@@ -98,8 +98,12 @@ router.get("/", async (req, res) => {
     var result = await ItemList.find({
       stores: { $elemMatch: { storeId: storeId } },
       createdBy: _id,
-    });
-
+    })
+    // .select('name -_id  category.categoryId');
+    // result.exec(function (err, someValue) {
+    //         if (err) return next(err);
+    //         res.send(someValue);
+    //     });
     result = result.slice(startIndex, endIndex);
     res.status(200).json(result);
   } catch (error) {
