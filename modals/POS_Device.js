@@ -11,20 +11,20 @@ const posDeviceSchema = new mongoose.Schema({
     required: true
   },
   store: {
-    type: [{
-      storeId: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true
-      },
-      storeName: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true
-      }
-    }]
+
+    storeId: {
+      type: String,
+      min: 3,
+      max: 255,
+      required: true
+    },
+    storeName: {
+      type: String,
+      min: 3,
+      max: 255,
+      required: true
+    }
+
   },
   createdAt: {
     type: Date,
