@@ -34,9 +34,11 @@ router.get('/', async (req, res) => {
 });
 router.post('/getStoreDevice', async (req, res) => {
     try {
-        const { _id } = req.authData;    
+        const { _id } = req.authData;
         const { storeId } = req.body
-        const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
+        // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
+        const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id });
+
         if (result != null)
         {
             await POS_Device.updateOne({ _id: result._id }, {
@@ -67,7 +69,7 @@ router.delete('/:ids', async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-});  
+});
 router.patch('/:id', async (req, res) => {
     try {
         const {title, store } = req.body;
