@@ -27,7 +27,7 @@ const diningOptionSchema = new mongoose.Schema({
   },
   position: {
     type: Number,
-    default: 1,
+    default: 0,
   },
   createdAt: {
     type: Date,
@@ -49,33 +49,18 @@ diningOptionSchema.index(
     unique: true,
   }
 );
-// const diningOption = mongoose.model("diningOption", diningOptionSchema);
-// diningOptionSchema.pre("save", function (next) {
-//   var doc = this;
-//
-//   //Retrieve last value of caseStudyNo
-//   diningOption.findOne({}, {}, { sort: { position: -1 } }, function (error, counter) {
-//     //if documents are present in collection then it will increament caseStudyNo
-//     // else it will create a new documents with default values
-//
-//     if (counter) {
-//       counter.position++;
-//       doc.position = counter.position;
-//     }
-//     next();
-//   });
-// });
-// var diningOption = mongoose.model("diningOption", diningOptionSchema);
-// diningOptionSchema.pre("save", function (next) {
-//   var doc = this;
-//   diningOption.findByIdAndUpdate(
-//     { _id: "entityId" },
-//     { $inc: { position: 1 } },
-//     function (error, res) {
-//       if (error) return next(error);
-//       doc.position = res.position  ;
-//       next();
-//     }
-//   );
-// });
+diningOptionSchema.pre('save', function (next) {
+  var doc = this;
+var diningOption = mongoose.model("diningOption", diningOptionSchema);
+    // Only increment when the document is new
+    if (this.isNew) {
+        diningOption.countDocuments().then(res => {
+            doc.position = res; // Increment count
+            next();
+        });
+    } else {
+        next();
+    }
+});
+
 module.exports = mongoose.model("diningOption", diningOptionSchema);

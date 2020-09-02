@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { _id } = req.authData;
-    const result = await diningOption.find({ createdBy: _id });
+    const result = await diningOption.find({ createdBy: _id }).sort({ position: 'asc' });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -33,13 +33,20 @@ router.post("/getStoreDining", async (req, res) => {
   try {
     const { _id } = req.authData;
     const { storeId } = req.body;
+    let filter= {}
+    if(storeId == 0) {
+      filter = {
+          createdBy: _id
+      }
+    }else {
+      filter ={
+        stores: { $elemMatch: { storeId: storeId } },
+        createdBy: _id,
+      }
+    }
     // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
-    const result = await diningOption.find({
-      stores: { $elemMatch: { storeId: storeId } },
-      createdBy: _id,
-    });
+    const result = await diningOption.find(filter);
 
-    i;
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -48,35 +55,31 @@ router.post("/getStoreDining", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    // ids = JSON.parse(id)
-    // ids.forEach(async (id) => {
     await diningOption.deleteOne({ _id: id });
-    // });
     res.status(200).json({ message: "deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-// router.patch('/:id', async (req, res) => {
-//     try {
-//         const {title, store } = req.body;
-//         let jsonStore = JSON.parse(store);
-//         const { id } = req.params;
-//
-//         await POS_Device.updateOne({ _id: id }, {
-//             $set: {
-//                 title: title,
-//                 store: jsonStore
-//             }
-//         });
-//
-//         res.status(200).json({ message: "updated" });
-//
-//
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-//
-// });
+router.patch('/', async (req, res) => {
+    try {
+
+      const data = JSON.parse(req.body.data)
+      data.map(async (item, index)=> {
+        await diningOption.updateOne({ _id:item.id }, {
+            $set: {
+              position:index
+            }
+        });
+      })
+
+        res.status(200).json({ message: 'Dining Position Is Updated' });
+
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+});
 
 module.exports = router;
