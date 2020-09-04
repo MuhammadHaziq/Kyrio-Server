@@ -98,7 +98,7 @@ router.get("/", async (req, res) => {
     var result = await ItemList.find({
       stores: { $elemMatch: { storeId: storeId } },
       createdBy: _id,
-    })
+    });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {
     //         if (err) return next(err);
@@ -128,7 +128,8 @@ router.get("/search", async (req, res) => {
       filters = {
         stores: { $elemMatch: { storeId: storeId } },
         name: { $regex: ".*" + search + ".*", $options: "i" },
-        category: { categoryId: categoryFilter },
+        "category.categoryId": categoryFilter,
+        // category: { categoryId: categoryFilter },
         createdBy: _id,
       };
     } else if (categoryFilter == undefined) {
@@ -143,7 +144,8 @@ router.get("/search", async (req, res) => {
         stores: { $elemMatch: { storeId: storeId } },
         name: { $regex: ".*" + search + ".*", $options: "i" },
         // categoryId: categoryFilter,
-        category: { categoryId: categoryFilter },
+        "category.categoryId": categoryFilter,
+        // category: { categoryId: categoryFilter },
         stockId: stockFilter,
         createdBy: _id,
       };
@@ -154,6 +156,7 @@ router.get("/search", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.delete("/:ids", async (req, res) => {
   try {
     var { ids } = req.params;
