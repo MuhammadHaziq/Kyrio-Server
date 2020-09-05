@@ -41,11 +41,36 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+router.post("/getStoreTaxes", async (req, res) => {
+  try {
+    const { _id } = req.authData;
+    const { storeId } = req.body;
+    let filter = {};
+    if (storeId == 0) {
+      filter = {
+        createdBy: _id,
+      };
+    } else {
+      filter = {
+        stores: { $elemMatch: { storeId: storeId } },
+        createdBy: _id,
+      };
+    }
+    const result = await itemTax.find(filter);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    await itemTax.deleteOne({ _id: id });
+    const { _id } = req.authData;
+    id = JSON.parse(id);
+    for (const taxId of id) {
+      await itemTax.deleteOne({ _id: taxId, createdBy: _id });
+    }
     res.status(200).json({ message: "deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
