@@ -114,45 +114,45 @@ export const modulesData = {
                isMenu: true,
                isChild: false
              },
-           ],
-           posModules: [
-             {
-               moduleName: "View all receipts",
-               description:
-                 "When this option is disabled, a cashier can view the last 5 receipts",
-             },
-             {
-               moduleName: "Apply discounts with restricted access",
-             },
-             {
-               moduleName: "Change taxes in a sale",
-             },
-             {
-               moduleName: "Perform refunds",
-             },
-             {
-               moduleName: "Manage all open tickets",
-             },
-             {
-               moduleName: "Void saved items in open tickets",
-             },
-             {
-               moduleName: "View shift report",
-             },
-             {
-               moduleName: "Open cash drawer without making a sale",
-             },
-             {
-               moduleName: "Reprint and resend receipts",
-             },
-             {
-               moduleName: "Manage items",
-             },
-             {
-               moduleName: "Change settings",
-             },
-             {
-               moduleName: "Access to live chat support",
-             },
-           ],
-         };
+    ],
+    posModules: [
+        {
+          moduleName: "View all receipts",
+          description:
+            "When this option is disabled, a cashier can view the last 5 receipts",
+        },
+        {
+          moduleName: "Apply discounts with restricted access",
+        },
+        {
+          moduleName: "Change taxes in a sale",
+        },
+        {
+          moduleName: "Perform refunds",
+        },
+        {
+          moduleName: "Manage all open tickets",
+        },
+        {
+          moduleName: "Void saved items in open tickets",
+        },
+        {
+          moduleName: "View shift report",
+        },
+        {
+          moduleName: "Open cash drawer without making a sale",
+        },
+        {
+          moduleName: "Reprint and resend receipts",
+        },
+        {
+          moduleName: "Manage items",
+        },
+        {
+          moduleName: "Change settings",
+        },
+        {
+          moduleName: "Access to live chat support",
+        },
+    ],
+  };

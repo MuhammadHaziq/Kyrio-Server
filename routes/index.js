@@ -7,6 +7,7 @@ import diningRoute from "../controllers/settings/diningOption";
 import taxesType from "../controllers/settings/taxes/taxesType";
 import taxesOption from "../controllers/settings/taxes/taxesOption";
 import itemTax from "../controllers/settings/taxes/itemTax";
+import ticketsRouter from "../controllers/tickets/tickets";
 import express from "express";
 import { verifyToken } from "../libs/middlewares";
 var router = express.Router();
@@ -15,6 +16,7 @@ router.get("/", (req, res, next) => {
   res.render("index", { title: "Kyrio POS Server" });
 });
 router.use("/users", usersRouter);
+router.use("/tickets", verifyToken, ticketsRouter);
 router.use("/items", verifyToken, itemsRouter);
 router.use("/stores", verifyToken, storesRouter);
 router.use("/devices", verifyToken, devicesRouter);
