@@ -21,7 +21,9 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { _id } = req.authData;
-    const allCat = await Category.find({ createdBy: _id });
+    const allCat = await Category.find({ createdBy: _id }).sort({
+      _id: "desc",
+    });
     res.status(200).json(allCat);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -45,7 +47,7 @@ router.get("/categoryItem", async (req, res) => {
   let { categoryFilter, storeId } = req.query;
   try {
     let filters;
-if (categoryFilter == undefined) {
+    if (categoryFilter == undefined) {
       filters = {
         stores: { $elemMatch: { storeId: storeId } },
         createdBy: _id,

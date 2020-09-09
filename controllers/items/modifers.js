@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
     try {
         const { _id } = req.authData;
         const { storeId } = req.body;
-        const result = await Modifier.find({stores: {$elemMatch: {storeId: storeId}}, createdBy: _id });
+        const result = await Modifier.find({stores: {$elemMatch: {storeId: storeId}}, createdBy: _id }).sort({ _id: "desc" });
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: error.message });

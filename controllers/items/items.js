@@ -98,7 +98,7 @@ router.get("/", async (req, res) => {
     var result = await ItemList.find({
       stores: { $elemMatch: { storeId: storeId } },
       createdBy: _id,
-    });
+    }).sort({ _id: "desc" });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {
     //         if (err) return next(err);
@@ -150,7 +150,7 @@ router.get("/search", async (req, res) => {
         createdBy: _id,
       };
     }
-    var result = await ItemList.find(filters);
+    var result = await ItemList.find(filters).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
