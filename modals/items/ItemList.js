@@ -59,8 +59,7 @@ const itemListSchema = new mongoose.Schema({
     default: 1,
     required: true,
   },
-  varients: {
-    type: [
+  varients: [
       {
         varientTitle: {
           type: String,
@@ -91,7 +90,6 @@ const itemListSchema = new mongoose.Schema({
         },
       },
     ],
-  },
   stores: {
     type: [
       {
