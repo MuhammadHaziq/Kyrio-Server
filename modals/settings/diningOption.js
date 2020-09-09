@@ -25,6 +25,10 @@ const diningOptionSchema = new mongoose.Schema({
       },
     ],
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
   position: {
     type: Number,
     default: 0,
@@ -49,18 +53,19 @@ diningOptionSchema.index(
     unique: true,
   }
 );
-diningOptionSchema.pre('save', function (next) {
+diningOptionSchema.pre("save", function (next) {
   var doc = this;
-var diningOption = mongoose.model("diningOption", diningOptionSchema);
-    // Only increment when the document is new
-    if (this.isNew) {
-        diningOption.countDocuments().then(res => {
-            doc.position = res; // Increment count
-            next();
-        });
-    } else {
-        next();
-    }
+  var diningOption = mongoose.model("diningOption", diningOptionSchema);
+  // Only increment when the document is new
+  if (this.isNew) {
+    diningOption.countDocuments().then((res) => {
+      doc.position = res; // Increment count
+      doc.isActive = true;
+      next();
+    });
+  } else {
+    next();
+  }
 });
 
 module.exports = mongoose.model("diningOption", diningOptionSchema);
