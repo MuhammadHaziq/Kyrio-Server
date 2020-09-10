@@ -49,18 +49,17 @@ router.delete("/:id", async (req, res) => {
 });
 router.patch("/", async (req, res) => {
   try {
-    const data = JSON.parse(req.body.data);
+    const { id, name, categories, storeId } = req.body;
+    let jsonCategoires = JSON.parse(categories);
     const { _id } = req.authData;
-    data.map(async (item, index) => {
-      await kitchenPrinter.updateOne(
-        { _id: item.id, storeId: storeId, createdBy: _id },
-        {
-          $set: {
-            categories: jsonCategoires,
-          },
-        }
-      );
-    });
+    await kitchenPrinter.updateOne(
+      { _id: id, storeId: storeId, createdBy: _id },
+      {
+        $set: {
+          categories: jsonCategoires,
+        },
+      }
+    );
 
     res.status(200).json({ message: "Dining Position Is Updated" });
   } catch (error) {
