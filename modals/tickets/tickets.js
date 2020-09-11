@@ -11,6 +11,31 @@ const ticketsSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  total_price: {
+    type: Number,
+    min: 1,
+    max: 100000000000,
+  },
+  sale: {
+    completed: {
+      type: Boolean,
+    },
+    cash_received: {
+      type: Number,
+      min: 1,
+      max: 100000000000,
+    },
+    change_return: {
+      type: Number,
+      min: 0,
+      max: 100000000000,
+    },
+    refund_amount: {
+      type: Number,
+      min: 0,
+      max: 100000000000,
+    }
+  },
   items: [{
       item_id: {
         type: String,
@@ -38,7 +63,12 @@ const ticketsSchema = new mongoose.Schema({
         type: String,
         min: 6,
         max: 255,
-      }
+      },
+      price: {
+        type: String,
+        min: 6,
+        max: 255,
+      },
     },
   store: {
     store_id: {
@@ -93,7 +123,7 @@ const ticketsSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
-  created: {
+  created_at: {
     type: Date,
     default: Date.now(),
   },

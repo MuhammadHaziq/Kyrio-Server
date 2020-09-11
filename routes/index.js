@@ -8,6 +8,7 @@ import taxesType from "../controllers/settings/taxes/taxesType";
 import taxesOption from "../controllers/settings/taxes/taxesOption";
 import itemTax from "../controllers/settings/taxes/itemTax";
 import ticketsRouter from "../controllers/tickets/tickets";
+import customersRouter from "../controllers/customers/customers";
 import kitchenPrinter from "../controllers/settings/kitchenPrinter";
 import express from "express";
 import { verifyToken } from "../libs/middlewares";
@@ -18,6 +19,7 @@ router.get("/", (req, res, next) => {
 });
 router.use("/users", usersRouter);
 router.use("/tickets", verifyToken, ticketsRouter);
+router.use("/customers", verifyToken, customersRouter);
 router.use("/items", verifyToken, itemsRouter);
 router.use("/stores", verifyToken, storesRouter);
 router.use("/devices", verifyToken, devicesRouter);
