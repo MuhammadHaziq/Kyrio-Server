@@ -129,13 +129,13 @@ const ticketsSchema = new mongoose.Schema({
   },
 });
 
-ticketsSchema.index(
-  {
-    ticket_name: 1,
-  },
-  {
-    unique: true,
-  }
-);
+// ticketsSchema.index(
+//   {
+//     ticket_name: 1,
+//   },
+//   {
+//     unique: true,
+//   }
+// );
 
 module.exports = mongoose.model("tickets", ticketsSchema);
