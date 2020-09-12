@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { _id } = req.authData;
-    const result = await itemTax.find({ createdBy: _id });
+    const result = await itemTax.find({ createdBy: _id }).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
