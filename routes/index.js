@@ -7,6 +7,8 @@ import diningRoute from "../controllers/settings/diningOption";
 import taxesType from "../controllers/settings/taxes/taxesType";
 import taxesOption from "../controllers/settings/taxes/taxesOption";
 import paymentTypes from "../controllers/settings/paymentTypes/paymentTypes.js";
+import paymentsType from "../controllers/settings/paymentTypes/paymentsType.js";
+
 import itemTax from "../controllers/settings/taxes/itemTax";
 import ticketsRouter from "../controllers/tickets/tickets";
 import customersRouter from "../controllers/customers/customers";
@@ -31,4 +33,5 @@ router.use("/tax/taxesOption", verifyToken, taxesOption);
 router.use("/tax", verifyToken, itemTax);
 router.use("/kitchenPrinter", verifyToken, kitchenPrinter);
 router.use("/paymentTypes", verifyToken, paymentTypes);
+router.use("/paymentsType", verifyToken, paymentsType);
 module.exports = router;
