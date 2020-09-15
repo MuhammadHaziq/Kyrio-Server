@@ -47,12 +47,11 @@ const itemListSchema = new mongoose.Schema({
     min: 1,
     max: 100,
   },
-  stockId: {
-    type: String,
-    max: 10000000,
-    // default: 0,
-    required: true,
-  },
+  trackStock: {
+    type: Boolean,
+    default: false,
+    required: true
+  },  
   stockQty: {
     type: String,
     max: 10000000,

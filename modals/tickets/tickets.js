@@ -16,6 +16,9 @@ const ticketsSchema = new mongoose.Schema({
     min: 1,
     max: 100000000000,
   },
+  open: {
+    type: Boolean,
+  },
   sale: {
     completed: {
       type: Boolean,

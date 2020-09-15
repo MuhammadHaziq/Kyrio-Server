@@ -15,7 +15,7 @@ router.get("/:ticket_name", async (req, res) => {
   try {
     const { _id } = req.authData;
     const { ticket_name } = req.query;
-    console.log(ticket_name);
+    
     var result = await Tickets.find({
       ticket_name: ticket_name,
       created_by: _id,
@@ -103,19 +103,20 @@ router.post("/saveOpenTicket", async (req, res) => {
   } else {
     const { _id } = req.authData;
     try {
-      //   let result;
-      //   ticket_name.map((item) => {
-      //     try {
-      //       result = new Tickets({
-      //         ticket_name: item,
-      //         store: store,
-      //         created_by: _id,
-      //       }).save();
-      //     } catch (err) {
-      //       res.status(400).json({ message: err.message });
-      //     }
-      //   });
-      res.status(200).json({ message: "In Process" });
+      const newTickets = await new Tickets({
+        ticket_name: ticket_name,
+        store: store,
+        open: true,
+        created_by: _id,
+      }).save();
+      let ticketData = {
+        _id: newTickets._id,
+        name: newTickets.ticket_name,
+        store: newTickets.store.store_id,
+        store_name: newTickets.store.name,
+        open:  newTickets.open,
+      }
+      res.status(200).json(ticketData);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

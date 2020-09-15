@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
     sku,
     barcode,
     repoOnPos,
-    stockId,
+    trackStock,
     stockQty,
   } = req.body;
   var {
@@ -69,7 +69,7 @@ router.post("/", async (req, res) => {
     cost,
     sku,
     barcode,
-    stockId,
+    trackStock,
     stockQty,
     varients,
     stores,
