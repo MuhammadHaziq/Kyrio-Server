@@ -5,6 +5,10 @@ import modifierRouter from "./modifers";
 import stockRouter from "./stock";
 import ItemList from "../../modals/items/ItemList";
 import uploadFiles from "../fileHandler/uploadFiles";
+import { getOwner } from "../../function/getOwner";
+
+const fs = require("fs-extra");
+
 var router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -29,6 +33,8 @@ router.post("/", async (req, res) => {
     itemColor,
     itemShape,
   } = req.body;
+  var image = req.files ? req.files.image : [];
+
   const { _id } = req.authData;
   varients = JSON.parse(varients);
   stores = JSON.parse(stores);
@@ -39,21 +45,20 @@ router.post("/", async (req, res) => {
   // res.status(200).send(data);
 
   var itemImageName = "";
-
+  let owner = await getOwner(_id);
+  
   if (repoOnPos == "image") {
     if (
       req.files != null &&
       req.files != "null" &&
       typeof req.files != "undefined"
     ) {
-      if (typeof req.files.itemImage != "undefined") {
-        var files = req.files.itemImage;
-        var uploadResult = await uploadFiles.uploadImages(files, "items");
+      if (typeof req.files.image != "undefined") {
+        var uploadResult = await uploadFiles.uploadImages(image, `items/${owner._id}`);
         if (!uploadResult.success) {
           res.status(200).json({ message: "error" });
           conn.release();
         }
-        console.log(uploadResult);
         itemImageName = uploadResult.images[0];
         itemColor = "";
         itemShape = "";
@@ -76,9 +81,9 @@ router.post("/", async (req, res) => {
     modifiers,
     taxes,
     repoOnPos,
-    itemImageName,
-    itemColor,
-    itemShape,
+    image: itemImageName,
+    color: itemColor,
+    shape: itemShape,
     createdBy: _id,
   });
   try {
@@ -88,6 +93,95 @@ router.post("/", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+router.patch("/", async (req, res) => {
+  const {
+    item_id,
+    name,
+    imageName,
+    availableForSale,
+    soldByType,
+    price,
+    cost,
+    sku,
+    barcode,
+    repoOnPos,
+    trackStock,
+    stockQty,
+  } = req.body;
+  var {
+    category,
+    varients,
+    stores,
+    modifiers,
+    taxes,
+    itemColor,
+    itemShape,
+  } = req.body;
+  var image = req.files ? req.files.image : [];
+
+  const { _id } = req.authData;
+  varients = JSON.parse(varients);
+  stores = JSON.parse(stores);
+  modifiers = JSON.parse(modifiers);
+  taxes = JSON.parse(taxes);
+  category = JSON.parse(category);
+  // stock = JSON.parse(stock);
+  // res.status(200).send(data);
+
+  var itemImageName = "";
+  let owner = await getOwner(_id);
+  
+  
+  var rootDir = process.cwd()
+  
+  if (repoOnPos == "image") {
+    if (
+      req.files != null &&
+      req.files != "null" &&
+      typeof req.files != "undefined"
+    ) {
+      if (typeof req.files.image != "undefined") {
+        fs.unlinkSync(`${rootDir}/uploads/items/${owner._id}/` + imageName);
+        var uploadResult = await uploadFiles.uploadImages(image, `items/${owner._id}`);
+        if (!uploadResult.success) {
+          res.status(200).json({ message: "error" });
+          conn.release();
+        }
+        itemImageName = uploadResult.images[0];
+        itemColor = "";
+        itemShape = "";
+      }
+    }
+  }
+  let data = {
+    name: name,
+    category: category,
+    availableForSale: availableForSale,
+    soldByType: soldByType,
+    price: price,
+    cost: cost,
+    sku: sku,
+    barcode: barcode,
+    trackStock: trackStock,
+    stockQty: stockQty,
+    varients: varients,
+    stores: stores,
+    modifiers: modifiers,
+    taxes: taxes,
+    repoOnPos: repoOnPos,
+    image: itemImageName,
+    color: itemColor,
+    shape: itemShape,
+    createdBy: _id
+  };
+  try {
+    let result = await ItemList.updateOne({ _id: item_id }, data);
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 router.get("/", async (req, res) => {
   try {
     const { _id } = req.authData;

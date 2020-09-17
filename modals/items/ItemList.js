@@ -8,12 +8,12 @@ const itemListSchema = new mongoose.Schema({
     required: true,
   },
   category: {
-    categoryId: {
+    id: {
       type: String,
       min: 3,
       max: 255,
     },
-    categoryName: {
+    name: {
       type: String,
       min: 3,
       max: 255,
@@ -60,100 +60,94 @@ const itemListSchema = new mongoose.Schema({
   },
   varients: [
       {
-        varientTitle: {
+        title: {
           type: String,
           min: 1,
           max: 255,
           required: true,
         },
-        varientPrice: {
+        price: {
           type: Number,
           min: 1,
           max: 100000000000,
           required: true,
         },
-        varientCost: {
+        cost: {
           type: Number,
           min: 1,
           max: 100000000000,
         },
-        varientSKU: {
+        SKU: {
           type: String,
           min: 1,
           max: 100,
         },
-        varientBarcode: {
+        barcode: {
           type: String,
           min: 1,
-          max: 100,
+          max: 100000000000,
         },
       },
     ],
-  stores: {
-    type: [
+  stores: [
       {
-        storeId: {
+        id: {
           type: String,
           min: 1,
           max: 255,
         },
-        storeTitle: {
+        title: {
           type: String,
           min: 1,
           max: 255,
         },
       },
     ],
-  },
-  modifiers: {
-    type: [
+  modifiers: [
       {
-        modifierId: {
+        id: {
           type: String,
           min: 1,
           max: 255,
         },
-        modifierTitle: {
+        title: {
           type: String,
           min: 1,
           max: 255,
         },
       },
     ],
-  },
-  taxes: {
-    type: [
+  taxes: [
       {
-        taxId: {
+        id: {
           type: String,
           min: 1,
           max: 255,
         },
-        taxTitle: {
+        title: {
           type: String,
           min: 1,
           max: 255,
         },
       },
     ],
-  },
   repoOnPos: {
     type: String,
     max: 14,
     required: true,
   },
-  itemImageName: {
+  image: {
     type: String,
     min: 3,
     max: 255,
     required: false,
   },
-  itemColor: {
+  color: {
     type: String,
     max: 20,
     required: false,
   },
-  itemShape: {
+  shape: {
     type: String,
     max: 20,
     required: false,

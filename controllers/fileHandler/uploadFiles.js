@@ -10,7 +10,12 @@ async function asyncForEach(array, callback) {
 
 async function uploadImages(files, folder) {
     var images = [];
+    let pciturePath = `./uploads/${folder}/`;
+   
     try {
+        if (!fs.existsSync(pciturePath)) {
+            fs.mkdirSync(pciturePath);
+            }
         //getting time & date
         var today = new Date();
         var date = today.getFullYear() + '_' + (today.getMonth() + 1) + '_' + today.getDate();
@@ -29,13 +34,13 @@ async function uploadImages(files, folder) {
                     "_" + dateTime +
                     Math.floor(Math.random() * 1000000000) +
                     "." + fileType;
-                let imageFile = `./uploads/${folder}/` + newName;
+                let imageFile = pciturePath + newName;
                 // console.log("called");
                 fs.writeFileSync(imageFile, file.data);
                 images.push(newName);
 
             });
-        } else if (typeof files.name != "undefined") {
+        } else if (typeof files.name !== "undefined") {
             //fore single file upload
             let fileType = files.mimetype.split("/")[1];
             fileType = fileType == "octet-stream" ? "jpg" : fileType;
@@ -45,8 +50,8 @@ async function uploadImages(files, folder) {
                 "_" + dateTime +
                 Math.floor(Math.random() * 1000000000) +
                 "." + fileType;
-
-            let imageFile = `./uploads/${folder}/` + newName;
+            
+            let imageFile = pciturePath + newName;
 
 
             fs.writeFileSync(imageFile, files.data);
@@ -56,9 +61,7 @@ async function uploadImages(files, folder) {
         return { success: true, images: images, message: "Successfully saved images!" };
 
     } catch (error) {
-        console.log(error);
         return { success: false, images: images, message: error.message };
-        // return res.status(200).json({ message: "error" });
     }
 }
 async function uploadVideo(files, folder) {
