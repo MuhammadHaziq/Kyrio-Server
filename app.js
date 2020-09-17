@@ -13,7 +13,19 @@ import fileUpload from "express-fileupload";
 dotenv.config();
 var app = express();
 app.use(cors());
-app.use(fileUpload());
+app.use(
+  fileUpload({
+    limits: { fileSize: 1 * 1024 * 1024 * 1024 },
+    abortOnLimit: true,
+    createParentPath: true,
+    limitHandler:(req,res,next)=>{
+      return res.status(422).send({
+        success:"false",
+        message:"File size limit has been reached"
+      });
+    }
+  })
+)
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
@@ -30,8 +42,8 @@ app.use(`/kyrio/v1`, indexRouter);
 app.use(logger("dev"));
 app.use(cookieParser());
 
-app.use(express.static(path.join(__dirname, "./uploads")));
-
+app.use('/media',express.static(path.join(__dirname, "./uploads")));
+app.use('/media/items/:ownerid',express.static(path.join(__dirname, "./uploads/items")));
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
