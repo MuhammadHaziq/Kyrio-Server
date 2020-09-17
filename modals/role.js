@@ -7,27 +7,35 @@ const roleSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  features: [{
-    featureName: {
-      type: String,
-    min: 3,
-    max: 255,
-    required: true,
+  features: [
+    {
+      featureId: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      featureName: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      description: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      icon: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      enable: Boolean,
     },
-    description: {
-      type: String,
-    min: 3,
-    max: 255,
-    required: true,
-    },
-    icon: {
-      type: String,
-    min: 3,
-    max: 255,
-    required: true,
-    },
-    enable: Boolean,
-  }],
+  ],
   allowBackoffice: {
     enable: Boolean,
     modules: [
@@ -48,7 +56,7 @@ const roleSchema = new mongoose.Schema({
         isChild: Boolean,
         enable: Boolean,
       },
-    ],    
+    ],
   },
   allowPOS: {
     enable: Boolean,
@@ -67,6 +75,46 @@ const roleSchema = new mongoose.Schema({
           required: true,
         },
         enable: Boolean,
+      },
+    ],
+  },
+  settings: {
+    settingModules: [
+      {
+        moduleId: {
+          type: String,
+          min: 3,
+          max: 255,
+          required: true,
+        },
+        moduleName: {
+          type: String,
+          min: 3,
+          max: 255,
+          required: true,
+        },
+        icon: {
+          type: String,
+          min: 3,
+          max: 255,
+        },
+        heading: {
+          type: String,
+          min: 3,
+          max: 255,
+        },
+        span: {
+          type: String,
+          min: 3,
+          max: 255,
+        },
+
+        enable: Boolean,
+        featureId: {
+          type: String,
+          min: 3,
+          max: 255,
+        },
       },
     ],
   },
