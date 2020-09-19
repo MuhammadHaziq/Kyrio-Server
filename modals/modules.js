@@ -34,7 +34,7 @@ const moduleSchema = new mongoose.Schema({
         max: 255,
       },
       isMenu: Boolean,
-      isChild: Boolean
+      isChild: Boolean,
     },
   ],
   posModules: [
@@ -50,6 +50,32 @@ const moduleSchema = new mongoose.Schema({
         min: 3,
         max: 255,
       },
+    },
+  ],
+  settings: [
+    {
+      moduleName: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      icon: {
+        type: String,
+        min: 3,
+        max: 255,
+      },
+      heading: {
+        type: String,
+        min: 3,
+        max: 255,
+      },
+      span: {
+        type: String,
+        min: 3,
+        max: 255,
+      },
+      enable: Boolean,
     },
   ],
   created: {
