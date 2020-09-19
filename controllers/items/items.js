@@ -56,8 +56,7 @@ router.post("/", async (req, res) => {
       if (typeof req.files.image != "undefined") {
         var uploadResult = await uploadFiles.uploadImages(image, `items/${owner._id}`);
         if (!uploadResult.success) {
-          res.status(200).json({ message: "error" });
-          conn.release();
+          res.status(404).json({ message: uploadResult.message });
         }
         itemImageName = uploadResult.images[0];
         itemColor = "";
@@ -154,21 +153,21 @@ router.patch("/", async (req, res) => {
     }
   }
   let data = {
-    name: name,
-    category: category,
-    availableForSale: availableForSale,
-    soldByType: soldByType,
-    price: price,
-    cost: cost,
-    sku: sku,
-    barcode: barcode,
-    trackStock: trackStock,
-    stockQty: stockQty,
-    varients: varients,
-    stores: stores,
-    modifiers: modifiers,
-    taxes: taxes,
-    repoOnPos: repoOnPos,
+    name,
+    category,
+    availableForSale,
+    soldByType,
+    price,
+    cost,
+    sku,
+    barcode,
+    trackStock,
+    stockQty,
+    varients,
+    stores,
+    modifiers,
+    taxes,
+    repoOnPos,
     image: itemImageName,
     color: itemColor,
     shape: itemShape,
@@ -199,6 +198,21 @@ router.get("/", async (req, res) => {
     //         res.send(someValue);
     //     });
     result = result.slice(startIndex, endIndex);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+router.get("/searchByName", async (req, res) => {
+  try {
+    let { name, storeId } = req.body;
+
+    let filters = {
+        stores: { $elemMatch: { "id": storeId } },
+        name: { $regex: ".*" + name + ".*", $options: "i" },
+      };
+    
+    var result = await ItemList.find(filters).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
