@@ -143,7 +143,7 @@ router.patch("/", async (req, res) => {
         fs.unlinkSync(`${rootDir}/uploads/items/${owner._id}/` + imageName);
         var uploadResult = await uploadFiles.uploadImages(image, `items/${owner._id}`);
         if (!uploadResult.success) {
-          res.status(200).json({ message: "error" });
+          res.status(200).json({ message: uploadResult.message });
           conn.release();
         }
         itemImageName = uploadResult.images[0];
