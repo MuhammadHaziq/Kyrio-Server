@@ -33,18 +33,31 @@ router.get("/", async (req, res) => {
 router.patch("/", async (req, res) => {
   try {
     const { _id } = req.authData;
-    const { featureId, enable } = req.query;
-    if (!featureId || typeof featureId === "undefined" || featureId == "") {
+    let { features } = req.body;
+
+    if (!features || typeof features === "undefined" || features == "") {
       res.status(400).json({ message: "Feature Id Not Empty", errors: [] });
     }
-    await Role.updateOne(
-      { features: { $elemMatch: { _id: featureId } } },
-      {
-        $set: {
-          enable: enable,
-        },
-      }
-    );
+    features = JSON.parse(features);
+    // for (const feature of features) {
+    //   console.log(feature.featureId);
+    //   await Role.updateOne(
+    //     // { _id: feature.feature_id },
+    //     { features: { $elemMatch: { featureId: feature.featureId } } },
+    //     {
+    //       $set: {
+    //         features: { $elemMatch: { enable: feature.enable } },
+    //       },
+    //     },
+    //     function (err, res) {
+    //       if (err) {
+    //         console.log(err.message);
+    //       } else {
+    //         console.log(res);
+    //       }
+    //     }
+    //   );
+    // }
 
     res.status(200).json({ message: "Features Updated" });
   } catch (error) {
@@ -52,3 +65,10 @@ router.patch("/", async (req, res) => {
   }
 });
 module.exports = router;
+// {
+//   "settings.settingModules": {
+//     $elemMatch: {
+//       featureId: feature.featureId,
+//     },
+//   },
+// },
