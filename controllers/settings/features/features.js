@@ -33,37 +33,20 @@ router.get("/", async (req, res) => {
 router.patch("/", async (req, res) => {
   try {
     const { role_id } = req.authData;
-    let { features } = req.body;
-    // console.log(features)
-    if (!features || typeof features === "undefined" || features == "") {
+    const { features } = req.body;
+
+    if (typeof features === "undefined" || features.length <= 0) {
       res.status(400).json({ message: "Feature Id Not Empty", errors: [] });
     }
-    let features = await Role.findOne({ _id: role_id });
-    for(const feature of features){
-      
-    }
-    // features = JSON.parse(features);
-    for (const feature of features) {
-      console.log(feature.featureId);
-      await Role.updateOne(
-        // { _id: feature.feature_id },
-        { features: { $elemMatch: { featureId: feature.featureId } } },
-        {
-          $set: {
-            features: { $elemMatch: { enable: feature.enable } },
-          },
-        },
-        function (err, res) {
-          if (err) {
-            console.log(err.message);
-          } else {
-            console.log(res);
-          }
-        }
-      );
-    }
 
-    res.status(200).json({ message: "Features Updated" });
+    let featuresArray = JSON.parse(features);
+    for (const feature of featuresArray) {
+      await Role.updateOne({'features.featureId': feature.featureId}, {'$set': {
+        'features.$.enable': feature.enable
+      }})
+    }
+    let role = await Role.findOne({ _id: role_id });
+    res.status(200).json({ message: "Features updated", features: role.features });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
