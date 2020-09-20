@@ -10,7 +10,8 @@ import paymentTypes from "../controllers/settings/paymentTypes/paymentTypes.js";
 import paymentsType from "../controllers/settings/paymentTypes/paymentsType.js";
 
 import itemTax from "../controllers/settings/taxes/itemTax";
-import ticketsRouter from "../controllers/tickets/tickets";
+import ticketsRouter from "../controllers/sales/tickets";
+import salesRouter from "../controllers/sales/sales";
 import customersRouter from "../controllers/customers/customers";
 import kitchenPrinter from "../controllers/settings/kitchenPrinter";
 import settingsLoyalty from "../controllers/settings/loyalty";
@@ -24,6 +25,7 @@ router.get("/", (req, res, next) => {
 });
 router.use("/users", usersRouter);
 router.use("/tickets", verifyToken, ticketsRouter);
+router.use("/sales", verifyToken, salesRouter);
 router.use("/customers", verifyToken, customersRouter);
 router.use("/items", verifyToken, itemsRouter);
 router.use("/stores", verifyToken, storesRouter);

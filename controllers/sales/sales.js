@@ -1,5 +1,5 @@
 import express from "express";
-import Tickets from "../../modals/tickets/tickets";
+import Tickets from "../../modals/sales/tickets";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
