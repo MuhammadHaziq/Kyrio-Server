@@ -187,10 +187,9 @@ router.get("/", async (req, res) => {
     const { page, limit, storeId } = req.query;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-
+    
     var result = await ItemList.find({
-      stores: { $elemMatch: { storeId: storeId } },
-      createdBy: _id,
+      stores: { $elemMatch: { id: storeId } }
     }).sort({ _id: "desc" });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {
