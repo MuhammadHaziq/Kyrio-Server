@@ -52,10 +52,3 @@ router.patch("/", async (req, res) => {
   }
 });
 module.exports = router;
-// {
-//   "settings.settingModules": {
-//     $elemMatch: {
-//       featureId: feature.featureId,
-//     },
-//   },
-// },

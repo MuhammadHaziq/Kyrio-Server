@@ -6,11 +6,6 @@ const ticketsSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
-  comments: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
   total_price: {
     type: Number,
     min: 1,
