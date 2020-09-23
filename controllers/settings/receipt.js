@@ -6,33 +6,37 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const {
     header,
+
     footer,
     show_customer_info,
     show_comments,
     language,
     storeId,
   } = req.body;
+  let { receiptImagePath, printedReceiptImagePath } = req.body;
   const { _id } = req.authData;
   var errors = [];
   var receiptImage = req.files ? req.files.receiptImage : "";
   var printedReceiptImage = req.files ? req.files.printedReceiptImage : "";
 
-  // if (
-  //   !receiptImage ||
-  //   typeof receiptImage == "undefined" ||
-  //   receiptImage == ""
-  // ) {
-  //   errors.push(`Invalid Receipt Image!`);
-  //   // errors.push({ name: `Invalid Name!` });
-  // }
-  // if (
-  //   !printedReceiptImage ||
-  //   typeof printedReceiptImage == "undefined" ||
-  //   printedReceiptImage == ""
-  // ) {
-  //   errors.push(`Invalid Printed Receipt Image!`);
-  //   // errors.push({ name: `Invalid Name!` });
-  // }
+  if (
+    (!receiptImage ||
+      typeof receiptImage == "undefined" ||
+      receiptImage == "") &&
+    receiptImagePath == ""
+  ) {
+    errors.push(`Invalid Receipt Image!`);
+    // errors.push({ name: `Invalid Name!` });
+  }
+  if (
+    (!printedReceiptImage ||
+      typeof printedReceiptImage == "undefined" ||
+      printedReceiptImage == "") &&
+    printedReceiptImagePath == ""
+  ) {
+    errors.push(`Invalid Printed Receipt Image!`);
+    // errors.push({ name: `Invalid Name!` });
+  }
   if (!header || typeof header == "undefined" || header == "") {
     errors.push(`Invalid Header!`);
   }
@@ -49,23 +53,72 @@ router.post("/", async (req, res) => {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     try {
-      const files = [receiptImage, printedReceiptImage];
-      const imagesName = await uploadImages(files, storeId);
-      // res.json({
-      //   receiptImage: imagesName.images[0],
-      //   printedReceiptImage: imagesName.images[1],
-      //   header: header,
-      //   footer: footer,
-      //   show_customer_info: show_customer_info,
-      //   show_comments: show_comments,
-      //   language: language,
-      //   storeId: storeId,
-      //   createdBy: _id,
-      // });
-      if (imagesName.success === true) {
-        const newReceipt = new receipts({
-          receiptImage: imagesName.images[0],
-          printedReceiptImage: imagesName.images[1],
+      let files = [];
+      let fileExist = [];
+      let newReceipt;
+      if (
+        receiptImage &&
+        typeof receiptImage !== "undefined" &&
+        receiptImage !== ""
+      ) {
+        files.push(receiptImage);
+        fileExist.push(true);
+      } else {
+        fileExist.push(false);
+      }
+      if (
+        printedReceiptImage &&
+        typeof printedReceiptImage !== "undefined" &&
+        printedReceiptImage !== ""
+      ) {
+        files.push(printedReceiptImage);
+        fileExist.push(true);
+      } else {
+        fileExist.push(false);
+      }
+      receiptImagePath === ""
+        ? ""
+        : (receiptImagePath = receiptImagePath.substring(
+            receiptImagePath.lastIndexOf("/") + 1,
+            receiptImagePath.length
+          ));
+      printedReceiptImagePath === ""
+        ? ""
+        : (printedReceiptImagePath = printedReceiptImagePath.substring(
+            printedReceiptImagePath.lastIndexOf("/") + 1,
+            printedReceiptImagePath.length
+          ));
+      // const files = [receiptImage, printedReceiptImage];
+      if (files.length !== 0) {
+        const imagesName = await uploadImages(files, `receipt/${storeId}`);
+        if (imagesName.success === true) {
+          newReceipt = new receipts({
+            receiptImage:
+              fileExist[0] == true ? imagesName.images[0] : receiptImagePath,
+            printedReceiptImage:
+              fileExist[1] == true
+                ? imagesName.images[1]
+                : printedReceiptImagePath,
+            header: header,
+            footer: footer,
+            show_customer_info: show_customer_info,
+            show_comments: show_comments,
+            language: language,
+            storeId: storeId,
+            createdBy: _id,
+          });
+        } else {
+          res.status(400).send({
+            message: `Images Not Saved!`,
+            errors: [],
+            files,
+            fileExist,
+          });
+        }
+      } else {
+        newReceipt = new receipts({
+          receiptImage: receiptImagePath,
+          printedReceiptImage: printedReceiptImagePath,
           header: header,
           footer: footer,
           show_customer_info: show_customer_info,
@@ -74,11 +127,9 @@ router.post("/", async (req, res) => {
           storeId: storeId,
           createdBy: _id,
         });
-        const result = await newReceipt.save();
-        res.status(201).json(result);
-      } else {
-        res.status(400).send({ message: `Images Not Saved!`, errors: [] });
       }
+      const result = await newReceipt.save();
+      res.status(201).json(result);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -86,17 +137,24 @@ router.post("/", async (req, res) => {
 });
 router.get("/:storeId", async (req, res) => {
   try {
+    var rootDir = process.cwd();
     const { _id } = req.authData;
     const { storeId } = req.params;
     const result = await receipts
       .findOne({ createdBy: _id, storeId: storeId })
       .sort({ _id: "desc" })
       .limit(1); // Find Lasted One Record
-    const data = {
-      status: true,
-      data: result !== null ? result["amount"] : "00.0",
-    };
-    res.status(200).json(data);
+    if (result !== null) {
+      result.receiptImage =
+        result.receiptImage === "null"
+          ? ""
+          : `media/receipt/${storeId}/${result.receiptImage}`;
+      result.printedReceiptImage =
+        result.printedReceiptImage === "null"
+          ? ""
+          : `media/receipt/${storeId}/${result.printedReceiptImage}`;
+    }
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

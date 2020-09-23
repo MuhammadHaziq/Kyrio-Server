@@ -46,7 +46,7 @@ router.post("/", async (req, res) => {
 
   var itemImageName = "";
   let owner = await getOwner(_id);
-  
+
   if (repoOnPos == "image") {
     if (
       req.files != null &&
@@ -129,10 +129,10 @@ router.patch("/", async (req, res) => {
 
   var itemImageName = "";
   let owner = await getOwner(_id);
-  
-  
+
+
   var rootDir = process.cwd()
-  
+
   if (repoOnPos == "image") {
     if (
       req.files != null &&
@@ -187,7 +187,7 @@ router.get("/", async (req, res) => {
     const { page, limit, storeId } = req.query;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    
+
     var result = await ItemList.find({
       stores: { $elemMatch: { id: storeId } }
     }).sort({ _id: "desc" });
@@ -210,7 +210,7 @@ router.get("/searchByName", async (req, res) => {
         stores: { $elemMatch: { "id": storeId } },
         name: { $regex: ".*" + name + ".*", $options: "i" },
       };
-    
+
     var result = await ItemList.find(filters).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
