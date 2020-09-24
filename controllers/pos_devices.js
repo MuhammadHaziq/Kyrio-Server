@@ -82,7 +82,7 @@ router.delete("/:ids", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   try {
     const { title, store } = req.body;
-    let jsonStore = JSON.parse(store);
+    // let jsonStore = JSON.parse(store);
     const { id } = req.params;
 
     await POS_Device.updateOne(
@@ -90,7 +90,6 @@ router.patch("/:id", async (req, res) => {
       {
         $set: {
           title: title,
-          store: jsonStore,
         },
       }
     );
