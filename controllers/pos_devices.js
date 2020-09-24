@@ -34,18 +34,19 @@ router.post("/getStoreDevice", async (req, res) => {
   try {
     const { _id } = req.authData;
     const { storeId } = req.body;
+    let result = {};
     let condition = {};
     if (storeId === "0") {
-      const result = await POS_Device.findOne({ createdBy: _id });
+      result = await POS_Device.findOne({ createdBy: _id });
     } else {
-      const result = await POS_Device.findOne({
+      result = await POS_Device.findOne({
         "store.storeId": storeId,
         createdBy: _id,
       });
     }
     // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
 
-    if (result != null) {
+    if (result !== null) {
       await POS_Device.updateOne(
         { _id: result._id },
         {
@@ -56,10 +57,10 @@ router.post("/getStoreDevice", async (req, res) => {
       );
       res.status(200).json(result);
     } else {
-      res.status(400).send({
-        message:
-          "POS Device is not available! Please create a POS Device in this Store from backoffice",
-      });
+      res.status(200).json({});
+      // res.status(400).send({//   message:
+      //     "POS Device is not available! Please create a POS Device in this Store from backoffice",
+      // });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
