@@ -1,6 +1,7 @@
 import Users from "../modals/users";
 import Role from "../modals/role";
 import Stores from "../modals/Store";
+import POS_Device from "../modals/POS_Device";
 import { checkModules } from "../libs/middlewares";
 import md5 from "md5";
 import express from "express";
@@ -41,13 +42,12 @@ router.post("/signup", checkModules, (req, res) => {
                   created_by: result._id,
                   owner_id: result._id,
                 };
-                let store = new Stores({
+                let store = await new Stores({
                   title: businessName,
                   createdBy: result._id
-                })
-                store.save().then(response=>{
-                  console.log(response)
-                }).catch(e => console.log(e.message));
+                }).save();
+                
+                // Enable when application is live
                 // let emailMessage = {
                 //   businessName: result.businessName,
                 //   email: result.email,
@@ -55,6 +55,16 @@ router.post("/signup", checkModules, (req, res) => {
                 //   from: "info@kyrio.com",
                 // };
                 // sendEmail(emailMessage);
+                let jsonStore = {
+                  storeId: store._id,
+                  storeName: businessName
+                }
+                await new POS_Device({
+                  title: "POS 1",
+                  store: jsonStore,
+                  createdBy: result._id,
+                }).save();
+
                 jwt.sign(
                   user,
                   "kyrio_bfghigheu",
