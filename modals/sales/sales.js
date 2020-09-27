@@ -1,41 +1,41 @@
 import mongoose from "mongoose";
 
-const ticketsSchema = new mongoose.Schema({
+const salesSchema = new mongoose.Schema({
   ticket_name: {
     type: String,
     min: 6,
     max: 255,
+  },
+  comments: {
+    type: String,
+    min: 6,
+    max: 255,
+  },
+  open: {
+    type: Boolean
   },
   total_price: {
     type: Number,
     min: 1,
     max: 100000000000,
   },
-  open: {
-    type: Boolean,
+  cash_received: {
+    type: Number,
+    min: 1,
+    max: 100000000000,
   },
-  sale: {
-    completed: {
-      type: Boolean,
-    },
-    cash_received: {
-      type: Number,
-      min: 1,
-      max: 100000000000,
-    },
-    change_return: {
-      type: Number,
-      min: 0,
-      max: 100000000000,
-    },
-    refund_amount: {
-      type: Number,
-      min: 0,
-      max: 100000000000,
-    }
+  cash_return: {
+    type: Number,
+    min: 1,
+    max: 100000000000,
+  },
+  refund_status: {
+    type: String,
+    min: 3,
+    max: 255,
   },
   items: [{
-      item_id: {
+      id: {
         type: String,
         min: 6,
         max: 255,
@@ -50,9 +50,45 @@ const ticketsSchema = new mongoose.Schema({
         min: 0,
         max: 255,
       },
+      modifiers: [{
+        id: {
+          type: String,
+          min: 6,
+          max: 255,
+        },
+        name: {
+          type: String,
+          min: 6,
+          max: 255,
+        },
+        options: [{
+          name: {
+              type: String,
+              min: 6,
+              max: 255,
+            },
+          price: {
+              type: Number,
+              min: 1,
+              max: 255,
+            },
+        }]
+    }],
+  }],
+  discounts: [{
+    name: {
+      type: String,
+      min: 6,
+      max: 255,
+    },
+    value: {
+      type: String,
+      min: 2,
+      max: 255,
+    }
   }],
   variant: {
-      variant_id: {
+      id: {
         type: String,
         min: 6,
         max: 255,
@@ -69,7 +105,7 @@ const ticketsSchema = new mongoose.Schema({
       },
     },
   store: {
-    store_id: {
+    id: {
         type: String,
         min: 6,
         max: 255,
@@ -80,32 +116,8 @@ const ticketsSchema = new mongoose.Schema({
         max: 255,
       }
   },
-  modifiers: [{
-      modifier_id: {
-        type: String,
-        min: 6,
-        max: 255,
-      },
-      name: {
-        type: String,
-        min: 6,
-        max: 255,
-      },
-      options: [{
-        name: {
-            type: String,
-            min: 6,
-            max: 255,
-          },
-        price: {
-            type: Number,
-            min: 1,
-            max: 255,
-          },
-      }]
-  }],
   taxes: [{
-    tax_id: {
+    id: {
         type: String,
         min: 6,
         max: 255,
@@ -127,7 +139,7 @@ const ticketsSchema = new mongoose.Schema({
   },
 });
 
-// ticketsSchema.index(
+// salesSchema.index(
 //   {
 //     ticket_name: 1,
 //   },
@@ -136,4 +148,4 @@ const ticketsSchema = new mongoose.Schema({
 //   }
 // );
 
-module.exports = mongoose.model("tickets", ticketsSchema);
+module.exports = mongoose.model("sales", salesSchema);

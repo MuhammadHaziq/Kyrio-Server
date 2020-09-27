@@ -3,19 +3,19 @@ import Modifier from "../../modals/items/Modifier";
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-    const {title, modifierType, options, stores } = req.body;
-    var jsonOptions = JSON.parse(options);
-    var jsonStores = JSON.parse(stores);
+    const {title, type, options, stores } = req.body;
+    try {
+    var jsonOptions = typeof options !== "undefined" && options.length > 0 ? JSON.parse(options) : [];
+    var jsonStores = typeof stores !== "undefined" && stores.length > 0 ? JSON.parse(stores) : [];
     const { _id } = req.authData;
 
     const newModifier = new Modifier({
         title: title,
-        modifierType: modifierType,
+        type: type,
         options: jsonOptions,
         stores: jsonStores,
         createdBy: _id
     });
-    try {
         const result = await newModifier.save();
         res.status(201).json(result);
     } catch (error) {
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
     try {
         const { _id } = req.authData;
         const { storeId } = req.body;
-        const result = await Modifier.find({stores: {$elemMatch: {storeId: storeId}}, createdBy: _id }).sort({ _id: "desc" });
+        const result = await Modifier.find({stores: {$elemMatch: {id: storeId}}, createdBy: _id }).sort({ _id: "desc" });
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -37,7 +37,7 @@ router.post('/getStoreModifiers', async (req, res) => {
     try {
         const { _id } = req.authData;
         const { storeId } = req.body;
-        const result = await Modifier.find({stores: {$elemMatch: {storeId: storeId}}, createdBy: _id });
+        const result = await Modifier.find({stores: {$elemMatch: {id: storeId}}, createdBy: _id });
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: error.message });

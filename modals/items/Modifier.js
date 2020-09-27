@@ -7,15 +7,14 @@ const modifierSchema = new mongoose.Schema({
         max: 255,
         required: true
     },
-    modifierType: {
+    type: {
         type: String,
         min: 3,
         max: 255,
         required: true   
     },
-    options: {
-        type: [{
-            optionName: {
+    options: [{
+            name: {
                 type: String,
                 min: 3,
                 max: 255,
@@ -23,28 +22,24 @@ const modifierSchema = new mongoose.Schema({
             },
             price: {
                 type: Number,
-
                 max: 100000000000,
                 required: true
             }
-        }]
-    },
-    stores: {
-        type: [{
-            storeId: {
+        }],
+    stores: [{
+            id: {
                 type: String,
                 min: 1,
                 max: 255,
                 required: true
             },
-            storeName: {
+            name: {
                 type: String,
                 min: 1,
                 max: 255,
                 required: true
             },
-        }]
-    },
+        }],
     createdAt: {
         type: Date,
         default: Date.now(),

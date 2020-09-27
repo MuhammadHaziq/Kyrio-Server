@@ -1,26 +1,29 @@
 import express from "express";
+import Sales from "../../modals/sales/sales";
 import Tickets from "../../modals/sales/tickets";
+var mongoose = require('mongoose');
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    var result = await Tickets.find({ created_by: _id }).sort({ _id: "desc" });
-    res.status(200).json(result);
+    var allSales = await Sales.find().sort({ _id: "desc" });
+    res.status(200).json(allSales);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-router.get("/:ticket_name", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    const { ticket_name } = req.query;
+    const { ticket, sale_id } = req.body;
+    let check = mongoose.Types.ObjectId.isValid(sale_id);
+    let searchResult; 
+    if(check){
+      searchResult = await Sales.find({ $or:[{'ticket_name': ticket}, {'_id': sale_id}] }).sort({ _id: "desc" });
+    } else {
+      searchResult = await Sales.find({ $or:[{'ticket_name': ticket}] }).sort({ _id: "desc" });
+    }
     
-    var result = await Tickets.find({
-      ticket_name: ticket_name,
-      created_by: _id,
-    }).sort({ _id: "desc" });
-    res.status(200).json(result);
+    res.status(200).json(searchResult);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -28,7 +31,7 @@ router.get("/:ticket_name", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    let result = await Tickets.deleteOne({ _id: id });
+    let result = await Sales.deleteOne({ _id: id });
 
     res.status(200).json({ message: "deleted", result });
   } catch (error) {
@@ -39,12 +42,15 @@ router.post("/", async (req, res) => {
   const {
     ticket_name,
     comments,
+    open,
     total_price,
-    sale,
+    cash_received,
+    cash_return,
+    refund_amount,
     items,
+    discounts,
     variant,
     store,
-    modifiers,
     taxes,
   } = req.body;
   var errors = [];
@@ -65,131 +71,46 @@ router.post("/", async (req, res) => {
   } else {
     const { _id } = req.authData;
     try {
-      const newTickets = await new Tickets({
-        ticket_name: ticket_name,
-        comments: comments,
-        total_price: total_price,
-        sale: sale,
-        items: items,
-        variant: variant,
-        store: store,
-        modifiers: modifiers,
-        taxes: taxes,
+      const newSales = await new Sales({
+        ticket_name,
+        comments,
+        open,
+        total_price,
+        cash_received,
+        cash_return,
+        refund_amount,
+        items,
+        discounts,
+        variant,
+        store,
+        taxes,
         created_by: _id,
       }).save();
-      res.status(200).json(newTickets);
+      res.status(200).json(newSales);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   }
 });
-/*
- *
- * Created By Muhammad Haziq For Web Sttings => Open Ticket Save
- *
- *
- */
-router.post("/saveOpenTicket", async (req, res) => {
-  const { ticket_name, store } = req.body;
-  var errors = [];
-  if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
-    errors.push({ ticket_name: `Invalid ticket_name!` });
-  }
-  if (typeof store == "undefined" || store == "") {
-    errors.push({ store: `Invalid store!` });
-  }
-  if (errors.length > 0) {
-    res.status(400).send({ message: `Invalid Parameters!`, errors });
-  } else {
-    const { _id } = req.authData;
-    try {
-      const newTickets = await new Tickets({
-        ticket_name: ticket_name,
-        store: store,
-        open: true,
-        created_by: _id,
-      }).save();
-      let ticketData = {
-        _id: newTickets._id,
-        name: newTickets.ticket_name,
-        store: newTickets.store.store_id,
-        store_name: newTickets.store.name,
-        open:  newTickets.open,
-      }
-      res.status(200).json(ticketData);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
-  }
-});
-router.get("/getStoreTicket/:storeId", async (req, res) => {
-  try {
-    const { _id } = req.authData;
-    var { storeId } = req.params;
-    var result = await Tickets.find({
-      created_by: _id,
-      "store.store_id": storeId,
-    }).sort({ _id: "desc" });
-    res.status(200).json(result);
-    let itemList = [];
-    let newTicket = [];
-    new Promise((resolve, reject) => {
-      result.map((item, index) => {
-        return itemList.push({
-          id: `item-${index + 1}`,
-          value: item.ticket_name,
-        });
-      });
-
-      resolve();
-    })
-      .then((response) => {
-        // newTicket = itemList.map((k, index) => ({
-        //     id: `item-${index + 1}`,
-        //     value: k.value,
-        //   }));
-        let list = itemList.map((itm) => {
-          return false;
-        });
-        let values = itemList.map((itm) => {
-          return itm.value;
-        });
-        const data = {
-          errore: list,
-          values,
-          items: itemList,
-        };
-        res.status(200).json(data);
-      })
-      .catch((err) => {
-        res.status(400).json({ message: error.message });
-      });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-/*
- *
- * End Created By Muhammad Haziq For Web Sttings => Open Ticket Save
- *
- *
- */
 router.patch("/", async (req, res) => {
   const {
-    ticket_id,
+    sale_id,
     ticket_name,
     comments,
+    open,
     total_price,
-    sale,
+    cash_received,
+    cash_return,
+    refund_amount,
     items,
+    discounts,
     variant,
     store,
-    modifiers,
     taxes,
   } = req.body;
   var errors = [];
-  if (!ticket_id || typeof ticket_id == "undefined" || ticket_id == "") {
-    errors.push({ ticket_id: `Invalid Ticket ID!` });
+  if (!sale_id || typeof sale_id == "undefined" || sale_id == "") {
+    errors.push({ sale_id: `Invalid Sale ID!` });
   }
   if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
     errors.push({ ticket_name: `Invalid ticket_name!` });
@@ -209,19 +130,57 @@ router.patch("/", async (req, res) => {
     const { _id } = req.authData;
     try {
       let data = {
-        ticket_name: ticket_name,
-        comments: comments,
-        total_price: total_price,
-        sale: sale,
-        items: items,
-        variant: variant,
-        store: store,
-        modifiers: modifiers,
-        taxes: taxes,
+        ticket_name,
+        comments,
+        open,
+        total_price,
+        cash_received,
+        cash_return,
+        refund_amount,
+        items,
+        discounts,
+        variant,
+        store,
+        taxes,
         created_by: _id,
       };
-      let result = await Tickets.updateOne({ _id: ticket_id }, data);
-      res.status(200).json(result);
+      await Sales.updateOne({ _id: sale_id }, data);
+      let getUpdatedSale = await Sales.findOne({ _id: sale_id });
+      res.status(200).json(getUpdatedSale);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+});
+router.patch("/refund", async (req, res) => {
+  const {
+    sale_id,
+    items,
+  } = req.body;
+  var errors = [];
+  if (!sale_id || typeof sale_id == "undefined" || sale_id == "") {
+    errors.push({ sale_id: `Invalid Sale ID!` });
+  }
+  if (typeof items == "undefined" || items.length <= 0 || items == "") {
+    errors.push({ items: `Invalid items!` });
+  }
+  if (errors.length > 0) {
+    res.status(400).send({ message: `Invalid Parameters!`, errors });
+  } else {
+    try {
+    for (const item of items) {
+      await Sales.updateOne(
+        {$and: [{ _id: sale_id }, { "items.id": item.id }]},
+        {
+          $set: {
+            "items.$.refund_quantity": item.refund_quantity,
+            "refund_status": item.refund_quantity == item.quantity ? "Full" : "Partial Refund"
+          },
+        }
+      );
+    }
+      let getRefundedSale = await Sales.findOne({ _id: sale_id });
+      res.status(200).json(getRefundedSale);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
