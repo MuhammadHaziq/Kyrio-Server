@@ -174,7 +174,8 @@ router.patch("/", async (req, res) => {
     createdBy: _id
   };
   try {
-    let result = await ItemList.updateOne({ _id: item_id }, data);
+    await ItemList.updateOne({ _id: item_id }, data);
+    let result = await ItemList.findOne({ _id: item_id });
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
