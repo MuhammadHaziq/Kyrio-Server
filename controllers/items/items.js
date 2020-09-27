@@ -242,56 +242,7 @@ router.get("/search", async (req, res) => {
       storeFilter.name = { $regex: ".*" + search + ".*", $options: "i" };
     }
     storeFilter.createdBy = _id;
-    // if (storeId === "0") {
-    //   storeFilter = {
-    //     $elemMatch: { id: { $regex: ".*" + storeId + ".*", $options: "i" } },
-    //   };
-    // } else {
-    //   storeFilter = { $elemMatch: { id: storeId } };
-    // }
-    // // storeId !== '0' ?
-    // //   stores: { $elemMatch: { id: storeId } } : '',
-    // let filters;
-    // if (stockFilter == undefined && categoryFilter == undefined) {
-    //   filters = {
-    //     // stores: { $elemMatch: { id: storeId } },
-    //     stores: storeFilter,
-    //     name: { $regex: ".*", $options: "i" },
-    //     // categoryId: categoryFilter,
-    //     // stockId: stockFilter,
-    //     createdBy: _id,
-    //   };
-    // } else if (stockFilter == undefined) {
-    //   filters = {
-    //     // stores: { $elemMatch: { id: storeId } },
-    //     stores: storeFilter,
-    //     name: { $regex: ".*" + search + ".*", $options: "i" },
-    //     "category.id": categoryFilter,
-    //     // category: { categoryId: categoryFilter },
-    //     createdBy: _id,
-    //   };
-    // } else if (categoryFilter == undefined) {
-    //   filters = {
-    //     // stores: { $elemMatch: { id: storeId } },
-    //     stores: storeFilter,
-    //     name: { $regex: ".*" + search + ".*", $options: "i" },
-    //     stockId: stockFilter,
-    //     createdBy: _id,
-    //   };
-    // } else {
-    //   filters = {
-    //     // stores: { $elemMatch: { id: storeId } },
-    //     stores: storeFilter,
-    //     name: { $regex: ".*" + search + ".*", $options: "i" },
-    //     // categoryId: categoryFilter,
-    //     "category.categoryId": categoryFilter,
-    //     // category: { categoryId: categoryFilter },
-    //     stockId: stockFilter,
-    //     createdBy: _id,
-    //   };
-    // }
-    // console.log(filters);
-    // var result = await ItemList.find(filters).sort({ _id: "desc" });
+
     var result = await ItemList.find(storeFilter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -319,3 +270,53 @@ router.use("/modifier", modifierRouter);
 router.use("/items", ItemList);
 router.use("/stock", stockRouter);
 module.exports = router;
+// if (storeId === "0") {
+//   storeFilter = {
+//     $elemMatch: { id: { $regex: ".*" + storeId + ".*", $options: "i" } },
+//   };
+// } else {
+//   storeFilter = { $elemMatch: { id: storeId } };
+// }
+// // storeId !== '0' ?
+// //   stores: { $elemMatch: { id: storeId } } : '',
+// let filters;
+// if (stockFilter == undefined && categoryFilter == undefined) {
+//   filters = {
+//     // stores: { $elemMatch: { id: storeId } },
+//     stores: storeFilter,
+//     name: { $regex: ".*", $options: "i" },
+//     // categoryId: categoryFilter,
+//     // stockId: stockFilter,
+//     createdBy: _id,
+//   };
+// } else if (stockFilter == undefined) {
+//   filters = {
+//     // stores: { $elemMatch: { id: storeId } },
+//     stores: storeFilter,
+//     name: { $regex: ".*" + search + ".*", $options: "i" },
+//     "category.id": categoryFilter,
+//     // category: { categoryId: categoryFilter },
+//     createdBy: _id,
+//   };
+// } else if (categoryFilter == undefined) {
+//   filters = {
+//     // stores: { $elemMatch: { id: storeId } },
+//     stores: storeFilter,
+//     name: { $regex: ".*" + search + ".*", $options: "i" },
+//     stockId: stockFilter,
+//     createdBy: _id,
+//   };
+// } else {
+//   filters = {
+//     // stores: { $elemMatch: { id: storeId } },
+//     stores: storeFilter,
+//     name: { $regex: ".*" + search + ".*", $options: "i" },
+//     // categoryId: categoryFilter,
+//     "category.categoryId": categoryFilter,
+//     // category: { categoryId: categoryFilter },
+//     stockId: stockFilter,
+//     createdBy: _id,
+//   };
+// }
+// console.log(filters);
+// var result = await ItemList.find(filters).sort({ _id: "desc" });

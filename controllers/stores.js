@@ -25,6 +25,22 @@ router.get("/", async (req, res) => {
   try {
     const { _id } = req.authData;
     const result = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+    // .then((response) => {
+    //   if (response.length > 0) {
+    //     response.forEach(async (item) => {
+    //       const totalPosDevices = await POS_Device.find({
+    //         "store.storeId": item._id,
+    //       }).countDocuments();
+    //       item.No_Of_PosDevices = totalPosDevices;
+    //       // return {
+    //       //   ...item,
+    //       //   No_Of_Pos: totalPosDevices,
+    //       // };
+    //       console.log(item);
+    //     });
+    //     // console.log(modifed);
+    //   }
+    // });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
