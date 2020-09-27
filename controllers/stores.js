@@ -23,25 +23,22 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    const result = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
-    // .then((response) => {
-    //   if (response.length > 0) {
-    //     response.forEach(async (item) => {
-    //       const totalPosDevices = await POS_Device.find({
-    //         "store.storeId": item._id,
-    //       }).countDocuments();
-    //       item.No_Of_PosDevices = totalPosDevices;
-    //       // return {
-    //       //   ...item,
-    //       //   No_Of_Pos: totalPosDevices,
-    //       // };
-    //       console.log(item);
-    //     });
-    //     // console.log(modifed);
-    //   }
-    // });
-    res.status(200).json(result);
+    const stores = await Store.find().sort({ _id: "desc" });
+    let allStores = [];
+    for(const store of stores){
+      let devices = await POS_Device.find({"store.storeId": store._id})
+      allStores.push({
+        _id: store._id,
+        title: store.title,
+        address: store.address,
+        phone: store.phone,
+        description: store.description,
+        createdAt: store.createdAt,
+        createdBy: store.createdBy,
+        devices: devices.length
+      });
+    }
+    res.status(200).json(allStores);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
