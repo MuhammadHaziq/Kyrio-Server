@@ -54,7 +54,10 @@ router.post("/", async (req, res) => {
       typeof req.files != "undefined"
     ) {
       if (typeof req.files.image != "undefined") {
-        var uploadResult = await uploadFiles.uploadImages(image, `items/${owner._id}`);
+        var uploadResult = await uploadFiles.uploadImages(
+          image,
+          `items/${owner._id}`
+        );
         if (!uploadResult.success) {
           res.status(404).json({ message: uploadResult.message });
         }
@@ -130,8 +133,7 @@ router.patch("/", async (req, res) => {
   var itemImageName = "";
   let owner = await getOwner(_id);
 
-
-  var rootDir = process.cwd()
+  var rootDir = process.cwd();
 
   if (repoOnPos == "image") {
     if (
@@ -141,7 +143,10 @@ router.patch("/", async (req, res) => {
     ) {
       if (typeof req.files.image != "undefined") {
         fs.unlinkSync(`${rootDir}/uploads/items/${owner._id}/` + imageName);
-        var uploadResult = await uploadFiles.uploadImages(image, `items/${owner._id}`);
+        var uploadResult = await uploadFiles.uploadImages(
+          image,
+          `items/${owner._id}`
+        );
         if (!uploadResult.success) {
           res.status(404).json({ message: uploadResult.message });
           conn.release();
@@ -171,7 +176,7 @@ router.patch("/", async (req, res) => {
     image: itemImageName,
     color: itemColor,
     shape: itemShape,
-    createdBy: _id
+    createdBy: _id,
   };
   try {
     let result = await ItemList.updateOne({ _id: item_id }, data);
@@ -189,7 +194,7 @@ router.get("/", async (req, res) => {
     const endIndex = page * limit;
 
     var result = await ItemList.find({
-      stores: { $elemMatch: { id: storeId } }
+      stores: { $elemMatch: { id: storeId } },
     }).sort({ _id: "desc" });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {
@@ -207,9 +212,9 @@ router.get("/searchByName", async (req, res) => {
     let { name, storeId } = req.body;
 
     let filters = {
-        stores: { $elemMatch: { "id": storeId } },
-        name: { $regex: ".*" + name + ".*", $options: "i" },
-      };
+      stores: { $elemMatch: { id: storeId } },
+      name: { $regex: ".*" + name + ".*", $options: "i" },
+    };
 
     var result = await ItemList.find(filters).sort({ _id: "desc" });
     res.status(200).json(result);
@@ -222,42 +227,71 @@ router.get("/search", async (req, res) => {
     const { _id } = req.authData;
     let { search, stockFilter, categoryFilter, storeId } = req.query;
     search = req.query.search.trim();
-    let filters;
-    if (stockFilter == undefined && categoryFilter == undefined) {
-      filters = {
-        stores: { $elemMatch: { storeId: storeId } },
-        name: { $regex: ".*" + search + ".*", $options: "i" },
-        // categoryId: categoryFilter,
-        // stockId: stockFilter,
-        createdBy: _id,
-      };
-    } else if (stockFilter == undefined) {
-      filters = {
-        stores: { $elemMatch: { storeId: storeId } },
-        name: { $regex: ".*" + search + ".*", $options: "i" },
-        "category.categoryId": categoryFilter,
-        // category: { categoryId: categoryFilter },
-        createdBy: _id,
-      };
-    } else if (categoryFilter == undefined) {
-      filters = {
-        stores: { $elemMatch: { storeId: storeId } },
-        name: { $regex: ".*" + search + ".*", $options: "i" },
-        stockId: stockFilter,
-        createdBy: _id,
-      };
-    } else {
-      filters = {
-        stores: { $elemMatch: { storeId: storeId } },
-        name: { $regex: ".*" + search + ".*", $options: "i" },
-        // categoryId: categoryFilter,
-        "category.categoryId": categoryFilter,
-        // category: { categoryId: categoryFilter },
-        stockId: stockFilter,
-        createdBy: _id,
-      };
+    let storeFilter = {};
+    if (storeId !== "0") {
+      storeFilter.stores = { $elemMatch: { id: storeId } };
     }
-    var result = await ItemList.find(filters).sort({ _id: "desc" });
+    if (categoryFilter !== "0" && categoryFilter !== undefined) {
+      storeFilter["category.id"] = categoryFilter;
+    }
+    if (stockFilter !== "0" && stockFilter !== undefined) {
+      storeFilter.stockId = stockFilter;
+    }
+    if (search !== "" && search !== undefined) {
+      storeFilter.name = { $regex: ".*" + search + ".*", $options: "i" };
+    }
+    storeFilter.createdBy = _id;
+    // if (storeId === "0") {
+    //   storeFilter = {
+    //     $elemMatch: { id: { $regex: ".*" + storeId + ".*", $options: "i" } },
+    //   };
+    // } else {
+    //   storeFilter = { $elemMatch: { id: storeId } };
+    // }
+    // // storeId !== '0' ?
+    // //   stores: { $elemMatch: { id: storeId } } : '',
+    // let filters;
+    // if (stockFilter == undefined && categoryFilter == undefined) {
+    //   filters = {
+    //     // stores: { $elemMatch: { id: storeId } },
+    //     stores: storeFilter,
+    //     name: { $regex: ".*", $options: "i" },
+    //     // categoryId: categoryFilter,
+    //     // stockId: stockFilter,
+    //     createdBy: _id,
+    //   };
+    // } else if (stockFilter == undefined) {
+    //   filters = {
+    //     // stores: { $elemMatch: { id: storeId } },
+    //     stores: storeFilter,
+    //     name: { $regex: ".*" + search + ".*", $options: "i" },
+    //     "category.id": categoryFilter,
+    //     // category: { categoryId: categoryFilter },
+    //     createdBy: _id,
+    //   };
+    // } else if (categoryFilter == undefined) {
+    //   filters = {
+    //     // stores: { $elemMatch: { id: storeId } },
+    //     stores: storeFilter,
+    //     name: { $regex: ".*" + search + ".*", $options: "i" },
+    //     stockId: stockFilter,
+    //     createdBy: _id,
+    //   };
+    // } else {
+    //   filters = {
+    //     // stores: { $elemMatch: { id: storeId } },
+    //     stores: storeFilter,
+    //     name: { $regex: ".*" + search + ".*", $options: "i" },
+    //     // categoryId: categoryFilter,
+    //     "category.categoryId": categoryFilter,
+    //     // category: { categoryId: categoryFilter },
+    //     stockId: stockFilter,
+    //     createdBy: _id,
+    //   };
+    // }
+    // console.log(filters);
+    // var result = await ItemList.find(filters).sort({ _id: "desc" });
+    var result = await ItemList.find(storeFilter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

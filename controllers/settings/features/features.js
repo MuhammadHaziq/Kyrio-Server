@@ -41,12 +41,27 @@ router.patch("/", async (req, res) => {
 
     let featuresArray = JSON.parse(features);
     for (const feature of featuresArray) {
-      await Role.updateOne({'features.featureId': feature.featureId}, {'$set': {
-        'features.$.enable': feature.enable
-      }})
+      await Role.updateOne(
+        { "features.featureId": feature.featureId },
+        {
+          $set: {
+            "features.$.enable": feature.enable,
+          },
+        }
+      );
+      await Role.updateOne(
+        { "settings.settingModules.featureId": feature.featureId },
+        {
+          $set: {
+            "settings.settingModules.$.enable": feature.enable,
+          },
+        }
+      );
     }
     let role = await Role.findOne({ _id: role_id });
-    res.status(200).json({ message: "Features updated", features: role.features });
+    res
+      .status(200)
+      .json({ message: "Features updated", features: role.features });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

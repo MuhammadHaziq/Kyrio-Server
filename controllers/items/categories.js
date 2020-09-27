@@ -49,7 +49,7 @@ router.get("/categoryItem", async (req, res) => {
     let filters;
     if (categoryFilter == undefined) {
       filters = {
-        stores: { $elemMatch: { storeId: storeId } },
+        stores: { $elemMatch: { id: storeId } },
         createdBy: _id,
       };
     } else {
