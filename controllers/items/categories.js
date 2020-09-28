@@ -24,7 +24,22 @@ router.get("/", async (req, res) => {
     const allCat = await Category.find({ createdBy: _id }).sort({
       _id: "desc",
     });
-    res.status(200).json(allCat);
+    let allCategories = [];
+    for (const cate of allCat) {
+      let itemCount = await ItemList.find({
+        "category.id": cate._id,
+      }).countDocuments();
+      allCategories.push({
+        _id: cate._id,
+        catTitle: cate.catTitle,
+        catColor: cate.catColor,
+        created: cate.created,
+        createdBy: cate.createdBy,
+        total_items: itemCount,
+      });
+    }
+
+    res.status(200).json(allCategories);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

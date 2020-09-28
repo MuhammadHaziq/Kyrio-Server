@@ -52,16 +52,24 @@ router.patch("/", async (req, res) => {
     const { id, name, categories, storeId } = req.body;
     let jsonCategoires = JSON.parse(categories);
     const { _id } = req.authData;
-    await kitchenPrinter.updateOne(
-      { _id: id, storeId: storeId, createdBy: _id },
+    // { _id: id, storeId: storeId, createdBy: _id },
+    const updatedRecord = await kitchenPrinter.findOneAndUpdate(
+      { _id: id, storeId: storeId },
       {
         $set: {
+          name: name,
           categories: jsonCategoires,
         },
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
       }
     );
 
-    res.status(200).json({ message: "Dining Position Is Updated" });
+    res
+      .status(200)
+      .json({ message: "Kitchen Printer Is Updated", data: updatedRecord });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

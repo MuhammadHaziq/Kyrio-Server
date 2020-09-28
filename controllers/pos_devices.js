@@ -21,8 +21,9 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
+    // display only login user pos Devices
     const { _id } = req.authData;
-    const result = await POS_Device.find().sort({
+    const result = await POS_Device.find({ createdBy: _id }).sort({
       _id: "desc",
     });
     res.status(200).json(result);
@@ -37,7 +38,7 @@ router.post("/getStoreDevice", async (req, res) => {
     let result = {};
     let condition = {};
     if (storeId === "0") {
-      result = await POS_Device.findOne();
+      result = await POS_Device.findOne({ createdBy: _id });
     } else {
       result = await POS_Device.findOne({
         "store.storeId": storeId,

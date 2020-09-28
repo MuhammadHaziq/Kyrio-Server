@@ -23,10 +23,15 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const stores = await Store.find().sort({ _id: "desc" });
+    const { _id } = req.authData;
+
+    // display only login user stores
+    const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
     let allStores = [];
-    for(const store of stores){
-      let devices = await POS_Device.find({"store.storeId": store._id})
+    for (const store of stores) {
+      let devices = await POS_Device.find({
+        "store.storeId": store._id,
+      }).countDocuments();
       allStores.push({
         _id: store._id,
         title: store.title,
@@ -35,7 +40,7 @@ router.get("/", async (req, res) => {
         description: store.description,
         createdAt: store.createdAt,
         createdBy: store.createdBy,
-        devices: devices.length
+        devices: devices,
       });
     }
     res.status(200).json(allStores);
