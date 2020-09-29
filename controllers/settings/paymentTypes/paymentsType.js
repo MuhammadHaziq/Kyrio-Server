@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
     const { _id } = req.authData;
     const newPaymentsTypes = new paymentsType({
       name: name,
-      paymentTypes: paymentTypes,
+      paymentType: paymentTypes,
       storeId: storeId,
       createdBy: _id,
     });
@@ -55,6 +55,63 @@ router.get("/", async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+router.patch("/:id", async (req, res) => {
+  const { name, storeId } = req.body;
+  let { paymentTypes } = req.body;
+  const { id } = req.params;
+  var errors = [];
+  if (!name || typeof name == "undefined" || name == "") {
+    errors.push(`Invalid Name!`);
+    // errors.push({ name: `Invalid Name!` });
+  }
+  if (!storeId || typeof storeId == "undefined" || storeId == "") {
+    errors.push(`Invalid Store Id!`);
+  }
+  if (
+    typeof paymentTypes === "undefined" ||
+    !paymentTypes ||
+    paymentTypes === ""
+  ) {
+    errors.push(`Invalid Payment Type!`);
+  } else {
+    paymentTypes = JSON.parse(paymentTypes);
+    if (paymentTypes["paymentTypeId"] === 0) {
+      errors.push(`Select Payment Type!`);
+    }
+  }
+  if (errors.length > 0) {
+    res.status(400).send({ message: `Invalid Parameters!`, errors });
+  } else {
+    const { _id } = req.authData;
+    const newPaymentsTypes = new paymentsType({
+      name: name,
+      paymentType: paymentTypes,
+    });
+    try {
+      const { _id } = req.authData;
+      // { _id: id, storeId: storeId, createdBy: _id },
+      const updatedRecord = await paymentsType.findOneAndUpdate(
+        { _id: id, storeId: storeId },
+        {
+          $set: {
+            name: name,
+            paymentType: paymentTypes,
+          },
+        },
+        {
+          new: true,
+          upsert: true, // Make this update into an upsert
+        }
+      );
+      res
+        .status(200)
+        .json({ message: "Record Updated Successfully", data: updatedRecord });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
   }
 });
 
