@@ -12,7 +12,7 @@ const fs = require("fs-extra");
 var router = express.Router();
 
 router.post("/", async (req, res) => {
-  const {
+  var {
     name,
     availableForSale,
     soldByType,
@@ -34,7 +34,9 @@ router.post("/", async (req, res) => {
     itemShape,
   } = req.body;
   var image = req.files ? req.files.image : [];
-
+if(cost == "" || typeof cost === "undefined" || cost == null){
+  cost = 0;
+}
   const { _id } = req.authData;
   varients = JSON.parse(varients);
   stores = JSON.parse(stores);
@@ -96,7 +98,7 @@ router.post("/", async (req, res) => {
   }
 });
 router.patch("/", async (req, res) => {
-  const {
+  var {
     item_id,
     name,
     imageName,
@@ -120,7 +122,9 @@ router.patch("/", async (req, res) => {
     itemShape,
   } = req.body;
   var image = req.files ? req.files.image : [];
-
+  if(cost == "" || typeof cost === "undefined" || cost == null){
+    cost = 0;
+  }
   const { _id } = req.authData;
   varients = JSON.parse(varients);
   stores = JSON.parse(stores);
