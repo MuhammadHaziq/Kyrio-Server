@@ -65,20 +65,27 @@ router.delete("/:id", async (req, res) => {
 });
 router.patch("/", async (req, res) => {
   try {
-    const data = JSON.parse(req.body.data);
-    data.map(async (item, index) => {
-      await diningOption.updateOne(
-        { _id: item.id },
-        {
-          $set: {
-            position: index,
-            isActive: item.isActive,
-          },
-        }
-      );
-    });
+    const { id, title, store, isSelected } = req.body;
+    let jsonStore = JSON.parse(store);
+    const { _id } = req.authData;
+    const result = await diningOption.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          title: title,
+          stores: jsonStore,
+          createdBy: _id,
+        },
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
+      }
+    );
 
-    res.status(200).json({ message: "Dining Position Is Updated" });
+    res
+      .status(200)
+      .json({ message: "Dining Position Is Updated", data: result });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
