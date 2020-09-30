@@ -32,10 +32,16 @@ router.get("/:storeId", async (req, res) => {
   try {
     const { _id } = req.authData;
     const { storeId } = req.params;
-    const result = await Modifier.find({
-      stores: { $elemMatch: { id: storeId } },
-      createdBy: _id,
-    }).sort({ _id: "desc" });
+    let storeFilter = {};
+    if (storeId !== "0") {
+      storeFilter.stores = { $elemMatch: { id: storeId } };
+    }
+    storeFilter.createdBy = _id;
+    // const result = await Modifier.find({
+    //   stores: { $elemMatch: { id: storeId } },
+    //   createdBy: _id,
+    // }).sort({ _id: "desc" });
+    const result = await Modifier.find(storeFilter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
