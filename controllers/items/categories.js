@@ -59,21 +59,41 @@ router.delete("/:ids", async (req, res) => {
 });
 router.get("/categoryItem", async (req, res) => {
   const { _id } = req.authData;
-  let { categoryFilter, storeId } = req.query;
+// Old Quer Work in ModalSelectItemsTax(React)
+  // let { categoryFilter, storeId } = req.query;
+// Old Quer Work in UpdateTax(React)
+  let { storeId } = req.query;
+
   try {
     let filters;
-    if (categoryFilter == undefined) {
-      filters = {
-        stores: { $elemMatch: { id: storeId } },
-        createdBy: _id,
-      };
-    } else {
-      filters = {
-        stores: { $elemMatch: { storeId: storeId } },
-        "category.categoryId": categoryFilter,
+    /*
+*    if (categoryFilter == undefined && categoryFilter == null && categoryFilter == '') {
+    *  filters = {
+    *    stores: { $elemMatch: { id: storeId } },
+    *    createdBy: _id,
+    *  };
+    *} else {
+    *  filters = {
+    *    stores: { $elemMatch: { id: storeId } },
+          "category.id": categoryFilter,
         createdBy: _id,
       };
     }
+*
+*
+    */
+    if(storeId === undefined) {
+      filters = {
+      createdBy: _id,
+    };
+  }else {
+    storeId = JSON.parse(storeId)
+    filters = {
+    stores: { $elemMatch: { id: { $in: storeId } } },
+    createdBy: _id,
+  };
+  }
+
     var result = await ItemList.find(filters);
     res.status(200).json(result);
   } catch (error) {
