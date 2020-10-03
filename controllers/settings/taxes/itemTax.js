@@ -32,6 +32,7 @@ router.post("/", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
 router.get("/", async (req, res) => {
   try {
     const { _id } = req.authData;
@@ -41,6 +42,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.post("/getStoreTaxes", async (req, res) => {
   try {
     const { _id } = req.authData;
@@ -56,13 +58,51 @@ router.post("/getStoreTaxes", async (req, res) => {
         createdBy: _id,
       };
     }
-    const result = await itemTax.find(filter);
+    const result = await itemTax.find(filter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
+router.patch("/", async (req, res) => {
+  const { title, tax_rate, tex, id } = req.body;
+  const { _id } = req.authData;
+  let { tax_type, tax_option, stores, dinings, categories, items } = req.body;
+  stores = JSON.parse(stores);
+  dinings = JSON.parse(dinings);
+  categories = JSON.parse(categories);
+  items = JSON.parse(items);
+  tax_option = JSON.parse(tax_option);
+  tax_type = JSON.parse(tax_type);
+
+  try {
+    const updatedRecord = await itemTax.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          title: title,
+          tax_rate: tax_rate,
+          tax_type: tax_type,
+          tax_option: tax_option,
+          stores: stores,
+          dinings: dinings,
+          categories: categories,
+          items: items,
+          createdBy: _id,
+        },
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
+      }
+    );
+
+    res.status(200).json(updatedRecord);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;

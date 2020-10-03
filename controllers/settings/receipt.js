@@ -37,12 +37,12 @@ router.post("/", async (req, res) => {
     errors.push(`Invalid Printed Receipt Image!`);
     // errors.push({ name: `Invalid Name!` });
   }
-  if (!header || typeof header == "undefined" || header == "") {
-    errors.push(`Invalid Header!`);
-  }
-  if (!footer || typeof footer == "undefined" || footer == "") {
-    errors.push(`Invalid Footer!`);
-  }
+  // if (!header || typeof header == "undefined" || header == "") {
+  //   errors.push(`Invalid Header!`);
+  // }
+  // if (!footer || typeof footer == "undefined" || footer == "") {
+  //   errors.push(`Invalid Footer!`);
+  // }
   if (!language || typeof language == "undefined" || language == "") {
     errors.push(`Invalid Language!`);
   }

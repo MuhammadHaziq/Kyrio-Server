@@ -5,9 +5,11 @@ const router = express.Router();
 router.get("/:storeid", async (req, res) => {
   try {
     var { storeid } = req.body;
+
     var result = await Tickets.find({ "store.id": storeid }).sort({
       _id: "desc",
     });
+
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -55,9 +57,18 @@ router.post("/saveOpenTicket", async (req, res) => {
 router.get("/getStoreTicket/:storeId", async (req, res) => {
   try {
     var { storeId } = req.params;
-    var result = await Tickets.findOne({
-      "store.id": storeId,
-    }).sort({ _id: "desc" });
+    const { _id } = req.authData;
+    let filters = {}
+    if(storeId === '0') {
+      filters.created_by = _id
+    }else {
+      filters.store['id'] = storeId
+      filters.created_by = _id
+    }
+    // var result = await Tickets.findOne({
+    //   "store.id": storeId,
+    // }).sort({ _id: "desc" });
+    var result = await Tickets.findOne(filters).sort({ _id: "desc" });
     let itemList = [];
     let newTicket = [];
     if (result !== null) {

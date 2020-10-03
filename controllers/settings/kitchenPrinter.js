@@ -54,7 +54,8 @@ router.patch("/", async (req, res) => {
     const { _id } = req.authData;
     // { _id: id, storeId: storeId, createdBy: _id },
     const updatedRecord = await kitchenPrinter.findOneAndUpdate(
-      { _id: id, storeId: storeId },
+      { _id: id },
+      // { _id: id, storeId: storeId },
       {
         $set: {
           name: name,
