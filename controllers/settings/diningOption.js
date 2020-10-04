@@ -58,7 +58,7 @@ router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
     await diningOption.deleteOne({ _id: id });
-    res.status(200).json({ message: "deleted" });
+    res.status(200).json({ message: "Dining Option Deleted Successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -83,12 +83,35 @@ router.patch("/", async (req, res) => {
       }
     );
 
-    res
-      .status(200)
-      .json({ message: "Dining Position Is Updated", data: result });
+    res.status(200).json({ message: "Dining Is Updated", data: result });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
+router.patch("/update_position", async (req, res) => {
+  try {
+    let { data } = req.body;
+    data = JSON.parse(data);
+    const { _id } = req.authData;
+    await (data || []).map(async (item) => {
+      const result = await diningOption.findOneAndUpdate(
+        { _id: item.id },
+        {
+          $set: {
+            position: item.position,
+          },
+        },
+        {
+          new: true,
+          upsert: true, // Make this update into an upsert
+        }
+      );
+    });
+
+    res.status(200).json({ message: "Dining Position Is Updated" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 module.exports = router;

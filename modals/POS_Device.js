@@ -1,28 +1,25 @@
-import mongoose, {
-  mongo,
-  models
-} from "mongoose";
+import mongoose, { mongo, models } from "mongoose";
 
 const posDeviceSchema = new mongoose.Schema({
   title: {
     type: String,
     min: 3,
     max: 255,
-    required: true
+    required: true,
   },
   store: {
     storeId: {
       type: String,
       min: 3,
       max: 255,
-      required: true
+      required: true,
     },
     storeName: {
       type: String,
       min: 3,
       max: 255,
-      required: true
-    }
+      required: true,
+    },
   },
   createdAt: {
     type: Date,
@@ -36,14 +33,18 @@ const posDeviceSchema = new mongoose.Schema({
   },
   isActive: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
-posDeviceSchema.index({
-  title: 1,
-  createdBy: 1,
-}, {
-  unique: true,
-});
+posDeviceSchema.index(
+  {
+    title: 1,
+    createdBy: 1,
+    // store: 1,
+  },
+  {
+    unique: true,
+  }
+);
 module.exports = mongoose.model("pos_device", posDeviceSchema);
