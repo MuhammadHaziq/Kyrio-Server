@@ -1,6 +1,7 @@
 import express from "express";
 import Store from "../modals/Store";
 import POS_Device from "../modals/POS_Device";
+import diningOption from "../modals/settings/diningOption";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -16,7 +17,36 @@ router.post("/", async (req, res) => {
   });
   try {
     const result = await newStore.save();
-    res.status(201).json(result);
+    await diningOption
+      .create(
+        [
+          {
+            title: "Dine in",
+            stores: [{ storeId: result._id, storeName: result.title }],
+            createdBy: _id,
+          },
+          {
+            title: "Delivery",
+            stores: [{ storeId: result._id, storeName: result.title }],
+            createdBy: _id,
+          },
+          {
+            title: "Takeout",
+            stores: [{ storeId: result._id, storeName: result.title }],
+            createdBy: _id,
+          },
+        ],
+        { oneOperation: true }
+      )
+      .then((response) => {
+        res.status(201).json(result);
+
+        console.log("Default Dining Insert");
+      })
+      .catch((err) => {
+        res.status(400).json({ message: error.message });
+        console.log("Default Dining Insert Error", err.message);
+      });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

@@ -2,6 +2,10 @@ import Users from "../modals/users";
 import Role from "../modals/role";
 import Stores from "../modals/Store";
 import POS_Device from "../modals/POS_Device";
+import diningOption from "../modals/settings/diningOption";
+import taxesOption from "../modals/settings/taxes/taxesOption";
+import taxesType from "../modals/settings/taxes/taxesType";
+import paymentTypes from "../modals/settings/paymentTypes/paymentTypes";
 import { checkModules } from "../libs/middlewares";
 import md5 from "md5";
 import express from "express";
@@ -60,6 +64,102 @@ router.post("/signup", checkModules, (req, res) => {
                 console.log("POS DEVICE", resu);
               })
               .catch((e) => console.log(e.message));
+            const user = await Users.find({});
+            if (user.length === 1) {
+              await taxesType
+                .create([
+                  {
+                    title: "Included in the price",
+                    createdBy: result._id,
+                  },
+                  {
+                    title: "Added to the price",
+                    createdBy: result._id,
+                  },
+                ])
+                .then((response) => {
+                  console.log("Default Tax Type Create");
+                })
+                .catch((err) => {
+                  console.log("Default Tax Type Insert Error", err.message);
+                });
+              await taxesOption
+                .create([
+                  {
+                    title: "Apply the tax to the new items",
+                    createdBy: result._id,
+                  },
+                  {
+                    title: "Apply the tax to existing items",
+                    createdBy: result._id,
+                  },
+                  {
+                    title: "Apply the tax to all new and existing items",
+                    createdBy: result._id,
+                  },
+                ])
+                .then((response) => {
+                  console.log("Default Tax Option Create");
+                })
+                .catch((err) => {
+                  console.log("Default Tax Option Insert Error", err.message);
+                });
+              await paymentTypes
+                .create([
+                  {
+                    title: "Card",
+                    createdBy: result._id,
+                  },
+                  {
+                    title: "Cash",
+                    createdBy: result._id,
+                  },
+                  {
+                    title: "Other",
+                    createdBy: result._id,
+                  },
+                ])
+                .then((response) => {
+                  console.log("Default Payment Type Create");
+                })
+                .catch((err) => {
+                  console.log("Default Payment Type Insert Error", err.message);
+                });
+            }
+
+            await diningOption
+              .create(
+                [
+                  {
+                    title: "Dine in",
+                    stores: [
+                      { storeId: response._id, storeName: response.title },
+                    ],
+                    createdBy: result._id,
+                  },
+                  {
+                    title: "Delivery",
+                    stores: [
+                      { storeId: response._id, storeName: response.title },
+                    ],
+                    createdBy: result._id,
+                  },
+                  {
+                    title: "Takeout",
+                    stores: [
+                      { storeId: response._id, storeName: response.title },
+                    ],
+                    createdBy: result._id,
+                  },
+                ],
+                { oneOperation: true }
+              )
+              .then((response) => {
+                console.log("Default Dining Insert");
+              })
+              .catch((err) => {
+                console.log("Default Dining Insert Error", err.message);
+              });
           })
           .catch((e) => console.log(e.message));
         // let emailMessage = {
