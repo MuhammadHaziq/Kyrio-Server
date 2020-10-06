@@ -18,6 +18,10 @@ const paymentsTypeSchema = new mongoose.Schema({
   storeId: {
     type: String,
   },
+  cashPaymentRound: {
+    type: Number,
+    defaulr: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

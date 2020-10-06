@@ -49,9 +49,10 @@ router.get("/", async (req, res) => {
   try {
     const { storeId } = req.query;
     const { _id } = req.authData;
-    const result = await paymentsType
-      .find({ createdBy: _id, storeId: storeId })
-      .sort({ _id: "desc" });
+    const result = await paymentsType.find({
+      createdBy: _id,
+      storeId: storeId,
+    });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -59,9 +60,11 @@ router.get("/", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
-  const { name, storeId } = req.body;
+  const { name, storeId, cashPaymentRound } = req.body;
   let { paymentTypes } = req.body;
   const { id } = req.params;
+  let data = {};
+
   var errors = [];
   if (!name || typeof name == "undefined" || name == "") {
     errors.push(`Invalid Name!`);
@@ -85,21 +88,25 @@ router.patch("/:id", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
-    const newPaymentsTypes = new paymentsType({
-      name: name,
-      paymentType: paymentTypes,
-    });
+    if (req.body.cashPaymentRound !== undefined) {
+      data = {
+        name: name,
+        paymentType: paymentTypes,
+        cashPaymentRound: cashPaymentRound,
+      };
+    } else {
+      data = {
+        name: name,
+        paymentType: paymentTypes,
+      };
+    }
     try {
       const { _id } = req.authData;
       // { _id: id, storeId: storeId, createdBy: _id },
       const updatedRecord = await paymentsType.findOneAndUpdate(
         { _id: id, storeId: storeId },
         {
-          $set: {
-            name: name,
-            paymentType: paymentTypes,
-          },
+          $set: data,
         },
         {
           new: true,
