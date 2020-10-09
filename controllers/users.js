@@ -53,7 +53,7 @@ router.post("/signup", checkModules, (req, res) => {
         store
           .save()
           .then(async (response) => {
-            console.log(response);
+            // console.log(response);
             paymentTypeStoreId: response._id;
             const newPOSDevice = new POS_Device({
               title: "POS Device",
@@ -63,7 +63,7 @@ router.post("/signup", checkModules, (req, res) => {
             await newPOSDevice
               .save()
               .then((resu) => {
-                console.log("POS DEVICE", resu);
+                // console.log("POS DEVICE", resu);
               })
               .catch((e) => console.log(e.message));
             const user = await Users.find({});

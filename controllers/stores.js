@@ -41,11 +41,10 @@ router.post("/", async (req, res) => {
       )
       .then((response) => {
         res.status(201).json(result);
-
         console.log("Default Dining Insert");
       })
       .catch((err) => {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ message: err.message });
         console.log("Default Dining Insert Error", err.message);
       });
   } catch (error) {
