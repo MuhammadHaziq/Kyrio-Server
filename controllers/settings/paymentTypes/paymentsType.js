@@ -41,7 +41,11 @@ router.post("/", async (req, res) => {
 
       res.status(201).json(result);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      if (error.code === 11000) {
+        res.status(400).json({ message: "Payment type ALready Exist" });
+      } else {
+        res.status(400).json({ message: error.message });
+      }
     }
   }
 });
@@ -52,6 +56,7 @@ router.get("/", async (req, res) => {
     const result = await paymentsType.find({
       createdBy: _id,
       storeId: storeId,
+    
     });
     res.status(200).json(result);
   } catch (error) {

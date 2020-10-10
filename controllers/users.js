@@ -170,48 +170,46 @@ router.post("/signup", checkModules, (req, res) => {
               },
             ])
             .then((response) => {
-              const cash = response.filter(
-                (item) => item.title.toUpperCase() === "Cash".toUpperCase()
-              )[0];
-              const card = response.filter(
-                (item) => item.title.toUpperCase() === "Card".toUpperCase()
-              )[0];
-              paymentsType
-                .create([
-                  {
-                    name: "Cash",
-                    paymentType: {
-                      paymentTypeId: cash._id,
-                      paymentTypeName: cash.title,
-                    },
-                    storeId: paymentTypeStoreId,
-                    createdBy: result._id,
-                  },
-                  {
-                    name: "Card",
-                    paymentType: {
-                      paymentTypeId: card._id,
-                      paymentTypeName: card.title,
-                    },
-                    storeId: paymentTypeStoreId,
-                    createdBy: result._id,
-                  },
-                ])
-                .then((response) => {
-                  console.log("Default Payment Types Create");
-                })
-                .catch((err) => {
-                  console.log(
-                    "Default Payment Types Insert Error",
-                    err.message
-                  );
-                });
               console.log("Default Payment Type Create", response);
             })
             .catch((err) => {
               console.log("Default Payment Type Insert Error", err.message);
             });
         }
+
+        const cash = paymentTypesCheck.filter(
+          (item) => item.title.toUpperCase() === "Cash".toUpperCase()
+        )[0];
+        const card = paymentTypesCheck.filter(
+          (item) => item.title.toUpperCase() === "Card".toUpperCase()
+        )[0];
+        paymentsType
+          .create([
+            {
+              name: "Cash",
+              paymentType: {
+                paymentTypeId: cash._id,
+                paymentTypeName: cash.title,
+              },
+              storeId: paymentTypeStoreId,
+              createdBy: result._id,
+            },
+            {
+              name: "Card",
+              paymentType: {
+                paymentTypeId: card._id,
+                paymentTypeName: card.title,
+              },
+              storeId: paymentTypeStoreId,
+              createdBy: result._id,
+            },
+          ])
+          .then((response) => {
+            console.log("Default Payment Types Create");
+          })
+          .catch((err) => {
+            console.log("Default Payment Types Insert Error", err.message);
+          });
 
         // let emailMessage = {
         //   businessName: result.businessName,
@@ -264,6 +262,7 @@ router.post("/signin", async (req, res) => {
         } else {
           let roleData = await Role.findOne({ _id: result.role_id });
           let stores = await Stores.find({ createdBy: result._id });
+          var paymentTypeStoreId = stores[0]._id;
           let user = {
             _id: result._id,
             email: result.email,
@@ -274,6 +273,40 @@ router.post("/signin", async (req, res) => {
             created_by: result._id,
             owner_id: result._id,
           };
+          const paymentTypesCheck = await paymentTypes.find({});
+          const cash = paymentTypesCheck.filter(
+            (item) => item.title.toUpperCase() === "Cash".toUpperCase()
+          )[0];
+          const card = paymentTypesCheck.filter(
+            (item) => item.title.toUpperCase() === "Card".toUpperCase()
+          )[0];
+          paymentsType
+            .create([
+              {
+                name: "Cash",
+                paymentType: {
+                  paymentTypeId: cash._id,
+                  paymentTypeName: cash.title,
+                },
+                storeId: paymentTypeStoreId,
+                createdBy: result._id,
+              },
+              {
+                name: "Card",
+                paymentType: {
+                  paymentTypeId: card._id,
+                  paymentTypeName: card.title,
+                },
+                storeId: paymentTypeStoreId,
+                createdBy: result._id,
+              },
+            ])
+            .then((response) => {
+              console.log("Default Payment Types Create");
+            })
+            .catch((err) => {
+              console.log("Default Payment Types Insert Error", err.message);
+            });
 
           jwt.sign(user, "kyrio_bfghigheu", (err, token) => {
             if (err) {
