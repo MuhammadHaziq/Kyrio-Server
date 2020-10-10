@@ -34,15 +34,28 @@ router.post("/", async (req, res) => {
     itemShape,
   } = req.body;
   var image = req.files ? req.files.image : [];
-if(cost == "" || typeof cost === "undefined" || cost == null){
-  cost = 0;
-}
+  if (cost == "" || typeof cost === "undefined" || cost == null) {
+    cost = 0;
+  }
   const { _id } = req.authData;
-  varients = JSON.parse(varients);
-  stores = JSON.parse(stores);
-  modifiers = JSON.parse(modifiers);
-  taxes = JSON.parse(taxes);
-  category = JSON.parse(category);
+  if (varients !== undefined && varients !== null) {
+    varients = JSON.parse(varients);
+  }
+  if (stores !== undefined && stores !== null) {
+    stores = JSON.parse(stores);
+  }
+  if (modifiers !== undefined && modifiers !== null) {
+    modifiers = JSON.parse(modifiers);
+  }
+  if (taxes !== undefined && taxes !== null) {
+    taxes = JSON.parse(taxes);
+  }
+  if (category !== undefined && category !== null) {
+    category = JSON.parse(category);
+  } else {
+    category = { id: "0", name: "No Category", createdBy: _id };
+  }
+
   // stock = JSON.parse(stock);
   // res.status(200).send(data);
 
@@ -97,6 +110,7 @@ if(cost == "" || typeof cost === "undefined" || cost == null){
     res.status(400).json({ message: error.message });
   }
 });
+
 router.patch("/", async (req, res) => {
   var {
     item_id,
@@ -122,7 +136,7 @@ router.patch("/", async (req, res) => {
     itemShape,
   } = req.body;
   var image = req.files ? req.files.image : [];
-  if(cost == "" || typeof cost === "undefined" || cost == null){
+  if (cost == "" || typeof cost === "undefined" || cost == null) {
     cost = 0;
   }
   const { _id } = req.authData;
@@ -212,6 +226,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.get("/searchByName", async (req, res) => {
   try {
     let { name, storeId } = req.body;
@@ -227,6 +242,7 @@ router.get("/searchByName", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.get("/search", async (req, res) => {
   try {
     const { _id } = req.authData;
