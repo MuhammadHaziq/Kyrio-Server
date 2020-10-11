@@ -67,26 +67,25 @@ router.post("/signup", checkModules, (req, res) => {
               })
               .catch((e) => console.log(e.message));
             const user = await Users.find({});
-
             await diningOption
               .create(
                 [
                   {
-                    title: "Dine in",
+                    title: process.env.DEFAULT_DINING_1,
                     stores: [
                       { storeId: response._id, storeName: response.title },
                     ],
                     createdBy: result._id,
                   },
                   {
-                    title: "Delivery",
+                    title: process.env.DEFAULT_DINING_2,
                     stores: [
                       { storeId: response._id, storeName: response.title },
                     ],
                     createdBy: result._id,
                   },
                   {
-                    title: "Takeout",
+                    title: process.env.DEFAULT_DINING_2,
                     stores: [
                       { storeId: response._id, storeName: response.title },
                     ],
@@ -153,19 +152,19 @@ router.post("/signup", checkModules, (req, res) => {
           await paymentTypes
             .create([
               {
-                title: "Card",
+                title: DEFAULT_PAYMENT_TYPES_1,
                 createdBy: result._id,
               },
               {
-                title: "Check",
+                title: DEFAULT_PAYMENT_TYPES_2,
                 createdBy: result._id,
               },
               {
-                title: "Other",
+                title: DEFAULT_PAYMENT_TYPES_3,
                 createdBy: result._id,
               },
               {
-                title: "Cash",
+                title: DEFAULT_PAYMENT_TYPES_4,
                 createdBy: result._id,
               },
             ])
@@ -186,7 +185,7 @@ router.post("/signup", checkModules, (req, res) => {
         paymentsType
           .create([
             {
-              name: "Cash",
+              name: process.env.DEFAULT_PAYMENT_TYPE_1,
               paymentType: {
                 paymentTypeId: cash._id,
                 paymentTypeName: cash.title,
@@ -195,7 +194,7 @@ router.post("/signup", checkModules, (req, res) => {
               createdBy: result._id,
             },
             {
-              name: "Card",
+              name: process.env.DEFAULT_PAYMENT_TYPE_2,
               paymentType: {
                 paymentTypeId: card._id,
                 paymentTypeName: card.title,
@@ -273,6 +272,43 @@ router.post("/signin", async (req, res) => {
             created_by: result._id,
             owner_id: result._id,
           };
+          // const store = await Stores.find({ createdBy: result._id })
+          //   .select(["title"])
+          //   .sort({ _id: "desc" });
+          // let storeData = [];
+          // store.map((item) => {
+          //   return storeData.push({
+          //     storeId: item._id,
+          //     storeName: item.title,
+          //   });
+          // });
+          // await diningOption
+          //   .create(
+          //     [
+          //       {
+          //         title: process.env.DEFAULT_DINING_TITLE_1,
+          //         stores: storeData,
+          //         createdBy: result._id,
+          //       },
+          //       {
+          //         title: process.env.DEFAULT_DINING_TITLE_2,
+          //         stores: storeData,
+          //         createdBy: result._id,
+          //       },
+          //       {
+          //         title: process.env.DEFAULT_DINING_TITLE_3,
+          //         stores: storeData,
+          //         createdBy: result._id,
+          //       },
+          //     ],
+          //     { oneOperation: true }
+          //   )
+          //   .then((response) => {
+          //     console.log("Default Dining Insert");
+          //   })
+          //   .catch((err) => {
+          //     console.log("Default Dining Insert Error", err.message);
+          //   });
           const paymentTypesCheck = await paymentTypes.find({});
           const cash = paymentTypesCheck.filter(
             (item) => item.title.toUpperCase() === "Cash".toUpperCase()
@@ -283,7 +319,7 @@ router.post("/signin", async (req, res) => {
           paymentsType
             .create([
               {
-                name: "Cash",
+                name: process.env.DEFAULT_PAYMENT_TYPE_1,
                 paymentType: {
                   paymentTypeId: cash._id,
                   paymentTypeName: cash.title,
@@ -292,7 +328,7 @@ router.post("/signin", async (req, res) => {
                 createdBy: result._id,
               },
               {
-                name: "Card",
+                name: process.env.DEFAULT_PAYMENT_TYPE_2,
                 paymentType: {
                   paymentTypeId: card._id,
                   paymentTypeName: card.title,

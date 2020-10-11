@@ -40,7 +40,7 @@ const posDeviceSchema = new mongoose.Schema({
 posDeviceSchema.index(
   {
     title: 1,
-    createdBy: 1,
+    "store.storeId": 1,
     // store: 1,
   },
   {

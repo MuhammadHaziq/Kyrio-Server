@@ -48,6 +48,7 @@ const diningOptionSchema = new mongoose.Schema({
 diningOptionSchema.index(
   {
     title: 1,
+    createdBy: 1,
   },
   {
     unique: true,

@@ -18,35 +18,34 @@ router.post("/", async (req, res) => {
   });
   try {
     const result = await newStore.save();
-    await diningOption
-      .create(
-        [
-          {
-            title: "Dine in",
-            stores: [{ storeId: result._id, storeName: result.title }],
-            createdBy: _id,
-          },
-          {
-            title: "Delivery",
-            stores: [{ storeId: result._id, storeName: result.title }],
-            createdBy: _id,
-          },
-          {
-            title: "Takeout",
-            stores: [{ storeId: result._id, storeName: result.title }],
-            createdBy: _id,
-          },
-        ],
-        { oneOperation: true }
-      )
-      .then((response) => {
-        res.status(201).json(result);
-        console.log("Default Dining Insert");
-      })
-      .catch((err) => {
-        res.status(400).json({ message: err.message });
-        console.log("Default Dining Insert Error", err.message);
+    const store = await Store.find({ createdBy: _id })
+      .select(["title"])
+      .sort({ _id: "desc" });
+    let storeData = [];
+    store.map((item) => {
+      return storeData.push({
+        storeId: item._id,
+        storeName: item.title,
       });
+    });
+    await diningOption.updateMany(
+      {
+        title: {
+          $in: [
+            process.env.DEFAULT_DINING_TITLE_1,
+            process.env.DEFAULT_DINING_TITLE_2,
+            process.env.DEFAULT_DINING_TITLE_3,
+          ],
+        },
+        createdBy: _id,
+      },
+      {
+        $set: {
+          stores: storeData,
+        },
+      }
+    );
+    res.status(201).json(result);
   } catch (error) {
     if (error.code === 11000) {
       res.status(400).json({ message: "Store Already Register By This User" });
@@ -84,6 +83,7 @@ router.get("/", async (req, res) => {
 });
 router.delete("/:ids", async (req, res) => {
   try {
+    const { _id } = req.authData;
     var { ids } = req.params;
     let message = [];
     ids = JSON.parse(ids);
@@ -112,6 +112,33 @@ router.delete("/:ids", async (req, res) => {
         }
       }
     }
+    const store = await Store.find({ createdBy: _id })
+      .select(["title"])
+      .sort({ _id: "desc" });
+    let storeData = [];
+    store.map((item) => {
+      return storeData.push({
+        storeId: item._id,
+        storeName: item.title,
+      });
+    });
+    await diningOption.updateMany(
+      {
+        title: {
+          $in: [
+            process.env.DEFAULT_DINING_TITLE_1,
+            process.env.DEFAULT_DINING_TITLE_2,
+            process.env.DEFAULT_DINING_TITLE_3,
+          ],
+        },
+        createdBy: _id,
+      },
+      {
+        $set: {
+          stores: storeData,
+        },
+      }
+    );
 
     res.status(200).json({ message: message });
   } catch (error) {
