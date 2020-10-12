@@ -4,24 +4,6 @@ import Store from "../../modals/Store";
 
 const router = express.Router();
 
-const get_dining_store_format = async (data, id) => {
-  let storeFormat = [];
-  // display only login user stores
-  const stores = await Store.find({ createdBy: id }).sort({ id: "desc" });
-  stores.map((item) => {
-    storeFormat.push({
-      storeId: item._id,
-      storeName: item.title,
-      data: data.filter((item) =>
-        item.stores.map((str) => {
-          str.storeId === item._id;
-        })
-      ),
-    });
-  });
-  return storeFormat;
-};
-
 router.post("/", async (req, res) => {
   const { title, store, isSelected } = req.body;
   let jsonStore = JSON.parse(store);
@@ -37,47 +19,97 @@ router.post("/", async (req, res) => {
 
     res.status(201).json(result);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error.code === 11000) {
+      res.status(400).json({ message: "Dining Already Register In Store" });
+    } else {
+      res.status(400).json({ message: error.message });
+    }
+    // res.status(400).json({ message: error.message });
   }
 });
 
 router.get("/", async (req, res) => {
   try {
     const { _id } = req.authData;
-    const result = await diningOption
-      .find({ createdBy: _id })
-      .sort({ position: "asc" });
-    // get_dining_store_format(result, _id)
-    //   .then((response) => {
-    //     console.log(response);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err.message);
-    //   });
-    res.status(200).json(result);
+    const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+    let data = [];
+    for (const store of stores) {
+      const result = await diningOption
+        .find({
+          createdBy: _id,
+          stores: { $elemMatch: { storeId: store._id } },
+        })
+        .sort({ position: "asc" });
+      data.push({
+        storeId: store._id,
+        storeName: store.title,
+        data: result,
+      });
+    }
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.post("/getStoreDining", async (req, res) => {
   try {
     const { _id } = req.authData;
     const { storeId } = req.body;
-    let filter = {};
-    if (storeId == 0) {
-      filter = {
-        createdBy: _id,
-      };
+    // let filter = {};
+    if (storeId === "0") {
+      const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+      let data = [];
+      for (const store of stores) {
+        const result = await diningOption
+          .find({
+            stores: { $elemMatch: { storeId: store._id } },
+            createdBy: _id,
+          })
+          .sort({ position: "asc" });
+        data.push({
+          storeId: store._id,
+          storeName: store.title,
+          data: result,
+        });
+      }
+      res.status(200).json(data);
     } else {
-      filter = {
-        stores: { $elemMatch: { storeId: storeId } },
+      const stores = await Store.find({
+        _id: storeId,
         createdBy: _id,
-      };
+      });
+      let data = [];
+      for (const store of stores) {
+        const result = await diningOption
+          .find({
+            stores: { $elemMatch: { storeId: store._id } },
+            createdBy: _id,
+          })
+          .sort({ position: "asc" });
+        data.push({
+          storeId: store._id,
+          storeName: store.title,
+          data: result,
+        });
+      }
+      res.status(200).json(data);
     }
-    // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
-    const result = await diningOption.find(filter);
 
-    res.status(200).json(result);
+    // if (storeId == 0) {
+    //   filter = {
+    //     createdBy: _id,
+    //   };
+    // } else {
+    //   filter = {
+    //     stores: { $elemMatch: { storeId: storeId } },
+    //     createdBy: _id,
+    //   };
+    // }
+    // // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
+    // const result = await diningOption.find(filter);
+    //
+    // res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
