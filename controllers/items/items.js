@@ -61,8 +61,8 @@ router.post("/", async (req, res) => {
 
   var itemImageName = "";
   let owner = await getOwner(_id);
-
-  if (repoOnPos == "image") {
+console.log(owner)
+  if (repoOnPos == "IMAGE") {
     if (
       req.files != null &&
       req.files != "null" &&
@@ -153,7 +153,7 @@ router.patch("/", async (req, res) => {
 
   var rootDir = process.cwd();
 
-  if (repoOnPos == "image") {
+  if (repoOnPos == "IMAGE") {
     if (
       req.files != null &&
       req.files != "null" &&

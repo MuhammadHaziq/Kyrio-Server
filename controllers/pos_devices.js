@@ -58,7 +58,7 @@ router.post("/getStoreDevice", async (req, res) => {
       );
       res.status(200).json(result);
     } else {
-      res.status(200).json({});
+      res.status(200).json({ message: "Please create POS device for this store!" });
       // res.status(400).send({//   message:
       //     "POS Device is not available! Please create a POS Device in this Store from backoffice",
       // });
