@@ -48,7 +48,7 @@ if(cost == "" || typeof cost === "undefined" || cost == null){
 
   var itemImageName = "";
   let owner = await getOwner(_id);
-
+console.log(owner)
   if (repoOnPos == "image") {
     if (
       req.files != null &&
