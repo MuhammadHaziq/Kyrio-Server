@@ -61,8 +61,8 @@ router.post("/", async (req, res) => {
 
   var itemImageName = "";
   let owner = await getOwner(_id);
-console.log(owner)
-  if (repoOnPos == "IMAGE") {
+
+  if (repoOnPos == "image") {
     if (
       req.files != null &&
       req.files != "null" &&
@@ -153,14 +153,17 @@ router.patch("/", async (req, res) => {
 
   var rootDir = process.cwd();
 
-  if (repoOnPos == "IMAGE") {
+  if (repoOnPos == "image") {
     if (
       req.files != null &&
       req.files != "null" &&
       typeof req.files != "undefined"
     ) {
       if (typeof req.files.image != "undefined") {
-        fs.unlinkSync(`${rootDir}/uploads/items/${owner._id}/` + imageName);
+        let fileUrl = `${rootDir}/uploads/items/${owner._id}/` + imageName;
+        if(fs.existsSync(fileUrl)){
+          fs.unlinkSync(fileUrl);
+        }
         var uploadResult = await uploadFiles.uploadImages(
           image,
           `items/${owner._id}`

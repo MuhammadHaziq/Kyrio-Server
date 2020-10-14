@@ -29,6 +29,21 @@ const salesSchema = new mongoose.Schema({
     min: 1,
     max: 100000000000,
   },
+  total_after_discount: {
+    type: Number,
+    min: 1,
+    max: 100000000000,
+  },
+  total_discount: {
+    type: Number,
+    min: 0,
+    max: 1000000,
+  },
+  total_tax: {
+    type: Number,
+    min: 0,
+    max: 1000000,
+  },
   refund_status: {
     type: String,
     min: 3,
@@ -40,6 +55,11 @@ const salesSchema = new mongoose.Schema({
         min: 6,
         max: 255,
       },
+      price: {
+        type: Number,
+        min: 1,
+        max: 100000000000,
+      },
       quantity: {
         type: Number,
         min: 1,
@@ -50,6 +70,40 @@ const salesSchema = new mongoose.Schema({
         min: 0,
         max: 255,
       },
+      taxes: [{
+        id: {
+            type: String,
+            min: 6,
+            max: 255,
+          },
+        name: {
+            type: String,
+            min: 4,
+            max: 255,
+          },
+        type: {
+            type: String,
+            min: 4,
+            max: 255,
+          },
+      }],
+      discounts: [{
+        name: {
+          type: String,
+          min: 6,
+          max: 255,
+        },
+        value: {
+          type: Number,
+          min: 2,
+          max: 1000000,
+        },
+        type: {
+          type: String,
+          min: 2,
+          max: 255,
+        }
+      }],
       modifiers: [{
         id: {
           type: String,
@@ -82,6 +136,11 @@ const salesSchema = new mongoose.Schema({
       max: 255,
     },
     value: {
+      type: Number,
+      min: 2,
+      max: 1000000,
+    },
+    type: {
       type: String,
       min: 2,
       max: 255,
@@ -116,18 +175,6 @@ const salesSchema = new mongoose.Schema({
         max: 255,
       }
   },
-  taxes: [{
-    id: {
-        type: String,
-        min: 6,
-        max: 255,
-      },
-    name: {
-        type: String,
-        min: 4,
-        max: 255,
-      },
-  }],
   created_by: {
     type: String,
     min: 6,

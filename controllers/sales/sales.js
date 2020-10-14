@@ -43,22 +43,16 @@ router.post("/", async (req, res) => {
     ticket_name,
     comments,
     open,
-    total_price,
     cash_received,
-    cash_return,
     refund_amount,
     items,
     discounts,
     variant,
     store,
-    taxes,
   } = req.body;
   var errors = [];
   if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
     errors.push({ ticket_name: `Invalid ticket_name!` });
-  }
-  if (!total_price || typeof total_price == "undefined" || total_price == "") {
-    errors.push({ total_price: `Invalid Total Price!` });
   }
   if (typeof items == "undefined" || items.length <= 0 || items == "") {
     errors.push({ items: `Invalid items!` });
@@ -70,6 +64,40 @@ router.post("/", async (req, res) => {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     const { _id } = req.authData;
+    let total_discount = 0;
+    let total_tax = 0;
+    let itemTotalPrices = 0;
+    
+    for(const item of items){
+      itemTotalPrices = parseFloat(itemTotalPrices) + parseFloat(item.price)
+      if(typeof item.discounts !== "undefined" && item.discounts.length > 0){
+      }
+      if(typeof item.modifiers !== "undefined" && item.modifiers.length > 0){
+        for(const modifier of item.modifiers){
+          for(const option of modifier.options){
+            itemTotalPrices = parseFloat(itemTotalPrices) + parseFloat(option.price)
+          }
+        }
+      }
+      if(typeof item.taxes !== "undefined" && item.taxes.length > 0){
+        for(const tax of item.taxes){
+          total_tax = parseFloat(total_tax) + parseFloat(((tax.value/100) * item.price));
+          if(tax.type == "excluded"){
+            itemTotalPrices =  parseFloat(itemTotalPrices) + parseFloat(((tax.value/100) * item.price))
+          }
+        }
+      }
+    }
+    for(const discount of discounts){
+      if(discount.type == "%"){
+        total_discount = parseFloat(total_discount) + parseFloat(((discount.value/100) * itemTotalPrices))
+      } else {
+        total_discount = parseFloat(total_discount) + parseFloat(discount.value)
+      }
+    }
+    let total_price = itemTotalPrices;
+    let total_after_discount = parseFloat(itemTotalPrices) - parseFloat(total_discount);
+    let cash_return = parseFloat(cash_received) - parseFloat(total_price)
     try {
       const newSales = await new Sales({
         ticket_name,
@@ -78,12 +106,14 @@ router.post("/", async (req, res) => {
         total_price,
         cash_received,
         cash_return,
+        total_after_discount,
+        total_discount,
+        total_tax,
         refund_amount,
         items,
         discounts,
         variant,
         store,
-        taxes,
         created_by: _id,
       }).save();
       res.status(200).json(newSales);
