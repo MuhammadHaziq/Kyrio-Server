@@ -111,15 +111,38 @@ router.post("/getStoreDining", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    await diningOption.deleteOne({ _id: id });
+    var { stores, checkAll } = req.body;
+    if (checkAll === false) {
+      if (stores !== undefined && stores !== null && stores.length > 0) {
+        await diningOption.findOneAndUpdate(
+          { _id: id },
+          {
+            $set: {
+              stores: JSON.parse(stores),
+            },
+          },
+          {
+            new: true,
+            upsert: true, // Make this update into an upsert
+          }
+        );
+      }
+    } else {
+      await diningOption.deleteOne({
+        _id: id,
+      });
+    }
+
     res.status(200).json({ message: "Dining Option Deleted Successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.patch("/", async (req, res) => {
   try {
     const { id, title, store, isSelected } = req.body;
