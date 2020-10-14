@@ -36,12 +36,10 @@ const posDeviceSchema = new mongoose.Schema({
     default: false,
   },
 });
-
 posDeviceSchema.index(
   {
     title: 1,
     "store.storeId": 1,
-    // store: 1,
   },
   {
     unique: true,
