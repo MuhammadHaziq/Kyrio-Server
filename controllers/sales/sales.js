@@ -97,7 +97,7 @@ router.post("/", async (req, res) => {
     }
     let total_price = itemTotalPrices;
     let total_after_discount = parseFloat(itemTotalPrices) - parseFloat(total_discount);
-    let cash_return = parseFloat(cash_received) - parseFloat(total_price)
+    let cash_return = parseFloat(cash_received) - parseFloat(total_after_discount);
     try {
       const newSales = await new Sales({
         ticket_name,
