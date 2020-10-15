@@ -18,7 +18,11 @@ router.post("/", async (req, res) => {
 
     res.status(201).json(result);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error.code === 11000) {
+      res.status(400).json({ message: "Kitchen Printer Already Reister" });
+    } else {
+      res.status(400).json({ message: error.message });
+    }
   }
 });
 router.get("/", async (req, res) => {
