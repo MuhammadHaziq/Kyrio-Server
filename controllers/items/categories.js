@@ -18,6 +18,7 @@ router.post("/", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
 router.get("/", async (req, res) => {
   try {
     const { _id } = req.authData;
@@ -44,6 +45,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.delete("/:ids", async (req, res) => {
   try {
     var { ids } = req.params;
@@ -57,6 +59,7 @@ router.delete("/:ids", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.get("/categoryItem", async (req, res) => {
   const { _id } = req.authData;
 // Old Quer Work in ModalSelectItemsTax(React)
