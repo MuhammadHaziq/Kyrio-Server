@@ -41,7 +41,7 @@ router.get("/:storeId", async (req, res) => {
     //   stores: { $elemMatch: { id: storeId } },
     //   createdBy: _id,
     // }).sort({ _id: "desc" });
-    const result = await Modifier.find(storeFilter).sort({ _id: "desc" });
+    const result = await Modifier.find(storeFilter).sort({ position: "asc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -54,7 +54,7 @@ router.post("/getStoreModifiers", async (req, res) => {
     const result = await Modifier.find({
       stores: { $elemMatch: { id: storeId } },
       createdBy: _id,
-    });
+    }).sort({ postion: "asc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -73,6 +73,33 @@ router.delete("/:ids", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+router.patch("/update_position", async (req, res) => {
+  try {
+    let { data } = req.body;
+    data = JSON.parse(data);
+    const { _id } = req.authData;
+    await (data || []).map(async (item) => {
+      const result = await Modifier.findOneAndUpdate(
+        { _id: item.id },
+        {
+          $set: {
+            position: item.position,
+          },
+        },
+        {
+          new: true,
+          upsert: true, // Make this update into an upsert
+        }
+      );
+    });
+
+    res.status(200).json({ message: "Modifier Position Is Updated" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.patch("/:id", async (req, res) => {
   try {
     const { title, options, stores } = req.body;

@@ -16,7 +16,11 @@ router.post("/", async (req, res) => {
     const result = await newPOSDevice.save();
     res.status(201).json(result);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error.code === 11000) {
+      res.status(400).json({ message: "POS Device Already Register In StOre" });
+    } else {
+      res.status(400).json({ message: error.message });
+    }
   }
 });
 router.get("/", async (req, res) => {
@@ -58,7 +62,9 @@ router.post("/getStoreDevice", async (req, res) => {
       );
       res.status(200).json(result);
     } else {
-      res.status(200).json({ message: "Please create POS device for this store!" });
+      res
+        .status(200)
+        .json({ message: "Please create POS device for this store!" });
       // res.status(400).send({//   message:
       //     "POS Device is not available! Please create a POS Device in this Store from backoffice",
       // });
