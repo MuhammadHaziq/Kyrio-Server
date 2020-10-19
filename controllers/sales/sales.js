@@ -44,7 +44,6 @@ router.post("/", async (req, res) => {
     comments,
     open,
     cash_received,
-    refund_amount,
     items,
     discounts,
     variant,
@@ -69,7 +68,8 @@ router.post("/", async (req, res) => {
     let itemTotalPrices = 0;
     
     for(const item of items){
-      itemTotalPrices = parseFloat(itemTotalPrices) + parseFloat(item.price)
+      let itemPrice = (parseFloat(item.price) * (parseFloat(item.quantity) - parseFloat(item.refund_quantity)))
+      itemTotalPrices = parseFloat(itemTotalPrices) + itemPrice
       if(typeof item.discounts !== "undefined" && item.discounts.length > 0){
       }
       if(typeof item.modifiers !== "undefined" && item.modifiers.length > 0){
@@ -81,9 +81,9 @@ router.post("/", async (req, res) => {
       }
       if(typeof item.taxes !== "undefined" && item.taxes.length > 0){
         for(const tax of item.taxes){
-          total_tax = parseFloat(total_tax) + parseFloat(((tax.value/100) * item.price));
+          total_tax = parseFloat(total_tax) + parseFloat(((tax.value/100) * itemPrice));
           if(tax.type == "excluded"){
-            itemTotalPrices =  parseFloat(itemTotalPrices) + parseFloat(((tax.value/100) * item.price))
+            itemTotalPrices =  parseFloat(itemTotalPrices) + parseFloat(((tax.value/100) * itemPrice))
           }
         }
       }
@@ -109,7 +109,7 @@ router.post("/", async (req, res) => {
         total_after_discount,
         total_discount,
         total_tax,
-        refund_amount,
+        refund_status: "",
         items,
         discounts,
         variant,
@@ -128,15 +128,11 @@ router.patch("/", async (req, res) => {
     ticket_name,
     comments,
     open,
-    total_price,
     cash_received,
-    cash_return,
-    refund_amount,
     items,
     discounts,
     variant,
-    store,
-    taxes,
+    store
   } = req.body;
   var errors = [];
   if (!sale_id || typeof sale_id == "undefined" || sale_id == "") {
@@ -144,9 +140,6 @@ router.patch("/", async (req, res) => {
   }
   if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
     errors.push({ ticket_name: `Invalid ticket_name!` });
-  }
-  if (!total_price || typeof total_price == "undefined" || total_price == "") {
-    errors.push({ total_price: `Invalid Total Price!` });
   }
   if (typeof items == "undefined" || items.length <= 0 || items == "") {
     errors.push({ items: `Invalid items!` });
@@ -159,6 +152,41 @@ router.patch("/", async (req, res) => {
   } else {
     const { _id } = req.authData;
     try {
+      let total_discount = 0;
+      let total_tax = 0;
+      let itemTotalPrices = 0;
+      
+      for(const item of items){
+        let itemPrice = (parseFloat(item.price) * (parseFloat(item.quantity) - parseFloat(item.refund_quantity)))
+        itemTotalPrices = parseFloat(itemTotalPrices) + itemPrice
+        if(typeof item.discounts !== "undefined" && item.discounts.length > 0){
+        }
+        if(typeof item.modifiers !== "undefined" && item.modifiers.length > 0){
+          for(const modifier of item.modifiers){
+            for(const option of modifier.options){
+              itemTotalPrices = parseFloat(itemTotalPrices) + parseFloat(option.price)
+            }
+          }
+        }
+        if(typeof item.taxes !== "undefined" && item.taxes.length > 0){
+          for(const tax of item.taxes){
+            total_tax = parseFloat(total_tax) + parseFloat(((tax.value/100) * itemPrice));
+            if(tax.type == "excluded"){
+              itemTotalPrices =  parseFloat(itemTotalPrices) + parseFloat(((tax.value/100) * itemPrice))
+            }
+          }
+        }
+      }
+      for(const discount of discounts){
+        if(discount.type == "%"){
+          total_discount = parseFloat(total_discount) + parseFloat(((discount.value/100) * itemTotalPrices))
+        } else {
+          total_discount = parseFloat(total_discount) + parseFloat(discount.value)
+        }
+      }
+      let total_price = itemTotalPrices;
+      let total_after_discount = parseFloat(itemTotalPrices) - parseFloat(total_discount);
+      let cash_return = parseFloat(cash_received) - parseFloat(total_after_discount);
       let data = {
         ticket_name,
         comments,
@@ -166,17 +194,21 @@ router.patch("/", async (req, res) => {
         total_price,
         cash_received,
         cash_return,
-        refund_amount,
+        total_after_discount,
+        refund_status: "",
         items,
         discounts,
         variant,
         store,
-        taxes,
         created_by: _id,
       };
       await Sales.updateOne({ _id: sale_id }, data);
       let getUpdatedSale = await Sales.findOne({ _id: sale_id });
-      res.status(200).json(getUpdatedSale);
+      if(getUpdatedSale == null){
+        res.status(200).json({message: "No Data Found! Invalid Sale ID"});
+      }else{
+        res.status(200).json(getUpdatedSale);
+      }
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -198,19 +230,75 @@ router.patch("/refund", async (req, res) => {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     try {
-    for (const item of items) {
-      await Sales.updateOne(
-        {$and: [{ _id: sale_id }, { "items.id": item.id }]},
+      let getRefundedSale = await Sales.findOne({ _id: sale_id });
+      if(getRefundedSale){
+        for (const item of items) {
+          let update =  await Sales.updateOne(
+              {$and: [{ _id: sale_id }, { "items.id": item.id }]},
+              {
+                $set: {
+                  "items.$.refund_quantity": item.refund_quantity,
+                  "refund_status": item.refund_quantity == item.quantity ? "Full" : "Partial Refund"
+                },
+              }
+            )
+            if(update.nModified){
+  
+            }
+          }
+        let total_discount = 0;
+        let total_tax = 0;
+        let itemTotalPrices = 0;
+      for(const item of getRefundedSale.items){
+        let itemPrice = (parseFloat(item.price) * (parseFloat(item.quantity) - parseFloat(item.refund_quantity)))
+        itemTotalPrices = parseFloat(itemTotalPrices) + itemPrice
+        if(typeof item.discounts !== "undefined" && item.discounts.length > 0){
+        }
+        if(typeof item.modifiers !== "undefined" && item.modifiers.length > 0){
+          for(const modifier of item.modifiers){
+            for(const option of modifier.options){
+              itemTotalPrices = parseFloat(itemTotalPrices) + parseFloat(option.price)
+            }
+          }
+        }
+        if(typeof item.taxes !== "undefined" && item.taxes.length > 0){
+          for(const tax of item.taxes){
+            total_tax = parseFloat(total_tax) + parseFloat(((tax.value/100) * itemPrice));
+            if(tax.type == "excluded"){
+              itemTotalPrices =  parseFloat(itemTotalPrices) + parseFloat(((tax.value/100) * itemPrice))
+            }
+          }
+        }
+      }
+      for(const discount of getRefundedSale.discounts){
+        if(discount.type == "%"){
+          total_discount = parseFloat(total_discount) + parseFloat(((discount.value/100) * itemTotalPrices))
+        } else {
+          total_discount = parseFloat(total_discount) + parseFloat(discount.value)
+        }
+      }
+      let total_price = itemTotalPrices;
+      let total_after_discount = parseFloat(itemTotalPrices) - parseFloat(total_discount);
+      let cash_return = parseFloat(cash_received) - parseFloat(total_after_discount);
+      let updateSale =  await Sales.updateOne(
+        { _id: sale_id },
         {
           $set: {
             "items.$.refund_quantity": item.refund_quantity,
-            "refund_status": item.refund_quantity == item.quantity ? "Full" : "Partial Refund"
+            "refund_status": item.refund_quantity == item.quantity ? "Full" : "Partial Refund",
+            "total_price": total_price,
+            "total_after_discount": total_after_discount,
+            "cash_return": cash_return,
+            "total_discount": total_discount,
+            "total_tax": total_tax
           },
         }
-      );
-    }
-      let getRefundedSale = await Sales.findOne({ _id: sale_id });
-      res.status(200).json(getRefundedSale);
+      )
+        getRefundedSale = await Sales.findOne({ _id: sale_id });
+        res.status(200).json(getRefundedSale);
+      } else {
+        res.status(404).json({message: "No Data Found!"});
+      }
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
