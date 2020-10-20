@@ -91,6 +91,11 @@ const salesSchema = new mongoose.Schema({
             min: 4,
             max: 255,
           },
+        value: {
+            type: Number,
+            min: 0,
+            max: 1000000,
+          },
       }],
       discounts: [{
         name: {
