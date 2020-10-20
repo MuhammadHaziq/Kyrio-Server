@@ -49,6 +49,11 @@ const salesSchema = new mongoose.Schema({
     min: 3,
     max: 255,
   },
+  refund_amount: {
+    type: Number,
+    min: 0,
+    max: 1000000,
+  },
   items: [{
       id: {
         type: String,
@@ -85,6 +90,11 @@ const salesSchema = new mongoose.Schema({
             type: String,
             min: 4,
             max: 255,
+          },
+        value: {
+            type: Number,
+            min: 0,
+            max: 1000000,
           },
       }],
       discounts: [{

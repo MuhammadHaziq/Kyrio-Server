@@ -43,12 +43,7 @@ router.post("/", async (req, res) => {
     ticket_name,
     comments,
     open,
-    total_price,
     cash_received,
-    cash_return,
-    total_after_discount,
-    total_discount,
-    total_tax,
     items,
     discounts,
     variant,
@@ -68,7 +63,40 @@ router.post("/", async (req, res) => {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     const { _id } = req.authData;
-   
+    let total_discount = 0;
+    let total_tax = 0;
+    let itemTotalPrices = 0;
+    
+    for(const item of items){
+      let itemPrice = (parseFloat(item.price) * (parseFloat(item.quantity) - parseFloat(item.refund_quantity)))
+      itemTotalPrices = parseFloat(itemTotalPrices) + itemPrice
+     
+      if(typeof item.modifiers !== "undefined" && item.modifiers.length > 0){
+        for(const modifier of item.modifiers){
+          for(const option of modifier.options){
+            itemTotalPrices = parseFloat(itemTotalPrices) + parseFloat(option.price)
+          }
+        }
+      }
+      if(typeof item.taxes !== "undefined" && item.taxes.length > 0){
+        for(const tax of item.taxes){
+          total_tax = parseFloat(total_tax) + parseFloat(((tax.value/100) * itemPrice));
+          if(tax.type == "excluded"){
+            itemTotalPrices =  parseFloat(itemTotalPrices) + parseFloat(((tax.value/100) * itemPrice))
+          }
+        }
+      }
+    }
+    for(const discount of discounts){
+      if(discount.type == "%"){
+        total_discount = parseFloat(total_discount) + parseFloat(((discount.value/100) * itemTotalPrices))
+      } else {
+        total_discount = parseFloat(total_discount) + parseFloat(discount.value)
+      }
+    }
+    let total_price = itemTotalPrices;
+    let total_after_discount = parseFloat(itemTotalPrices) - parseFloat(total_discount);
+    let cash_return = parseFloat(cash_received) - parseFloat(total_after_discount);
     try {
       const newSales = await new Sales({
         ticket_name,
@@ -100,12 +128,7 @@ router.patch("/", async (req, res) => {
     ticket_name,
     comments,
     open,
-    total_price,
     cash_received,
-    cash_return,
-    total_after_discount,
-    total_discount,
-    total_tax,
     items,
     discounts,
     variant,
@@ -129,7 +152,40 @@ router.patch("/", async (req, res) => {
   } else {
     const { _id } = req.authData;
     try {
-    
+      let total_discount = 0;
+      let total_tax = 0;
+      let itemTotalPrices = 0;
+      
+      for(const item of items){
+        let itemPrice = (parseFloat(item.price) * (parseFloat(item.quantity) - parseFloat(item.refund_quantity)))
+        itemTotalPrices = parseFloat(itemTotalPrices) + itemPrice
+        
+        if(typeof item.modifiers !== "undefined" && item.modifiers.length > 0){
+          for(const modifier of item.modifiers){
+            for(const option of modifier.options){
+              itemTotalPrices = parseFloat(itemTotalPrices) + parseFloat(option.price)
+            }
+          }
+        }
+        if(typeof item.taxes !== "undefined" && item.taxes.length > 0){
+          for(const tax of item.taxes){
+            total_tax = parseFloat(total_tax) + parseFloat(((tax.value/100) * itemPrice));
+            if(tax.type == "excluded"){
+              itemTotalPrices =  parseFloat(itemTotalPrices) + parseFloat(((tax.value/100) * itemPrice))
+            }
+          }
+        }
+      }
+      for(const discount of discounts){
+        if(discount.type == "%"){
+          total_discount = parseFloat(total_discount) + parseFloat(((discount.value/100) * itemTotalPrices))
+        } else {
+          total_discount = parseFloat(total_discount) + parseFloat(discount.value)
+        }
+      }
+      let total_price = itemTotalPrices;
+      let total_after_discount = parseFloat(itemTotalPrices) - parseFloat(total_discount);
+      let cash_return = parseFloat(cash_received) - parseFloat(total_after_discount);
       let data = {
         ticket_name,
         comments,
@@ -140,8 +196,6 @@ router.patch("/", async (req, res) => {
         total_after_discount,
         refund_status: "",
         refund_amount: 0,
-        total_discount,
-        total_tax,
         items,
         discounts,
         variant,
@@ -164,12 +218,6 @@ router.patch("/refund", async (req, res) => {
   const {
     sale_id,
     refund_amount,
-    total_price,
-    cash_received,
-    cash_return,
-    total_after_discount,
-    total_discount,
-    total_tax,
     items,
   } = req.body;
   var errors = [];
@@ -191,19 +239,60 @@ router.patch("/refund", async (req, res) => {
               {
                 $set: {
                   "items.$.refund_quantity": item.refund_quantity,
-                  "refund_status": item.refund_quantity == item.quantity ? "Full" : "Partial Refund",
-                  "total_price": total_price,
-                  "cash_received": cash_received,
-                  "total_after_discount": total_after_discount,
-                  "cash_return": cash_return,
-                  "total_discount": total_discount,
-                  "total_tax": total_tax,
-                  "refund_amount": refund_amount
+                  "refund_status": item.refund_quantity == item.quantity ? "Full" : "Partial Refund"
                 },
               }
             )
           }
+        let total_discount = 0;
+        let total_tax = 0;
+        let itemTotalPrices = 0;
+
+      for(const item of getRefundedSale.items){
+        let itemPrice = (parseFloat(item.price) * (parseFloat(item.quantity) - parseFloat(item.refund_quantity)))
+        itemTotalPrices = parseFloat(itemTotalPrices) + itemPrice
+        
+        if(typeof item.modifiers !== "undefined" && item.modifiers.length > 0){
+          for(const modifier of item.modifiers){
+            for(const option of modifier.options){
+              itemTotalPrices = parseFloat(itemTotalPrices) + parseFloat(option.price)
+            }
+          }
+        }
+        if(typeof item.taxes !== "undefined" && item.taxes.length > 0){
+          for(const tax of item.taxes){
+            total_tax = parseFloat(total_tax) + parseFloat(((tax.value/100) * itemPrice));
+            if(tax.type == "excluded"){
+              itemTotalPrices =  parseFloat(itemTotalPrices) + parseFloat(((tax.value/100) * itemPrice))
+            }
+          }
+        }
+      }
+      for(const discount of getRefundedSale.discounts){
+        if(discount.type == "%"){
+          total_discount = parseFloat(total_discount) + parseFloat(((discount.value/100) * itemTotalPrices))
+        } else {
+          total_discount = parseFloat(total_discount) + parseFloat(discount.value)
+        }
+      }
       
+      let total_price = itemTotalPrices;
+      let total_after_discount = parseFloat(itemTotalPrices) - parseFloat(total_discount);
+      let cash_return = parseFloat(getRefundedSale.cash_received) - parseFloat(total_after_discount);
+      let updateSale =  await Sales.updateOne(
+        {$and: [{ _id: sale_id }]},
+        {
+          $set: {
+            "total_price": total_price,
+            "total_after_discount": total_after_discount,
+            "cash_return": cash_return,
+            "total_discount": total_discount,
+            "total_tax": total_tax,
+            "refund_amount": refund_amount
+          },
+        }
+      )
+      console.log(updateSale)
         getRefundedSale = await Sales.findOne({ _id: sale_id });
         res.status(200).json(getRefundedSale);
       } else {
