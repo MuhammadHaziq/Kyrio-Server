@@ -21,7 +21,11 @@ router.post("/", async (req, res) => {
     const result = await newDiscount.save();
     res.status(201).json(result);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error.code === 11000) {
+      res.status(400).json({ message: "Discount Already Register" });
+    } else {
+      res.status(400).json({ message: error.message });
+    }
   }
 });
 router.get("/:storeId", async (req, res) => {

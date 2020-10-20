@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
     res.status(201).json(result);
   } catch (error) {
     if (error.code === 11000) {
-      res.status(400).json({ message: "POS Device Already Register In StOre" });
+      res.status(400).json({ message: "POS Device Already Register In Store" });
     } else {
       res.status(400).json({ message: error.message });
     }
