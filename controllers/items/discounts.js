@@ -63,8 +63,11 @@ router.patch("/:id", async (req, res) => {
   try {
     const { title, type, value, restricted } = req.body;
     const { id } = req.params;
-
-    await Discount.updateOne(
+    let { stores } = req.body;
+    if (stores !== undefined && stores !== null) {
+      stores = JSON.parse(stores);
+    }
+    const result = await Discount.findOneAndUpdate(
       { _id: id },
       {
         $set: {
@@ -72,11 +75,16 @@ router.patch("/:id", async (req, res) => {
           type: type,
           value: value,
           restricted: restricted,
+          stores: stores,
         },
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
       }
     );
 
-    res.status(200).json({ message: "updated" });
+    res.status(200).json({ data: result, message: "updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

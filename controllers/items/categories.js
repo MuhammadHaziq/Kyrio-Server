@@ -111,17 +111,21 @@ router.patch("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { catTitle, catColor } = req.body;
-    await Category.updateOne(
+    const result = await Category.findOneAndUpdate(
       { _id: id },
       {
         $set: {
           catTitle: catTitle,
           catColor: catColor,
         },
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
       }
     );
 
-    res.status(200).json({ message: "updated" });
+    res.status(200).json({ data: result, message: "updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
