@@ -129,6 +129,16 @@ const itemListSchema = new mongoose.Schema({
           min: 1,
           max: 255,
         },
+        type: {
+          type: String,
+          min: 1,
+          max: 255,
+        },
+        value: {
+          type: Number,
+          min: 1,
+          max: 1000000,
+        }
       },
     ],
   repoOnPos: {
