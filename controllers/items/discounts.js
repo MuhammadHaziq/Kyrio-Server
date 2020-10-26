@@ -21,7 +21,11 @@ router.post("/", async (req, res) => {
     const result = await newDiscount.save();
     res.status(201).json(result);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error.code === 11000) {
+      res.status(400).json({ message: "Discount Already Register" });
+    } else {
+      res.status(400).json({ message: error.message });
+    }
   }
 });
 router.get("/:storeId", async (req, res) => {
@@ -59,8 +63,11 @@ router.patch("/:id", async (req, res) => {
   try {
     const { title, type, value, restricted } = req.body;
     const { id } = req.params;
-
-    await Discount.updateOne(
+    let { stores } = req.body;
+    if (stores !== undefined && stores !== null) {
+      stores = JSON.parse(stores);
+    }
+    const result = await Discount.findOneAndUpdate(
       { _id: id },
       {
         $set: {
@@ -68,11 +75,16 @@ router.patch("/:id", async (req, res) => {
           type: type,
           value: value,
           restricted: restricted,
+          stores: stores,
         },
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
       }
     );
 
-    res.status(200).json({ message: "updated" });
+    res.status(200).json({ data: result, message: "updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

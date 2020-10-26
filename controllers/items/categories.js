@@ -15,7 +15,11 @@ router.post("/", async (req, res) => {
     const newCatResult = await newCat.save();
     res.status(201).json(newCatResult);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error.code === 11000) {
+      res.status(400).json({ message: "Category Already Register" });
+    } else {
+      res.status(400).json({ message: error.message });
+    }
   }
 });
 
@@ -62,9 +66,9 @@ router.delete("/:ids", async (req, res) => {
 
 router.get("/categoryItem", async (req, res) => {
   const { _id } = req.authData;
-// Old Quer Work in ModalSelectItemsTax(React)
+  // Old Quer Work in ModalSelectItemsTax(React)
   // let { categoryFilter, storeId } = req.query;
-// Old Quer Work in UpdateTax(React)
+  // Old Quer Work in UpdateTax(React)
   let { storeId } = req.query;
 
   try {
@@ -85,17 +89,17 @@ router.get("/categoryItem", async (req, res) => {
 *
 *
     */
-    if(storeId === undefined) {
+    if (storeId === undefined) {
       filters = {
-      createdBy: _id,
-    };
-  }else {
-    storeId = JSON.parse(storeId)
-    filters = {
-    stores: { $elemMatch: { id: { $in: storeId } } },
-    createdBy: _id,
-  };
-  }
+        createdBy: _id,
+      };
+    } else {
+      storeId = JSON.parse(storeId);
+      filters = {
+        stores: { $elemMatch: { id: { $in: storeId } } },
+        createdBy: _id,
+      };
+    }
 
     var result = await ItemList.find(filters);
     res.status(200).json(result);
@@ -107,17 +111,21 @@ router.patch("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { catTitle, catColor } = req.body;
-    await Category.updateOne(
+    const result = await Category.findOneAndUpdate(
       { _id: id },
       {
         $set: {
           catTitle: catTitle,
           catColor: catColor,
         },
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
       }
     );
 
-    res.status(200).json({ message: "updated" });
+    res.status(200).json({ data: result, message: "updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
