@@ -114,6 +114,23 @@ const salesSchema = new mongoose.Schema({
           max: 255,
         }
       }],
+      variant: {
+        id: {
+          type: String,
+          min: 6,
+          max: 255,
+        },
+        title: {
+          type: String,
+          min: 6,
+          max: 255,
+        },
+        price: {
+          type: String,
+          min: 6,
+          max: 255,
+        },
+      },
       modifiers: [{
         id: {
           type: String,
@@ -156,23 +173,30 @@ const salesSchema = new mongoose.Schema({
       max: 255,
     }
   }],
-  variant: {
-      id: {
+  dining_option: {
+    id: {
         type: String,
         min: 6,
         max: 255,
       },
-      title: {
+    name: {
+        type: String,
+        min: 6,
+        max: 255,
+      }
+  },
+  customer: {
+    id: {
         type: String,
         min: 6,
         max: 255,
       },
-      price: {
+    name: {
         type: String,
         min: 6,
         max: 255,
-      },
-    },
+      }
+  },
   store: {
     id: {
         type: String,
