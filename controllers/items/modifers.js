@@ -128,7 +128,7 @@ router.patch("/:id", async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: "updated", data: result });
+    res.status(200).json({ message: "Modifier Updated", data: result });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
