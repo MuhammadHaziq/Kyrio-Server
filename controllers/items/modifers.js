@@ -113,7 +113,7 @@ router.patch("/:id", async (req, res) => {
     let jsonStores = JSON.parse(stores);
     const { id } = req.params;
 
-    await Modifier.updateOne(
+    const result = await Modifier.findOneAndUpdate(
       { _id: id },
       {
         $set: {
@@ -121,10 +121,14 @@ router.patch("/:id", async (req, res) => {
           options: jsonOptions,
           stores: jsonStores,
         },
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
       }
     );
 
-    res.status(200).json({ message: "updated" });
+    res.status(200).json({ message: "updated", data: result });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
