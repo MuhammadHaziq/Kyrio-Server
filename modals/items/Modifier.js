@@ -11,7 +11,6 @@ const modifierSchema = new mongoose.Schema({
     type: String,
     min: 3,
     max: 255,
-    required: true,
   },
   options: [
     {
@@ -25,6 +24,10 @@ const modifierSchema = new mongoose.Schema({
         type: Number,
         max: 100000000000,
         required: true,
+      },
+      position: {
+        type: Number,
+        default: 0,
       },
     },
   ],
