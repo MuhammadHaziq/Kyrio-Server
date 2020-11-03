@@ -53,6 +53,7 @@ router.post("/", async (req, res) => {
     discounts,
     variant,
     store,
+    created_at
   } = req.body;
   var errors = [];
   if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
@@ -68,10 +69,23 @@ router.post("/", async (req, res) => {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     const { _id } = req.authData;
-   
+    // let lastSaleRefNo = await Sales.find({ "store.id": store.id });
+    
+    // let maxRefNo = lastSaleRefNo.map(itm => {return itm.refNo} )
+    // console.log(maxRefNo)
+    // let refNo = Math.max(...maxRefNo) + 1;
+    // if(isNaN(refNo) || refNo == null || refNo == "-Infinity"){
+    //   refNo = pad(1,"5")
+    // } else{
+    //   refNo = pad(refNo,"5")
+    // }
+    
+    
+    
     try {
       const newSales = await new Sales({
         ticket_name,
+        // refNo,
         comments,
         open,
         total_price,
@@ -87,6 +101,7 @@ router.post("/", async (req, res) => {
         variant,
         store,
         created_by: _id,
+        created_at
       }).save();
       res.status(200).json(newSales);
     } catch (error) {
@@ -94,6 +109,11 @@ router.post("/", async (req, res) => {
     }
   }
 });
+function pad(num, size) {
+  num = num.toString();
+  while (num.length < size) num = "0" + num;
+  return num;
+}
 router.patch("/", async (req, res) => {
   const {
     sale_id,
@@ -109,7 +129,8 @@ router.patch("/", async (req, res) => {
     items,
     discounts,
     variant,
-    store
+    store,
+    created_at
   } = req.body;
   var errors = [];
   if (!sale_id || typeof sale_id == "undefined" || sale_id == "") {
@@ -147,6 +168,7 @@ router.patch("/", async (req, res) => {
         variant,
         store,
         created_by: _id,
+        created_at
       };
       await Sales.updateOne({ _id: sale_id }, data);
       let getUpdatedSale = await Sales.findOne({ _id: sale_id });

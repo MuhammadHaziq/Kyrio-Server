@@ -6,6 +6,11 @@ const salesSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  refNo: {
+    type: String,
+    min: 6,
+    max: 255,
+  },
   comments: {
     type: String,
     min: 6,

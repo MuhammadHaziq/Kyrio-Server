@@ -1,5 +1,6 @@
 import express from "express";
 import Customers from "../../modals/customers/customers";
+const ObjectId = require('mongoose').Types.ObjectId;
 const router = express.Router();
 
 router.get('/all', async (req, res) => {
@@ -10,11 +11,11 @@ router.get('/all', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-router.get('/:customer_name', async (req, res) => {
+router.get('/:name', async (req, res) => {
 
   try {
-    const { customer_name } = req.query;
-    var result = await Customers.find({name: customer_name});
+    const { name } = req.params;
+    var result = await Customers.find({name: name});
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -23,44 +24,35 @@ router.get('/:customer_name', async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    let result = await Customers.deleteOne({ _id: id });
-
-    res.status(200).json({ message: "deleted", result });
+    console.log(id)
+    if(ObjectId.isValid(id)){
+      let result = await Customers.deleteOne({ _id: id });
+      res.status(200).json({ message: "deleted", result });
+    } else {
+      res.status(400).json({ message: "Invalid ID" }); 
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 router.post('/', async (req, res) => {
-    const {name, email, phone, address, city, region, postal_code, country, customer_code, note } = req.body;
+    const {name, email, phone, address, city, region, postal_code, country, note } = req.body;
     var errors = [];
     if (
-        !name ||
+        (!name ||
         typeof name == "undefined" ||
-        name == ""
+        name == "") &&
+        (!email ||
+          typeof email == "undefined" ||
+          email == "") && 
+          (!phone ||
+            typeof phone == "undefined" ||
+            phone == "")
       ) {
         errors.push({ name: `Invalid Customer Name!` });
-      } else {
-        errors = [];        
-      }
-     if (
-        !email ||
-        typeof email == "undefined" ||
-        email == ""
-      ) {
         errors.push({ email: `Invalid Customer Email!` });
-      } else {
-        errors = [];        
-      }
-    if (
-        !phone ||
-        typeof phone == "undefined" ||
-        phone == ""
-      ) {
         errors.push({ phone: `Invalid Customer phone!` });
-      } else {
-        errors = [];        
-      }
-
+      } 
       if (errors.length > 0) {
         res.status(400).send({ message: `Invalid Parameters!`, errors });
       } else {
@@ -75,7 +67,6 @@ router.post('/', async (req, res) => {
               region: region,
               postal_code: postal_code,
               country: country,
-              customer_code: customer_code,
               note: note,
               created_by: _id
             }).save();
@@ -87,35 +78,23 @@ router.post('/', async (req, res) => {
     }
 });
 router.patch('/', async (req, res) => {
-  const {name, email, phone, address, city, region, postal_code, country, customer_code, note } = req.body;
+  const { id, name, email, phone, address, city, region, postal_code, country, note } = req.body;
   var errors = [];
   if (
-      !name ||
-      typeof name == "undefined" ||
-      name == ""
-    ) {
-      errors.push({ name: `Invalid Customer Name!` });
-    } else {
-      errors = [];        
-    }
-   if (
-      !email ||
+    (!name ||
+    typeof name == "undefined" ||
+    name == "") &&
+    (!email ||
       typeof email == "undefined" ||
-      email == ""
-    ) {
-      errors.push({ email: `Invalid Customer Email!` });
-    } else {
-      errors = [];        
-    }
-  if (
-      !phone ||
-      typeof phone == "undefined" ||
-      phone == ""
-    ) {
-      errors.push({ phone: `Invalid Customer phone!` });
-    } else {
-      errors = [];        
-    }
+      email == "") && 
+      (!phone ||
+        typeof phone == "undefined" ||
+        phone == "")
+  ) {
+    errors.push({ name: `Invalid Customer Name!` });
+    errors.push({ email: `Invalid Customer Email!` });
+    errors.push({ phone: `Invalid Customer phone!` });
+  } 
 
       if (errors.length > 0) {
         res.status(400).send({ message: `Invalid Parameters!`, errors });
@@ -131,12 +110,11 @@ router.patch('/', async (req, res) => {
               region: region,
               postal_code: postal_code,
               country: country,
-              customer_code: customer_code,
               note: note,
               created_by: _id
           };
             let result = await Customers.updateOne(
-              { name: name },
+              { _id: id },
               data
             );
             res.status(200).json(result);
