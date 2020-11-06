@@ -6,6 +6,9 @@ import stockRouter from "./stock";
 import ItemList from "../../modals/items/ItemList";
 import uploadFiles from "../fileHandler/uploadFiles";
 import { getOwner } from "../../function/getOwner";
+import Modifier from "../../modals/items/Modifier";
+import itemTax from "../../modals/settings/taxes/itemTax";
+import Store from "../../modals/Store";
 
 const fs = require("fs-extra");
 
@@ -161,7 +164,7 @@ router.patch("/", async (req, res) => {
     ) {
       if (typeof req.files.image != "undefined") {
         let fileUrl = `${rootDir}/uploads/items/${owner._id}/` + imageName;
-        if(fs.existsSync(fileUrl)){
+        if (fs.existsSync(fileUrl)) {
           fs.unlinkSync(fileUrl);
         }
         var uploadResult = await uploadFiles.uploadImages(
@@ -282,6 +285,34 @@ router.delete("/:ids", async (req, res) => {
     });
 
     res.status(200).json({ message: "deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get("/get_item_stores", async (req, res) => {
+  try {
+    const { _id } = req.authData;
+    const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+    let allStores = [];
+    for (const store of stores) {
+      allStores.push({
+        id: store._id,
+        title: store.title,
+        modifiers: await Modifier.find({
+          stores: { $elemMatch: { id: store._id } },
+        })
+          .select("title")
+          .sort({
+            _id: "desc",
+          }),
+        taxes: await itemTax
+          .find({ stores: { $elemMatch: { storeId: store._id } } })
+          .select("title tax_type tax_rate")
+          .sort({ _id: "desc" }),
+      });
+    }
+    res.status(200).json({ stores: allStores });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
