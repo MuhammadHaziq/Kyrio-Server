@@ -26,6 +26,8 @@ router.post("/", async (req, res) => {
     repoOnPos,
     trackStock,
     stockQty,
+    dsd,
+    modifiersStatus,
   } = req.body;
   var {
     category,
@@ -58,7 +60,16 @@ router.post("/", async (req, res) => {
   } else {
     category = { id: "0", name: "No Category", createdBy: _id };
   }
-
+  if (dsd !== undefined) {
+    dsd = dsd;
+  } else {
+    dsd = false;
+  }
+  if (modifiersStatus !== undefined) {
+    modifiersStatus = modifiersStatus;
+  } else {
+    modifiersStatus = false;
+  }
   // stock = JSON.parse(stock);
   // res.status(200).send(data);
 
@@ -95,6 +106,8 @@ router.post("/", async (req, res) => {
     sku,
     barcode,
     trackStock,
+    dsd,
+    modifiersStatus,
     stockQty,
     varients,
     stores,
@@ -128,6 +141,8 @@ router.patch("/", async (req, res) => {
     repoOnPos,
     trackStock,
     stockQty,
+    dsd,
+    modifiersStatus,
   } = req.body;
   var {
     category,
@@ -143,11 +158,38 @@ router.patch("/", async (req, res) => {
     cost = 0;
   }
   const { _id } = req.authData;
-  varients = JSON.parse(varients);
-  stores = JSON.parse(stores);
-  modifiers = JSON.parse(modifiers);
-  taxes = JSON.parse(taxes);
-  category = JSON.parse(category);
+  if (varients !== undefined && varients !== null) {
+    varients = JSON.parse(varients);
+  }
+  if (stores !== undefined && stores !== null) {
+    stores = JSON.parse(stores);
+  }
+  if (modifiers !== undefined && modifiers !== null) {
+    modifiers = JSON.parse(modifiers);
+  }
+  if (taxes !== undefined && taxes !== null) {
+    taxes = JSON.parse(taxes);
+  }
+  if (category !== undefined && category !== null) {
+    category = JSON.parse(category);
+  } else {
+    category = { id: "0", name: "No Category", createdBy: _id };
+  }
+  if (dsd !== undefined) {
+    dsd = dsd;
+  } else {
+    dsd = false;
+  }
+  if (modifiersStatus !== undefined) {
+    modifiersStatus = modifiersStatus;
+  } else {
+    modifiersStatus = false;
+  }
+  // varients = JSON.parse(varients);
+  // stores = JSON.parse(stores);
+  // modifiers = JSON.parse(modifiers);
+  // taxes = JSON.parse(taxes);
+  // category = JSON.parse(category);
   // stock = JSON.parse(stock);
   // res.status(200).send(data);
 
@@ -191,6 +233,8 @@ router.patch("/", async (req, res) => {
     sku,
     barcode,
     trackStock,
+    modifiersStatus,
+    dsd,
     stockQty,
     varients,
     stores,
@@ -258,7 +302,7 @@ router.get("/search", async (req, res) => {
     if (storeId !== "0") {
       storeFilter.stores = { $elemMatch: { id: storeId } };
     }
-    if (categoryFilter !== "0" && categoryFilter !== undefined) {
+    if (categoryFilter !== "-1" && categoryFilter !== undefined) {
       storeFilter["category.id"] = categoryFilter;
     }
     if (stockFilter !== "0" && stockFilter !== undefined) {

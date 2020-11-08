@@ -39,12 +39,10 @@ const itemListSchema = new mongoose.Schema({
   },
   sku: {
     type: String,
-    min: 1,
     max: 100,
   },
   barcode: {
     type: String,
-    min: 1,
     max: 100,
   },
   trackStock: {
@@ -83,7 +81,7 @@ const itemListSchema = new mongoose.Schema({
       },
       optionValue: [
         {
-          title: {
+          variantName: {
             type: String,
             min: 1,
             max: 255,
@@ -91,23 +89,18 @@ const itemListSchema = new mongoose.Schema({
           },
           price: {
             type: Number,
-            min: 1,
             max: 100000000000,
-            required: true,
           },
           cost: {
             type: Number,
-            min: 1,
             max: 100000000000,
           },
-          SKU: {
+          sku: {
             type: String,
-            min: 1,
             max: 100,
           },
           barcode: {
             type: String,
-            min: 1,
             max: 100000000000,
           },
         },
@@ -129,22 +122,18 @@ const itemListSchema = new mongoose.Schema({
 
       price: {
         type: String,
-        min: 1,
         max: 255,
       },
       inStock: {
         type: String,
-        min: 1,
         max: 255,
       },
       lowStock: {
         type: String,
-        min: 1,
         max: 255,
       },
       variantName: {
         type: String,
-        min: 1,
         max: 255,
       },
       modifiers: [
@@ -232,7 +221,6 @@ const itemListSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    min: 3,
     max: 255,
     required: false,
   },
