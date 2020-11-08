@@ -299,6 +299,10 @@ router.get("/get_item_stores", async (req, res) => {
       allStores.push({
         id: store._id,
         title: store.title,
+        price: "",
+        inStock: 0,
+        lowStock: "",
+        variantName: "",
         modifiers: await Modifier.find({
           stores: { $elemMatch: { id: store._id } },
         })
