@@ -167,19 +167,19 @@ router.post("/signup", checkModules, (req, res) => {
           await paymentTypes
             .create([
               {
-                title: DEFAULT_PAYMENT_TYPES_1,
+                title: process.env.DEFAULT_PAYMENT_TYPES_1,
                 createdBy: result._id,
               },
               {
-                title: DEFAULT_PAYMENT_TYPES_2,
+                title: process.env.DEFAULT_PAYMENT_TYPES_2,
                 createdBy: result._id,
               },
               {
-                title: DEFAULT_PAYMENT_TYPES_3,
+                title: process.env.DEFAULT_PAYMENT_TYPES_3,
                 createdBy: result._id,
               },
               {
-                title: DEFAULT_PAYMENT_TYPES_4,
+                title: process.env.DEFAULT_PAYMENT_TYPES_4,
                 createdBy: result._id,
               },
             ])
