@@ -41,6 +41,11 @@ const customersSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  customer_code: {
+    type: String,
+    min: 6,
+    max: 255,
+  },
   note: {
     type: String,
     min: 6,
