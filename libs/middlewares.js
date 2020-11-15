@@ -1,6 +1,12 @@
 import Users from "../modals/users";
 import Modules from "../modals/modules";
 import Role from "../modals/role";
+import POS_Device from "../modals/POS_Device";
+import diningOption from "../modals/settings/diningOption";
+import taxesOption from "../modals/settings/taxes/taxesOption";
+import taxesType from "../modals/settings/taxes/taxesType";
+import paymentTypes from "../modals/settings/paymentTypes/paymentTypes";
+import paymentsType from "../modals/settings/paymentTypes/paymentsType";
 import { modulesData } from "../data/data";
 import jwt from "jsonwebtoken";
 import validator from "email-validator";
@@ -256,5 +262,220 @@ export const verifyToken = (req, res, next) => {
     // Next middleware
   } else {
     res.sendStatus(403);
+  }
+};
+
+/**
+
+  Haziq
+
+***/
+
+export const addModuleWhenSignUp = async (userId, store) => {
+  let paymentTypeStoreId = "";
+  let cash = "";
+  let card = "";
+  paymentTypeStoreId: store._id;
+  const posDeviceData = {
+    storeId: store._id,
+    storeName: store.title,
+  };
+  try {
+    const newPOSDevice = new POS_Device({
+      title: "POS Device",
+      store: posDeviceData,
+      createdBy: userId,
+    });
+    await newPOSDevice
+      .save()
+      .then((resu) => {
+        // console.log("POS DEVICE", resu);
+      })
+      .catch((e) => console.log("POS Device Response Catch Error", e.message));
+  } catch (error) {
+    console.log("POS Device Catch Error", error.message);
+  }
+  const user = await Users.find({});
+  try {
+    await diningOption
+      .create(
+        [
+          {
+            title: process.env.DEFAULT_DINING_TITLE_1,
+            stores: [
+              {
+                storeId: store._id,
+                storeName: store.title,
+                isActive: true,
+                position: 0,
+              },
+            ],
+            createdBy: userId,
+          },
+          {
+            title: process.env.DEFAULT_DINING_TITLE_2,
+            stores: [
+              {
+                storeId: store._id,
+                storeName: store.title,
+                isActive: true,
+                position: 1,
+              },
+            ],
+            createdBy: userId,
+          },
+          {
+            title: process.env.DEFAULT_DINING_TITLE_3,
+            stores: [
+              {
+                storeId: store._id,
+                storeName: store.title,
+                isActive: true,
+                position: 2,
+              },
+            ],
+            createdBy: userId,
+          },
+        ],
+        { oneOperation: true }
+      )
+      .then((response) => {
+        console.log("Default Dining Insert");
+      })
+      .catch((err) => {
+        console.log("Default Dining Insert Error", err.message);
+      });
+  } catch (error) {
+    console.log("Default Dining Catch Error", error.message);
+  }
+  const taxesTypeCheck = await taxesType.find({});
+  if (taxesTypeCheck.length === 0) {
+    try {
+      await taxesType
+        .create([
+          {
+            title: "Included in the price",
+            createdBy: userId,
+          },
+          {
+            title: "Added to the price",
+            createdBy: userId,
+          },
+        ])
+        .then((response) => {
+          console.log("Default Tax Type Create");
+        })
+        .catch((err) => {
+          console.log("Default Tax Type Insert Error", err.message);
+        });
+    } catch (error) {
+      console.log("Default Tax Type Catch Error", error.message);
+    }
+  }
+  const taxesOptionCheck = await taxesOption.find({});
+
+  if (taxesOptionCheck.length === 0) {
+    try {
+      await taxesOption
+        .create([
+          {
+            title: "Apply the tax to the new items",
+            createdBy: userId,
+          },
+          {
+            title: "Apply the tax to existing items",
+            createdBy: userId,
+          },
+          {
+            title: "Apply the tax to all new and existing items",
+            createdBy: userId,
+          },
+        ])
+        .then((response) => {
+          console.log("Default Tax Option Create");
+        })
+        .catch((err) => {
+          console.log("Default Tax Option Insert Error", err.message);
+        });
+    } catch (error) {
+      console.log("Default Tax Option Catch Error", error.message);
+    }
+  }
+  const paymentTypesCheck = await paymentTypes.find({});
+  if (paymentTypesCheck.length === 0) {
+    try {
+      await paymentTypes
+        .create([
+          {
+            title: process.env.DEFAULT_PAYMENT_TYPES_1,
+            createdBy: userId,
+          },
+          {
+            title: process.env.DEFAULT_PAYMENT_TYPES_2,
+            createdBy: userId,
+          },
+          {
+            title: process.env.DEFAULT_PAYMENT_TYPES_3,
+            createdBy: userId,
+          },
+          {
+            title: process.env.DEFAULT_PAYMENT_TYPES_4,
+            createdBy: userId,
+          },
+        ])
+        .then((response) => {
+          cash = response.filter(
+            (item) => item.title.toUpperCase() === "Cash".toUpperCase()
+          )[0];
+          card = response.filter(
+            (item) => item.title.toUpperCase() === "Card".toUpperCase()
+          )[0];
+          // console.log("Default Payment Type Create", response);
+          console.log("Default Payment Type Create");
+        })
+        .catch((err) => {
+          console.log("Default Payment Type Insert Error", err.message);
+        });
+    } catch (error) {
+      console.log("Default Payment Type Catch Error", error.message);
+    }
+  }
+
+  // const cash = paymentTypesCheck.filter(
+  //   (item) => item.title.toUpperCase() === "Cash".toUpperCase()
+  // )[0];
+  // const card = paymentTypesCheck.filter(
+  //   (item) => item.title.toUpperCase() === "Card".toUpperCase()
+  // )[0];
+  try {
+    await paymentsType
+      .create([
+        {
+          name: process.env.DEFAULT_PAYMENT_TYPE_1,
+          paymentType: {
+            paymentTypeId: cash._id,
+            paymentTypeName: cash.title,
+          },
+          storeId: paymentTypeStoreId,
+          createdBy: userId,
+        },
+        {
+          name: process.env.DEFAULT_PAYMENT_TYPE_2,
+          paymentType: {
+            paymentTypeId: card._id,
+            paymentTypeName: card.title,
+          },
+          storeId: paymentTypeStoreId,
+          createdBy: userId,
+        },
+      ])
+      .then((response) => {
+        console.log("Default Payment Types Create");
+      })
+      .catch((err) => {
+        console.log("Default Payment Types Insert Error", err.message);
+      });
+  } catch (error) {
+    console.log("Default Payment Types Catch Error", error.message);
   }
 };
