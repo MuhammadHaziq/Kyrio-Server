@@ -26,15 +26,18 @@ export const checkModules = (req, res, next) => {
         Modules.findOne()
           .then((result) => {
             if (result != null) {
-              Role.findOne({
-                roleName: "Owner",
-              })
-                .then((roleData) => {
-                  if (roleData != null) {
-                    req.body.role_id = roleData._id;
-                    req.body.roleName = "Owner";
-                    next();
-                  } else {
+              //****************Commented because when this API will trigger only a new role with Owner status will be created
+              // Role.findOne({
+              //   roleName: "Owner",
+              // })
+              //   .then((roleData) => {
+                  
+                  // if (roleData != null) {
+                  //   req.body.role_id = roleData._id;
+                  //   req.body.roleName = "Owner";
+                  //   next();
+                  // } else { 
+                    
                     let roleData = {
                       roleName: "Owner",
                       features: result.features.map((itm) => {
@@ -111,28 +114,29 @@ export const checkModules = (req, res, next) => {
                           message: `Unable to Save Role ${err.message}`,
                         });
                       });
-                  }
-                })
-                .catch((err) => {
-                  res.status(403).send({
-                    type: "server",
-                    message: `Unable to find Role ${err.message}`,
-                  });
-                });
+                  // }
+                // })
+                // .catch((err) => {
+                //   res.status(403).send({
+                //     type: "server",
+                //     message: `Unable to find Role ${err.message}`,
+                //   });
+                // });
             } else {
               let modules = new Modules(modulesData);
               modules
                 .save()
                 .then((insertedRecord) => {
-                  Role.findOne({
-                    roleName: "Owner",
-                  })
-                    .then((roleData) => {
-                      if (roleData != null) {
-                        req.body.role_id = roleData._id;
-                        req.body.roleName = "Owner";
-                        next();
-                      } else {
+                  //****************Commented because when this API will trigger only a new role with Owner status will be created
+                  // Role.findOne({
+                  //   roleName: "Owner",
+                  // })
+                  //   .then((roleData) => {
+                  //     if (roleData != null) {
+                  //       req.body.role_id = roleData._id;
+                  //       req.body.roleName = "Owner";
+                  //       next();
+                  //     } else {
                         let roleData = {
                           roleName: "Owner",
                           features: insertedRecord.features.map((itm) => {
@@ -213,13 +217,13 @@ export const checkModules = (req, res, next) => {
                               message: `Unable to Save Role ${err.message}`,
                             });
                           });
-                      }
-                    })
-                    .catch((err) => {
-                      res.status(403).send({
-                        message: `Unable to find Role ${err.message}`,
-                      });
-                    });
+                      // }
+                    // })
+                    // .catch((err) => {
+                    //   res.status(403).send({
+                    //     message: `Unable to find Role ${err.message}`,
+                    //   });
+                    // });
                 })
                 .catch((err) => {
                   res.status(403).send({

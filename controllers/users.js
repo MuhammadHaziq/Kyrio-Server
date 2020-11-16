@@ -36,6 +36,10 @@ router.post("/signup", checkModules, (req, res) => {
           { _id: result._id },
           { created_by: result._id, owner_id: result._id }
         );
+        await Role.updateOne(
+          { _id: role_id },
+          { user_id: result._id }
+        );
         let roleData = await Role.findOne({ _id: role_id });
         let user = {
           _id: result._id,
