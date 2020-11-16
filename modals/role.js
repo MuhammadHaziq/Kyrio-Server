@@ -7,6 +7,11 @@ const roleSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
+  user_id: {
+    type: String,
+    min: 3,
+    max: 255,
+  },
   features: [
     {
       featureId: {
