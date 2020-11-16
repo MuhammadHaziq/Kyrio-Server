@@ -1,12 +1,12 @@
 module.exports = {
   apps: [
     {
-      name: "Production Node.js Server",
+      name: "Kyrio API Server",
       script: "./bin/www",
       error_file: "../api_server_log/production/error.log",
       out_file: "../api_server_log/production/out.log",
       args: "one two",
-      instances: 1,
+      instances: 2,
       autorestart: true,
       watch: true,
       max_memory_restart: "500M",

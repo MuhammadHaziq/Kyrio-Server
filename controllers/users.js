@@ -96,6 +96,7 @@ router.post("/signup", checkModules, (req, res) => {
 router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
+  
     Users.findOne({ email: email, password: md5(password) })
       .then(async (result) => {
         if (!result) {
@@ -115,16 +116,16 @@ router.post("/signin", async (req, res) => {
           let roleData = await Role.findOne({ _id: result.role_id });
           let stores = await Stores.find({ createdBy: result._id });
           // var paymentTypeStoreId = stores[0]._id;
-          // let user = {
-          //   _id: result._id,
-          //   email: result.email,
-          //   emailVerified: result.emailVerified,
-          //   businessName: result.businessName,
-          //   country: result.country,
-          //   role_id: result.role_id,
-          //   created_by: result._id,
-          //   owner_id: result._id,
-          // };
+          let user = {
+            _id: result._id,
+            email: result.email,
+            emailVerified: result.emailVerified,
+            businessName: result.businessName,
+            country: result.country,
+            role_id: result.role_id,
+            created_by: result._id,
+            owner_id: result._id,
+          };
           // const store = await Stores.find({ createdBy: result._id })
           //   .select(["title"])
           //   .sort({ _id: "desc" });
