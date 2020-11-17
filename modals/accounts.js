@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
 
-const usersSchema = new mongoose.Schema({
-  email: {
+const accountsSchema = new mongoose.Schema({
+  businessName: {
     type: String,
     min: 3,
     max: 255,
     required: true,
   },
-  emailVerified: {
-    type: Boolean,
+  email: {
+    type: String,
+    min: 3,
+    max: 255,
     required: true,
   },
   password: {
@@ -17,44 +19,28 @@ const usersSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  businessName: {
+  timezone: {
     type: String,
     min: 3,
     max: 255,
-    required: true,
   },
-  country: {
+  language: {
     type: String,
     min: 6,
     max: 255,
   },
-  role_id: {
+  createdBy: {
     type: String,
     min: 6,
     max: 255,
   },
-  created_by: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
-  owner_id: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
-  created: {
+  createdAt: {
     type: Date,
     default: Date.now(),
   },
 });
 
-usersSchema.index(
+accountsSchema.index(
   {
     email: 1,
   },
@@ -63,4 +49,4 @@ usersSchema.index(
   }
 );
 
-module.exports = mongoose.model("users", usersSchema);
+module.exports = mongoose.model("accounts", accountsSchema);

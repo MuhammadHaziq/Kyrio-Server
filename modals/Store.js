@@ -22,6 +22,11 @@ const storeSchema = new mongoose.Schema({
         min: 0,
         max: 4000
     },
+    accountId: {
+        type: String,
+        min: 0,
+        max: 4000
+    },
     createdAt: {
         type: Date,
         default: Date.now(),

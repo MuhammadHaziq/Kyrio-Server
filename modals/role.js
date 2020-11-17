@@ -12,6 +12,11 @@ const roleSchema = new mongoose.Schema({
     min: 3,
     max: 255,
   },
+  accountId: {
+    type: String,
+    min: 3,
+    max: 255,
+  },
   features: [
     {
       featureId: {
@@ -128,5 +133,15 @@ const roleSchema = new mongoose.Schema({
     default: Date.now(),
   },
 });
+
+roleSchema.index(
+  {
+    roleName: 1,
+    user_id: 1,
+  },
+  {
+    unique: true,
+  }
+);
 
 module.exports = mongoose.model("role", roleSchema);

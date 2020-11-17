@@ -23,6 +23,7 @@ export const checkModules = (req, res, next) => {
       });
     } else {
       if (validator.validate(email)) {
+        
         Modules.findOne()
           .then((result) => {
             if (result != null) {
@@ -279,7 +280,7 @@ export const addModuleWhenSignUp = async (userId, store) => {
   let paymentTypeStoreId = "";
   let cash = "";
   let card = "";
-  paymentTypeStoreId: store._id;
+  paymentTypeStoreId = store._id;
   const posDeviceData = {
     storeId: store._id,
     storeName: store.title,
