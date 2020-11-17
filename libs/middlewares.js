@@ -293,7 +293,7 @@ export const addModuleWhenSignUp = async (userId, store) => {
     });
     await newPOSDevice
       .save()
-      .then((resu) => {
+      .then(() => {
         // console.log("POS DEVICE", resu);
       })
       .catch((e) => console.log("POS Device Response Catch Error", e.message));
