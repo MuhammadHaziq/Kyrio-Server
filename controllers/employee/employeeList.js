@@ -110,6 +110,7 @@ router.delete("/:ids", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const { name, email, phone, roles, stores } = req.body;
+  let { posPin, sendMail } = req.body
   var errors = [];
   if (
     (!name || typeof name == "undefined" || name == "") &&
@@ -120,10 +121,21 @@ router.post("/", async (req, res) => {
     errors.push({ email: `Invalid Employee Email!` });
     errors.push({ phone: `Invalid Employee phone!` });
   }
+  if (posPin !== undefined && posPin === '0000' && posPin === '000' && posPin === '00' && posPin === '0') {
+    errors.push({ posPin: `Please Enter Pos Pin!` });
+  }
+  if (sendMail === undefined) {
+    sendMail = false
+  }
+  if (posPin === undefined) {
+    posBin = '0000'
+  }
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     const { _id } = req.authData;
+
+
     try {
       const newEmployee = await new EmployeeLists({
         name: removeSpaces(name),
@@ -131,6 +143,8 @@ router.post("/", async (req, res) => {
         phone: removeSpaces(phone),
         role: JSON.parse(roles),
         stores: JSON.parse(stores),
+        sendMail: (sendMail),
+        posPin: posPin,
         created_by: _id,
       }).save();
       res.status(200).json(newEmployee);
@@ -145,6 +159,7 @@ router.post("/", async (req, res) => {
 });
 router.patch("/", async (req, res) => {
   const { id, name, email, phone, roles, stores } = req.body;
+  let { posPin, sendMail } = req.body
   var errors = [];
   if (
     (!name || typeof name == "undefined" || name == "") &&
@@ -155,7 +170,15 @@ router.patch("/", async (req, res) => {
     errors.push({ email: `Invalid Employee Email!` });
     errors.push({ phone: `Invalid Employee phone!` });
   }
-
+  if (posPin !== undefined && posPin === '0000' && posPin === '000' && posPin === '00' && posPin === '0') {
+    errors.push({ posPin: `Please Enter Pos Pin!` });
+  }
+  if (sendMail === undefined) {
+    sendMail = false
+  }
+  if (posPin === undefined) {
+    posPin = '0000'
+  }
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
@@ -167,6 +190,8 @@ router.patch("/", async (req, res) => {
         phone: removeSpaces(phone),
         role: JSON.parse(roles),
         stores: JSON.parse(stores),
+        sendMail: (sendMail),
+        posPin: posPin,
         created_by: _id,
       };
       let result = await EmployeeLists.findOneAndUpdate({ _id: id }, data, {

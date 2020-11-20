@@ -44,6 +44,15 @@ const employeeListSchema = new mongoose.Schema({
       },
     },
   ],
+  posPin: {
+    type: String,
+    min: 3,
+    max: 255,
+  },
+  sendMail: {
+    type: Boolean,
+    default: false
+  },
   created_by: {
     type: String,
     min: 3,
