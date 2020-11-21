@@ -53,6 +53,10 @@ const timeCardSchema = new mongoose.Schema({
         type: String,
         default: "Created",
       },
+      created_at: {
+        type: Date,
+        default: Date.now(),
+      },
     },
   ],
   created_by: {

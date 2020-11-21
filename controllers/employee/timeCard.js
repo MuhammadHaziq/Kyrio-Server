@@ -132,7 +132,7 @@ router.patch("/", async (req, res) => {
       };
       let result = await TimeCard.findOneAndUpdate(
         { _id: id },
-        { $set: { timeDetail: data } },
+        { $push: { timeDetail: [data] } },
         {
           new: true,
           upsert: false, // Make this update into an upsert
