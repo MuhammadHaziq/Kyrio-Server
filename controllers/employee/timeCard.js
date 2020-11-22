@@ -10,9 +10,25 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const { _id } = req.authData;
-    var result = await TimeCard.find({ created_by: _id }).sort({
-      _id: "desc",
-    });
+    var result = await TimeCard.aggregate([
+      { $unwind: { path: "$timeDetail", preserveNullAndEmptyArrays: true } },
+      { $sort: { "timeDetail._id": -1 } },
+      {
+        $group: {
+          _id: "$_id",
+          employee: {
+            $first: "$employee",
+          },
+          store: {
+            $first: "$store",
+          },
+          timeDetail: { $push: "$timeDetail" },
+        },
+      },
+    ]);
+    // .find({ created_by: _id }).sort({
+    //   "timeDetail.created_at": 1,
+    // });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -130,16 +146,49 @@ router.patch("/", async (req, res) => {
         clockOutTime: removeSpaces(clockOutTime),
         event: "Edited",
       };
-      let result = await TimeCard.findOneAndUpdate(
+      const result = await TimeCard.updateOne(
         { _id: id },
-        { $push: { timeDetail: [data] } },
-        {
-          new: true,
-          upsert: false, // Make this update into an upsert
-          multi: true,
-        }
+        { $push: { timeDetail: [data] } }
       );
-      res.status(200).json(result);
+      if (result.nModified === 1) {
+        var result = await TimeCard.aggregate([
+          {
+            $match: {
+              _id: id,
+            },
+          },
+          {
+            $unwind: { path: "$timeDetail", preserveNullAndEmptyArrays: true },
+          },
+          { $sort: { "timeDetail._id": -1 } },
+          {
+            $group: {
+              _id: "$_id",
+              employee: {
+                $first: "$employee",
+              },
+              store: {
+                $first: "$store",
+              },
+              timeDetail: { $push: "$timeDetail" },
+            },
+          },
+        ]);
+        res.status(200).json(result);
+      } else {
+        res.status(400).json({ message: "Not Update" });
+      }
+
+      // let result = await TimeCard.findOneAndUpdate(
+      //   { _id: id },
+      //   { $push: { timeDetail: [data] } },
+      //   {
+      //     new: true,
+      //     upsert: false, // Make this update into an upsert
+      //     multi: true,
+      //   }
+      // );
+      // res.status(200).json(result);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
