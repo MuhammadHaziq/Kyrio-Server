@@ -309,10 +309,24 @@ router.get("/search", async (req, res) => {
       storeFilter.stockId = stockFilter;
     }
     if (search !== "" && search !== undefined) {
-      storeFilter.name = { $regex: ".*" + search + ".*", $options: "i" };
+      storeFilter = {
+        $or: [
+          { name: { $regex: ".*" + search + ".*", $options: "i" } },
+          {
+            "category.name": {
+              $regex: ".*" + search + ".*",
+              $options: "i",
+            },
+          },
+        ],
+      };
+      // storeFilter.name = { $regex: ".*" + search + ".*", $options: "i" };
+      // storeFilter["category.name"] = {
+      //   $regex: ".*" + search + ".*",
+      //   $options: "i",
+      // };
     }
     storeFilter.createdBy = _id;
-
     var result = await ItemList.find(storeFilter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {

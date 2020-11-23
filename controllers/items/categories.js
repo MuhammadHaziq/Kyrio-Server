@@ -16,7 +16,9 @@ router.post("/", async (req, res) => {
     res.status(201).json(newCatResult);
   } catch (error) {
     if (error.code === 11000) {
-      res.status(400).json({ message: "Category Already Register" });
+      res
+        .status(400)
+        .json({ message: "Category with this name already exists" });
     } else {
       res.status(400).json({ message: error.message });
     }
