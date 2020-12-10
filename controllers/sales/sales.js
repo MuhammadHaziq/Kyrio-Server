@@ -43,6 +43,9 @@ router.post("/", async (req, res) => {
     ticket_name,
     comments,
     open,
+    sale_no,
+    completed,
+    device_no,
     total_price,
     cash_received,
     cash_return,
@@ -85,9 +88,11 @@ router.post("/", async (req, res) => {
     try {
       const newSales = await new Sales({
         ticket_name,
-        // refNo,
+        sale_no,
+        device_no,
         comments,
         open,
+        completed,
         total_price,
         cash_received,
         cash_return,

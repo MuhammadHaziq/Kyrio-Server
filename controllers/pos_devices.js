@@ -6,9 +6,13 @@ router.post("/", async (req, res) => {
   const { title, store } = req.body;
   let jsonStore = JSON.parse(store);
   const { _id } = req.authData;
+  let result = await POS_Device.find({ "store.storeId": jsonStore.storeId }).sort({deviceNo: -1}).limit(1);
+  let deviceNo = typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo)+1 : 1;
 
   const newPOSDevice = new POS_Device({
     title: title,
+    deviceNo: deviceNo,
+    noOfSales: 0,
     store: jsonStore,
     createdBy: _id,
   });
@@ -39,14 +43,15 @@ router.post("/getStoreDevice", async (req, res) => {
   try {
     const { _id } = req.authData;
     const { storeId } = req.body;
+    
     let result = {};
     let condition = {};
     if (storeId === "0") {
-      result = await POS_Device.findOne({ createdBy: _id });
+      result = await POS_Device.findOne({ createdBy: _id, isActive: false });
     } else {
       result = await POS_Device.findOne({
         "store.storeId": storeId,
-        createdBy: _id,
+        isActive: false,
       });
     }
     // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
@@ -60,6 +65,7 @@ router.post("/getStoreDevice", async (req, res) => {
           },
         }
       );
+      result.isActive = true
       res.status(200).json(result);
     } else {
       res

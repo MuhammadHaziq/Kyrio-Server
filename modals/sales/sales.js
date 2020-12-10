@@ -6,7 +6,12 @@ const salesSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
-  refNo: {
+  sale_no: {
+    type: String,
+    min: 6,
+    max: 255,
+  },
+  device_no: {
     type: String,
     min: 6,
     max: 255,
@@ -17,6 +22,9 @@ const salesSchema = new mongoose.Schema({
     max: 255,
   },
   open: {
+    type: Boolean
+  },
+  completed: {
     type: Boolean
   },
   total_price: {
@@ -31,7 +39,7 @@ const salesSchema = new mongoose.Schema({
   },
   cash_return: {
     type: Number,
-    min: 1,
+    min: 0,
     max: 100000000000,
   },
   total_after_discount: {

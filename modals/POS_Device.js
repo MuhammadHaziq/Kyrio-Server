@@ -7,6 +7,18 @@ const posDeviceSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
+  deviceNo: {
+    type: Number,
+    min: 1,
+    max: 100000,
+    required: true,
+  },
+  noOfSales: {
+    type: Number,
+    min: 0,
+    max: 10000000000,
+    required: true,
+  },
   store: {
     storeId: {
       type: String,
