@@ -23,7 +23,7 @@ export const checkModules = (req, res, next) => {
       });
     } else {
       if (validator.validate(email)) {
-        
+
         Modules.findOne()
           .then((result) => {
             if (result != null) {
@@ -32,13 +32,13 @@ export const checkModules = (req, res, next) => {
               //   roleName: "Owner",
               // })
               //   .then((roleData) => {
-                  
+
                   // if (roleData != null) {
                   //   req.body.role_id = roleData._id;
                   //   req.body.roleName = "Owner";
                   //   next();
-                  // } else { 
-                    
+                  // } else {
+
                     let roleData = {
                       roleName: "Owner",
                       features: result.features.map((itm) => {
