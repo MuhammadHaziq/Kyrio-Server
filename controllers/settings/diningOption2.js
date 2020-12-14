@@ -148,9 +148,9 @@ router.post("/getStoreDining", async (req, res) => {
 
 router.delete("/", async (req, res) => {
   try {
-    var { data } = req.body;
+    var { stores, title } = req.body;
     const { _id } = req.params;
-    for (const item of JSON.parse(data)) {
+    for (const item of JSON.parse(stores)) {
       const result = await diningOption2
         .find({
           storeId: item.storeId,
@@ -163,22 +163,18 @@ router.delete("/", async (req, res) => {
             {
               $pull: {
                 diningOptions: {
-                  title: { $regex: `^${item.title}$`, $options: "i" },
+                  title: { $regex: `^${title}$`, $options: "i" },
                 },
               },
             },
-            { safe: true, multi: false },
-            function (err, obj) {
-              //do something smart
-              console.log(obj);
-            }
+            { safe: true, multi: false }
           );
         } else {
           await diningOption2.deleteOne({
             storeId: item.storeId,
             diningOptions: {
               $elemMatch: {
-                title: { $regex: `^${item.title}$`, $options: "i" },
+                title: { $regex: `^${title}$`, $options: "i" },
               },
             },
           });
@@ -193,13 +189,11 @@ router.delete("/", async (req, res) => {
 
 router.patch("/", async (req, res) => {
   try {
-    const { title, stores } = req.body;
-    console.log(title);
+    const { title, stores, select_store_id } = req.body;
     let jsonStore = JSON.parse(stores);
     let updateDining = [];
     const { _id } = req.authData;
     for (const item of jsonStore) {
-      console.log("item", item);
       const result = await diningOption2.updateOne(
         {
           storeId: item.storeId,
@@ -219,7 +213,40 @@ router.patch("/", async (req, res) => {
         }
       );
     }
-    res.status(200).json({ message: "Dining Is Updated", data: updateDining });
+    if (select_store_id === "0") {
+      const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+      let data = [];
+      for (const store of stores) {
+        const result = await diningOption2
+          .find({
+            createdBy: _id,
+            storeId: store._id,
+          })
+          .sort({ _id: "asc" });
+
+        if (result.length > 0) {
+          data.push(result[0]);
+        }
+      }
+      res.status(200).json({ message: "Dining Is Updated", data: data });
+    } else {
+      const stores = await Store.find({
+        _id: storeId,
+        createdBy: _id,
+      });
+      let data = [];
+      for (const store of stores) {
+        const result = await diningOption2
+          .find({
+            createdBy: _id,
+            storeId: store._id,
+          })
+          .sort({ _id: "asc" });
+
+        data.push(result[0]);
+      }
+      res.status(200).json({ message: "Dining Is Updated", data: data });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -227,12 +254,12 @@ router.patch("/", async (req, res) => {
 
 router.patch("/update_position", async (req, res) => {
   try {
-    let { data, storeId, diningId } = req.body;
+    let { data, storeId } = req.body;
     data = JSON.parse(data);
     const { _id } = req.authData;
     await (data || []).map(async (item) => {
       const result = await diningOption2.findOneAndUpdate(
-        { _id: diningId, storeId: storeId, "diningOptions._id": item._id },
+        { storeId: storeId, "diningOptions._id": item.id },
         {
           $set: {
             "diningOptions.$.position": item.position,
@@ -253,12 +280,12 @@ router.patch("/update_position", async (req, res) => {
 
 router.patch("/update_availabilty", async (req, res) => {
   try {
-    let { data, storeId, diningId } = req.body;
+    let { data, storeId } = req.body;
     data = JSON.parse(data);
     const { _id } = req.authData;
     await (data || []).map(async (item) => {
       const result = await diningOption2.findOneAndUpdate(
-        { _id: diningId, storeId: storeId, "diningOptions._id": item._id },
+        { storeId: storeId, "diningOptions._id": item._id },
         {
           $set: {
             "diningOptions.$.isActive": item.isActive,

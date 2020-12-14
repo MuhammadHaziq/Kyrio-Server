@@ -1,6 +1,7 @@
 import express from "express";
 import itemTax from "../../../modals/settings/taxes/itemTax";
-import diningOption from "../../../modals/settings/diningOption";
+// import diningOption from "../../../modals/settings/diningOption";
+import diningOption2 from "../../../modals/settings/diningOption2";
 import Category from "../../../modals/items/category";
 import ItemList from "../../../modals/items/ItemList";
 const router = express.Router();
@@ -33,9 +34,7 @@ router.post("/", async (req, res) => {
     res.status(201).json(result);
   } catch (error) {
     if (error.code === 11000) {
-      res
-        .status(400)
-        .json({ message: "Tax Name Already In Record" });
+      res.status(400).json({ message: "Tax Name Already In Record" });
     } else {
       res.status(400).json({ message: error.message });
     }
@@ -112,18 +111,24 @@ router.post("/getTaxDining", async (req, res) => {
       };
     } else {
       filter = {
-        stores: { $elemMatch: { storeId: { $in: storeId } } },
+        storeId: { $in: storeId },
         createdBy: _id,
       };
     }
     // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
-    const result = await diningOption.find(filter);
+    const result = await diningOption2.find(filter);
     if (result !== null && result !== undefined) {
       // Get Only Unique names
       // var unique = [...new Set(result.map((item) => item.title.toUpperCase()))];
 
       //  Get Unique Objects
-      var unique = result.filter(
+      let titles = [];
+      result.map((item) => {
+        item.diningOptions.map((ite) => {
+          return titles.push({ title: ite.title });
+        });
+      });
+      var unique = titles.filter(
         ((set) => (f) =>
           !set.has(f.title.toUpperCase()) && set.add(f.title.toUpperCase()))(
           new Set()
@@ -138,6 +143,45 @@ router.post("/getTaxDining", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+// router.post("/getTaxDining", async (req, res) => {
+//   try {
+//     const { _id } = req.authData;
+//     let { storeId } = req.body;
+//     storeId = JSON.parse(storeId);
+//     let filter = {};
+//     if (storeId == 0) {
+//       filter = {
+//         createdBy: _id,
+//       };
+//     } else {
+//       filter = {
+//         stores: { $elemMatch: { storeId: { $in: storeId } } },
+//         createdBy: _id,
+//       };
+//     }
+//     // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
+//     const result = await diningOption.find(filter);
+//     if (result !== null && result !== undefined) {
+//       // Get Only Unique names
+//       // var unique = [...new Set(result.map((item) => item.title.toUpperCase()))];
+//
+//       //  Get Unique Objects
+//       var unique = result.filter(
+//         ((set) => (f) =>
+//           !set.has(f.title.toUpperCase()) && set.add(f.title.toUpperCase()))(
+//           new Set()
+//         )
+//       );
+//
+//       res.status(200).json(unique);
+//     } else {
+//       res.status(200).json([]);
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
 
 router.patch("/", async (req, res) => {
   const { title, tax_rate, tex, id } = req.body;
