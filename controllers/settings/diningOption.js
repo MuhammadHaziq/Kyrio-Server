@@ -15,6 +15,7 @@ router.post("/", async (req, res) => {
       storeId: item.storeId,
       storeName: item.storeName,
       position: countDining + 1,
+      isActive:item.isActive
     });
   });
   // console.log(stores);
