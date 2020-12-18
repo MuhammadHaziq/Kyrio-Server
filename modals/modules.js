@@ -78,7 +78,7 @@ const moduleSchema = new mongoose.Schema({
       enable: Boolean,
     },
   ],
-  created: {
+  createdAt: {
     type: Date,
     default: Date.now(),
   },

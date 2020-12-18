@@ -128,7 +128,7 @@ const roleSchema = new mongoose.Schema({
       },
     ],
   },
-  created: {
+  createdAt: {
     type: Date,
     default: Date.now(),
   },

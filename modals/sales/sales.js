@@ -17,6 +17,14 @@ const salesSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  sub_total: {
+    type: String,
+    min: 0,
+    max: 1000000000000,
+  },
+  sale_timestamp: {
+    type: Date,
+  },
   device_no: {
     type: String,
     min: 6,

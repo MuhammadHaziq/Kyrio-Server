@@ -79,6 +79,7 @@ router.get("/app", async (req, res) => {
         for(const dineStore of dine.stores) {
           if(dineStore.storeId == store._id && dineStore.isActive){
             result.push({
+              diningId: dine._id,
               title: dine.title,
               position: dineStore.position,
               isActive: dineStore.isActive
@@ -86,6 +87,7 @@ router.get("/app", async (req, res) => {
           }
         }
       }
+      result.sort((positionA, positionB) => parseFloat(positionA.position) - parseFloat(positionB.position));
       res.status(200).json(result);
     } else {
       res.status(400).json({ message: "Store Not Found! Invalid Store ID" });
