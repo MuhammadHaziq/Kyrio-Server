@@ -264,7 +264,8 @@ router.get("/", async (req, res) => {
     const endIndex = page * limit;
 
     var result = await ItemList.find({
-      stores: { $elemMatch: { id: storeId }, accountId: accountId },
+      stores: { $elemMatch: { id: storeId } },
+      accountId: accountId
     }).sort({ _id: "desc" });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {

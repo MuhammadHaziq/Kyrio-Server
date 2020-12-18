@@ -1,211 +1,91 @@
 import express from "express";
-import EmployeeLists from "../../modals/employee/employeeList";
-import {
-  removeSpaces,
-  removeNumberSpaces,
-} from "../../function/validateFunctions";
+import Role from "../../modals/role";
+import Users from "../../modals/users";
+import Modules from "../../modals/modules";
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
-    var result = await EmployeeLists.find({ accountId: accountId }).sort({
+    const { accountId } = req.authData;
+    let accessRights = [];
+    var roles = await Role.find({ accountId: accountId }).select(["_id","roleName", "allowBackoffice.enable", "allowPOS.enable"]).sort({
       _id: "desc",
     });
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+    for(const role of roles) {
+      let access = role.allowBackoffice.enable && role.allowPOS.enable ? "Back office and POS" : role.allowBackoffice.enable && !role.allowPOS.enable ? "Back office" : !role.allowBackoffice.enable && role.allowPOS.enable ? "POS" : "";
 
-router.get("/get_store_employee_list", async (req, res) => {
-  try {
-    const { _id, accountId } = req.authData;
-    const { storeId } = req.query;
-    let filter = "";
-    if (storeId === undefined || storeId === "" || storeId === "0") {
-      filter = { accountId: accountId };
-    } else {
-      filter = {
-        accountId: accountId,
-        stores: {
-          $elemMatch: {
-            id: storeId,
-          },
-        },
-      };
+      let NoOfEmployees = await Users.find({ role_id: role._id }).countDocuments();
+      accessRights.push({
+        role_id: role._id,
+        roleName: role.roleName,
+        access: access,
+        NoOfEmployees: NoOfEmployees
+      })
     }
-    var result = await EmployeeLists.find(filter).sort({
-      _id: "desc",
-    });
-    res.status(200).json(result);
+    res.status(200).json(accessRights);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
-router.get("/search", async (req, res) => {
+router.get("/modules", async (req, res) => {
   try {
     const { accountId } = req.authData;
-    const { search, storeId } = req.query;
-    // email: { $regex: ".*" + search + ".*", $options: "i" },
-    let filter = "";
-    if (storeId === "0" || storeId === undefined || storeId === "") {
-      filter = {
-        accountId: accountId,
-        $or: [
-          { name: { $regex: ".*" + search + ".*", $options: "i" } },
-          { email: { $regex: ".*" + search + ".*", $options: "i" } },
-          { phone: { $regex: ".*" + search + ".*", $options: "i" } },
-          {
-            role: {
-              "role.name": { $regex: ".*" + search + ".*", $options: "i" },
-            },
-          },
-        ],
+    let modules = await Modules.findOne();
+    let data = {
+    backoffice: modules.backofficeModules.map((itm) => {
+        return {
+          moduleId: itm._id,
+          moduleName: itm.moduleName,
+          description: typeof itm.description !== "undefined" ? itm.description : "",
+        };
+    }),
+    pos: modules.posModules.map((itm) => {
+      return {
+        moduleId: itm._id,
+        moduleName: itm.moduleName,
+        description: typeof itm.description !== "undefined" ? itm.description : "",
       };
-    } else {
-      filter = {
-        $or: [
-          { name: { $regex: ".*" + search + ".*", $options: "i" } },
-          { email: { $regex: ".*" + search + ".*", $options: "i" } },
-          { phone: { $regex: ".*" + search + ".*", $options: "i" } },
-          {
-            role: {
-              "role.name": { $regex: ".*" + search + ".*", $options: "i" },
-            },
-          },
-        ],
-        $and: [
-          {
-            stores: {
-              $elemMatch: {
-                id: storeId,
-              },
-            },
-            accountId: accountId,
-          },
-        ],
-      };
-    }
-    var result = await EmployeeLists.find(filter);
-    res.status(200).json(result);
+    }),
+  }
+   
+    
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-router.delete("/:ids", async (req, res) => {
+
+router.post("/create", async (req, res) => {
   try {
-    var { ids } = req.params;
-    ids = JSON.parse(ids);
-    ids.forEach(async (id) => {
-      if (ObjectId.isValid(id)) {
-        await EmployeeLists.deleteOne({ _id: id });
-      }
-    });
-    res.status(200).json({ message: "deleted" });
+    const { name, backoffice, pos } = req.body;
+    const { accountId } = req.authData;
+    let modules = await Modules.findOne();
+    let data = {
+    backoffice: modules.backofficeModules.map((itm) => {
+        return {
+          moduleId: itm._id,
+          moduleName: itm.moduleName,
+          description: typeof itm.description !== "undefined" ? itm.description : "",
+          isMenu: itm.isMenu,
+          isChild: itm.isChild,
+          enable: true,
+        };
+    }),
+    pos: modules.posModules.map((itm) => {
+      return {
+        moduleId: itm._id,
+        moduleName: itm.moduleName,
+        enable: true,
+        description: typeof itm.description !== "undefined" ? itm.description : "",
+      };
+    }),
+  }
+   
+    
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
-  }
-});
-
-
-router.post("/", async (req, res) => {
-  const { name, email, phone, roles, stores } = req.body;
-  let { posPin, sendMail } = req.body
-  var errors = [];
-  if (
-    (!name || typeof name == "undefined" || name == "") &&
-    (!email || typeof email == "undefined" || email == "") &&
-    (!phone || typeof phone == "undefined" || phone == "")
-  ) {
-    errors.push({ name: `Invalid Employee Name!` });
-    errors.push({ email: `Invalid Employee Email!` });
-    errors.push({ phone: `Invalid Employee phone!` });
-  }
-  if (posPin !== undefined && posPin === '0000' && posPin === '000' && posPin === '00' && posPin === '0') {
-    errors.push({ posPin: `Please Enter Pos Pin!` });
-  }
-  if (sendMail === undefined) {
-    sendMail = false
-  }
-  if (posPin === undefined) {
-    posBin = '0000'
-  }
-  if (errors.length > 0) {
-    res.status(400).send({ message: `Invalid Parameters!`, errors });
-  } else {
-    const { _id, accountId } = req.authData;
-
-
-    try {
-      const newEmployee = await new EmployeeLists({
-        name: removeSpaces(name),
-        accountId: accountId,
-        email: removeSpaces(email),
-        phone: removeSpaces(phone),
-        role: JSON.parse(roles),
-        stores: JSON.parse(stores),
-        sendMail: (sendMail),
-        posPin: posPin,
-        created_by: _id,
-      }).save();
-      res.status(200).json(newEmployee);
-    } catch (error) {
-      if (error.code === 11000) {
-        res.status(400).json({ message: "Employee Email Already Exist" });
-      } else {
-        res.status(400).json({ message: error.message });
-      }
-    }
-  }
-});
-router.patch("/", async (req, res) => {
-  const { id, name, email, phone, roles, stores } = req.body;
-  let { posPin, sendMail } = req.body
-  var errors = [];
-  if (
-    (!name || typeof name == "undefined" || name == "") &&
-    (!email || typeof email == "undefined" || email == "") &&
-    (!phone || typeof phone == "undefined" || phone == "")
-  ) {
-    errors.push({ name: `Invalid Employee Name!` });
-    errors.push({ email: `Invalid Employee Email!` });
-    errors.push({ phone: `Invalid Employee phone!` });
-  }
-  if (posPin !== undefined && posPin === '0000' && posPin === '000' && posPin === '00' && posPin === '0') {
-    errors.push({ posPin: `Please Enter Pos Pin!` });
-  }
-  if (sendMail === undefined) {
-    sendMail = false
-  }
-  if (posPin === undefined) {
-    posPin = '0000'
-  }
-  if (errors.length > 0) {
-    res.status(400).send({ message: `Invalid Parameters!`, errors });
-  } else {
-    const { _id } = req.authData;
-    try {
-      let data = {
-        name: removeSpaces(name),
-        email: removeSpaces(email),
-        phone: removeSpaces(phone),
-        role: JSON.parse(roles),
-        stores: JSON.parse(stores),
-        sendMail: (sendMail),
-        posPin: posPin,
-        created_by: _id,
-      };
-      let result = await EmployeeLists.findOneAndUpdate({ _id: id }, data, {
-        new: true,
-        upsert: true, // Make this update into an upsert
-      });
-      res.status(200).json(result);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
   }
 });
 
