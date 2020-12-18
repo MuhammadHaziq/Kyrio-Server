@@ -66,24 +66,30 @@ router.get("/", async (req, res) => {
 
 router.get("/app", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
-    const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
-    let data = [];
-    for (const store of stores) {
-      const result = await diningOption
-        .find({
-          accountId: accountId,
-          stores: { $elemMatch: { storeId: store._id } },
-        })
-        .sort({ _id: "asc" });
-
-      data.push({
-        storeId: store._id,
-        storeName: store.title,
-        data: result,
-      });
+    const { storeId } = req.body;
+    const { accountId } = req.authData;
+    
+    const store = await Store.findOne({ _id: storeId }).sort({ _id: "desc" });
+    
+    if(store !== null ) {
+      let result = []
+      var dinings = await diningOption.find({ accountId: accountId })
+      
+      for(const dine of dinings) {
+        for(const dineStore of dine.stores) {
+          if(dineStore.storeId == store._id && dineStore.isActive){
+            result.push({
+              title: dine.title,
+              position: dineStore.position,
+              isActive: dineStore.isActive
+            })
+          }
+        }
+      }
+      res.status(200).json(result);
+    } else {
+      res.status(400).json({ message: "Store Not Found! Invalid Store ID" });
     }
-    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

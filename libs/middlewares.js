@@ -277,6 +277,7 @@ export const verifyToken = (req, res, next) => {
 ***/
 
 export const addModuleWhenSignUp = async (userId, accountId, store) => {
+  console.log(accountId)
   let paymentTypeStoreId = "";
   let cash = "";
   let card = "";
@@ -286,8 +287,11 @@ export const addModuleWhenSignUp = async (userId, accountId, store) => {
     storeName: store.title,
   };
   try {
+    let result = await POS_Device.find({ accountId: accountId }).sort({deviceNo: -1}).limit(1);
+    let deviceNo = typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo)+1 : 1;
     const newPOSDevice = new POS_Device({
       title: "POS Device",
+      deviceNo: deviceNo,
       accountId: accountId,
       store: posDeviceData,
       createdBy: userId
@@ -321,6 +325,7 @@ export const addModuleWhenSignUp = async (userId, accountId, store) => {
           },
           {
             title: process.env.DEFAULT_DINING_TITLE_2,
+            accountId: accountId,
             stores: [
               {
                 storeId: store._id,
@@ -333,6 +338,7 @@ export const addModuleWhenSignUp = async (userId, accountId, store) => {
           },
           {
             title: process.env.DEFAULT_DINING_TITLE_3,
+            accountId: accountId,
             stores: [
               {
                 storeId: store._id,

@@ -17,7 +17,6 @@ const posDeviceSchema = new mongoose.Schema({
     type: Number,
     min: 0,
     max: 10000000000,
-    required: true,
   },
   accountId: {
     type: String,
