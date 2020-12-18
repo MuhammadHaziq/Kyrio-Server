@@ -14,8 +14,9 @@ const roleSchema = new mongoose.Schema({
   },
   accountId: {
     type: String,
-    min: 3,
+    min: 6,
     max: 255,
+    required: true
   },
   features: [
     {

@@ -6,7 +6,6 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const {
     header,
-
     footer,
     show_customer_info,
     show_comments,
@@ -14,7 +13,7 @@ router.post("/", async (req, res) => {
     storeId,
   } = req.body;
   let { receiptImagePath, printedReceiptImagePath } = req.body;
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
   var errors = [];
   var receiptImage = req.files ? req.files.receiptImage : "";
   var printedReceiptImage = req.files ? req.files.printedReceiptImage : "";
@@ -106,6 +105,7 @@ router.post("/", async (req, res) => {
             language: language,
             storeId: storeId,
             createdBy: _id,
+            accountId: accountId
           });
         } else {
           res.status(400).send({
@@ -126,6 +126,7 @@ router.post("/", async (req, res) => {
           language: language,
           storeId: storeId,
           createdBy: _id,
+          accountId: accountId
         });
       }
       const result = await newReceipt.save();
@@ -138,10 +139,10 @@ router.post("/", async (req, res) => {
 router.get("/:storeId", async (req, res) => {
   try {
     var rootDir = process.cwd();
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     const { storeId } = req.params;
     const result = await receipts
-      .findOne({ createdBy: _id, storeId: storeId })
+      .findOne({ accountId: accountId, storeId: storeId })
       .sort({ _id: "desc" })
       .limit(1); // Find Lasted One Record
     if (result !== null) {

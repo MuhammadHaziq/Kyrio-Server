@@ -5,9 +5,10 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { catTitle, catColor } = req.body;
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
   const newCat = new Category({
     catTitle: catTitle,
+    accountId: accountId,
     catColor: catColor,
     createdBy: _id,
   });
@@ -27,8 +28,8 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    const allCat = await Category.find({ createdBy: _id }).sort({
+    const { accountId } = req.authData;
+    const allCat = await Category.find({ accountId: accountId }).sort({
       _id: "desc",
     });
     let allCategories = [];
@@ -67,7 +68,7 @@ router.delete("/:ids", async (req, res) => {
 });
 
 router.get("/categoryItem", async (req, res) => {
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
   // Old Quer Work in ModalSelectItemsTax(React)
   // let { categoryFilter, storeId } = req.query;
   // Old Quer Work in UpdateTax(React)
@@ -93,13 +94,13 @@ router.get("/categoryItem", async (req, res) => {
     */
     if (storeId === undefined) {
       filters = {
-        createdBy: _id,
+        accountId: accountId,
       };
     } else {
       storeId = JSON.parse(storeId);
       filters = {
         stores: { $elemMatch: { id: { $in: storeId } } },
-        createdBy: _id,
+        accountId: accountId,
       };
     }
 

@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, address, phone, description } = req.body;
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
 
   const newStore = new Store({
     title: title,
@@ -15,10 +15,11 @@ router.post("/", async (req, res) => {
     phone: phone,
     description: description,
     createdBy: _id,
+    accountId: accountId
   });
   try {
     const result = await newStore.save();
-    const store = await Store.find({ createdBy: _id })
+    const store = await Store.find({ accountId: accountId })
       .select(["title"])
       .sort({ _id: "desc" });
     let storeData = [];
@@ -38,6 +39,7 @@ router.post("/", async (req, res) => {
           ],
         },
         createdBy: _id,
+        accountId: accountId
       },
       {
         $set: {
@@ -45,7 +47,7 @@ router.post("/", async (req, res) => {
         },
       }
     );
-    res.status(201).json(result);
+    res.status(200).json(result);
   } catch (error) {
     if (error.code === 11000) {
       res.status(400).json({ message: "Store Already Register By This User" });
@@ -56,10 +58,10 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
 
     // display only login user stores
-    const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+    const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
     let allStores = [];
     for (const store of stores) {
       let devices = await POS_Device.find({
@@ -83,7 +85,7 @@ router.get("/", async (req, res) => {
 });
 router.delete("/:ids", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     var { ids } = req.params;
     let message = [];
     ids = JSON.parse(ids);
@@ -112,7 +114,7 @@ router.delete("/:ids", async (req, res) => {
         }
       }
     }
-    const store = await Store.find({ createdBy: _id })
+    const store = await Store.find({ accountId: accountId })
       .select(["title"])
       .sort({ _id: "desc" });
     let storeData = [];
@@ -132,6 +134,7 @@ router.delete("/:ids", async (req, res) => {
           ],
         },
         createdBy: _id,
+        accountId: accountId
       },
       {
         $set: {

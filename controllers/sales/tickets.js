@@ -38,13 +38,14 @@ router.post("/saveOpenTicket", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     try {
       const newTickets = await new Tickets({
         ticket_name: ticket_name,
         comments: comments,
         store: store,
         created_by: _id,
+        accountId: accountId
       }).save();
       res
         .status(200)
@@ -57,13 +58,13 @@ router.post("/saveOpenTicket", async (req, res) => {
 router.get("/getStoreTicket/:storeId", async (req, res) => {
   try {
     var { storeId } = req.params;
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     let filters = {}
     if(storeId === '0') {
-      filters.created_by = _id
+      filters.accountId = accountId
     }else {
       filters.store['id'] = storeId
-      filters.created_by = _id
+      filters.accountId = accountId
     }
     // var result = await Tickets.findOne({
     //   "store.id": storeId,
@@ -134,14 +135,15 @@ router.patch("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     try {
       let data = {
         ticket_name: ticket_name,
         comments: comments,
         store: store,
+        accountId: accountId,
         updated_by: _id,
-        updated_at: Date.now(),
+        updated_at: Date.now()
       };
       let result = await Tickets.updateOne({ _id: ticket_id }, data);
       res.status(200).json(result);

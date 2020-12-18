@@ -1,12 +1,12 @@
 import express from "express";
 import Sales from "../../modals/sales/sales";
-import Tickets from "../../modals/sales/tickets";
 var mongoose = require('mongoose');
 const router = express.Router();
 
 router.get("/all", async (req, res) => {
   try {
-    var allSales = await Sales.find().sort({ _id: "desc" });
+    const { accountId } = req.authData;
+    var allSales = await Sales.find({accountId: accountId}).sort({ _id: "desc" });
     res.status(200).json(allSales);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -15,12 +15,13 @@ router.get("/all", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { ticket, sale_id } = req.body;
+    const { accountId } = req.authData;
     let check = mongoose.Types.ObjectId.isValid(sale_id);
     let searchResult; 
     if(check){
-      searchResult = await Sales.find({ $or:[{'ticket_name': ticket}, {'_id': sale_id}] }).sort({ _id: "desc" });
+      searchResult = await Sales.find({ $or:[{'ticket_name': ticket}, {'_id': sale_id}], accountId: accountId }).sort({ _id: "desc" });
     } else {
-      searchResult = await Sales.find({ $or:[{'ticket_name': ticket}] }).sort({ _id: "desc" });
+      searchResult = await Sales.find({ $or:[{'ticket_name': ticket}], accountId: accountId }).sort({ _id: "desc" });
     }
     
     res.status(200).json(searchResult);
@@ -71,7 +72,7 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     // let lastSaleRefNo = await Sales.find({ "store.id": store.id });
     
     // let maxRefNo = lastSaleRefNo.map(itm => {return itm.refNo} )
@@ -88,6 +89,7 @@ router.post("/", async (req, res) => {
     try {
       const newSales = await new Sales({
         ticket_name,
+        accountId,
         sale_no,
         device_no,
         comments,
@@ -114,11 +116,7 @@ router.post("/", async (req, res) => {
     }
   }
 });
-function pad(num, size) {
-  num = num.toString();
-  while (num.length < size) num = "0" + num;
-  return num;
-}
+
 router.patch("/", async (req, res) => {
   const {
     sale_id,

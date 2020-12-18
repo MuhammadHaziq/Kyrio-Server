@@ -14,10 +14,11 @@ router.post("/", async (req, res) => {
       typeof stores !== "undefined" && stores.length > 0
         ? JSON.parse(stores)
         : [];
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     const countModifier = await Modifier.countDocuments();
     const newModifier = new Modifier({
       title: title,
+      accountId: accountId,
       type: typeName,
       options: jsonOptions,
       stores: jsonStores,
@@ -36,13 +37,13 @@ router.post("/", async (req, res) => {
 });
 router.get("/:storeId", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     const { storeId } = req.params;
     let storeFilter = {};
     if (storeId !== "0") {
       storeFilter.stores = { $elemMatch: { id: storeId } };
     }
-    storeFilter.createdBy = _id;
+    storeFilter.accountId = accountId;
     // const result = await Modifier.find({
     //   stores: { $elemMatch: { id: storeId } },
     //   createdBy: _id,
@@ -55,11 +56,11 @@ router.get("/:storeId", async (req, res) => {
 });
 router.post("/getStoreModifiers", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     const { storeId } = req.body;
     const result = await Modifier.find({
       stores: { $elemMatch: { id: storeId } },
-      createdBy: _id,
+      accountId: accountId,
     }).sort({ postion: "asc" });
     res.status(200).json(result);
   } catch (error) {
@@ -84,7 +85,6 @@ router.patch("/update_position", async (req, res) => {
   try {
     let { data } = req.body;
     data = JSON.parse(data);
-    const { _id } = req.authData;
     await (data || []).map(async (item) => {
       const result = await Modifier.findOneAndUpdate(
         { _id: item.id },

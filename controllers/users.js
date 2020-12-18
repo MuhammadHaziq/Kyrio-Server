@@ -62,6 +62,7 @@ router.post("/signup", checkModules, (req, res) => {
           country: result.country,
           role_id: result.role_id,
           created_by: result._id,
+          accountId: account._id,
           owner_id: result._id,
         };
         let store = new Stores({
@@ -90,7 +91,7 @@ router.post("/signup", checkModules, (req, res) => {
               message: `Unable To Generate Token: ${err.message}`,
             });
           } else {
-            await addModuleWhenSignUp(userId, storeObject);
+            await addModuleWhenSignUp(userId, account._id, storeObject);
             let storesArray = [];
             storesArray.push(store);
             user.UserToken = token;

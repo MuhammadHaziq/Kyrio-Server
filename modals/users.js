@@ -47,6 +47,7 @@ const usersSchema = new mongoose.Schema({
     type: String,
     min: 6,
     max: 255,
+    required: true
   },
   created: {
     type: Date,

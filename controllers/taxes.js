@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, taxRate, taxType, taxOption, depOnDining, stores } = req.body;
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
   let jsonStores = JSON.parse(stores);
 
   const newTax = new Tax({
@@ -15,6 +15,7 @@ router.post("/", async (req, res) => {
     depOnDining: depOnDining,
     stores: jsonStores,
     createdBy: _id,
+    accountId: accountId
   });
   try {
     const result = await newTax.save();
@@ -29,11 +30,11 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     const { storeId } = req.body;
     const result = await Tax.find({
       stores: { $elemMatch: { storeId: storeId } },
-      createdBy: _id,
+      accountId: accountId,
     });
     res.status(200).json(result);
   } catch (error) {
@@ -42,11 +43,11 @@ router.get("/", async (req, res) => {
 });
 router.post("/getStoreTaxes", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     const { storeId } = req.body;
     const result = await Tax.find({
       stores: { $elemMatch: { storeId: storeId } },
-      createdBy: _id,
+      accountId: accountId,
     });
     res.status(200).json(result);
   } catch (error) {

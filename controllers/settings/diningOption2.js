@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
     title = removeSpaces(title);
   }
   const jsonStore = JSON.parse(store);
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
   let errors = [];
   let stores = [];
   let newInserted = [];
@@ -36,7 +36,7 @@ router.post("/", async (req, res) => {
         );
         const data1 = await diningOption2
           .find({
-            createdBy: _id,
+            accountId: accountId,
             storeId: item.storeId,
           })
           .sort({ _id: "asc" });
@@ -62,6 +62,7 @@ router.post("/", async (req, res) => {
           },
         ],
         createdBy: _id,
+        accountId: accountId
       });
       try {
         const result = await newDiningOption2.save();
@@ -82,13 +83,13 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+    const { _id, accountId } = req.authData;
+    const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
     let data = [];
     for (const store of stores) {
       const result = await diningOption2
         .find({
-          createdBy: _id,
+          accountId: accountId,
           storeId: store._id,
         })
         .sort({ _id: "asc" });
@@ -104,16 +105,16 @@ router.get("/", async (req, res) => {
 
 router.post("/getStoreDining", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     const { storeId } = req.body;
     // let filter = {};
     if (storeId === "0") {
-      const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+      const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
       let data = [];
       for (const store of stores) {
         const result = await diningOption2
           .find({
-            createdBy: _id,
+            accountId: accountId,
             storeId: store._id,
           })
           .sort({ _id: "asc" });
@@ -126,13 +127,13 @@ router.post("/getStoreDining", async (req, res) => {
     } else {
       const stores = await Store.find({
         _id: storeId,
-        createdBy: _id,
+        accountId: accountId,
       });
       let data = [];
       for (const store of stores) {
         const result = await diningOption2
           .find({
-            createdBy: _id,
+            accountId: accountId,
             storeId: store._id,
           })
           .sort({ _id: "asc" });
@@ -192,7 +193,7 @@ router.patch("/", async (req, res) => {
     const { title, stores, select_store_id } = req.body;
     let jsonStore = JSON.parse(stores);
     let updateDining = [];
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     for (const item of jsonStore) {
       const result = await diningOption2.updateOne(
         {
@@ -214,12 +215,12 @@ router.patch("/", async (req, res) => {
       );
     }
     if (select_store_id === "0") {
-      const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+      const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
       let data = [];
       for (const store of stores) {
         const result = await diningOption2
           .find({
-            createdBy: _id,
+            accountId: accountId,
             storeId: store._id,
           })
           .sort({ _id: "asc" });
@@ -232,13 +233,13 @@ router.patch("/", async (req, res) => {
     } else {
       const stores = await Store.find({
         _id: storeId,
-        createdBy: _id,
+        accountId: accountId,
       });
       let data = [];
       for (const store of stores) {
         const result = await diningOption2
           .find({
-            createdBy: _id,
+            accountId: accountId,
             storeId: store._id,
           })
           .sort({ _id: "asc" });
@@ -256,7 +257,7 @@ router.patch("/update_position", async (req, res) => {
   try {
     let { data, storeId } = req.body;
     data = JSON.parse(data);
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     await (data || []).map(async (item) => {
       const result = await diningOption2.findOneAndUpdate(
         { storeId: storeId, "diningOptions._id": item.id },
@@ -282,7 +283,6 @@ router.patch("/update_availabilty", async (req, res) => {
   try {
     let { data, storeId } = req.body;
     data = JSON.parse(data);
-    const { _id } = req.authData;
     await (data || []).map(async (item) => {
       const result = await diningOption2.findOneAndUpdate(
         { storeId: storeId, "diningOptions._id": item._id },

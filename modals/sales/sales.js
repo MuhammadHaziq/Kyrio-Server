@@ -6,6 +6,12 @@ const salesSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  accountId: {
+    type: String,
+    min: 6,
+    max: 255,
+    required: true
+  },
   sale_no: {
     type: String,
     min: 6,

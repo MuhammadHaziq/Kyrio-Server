@@ -276,7 +276,7 @@ export const verifyToken = (req, res, next) => {
 
 ***/
 
-export const addModuleWhenSignUp = async (userId, store) => {
+export const addModuleWhenSignUp = async (userId, accountId, store) => {
   let paymentTypeStoreId = "";
   let cash = "";
   let card = "";
@@ -288,8 +288,9 @@ export const addModuleWhenSignUp = async (userId, store) => {
   try {
     const newPOSDevice = new POS_Device({
       title: "POS Device",
+      accountId: accountId,
       store: posDeviceData,
-      createdBy: userId,
+      createdBy: userId
     });
     await newPOSDevice
       .save()
@@ -300,13 +301,14 @@ export const addModuleWhenSignUp = async (userId, store) => {
   } catch (error) {
     console.log("POS Device Catch Error", error.message);
   }
-  const user = await Users.find({});
+  
   try {
     await diningOption
       .create(
         [
           {
             title: process.env.DEFAULT_DINING_TITLE_1,
+            accountId: accountId,
             stores: [
               {
                 storeId: store._id,
@@ -361,10 +363,12 @@ export const addModuleWhenSignUp = async (userId, store) => {
           {
             title: "Included in the price",
             createdBy: userId,
+            accountId: accountId
           },
           {
             title: "Added to the price",
             createdBy: userId,
+            accountId: accountId
           },
         ])
         .then((response) => {
@@ -386,14 +390,17 @@ export const addModuleWhenSignUp = async (userId, store) => {
           {
             title: "Apply the tax to the new items",
             createdBy: userId,
+            accountId: accountId
           },
           {
             title: "Apply the tax to existing items",
             createdBy: userId,
+            accountId: accountId
           },
           {
             title: "Apply the tax to all new and existing items",
             createdBy: userId,
+            accountId: accountId
           },
         ])
         .then((response) => {
@@ -414,18 +421,22 @@ export const addModuleWhenSignUp = async (userId, store) => {
           {
             title: process.env.DEFAULT_PAYMENT_TYPES_1,
             createdBy: userId,
+            accountId: accountId
           },
           {
             title: process.env.DEFAULT_PAYMENT_TYPES_2,
             createdBy: userId,
+            accountId: accountId
           },
           {
             title: process.env.DEFAULT_PAYMENT_TYPES_3,
             createdBy: userId,
+            accountId: accountId
           },
           {
             title: process.env.DEFAULT_PAYMENT_TYPES_4,
             createdBy: userId,
+            accountId: accountId
           },
         ])
         .then((response) => {
@@ -463,6 +474,7 @@ export const addModuleWhenSignUp = async (userId, store) => {
           },
           storeId: paymentTypeStoreId,
           createdBy: userId,
+          accountId: accountId
         },
         {
           name: process.env.DEFAULT_PAYMENT_TYPE_2,
@@ -472,6 +484,7 @@ export const addModuleWhenSignUp = async (userId, store) => {
           },
           storeId: paymentTypeStoreId,
           createdBy: userId,
+          accountId: accountId
         },
       ])
       .then((response) => {

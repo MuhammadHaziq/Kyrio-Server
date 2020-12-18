@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, tax_rate, tex } = req.body;
-  const { _id } = req.authData;
+  const { accountId } = req.authData;
   let { tax_type, tax_option, stores, dinings, categories, items } = req.body;
   stores = JSON.parse(stores);
   dinings = JSON.parse(dinings);
@@ -20,6 +20,7 @@ router.post("/", async (req, res) => {
   const newItemTax = new itemTax({
     title: title,
     tax_rate: tax_rate,
+    accountId: accountId,
     tax_type: tax_type,
     tax_option: tax_option,
     stores: stores,
@@ -43,8 +44,8 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    const result = await itemTax.find({ createdBy: _id }).sort({ _id: "desc" });
+    const { _id, accountId } = req.authData;
+    const result = await itemTax.find({ accountId: accountId }).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -53,17 +54,17 @@ router.get("/", async (req, res) => {
 
 router.post("/getStoreTaxes", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     const { storeId } = req.body;
     let filter = {};
     if (storeId == 0) {
       filter = {
-        createdBy: _id,
+        accountId: accountId,
       };
     } else {
       filter = {
         stores: { $elemMatch: { storeId: storeId } },
-        createdBy: _id,
+        accountId: accountId,
       };
     }
     const result = await itemTax.find(filter).sort({ _id: "desc" });
@@ -75,8 +76,8 @@ router.post("/getStoreTaxes", async (req, res) => {
 
 router.get("/categories", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    const allCat = await Category.find({ createdBy: _id }).sort({
+    const { accountId } = req.authData;
+    const allCat = await Category.find({ accountId: accountId }).sort({
       _id: "desc",
     });
     let allCategories = [];
@@ -101,7 +102,7 @@ router.get("/categories", async (req, res) => {
 
 // router.post("/getTaxDining", async (req, res) => {
 //   try {
-//     const { _id } = req.authData;
+//     const { _id, accountId } = req.authData;
 //     let { storeId } = req.body;
 //     storeId = JSON.parse(storeId);
 //     let filter = {};
@@ -146,18 +147,18 @@ router.get("/categories", async (req, res) => {
 
 router.post("/getTaxDining", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     let { storeId } = req.body;
     storeId = JSON.parse(storeId);
     let filter = {};
     if (storeId == 0) {
       filter = {
-        createdBy: _id,
+        accountId: accountId,
       };
     } else {
       filter = {
         stores: { $elemMatch: { storeId: { $in: storeId } } },
-        createdBy: _id,
+        accountId: accountId,
       };
     }
     // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
@@ -224,10 +225,10 @@ router.patch("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     id = JSON.parse(id);
     for (const taxId of id) {
-      await itemTax.deleteOne({ _id: taxId, createdBy: _id });
+      await itemTax.deleteOne({ _id: taxId, accountId: accountId });
     }
     res.status(200).json({ message: "deleted" });
   } catch (error) {

@@ -5,6 +5,12 @@ const ticketsSchema = new mongoose.Schema({
     type: Array,
     required: true,
   },
+  accountId: {
+    type: String,
+    min: 6,
+    max: 255,
+    required: true
+  },
   comments: {
     type: String,
     min: 6,

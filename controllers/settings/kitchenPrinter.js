@@ -5,13 +5,14 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const { name, categories, storeId } = req.body;
   let jsonCategoires = JSON.parse(categories);
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
 
   const newKitchenPrinter = new kitchenPrinter({
     name: name,
     categories: jsonCategoires,
     storeId: storeId,
     createdBy: _id,
+    accountId: accountId
   });
   try {
     const result = await newKitchenPrinter.save();
@@ -27,9 +28,9 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     const result = await kitchenPrinter
-      .find({ createdBy: _id })
+      .find({ accountId: accountId })
       .sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -40,10 +41,10 @@ router.get("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     id = JSON.parse(id);
     for (const kitId of id) {
-      await kitchenPrinter.deleteOne({ _id: kitId, createdBy: _id });
+      await kitchenPrinter.deleteOne({ _id: kitId, accountId: accountId });
     }
 
     res.status(200).json({ message: "deleted" });
@@ -55,7 +56,6 @@ router.patch("/", async (req, res) => {
   try {
     const { id, name, categories, storeId } = req.body;
     let jsonCategoires = JSON.parse(categories);
-    const { _id } = req.authData;
     // { _id: id, storeId: storeId, createdBy: _id },
     const updatedRecord = await kitchenPrinter.findOneAndUpdate(
       { _id: id },

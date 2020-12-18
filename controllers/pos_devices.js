@@ -5,7 +5,8 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const { title, store } = req.body;
   let jsonStore = JSON.parse(store);
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
+
   let result = await POS_Device.find({ "store.storeId": jsonStore.storeId }).sort({deviceNo: -1}).limit(1);
   let deviceNo = typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo)+1 : 1;
 
@@ -15,6 +16,7 @@ router.post("/", async (req, res) => {
     noOfSales: 0,
     store: jsonStore,
     createdBy: _id,
+    accountId: accountId
   });
   try {
     const result = await newPOSDevice.save();
@@ -30,8 +32,8 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     // display only login user pos Devices
-    const { _id } = req.authData;
-    const result = await POS_Device.find({ createdBy: _id }).sort({
+    const { _id, accountId } = req.authData;
+    const result = await POS_Device.find({ accountId: accountId }).sort({
       _id: "desc",
     });
     res.status(200).json(result);
@@ -41,13 +43,13 @@ router.get("/", async (req, res) => {
 });
 router.post("/getStoreDevice", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     const { storeId } = req.body;
     
     let result = {};
     let condition = {};
     if (storeId === "0") {
-      result = await POS_Device.findOne({ createdBy: _id, isActive: false });
+      result = await POS_Device.findOne({ accountId: accountId, isActive: false });
     } else {
       result = await POS_Device.findOne({
         "store.storeId": storeId,

@@ -11,6 +11,12 @@ const itemTaxSchema = new mongoose.Schema({
     type: Number,
     min: 0,
   },
+  accountId: {
+    type: String,
+    min: 6,
+    max: 255,
+    required: true
+  },
   tax_type: {
     id: {
       type: String,

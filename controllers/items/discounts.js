@@ -4,13 +4,14 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, type, value, restricted } = req.body;
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
   let { stores } = req.body;
   if (stores !== undefined && stores !== null) {
     stores = JSON.parse(stores);
   }
   const newDiscount = new Discount({
     title: title,
+    accountId: accountId,
     type: type,
     value: value,
     restricted: restricted,
@@ -30,14 +31,14 @@ router.post("/", async (req, res) => {
 });
 router.get("/:storeId", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     const { storeId } = req.params;
 
     let storeFilter = {};
     if (storeId !== "0") {
       storeFilter.stores = { $elemMatch: { id: storeId } };
     }
-    storeFilter.createdBy = _id;
+    storeFilter.accountId = accountId;
     const result = await Discount.find(storeFilter).sort({
       _id: "desc",
     });

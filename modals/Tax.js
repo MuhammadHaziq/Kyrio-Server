@@ -45,6 +45,12 @@ const taxSchema = new mongoose.Schema({
             },
         }]
     },
+    accountId: {
+        type: String,
+        min: 6,
+        max: 255,
+        required: true
+      },
     createdAt: {
         type: Date,
         default: Date.now(),
@@ -55,6 +61,7 @@ const taxSchema = new mongoose.Schema({
         max: 255,
         required: true,
     }
+    
 });
 
 module.exports = mongoose.model("tax", taxSchema);

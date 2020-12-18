@@ -9,8 +9,8 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    var result = await EmployeeLists.find({ created_by: _id }).sort({
+    const { _id, accountId } = req.authData;
+    var result = await EmployeeLists.find({ accountId: accountId }).sort({
       _id: "desc",
     });
     res.status(200).json(result);
@@ -21,14 +21,14 @@ router.get("/", async (req, res) => {
 
 router.get("/get_store_employee_list", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     const { storeId } = req.query;
     let filter = "";
     if (storeId === undefined || storeId === "" || storeId === "0") {
-      filter = { created_by: _id };
+      filter = { accountId: accountId };
     } else {
       filter = {
-        created_by: _id,
+        accountId: accountId,
         stores: {
           $elemMatch: {
             id: storeId,
@@ -47,11 +47,13 @@ router.get("/get_store_employee_list", async (req, res) => {
 
 router.get("/search", async (req, res) => {
   try {
+    const { accountId } = req.authData;
     const { search, storeId } = req.query;
     // email: { $regex: ".*" + search + ".*", $options: "i" },
     let filter = "";
     if (storeId === "0" || storeId === undefined || storeId === "") {
       filter = {
+        accountId: accountId,
         $or: [
           { name: { $regex: ".*" + search + ".*", $options: "i" } },
           { email: { $regex: ".*" + search + ".*", $options: "i" } },
@@ -82,6 +84,7 @@ router.get("/search", async (req, res) => {
                 id: storeId,
               },
             },
+            accountId: accountId,
           },
         ],
       };
@@ -133,12 +136,13 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
 
 
     try {
       const newEmployee = await new EmployeeLists({
         name: removeSpaces(name),
+        accountId: accountId,
         email: removeSpaces(email),
         phone: removeSpaces(phone),
         role: JSON.parse(roles),

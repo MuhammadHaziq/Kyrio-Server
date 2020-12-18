@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
     const { role_id } = req.query;
     if (!role_id || typeof role_id === "undefined" || role_id == "") {
       res.status(400).json({ message: "Role Not Assigned", errors: [] });

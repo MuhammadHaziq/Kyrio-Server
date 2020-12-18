@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { loyalty_amount, storeId } = req.body;
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
   var errors = [];
   if (
     !loyalty_amount ||
@@ -24,6 +24,7 @@ router.post("/", async (req, res) => {
       amount: loyalty_amount,
       storeId: storeId,
       createdBy: _id,
+      accountId: accountId
     });
     try {
       const result = await newSettingsLoyalty.save();
@@ -39,10 +40,10 @@ router.post("/", async (req, res) => {
 });
 router.get("/:storeId", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     const { storeId } = req.params;
     const result = await settingsLoyalty
-      .findOne({ createdBy: _id, storeId: storeId })
+      .findOne({ accountId: accountId, storeId: storeId })
       .sort({ _id: "desc" })
       .limit(1); // Find Lasted One Record
     const data = {

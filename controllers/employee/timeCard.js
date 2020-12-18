@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    
     var result = await TimeCard.aggregate([
       { $unwind: { path: "$timeDetail", preserveNullAndEmptyArrays: true } },
       { $sort: { "timeDetail._id": -1 } },
@@ -89,10 +89,11 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     try {
       const newTimeCard = await new TimeCard({
         store: JSON.parse(store),
+        accountId: accountId,
         employee: JSON.parse(employee),
         timeDetail: [
           {

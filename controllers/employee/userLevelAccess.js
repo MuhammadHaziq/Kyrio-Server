@@ -37,7 +37,6 @@ router.delete("/:ids", async (req, res) => {
 router.post("/", async (req, res) => {
   const {
     userId,
-    accountId,
     features,
     allowBackoffice,
     allowPOS,
@@ -65,12 +64,12 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     try {
       const newRole = await new Role({
         roleName: removeSpaces(roleName),
         user_id: removeSpaces(userId),
-        accountId: removeSpaces(accountId),
+        accountId: accountId,
         features: JSON.parse(features),
         allowBackoffice: JSON.parse(allowBackoffice),
         allowPOS: JSON.parse(allowPOS),
@@ -89,7 +88,6 @@ router.post("/", async (req, res) => {
 router.patch("/", async (req, res) => {
   const {
     userId,
-    accountId,
     features,
     allowBackoffice,
     allowPOS,
@@ -117,7 +115,7 @@ router.patch("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     try {
       let data = {
         features: JSON.parse(features),

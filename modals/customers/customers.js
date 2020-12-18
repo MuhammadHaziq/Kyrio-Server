@@ -6,6 +6,12 @@ const customersSchema = new mongoose.Schema({
     min: 3,
     max: 255,
   },
+  accountId: {
+    type: String,
+    min: 6,
+    max: 255,
+    required: true
+  },
   email: {
     type: String,
     min: 3,

@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
   if (cost == "" || typeof cost === "undefined" || cost == null) {
     cost = 0;
   }
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
   if (varients !== undefined && varients !== null) {
     varients = JSON.parse(varients);
   }
@@ -98,6 +98,7 @@ router.post("/", async (req, res) => {
   }
   const newItemList = new ItemList({
     name,
+    accountId,
     category,
     availableForSale,
     soldByType,
@@ -257,13 +258,13 @@ router.patch("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     const { page, limit, storeId } = req.query;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
     var result = await ItemList.find({
-      stores: { $elemMatch: { id: storeId } },
+      stores: { $elemMatch: { id: storeId }, accountId: accountId },
     }).sort({ _id: "desc" });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {
@@ -280,8 +281,10 @@ router.get("/", async (req, res) => {
 router.get("/searchByName", async (req, res) => {
   try {
     let { name, storeId } = req.body;
+    const { accountId } = req.authData;
 
     let filters = {
+      accountId: accountId,
       stores: { $elemMatch: { id: storeId } },
       name: { $regex: ".*" + name + ".*", $options: "i" },
     };
@@ -295,7 +298,7 @@ router.get("/searchByName", async (req, res) => {
 
 router.get("/search", async (req, res) => {
   try {
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     let { search, stockFilter, categoryFilter, storeId } = req.query;
     search = req.query.search.trim();
     let storeFilter = {};
@@ -326,7 +329,7 @@ router.get("/search", async (req, res) => {
       //   $options: "i",
       // };
     }
-    storeFilter.createdBy = _id;
+    storeFilter.accountId = accountId;
     var result = await ItemList.find(storeFilter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -350,8 +353,8 @@ router.delete("/:ids", async (req, res) => {
 
 router.get("/get_item_stores", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    const stores = await Store.find({ createdBy: _id }).sort({ _id: "desc" });
+    const { accountId } = req.authData;
+    const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
     let allStores = [];
     for (const store of stores) {
       allStores.push({
@@ -369,7 +372,7 @@ router.get("/get_item_stores", async (req, res) => {
             _id: "desc",
           }),
         taxes: await itemTax
-          .find({ stores: { $elemMatch: { storeId: store._id } } })
+          .find({ stores: { $elemMatch: { storeId: store._id } }, accountId: accountId })
           .select("title tax_type tax_rate")
           .sort({ _id: "desc" }),
       });

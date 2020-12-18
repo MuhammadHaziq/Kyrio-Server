@@ -7,6 +7,12 @@ const itemListSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
+  accountId: {
+    type: String,
+    min: 6,
+    max: 255,
+    required: true
+  },
   category: {
     id: {
       type: String,

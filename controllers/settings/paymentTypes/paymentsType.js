@@ -29,12 +29,13 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
     const newPaymentsTypes = new paymentsType({
       name: name,
       paymentType: paymentTypes,
       storeId: storeId,
       createdBy: _id,
+      accountId: accountId
     });
     try {
       const result = await newPaymentsTypes.save();
@@ -52,9 +53,9 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { storeId } = req.query;
-    const { _id } = req.authData;
+    const { accountId } = req.authData;
     const result = await paymentsType.find({
-      createdBy: _id,
+      accountId: accountId,
       storeId: storeId,
     
     });
@@ -106,7 +107,6 @@ router.patch("/:id", async (req, res) => {
       };
     }
     try {
-      const { _id } = req.authData;
       // { _id: id, storeId: storeId, createdBy: _id },
       const updatedRecord = await paymentsType.findOneAndUpdate(
         { _id: id, storeId: storeId },
