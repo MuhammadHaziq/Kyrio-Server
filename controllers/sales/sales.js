@@ -196,6 +196,8 @@ router.patch("/", async (req, res) => {
 router.patch("/refund", async (req, res) => {
   const {
     sale_id,
+    sub_total,
+    sale_timestamp,
     refund_amount,
     total_price,
     cash_received,
@@ -226,6 +228,8 @@ router.patch("/refund", async (req, res) => {
                   "items.$.refund_quantity": item.refund_quantity,
                   "refund_status": item.refund_quantity == item.quantity ? "Full" : "Partial Refund",
                   "total_price": total_price,
+                  "sub_total": sub_total,
+                  "sale_timestamp": sale_timestamp,
                   "cash_received": cash_received,
                   "total_after_discount": total_after_discount,
                   "cash_return": cash_return,
