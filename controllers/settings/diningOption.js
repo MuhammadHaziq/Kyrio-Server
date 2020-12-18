@@ -64,7 +64,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/app", async (req, res) => {
+router.post("/app", async (req, res) => {
   try {
     const { storeId } = req.body;
     const { accountId } = req.authData;
