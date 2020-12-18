@@ -45,6 +45,8 @@ router.post("/", async (req, res) => {
     comments,
     open,
     sale_no,
+    sub_total,
+    sale_timestamp,
     completed,
     device_no,
     total_price,
@@ -91,6 +93,8 @@ router.post("/", async (req, res) => {
         ticket_name,
         accountId,
         sale_no,
+        sub_total,
+        sale_timestamp,
         device_no,
         comments,
         open,
@@ -120,6 +124,8 @@ router.post("/", async (req, res) => {
 router.patch("/", async (req, res) => {
   const {
     sale_id,
+    sub_total,
+    sale_timestamp,
     ticket_name,
     comments,
     open,
@@ -155,6 +161,8 @@ router.patch("/", async (req, res) => {
     try {
     
       let data = {
+        sub_total,
+        sale_timestamp,
         ticket_name,
         comments,
         open,
