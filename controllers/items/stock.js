@@ -4,6 +4,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
+    const { accountId } = req.authData;
     await Stock.find({ accountId: accountId }, (err, result) => {
       if (err) {
         conosle.log("Get Stock Error", err.message);
