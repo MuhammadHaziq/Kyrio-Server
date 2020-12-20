@@ -140,6 +140,7 @@ router.post("/signin", async (req, res) => {
             role_id: result.role_id,
             created_by: result._id,
             owner_id: result._id,
+            accountId: user[0].accountId
           };
 
           jwt.sign(user, "kyrio_bfghigheu", (err, token) => {
