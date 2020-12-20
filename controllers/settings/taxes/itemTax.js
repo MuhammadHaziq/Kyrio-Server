@@ -16,11 +16,14 @@ router.post("/", async (req, res) => {
   items = JSON.parse(items);
   tax_option = JSON.parse(tax_option);
   tax_type = JSON.parse(tax_type);
-
+  const taxType = tax_type.title;
+  const taxOption = tax_option.title;
   const newItemTax = new itemTax({
     title: title,
     tax_rate: tax_rate,
     accountId: accountId,
+    taxType,
+    taxOption,
     tax_type: tax_type,
     tax_option: tax_option,
     stores: stores,
@@ -196,13 +199,16 @@ router.patch("/", async (req, res) => {
   items = JSON.parse(items);
   tax_option = JSON.parse(tax_option);
   tax_type = JSON.parse(tax_type);
-
+  const taxType = tax_type.title;
+  const taxOption = tax_option.title;
   try {
     const updatedRecord = await itemTax.findOneAndUpdate(
       { _id: id },
       {
         $set: {
           title: title,
+          taxType,
+          taxOption,
           tax_rate: tax_rate,
           tax_type: tax_type,
           tax_option: tax_option,
