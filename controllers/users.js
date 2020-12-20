@@ -150,10 +150,10 @@ router.post("/signin", async (req, res) => {
                 message: `Invalid User Token: ${err.message}`,
               });
             }
-            user.UserToken = token;
-            user.roleData = roleData;
-            user.stores = stores;
-            res.status(200).send(user);
+            userData.UserToken = token;
+            userData.roleData = roleData;
+            userData.stores = stores;
+            res.status(200).send(userData);
           });
         }
       })
