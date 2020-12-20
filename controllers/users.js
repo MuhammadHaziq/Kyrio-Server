@@ -131,7 +131,7 @@ router.post("/signin", async (req, res) => {
           let roleData = await Role.findOne({ _id: result.role_id });
           let stores = await Stores.find({ createdBy: result._id });
           // var paymentTypeStoreId = stores[0]._id;
-          let userData = {
+          let user = {
             _id: result._id,
             email: result.email,
             emailVerified: result.emailVerified,
@@ -140,20 +140,20 @@ router.post("/signin", async (req, res) => {
             role_id: result.role_id,
             created_by: result._id,
             owner_id: result._id,
-            accountId: user[0].accountId
+            accountId: result.accountId
           };
 
-          jwt.sign(userData, "kyrio_bfghigheu", (err, token) => {
+          jwt.sign(user, "kyrio_bfghigheu", (err, token) => {
             if (err) {
               res.status(500).send({
                 type: "server",
                 message: `Invalid User Token: ${err.message}`,
               });
             }
-            userData.UserToken = token;
-            userData.roleData = roleData;
-            userData.stores = stores;
-            res.status(200).send(userData);
+            user.UserToken = token;
+            user.roleData = roleData;
+            user.stores = stores;
+            res.status(200).send(user);
           });
         }
       })
