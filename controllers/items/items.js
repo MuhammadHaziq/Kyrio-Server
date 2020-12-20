@@ -26,8 +26,6 @@ router.post("/", async (req, res) => {
     repoOnPos,
     trackStock,
     stockQty,
-    dsd,
-    modifiersStatus,
   } = req.body;
   var {
     category,
@@ -60,16 +58,7 @@ router.post("/", async (req, res) => {
   } else {
     category = { id: "0", name: "No Category", createdBy: _id };
   }
-  if (dsd !== undefined) {
-    dsd = dsd;
-  } else {
-    dsd = false;
-  }
-  if (modifiersStatus !== undefined) {
-    modifiersStatus = modifiersStatus;
-  } else {
-    modifiersStatus = false;
-  }
+
   // stock = JSON.parse(stock);
   // res.status(200).send(data);
 
@@ -107,8 +96,6 @@ router.post("/", async (req, res) => {
     sku,
     barcode,
     trackStock,
-    dsd,
-    modifiersStatus,
     stockQty,
     varients,
     stores,
@@ -265,7 +252,7 @@ router.get("/", async (req, res) => {
 
     var result = await ItemList.find({
       stores: { $elemMatch: { id: storeId } },
-      accountId: accountId
+      accountId: accountId,
     }).sort({ _id: "desc" });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {
@@ -355,7 +342,9 @@ router.delete("/:ids", async (req, res) => {
 router.get("/get_item_stores", async (req, res) => {
   try {
     const { accountId } = req.authData;
-    const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
+    const stores = await Store.find({ accountId: accountId }).sort({
+      _id: "desc",
+    });
     let allStores = [];
     for (const store of stores) {
       allStores.push({
@@ -373,7 +362,10 @@ router.get("/get_item_stores", async (req, res) => {
             _id: "desc",
           }),
         taxes: await itemTax
-          .find({ stores: { $elemMatch: { storeId: store._id } }, accountId: accountId })
+          .find({
+            stores: { $elemMatch: { storeId: store._id } },
+            accountId: accountId,
+          })
           .select("title tax_type tax_rate")
           .sort({ _id: "desc" }),
       });

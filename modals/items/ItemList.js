@@ -11,7 +11,7 @@ const itemListSchema = new mongoose.Schema({
     type: String,
     min: 6,
     max: 255,
-    required: true
+    required: true,
   },
   category: {
     id: {
@@ -57,16 +57,6 @@ const itemListSchema = new mongoose.Schema({
     required: true,
   },
   compositeItem: {
-    type: Boolean,
-    default: false,
-    required: true,
-  },
-  modifiersStatus: {
-    type: Boolean,
-    default: false,
-    required: true,
-  },
-  dsd: {
     type: Boolean,
     default: false,
     required: true,
