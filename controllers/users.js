@@ -131,7 +131,7 @@ router.post("/signin", async (req, res) => {
           let roleData = await Role.findOne({ _id: result.role_id });
           let stores = await Stores.find({ createdBy: result._id });
           // var paymentTypeStoreId = stores[0]._id;
-          let user = {
+          let userData = {
             _id: result._id,
             email: result.email,
             emailVerified: result.emailVerified,
@@ -143,7 +143,7 @@ router.post("/signin", async (req, res) => {
             accountId: user[0].accountId
           };
 
-          jwt.sign(user, "kyrio_bfghigheu", (err, token) => {
+          jwt.sign(userData, "kyrio_bfghigheu", (err, token) => {
             if (err) {
               res.status(500).send({
                 type: "server",
