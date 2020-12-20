@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, tax_rate, tex } = req.body;
-  const { accountId } = req.authData;
+  const { accountId, _id } = req.authData;
   let { tax_type, tax_option, stores, dinings, categories, items } = req.body;
   stores = JSON.parse(stores);
   dinings = JSON.parse(dinings);
@@ -45,7 +45,9 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { _id, accountId } = req.authData;
-    const result = await itemTax.find({ accountId: accountId }).sort({ _id: "desc" });
+    const result = await itemTax
+      .find({ accountId: accountId })
+      .sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
