@@ -41,7 +41,7 @@ router.get("/", async (req, res) => {
         _id: cate._id,
         catTitle: cate.catTitle,
         catColor: cate.catColor,
-        createdAt: cate.created,
+        createdAt: cate.createdAt,
         createdBy: cate.createdBy,
         total_items: itemCount,
       });
