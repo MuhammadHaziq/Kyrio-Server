@@ -52,6 +52,12 @@ const posDeviceSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  udid: {
+    type: String,
+    min: 3,
+    max: 255,
+    required: true,
+  }
 });
 posDeviceSchema.index(
   {
