@@ -48,24 +48,25 @@ router.post("/getStoreDevice", async (req, res) => {
   try {
     const { _id, accountId } = req.authData;
     const { storeId, UDID } = req.body;
-    if (storeId === "0") {
-      result = await POS_Device.findOne({ accountId: accountId, udid: UDID });
-      res.status(200).json(result);
-    } else {
-      result = await POS_Device.findOne({
-        "store.storeId": storeId,
-        udid: UDID,
-      });
-      res.status(200).json(result);
-    }
     let result = {};
     let condition = {};
     if (storeId === "0") {
+      result = await POS_Device.findOne({ accountId: accountId, udid: UDID });
+      if(result !== null){
+        res.status(200).json(result);
+      }
       result = await POS_Device.findOne({
         accountId: accountId,
         isActive: false,
       });
     } else {
+      result = await POS_Device.findOne({
+        "store.storeId": storeId,
+        udid: UDID,
+      });
+      if(result !== null){
+        res.status(200).json(result);
+      }
       result = await POS_Device.findOne({
         "store.storeId": storeId,
         isActive: false,
