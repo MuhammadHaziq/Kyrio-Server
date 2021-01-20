@@ -7,8 +7,11 @@ router.post("/", async (req, res) => {
   let jsonStore = JSON.parse(store);
   const { _id, accountId } = req.authData;
 
-  let result = await POS_Device.find({ "store.storeId": jsonStore.storeId }).sort({deviceNo: -1}).limit(1);
-  let deviceNo = typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo)+1 : 1;
+  let result = await POS_Device.find({ "store.storeId": jsonStore.storeId })
+    .sort({ deviceNo: -1 })
+    .limit(1);
+  let deviceNo =
+    typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo) + 1 : 1;
 
   const newPOSDevice = new POS_Device({
     title: title,
@@ -16,7 +19,7 @@ router.post("/", async (req, res) => {
     noOfSales: 0,
     store: jsonStore,
     createdBy: _id,
-    accountId: accountId
+    accountId: accountId,
   });
   try {
     const result = await newPOSDevice.save();
@@ -44,13 +47,26 @@ router.get("/", async (req, res) => {
 router.post("/getStoreDevice", async (req, res) => {
   try {
     const { _id, accountId } = req.authData;
-    const { storeId } = req.body;
-    
+    const { storeId, UDID } = req.body;
     let result = {};
     let condition = {};
     if (storeId === "0") {
-      result = await POS_Device.findOne({ accountId: accountId, isActive: false });
+      result = await POS_Device.findOne({ accountId: accountId, udid: UDID });
+      if(result !== null){
+        res.status(200).json(result);
+      }
+      result = await POS_Device.findOne({
+        accountId: accountId,
+        isActive: false,
+      });
     } else {
+      result = await POS_Device.findOne({
+        "store.storeId": storeId,
+        udid: UDID,
+      });
+      if(result !== null){
+        res.status(200).json(result);
+      }
       result = await POS_Device.findOne({
         "store.storeId": storeId,
         isActive: false,
@@ -67,7 +83,7 @@ router.post("/getStoreDevice", async (req, res) => {
           },
         }
       );
-      result.isActive = true
+      result.isActive = true;
       res.status(200).json(result);
     } else {
       res
