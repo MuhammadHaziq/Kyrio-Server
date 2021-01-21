@@ -61,6 +61,7 @@ router.post("/", async (req, res) => {
     store,
     created_at
   } = req.body;
+  console.log("test")
   var errors = [];
   if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
     errors.push({ ticket_name: `Invalid ticket_name!` });
