@@ -48,6 +48,7 @@ router.post("/getStoreDevice", async (req, res) => {
   try {
     const { _id, accountId } = req.authData;
     const { storeId, UDID } = req.body;
+    console.log(req.body)
     let result = {};
     let condition = {};
     if (storeId === "0") {

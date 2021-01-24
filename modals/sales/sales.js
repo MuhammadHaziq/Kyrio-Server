@@ -58,7 +58,7 @@ const salesSchema = new mongoose.Schema({
   },
   total_after_discount: {
     type: Number,
-    min: 1,
+    min: 0,
     max: 100000000000,
   },
   total_discount: {
