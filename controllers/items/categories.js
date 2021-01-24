@@ -29,6 +29,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { accountId } = req.authData;
+    console.log(accountId);
     const allCat = await Category.find({ accountId: accountId }).sort({
       _id: "desc",
     });

@@ -29,6 +29,7 @@
     "email-validator": "^2.0.4",
     "express": "~4.16.1",
     "express-fileupload": "^1.2.0",
+    "fast-csv": "^4.3.6",
     "fs-extra": "^9.0.0",
     "hbs": "^4.1.1",
     "http-errors": "~1.6.3",
