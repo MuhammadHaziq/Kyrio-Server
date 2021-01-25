@@ -509,8 +509,8 @@ router.post("/save_csv", async (req, res) => {
     await (csvData || []).map(async (item, index) => {
       let storeData = [];
       let modifierData = [];
-      let varientName: [];
-      let varientValue: [];
+      let varientName = [];
+      let varientValue = [];
       var keys = Object.keys(item);
       (keys || []).map(async (ite, iteIndex) => {
         (stores || []).map(async (stor, storIndex) => {
