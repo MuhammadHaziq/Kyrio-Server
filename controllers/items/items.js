@@ -7,6 +7,7 @@ import ItemList from "../../modals/items/ItemList";
 import uploadFiles from "../fileHandler/uploadFiles";
 import { getOwner } from "../../function/getOwner";
 import Modifier from "../../modals/items/Modifier";
+import Category from "../../modals/items/category";
 import itemTax from "../../modals/settings/taxes/itemTax";
 import Store from "../../modals/Store";
 const csv = require("fast-csv");
@@ -514,15 +515,16 @@ router.post("/save_csv", async (req, res) => {
       var keys = Object.keys(item);
       (keys || []).map(async (ite, iteIndex) => {
         (stores || []).map(async (stor, storIndex) => {
-          if (`Available for sale ${[stor.title]}` == ite) {
-            const inStock = `In stock ${[stor.title]}`;
-            const lowStock = `Low stock ${[stor.title]}`;
-            storeData.push({
+          console.log("Store");
+          console.log("Store", ite);
+          console.log("Store", `Available for sale [${stor.title}]`);
+          if (ite == `Available for sale [${stor.title}]`) {
+            await storeData.push({
               id: stor._id,
               title: stor.title,
-              price: item.price,
-              inStock: item.inStock,
-              lowStock: item.lowStock,
+              price: item["Default price"],
+              inStock: item[`In stock [${stor.title}]`],
+              lowStock: item[`Low stock [${stor.title}]`],
               variantName: "",
               modifiers: await Modifier.find({
                 stores: { $elemMatch: { id: stor._id } },
@@ -543,7 +545,7 @@ router.post("/save_csv", async (req, res) => {
         });
         (modifier || []).map(async (modi, modiIndex) => {
           if (
-            `Modifier - "${[modi.title]}"` == ite ||
+            `Modifier - "${modi.title}"` == ite ||
             `Modifier-${modi.title}` == ite
           ) {
             modifierData.push({
@@ -556,75 +558,67 @@ router.post("/save_csv", async (req, res) => {
       const getSameHandle = (csvData || []).filter((filterVar, varIndex) => {
         return filterVar.Handle == item.Handle;
       });
-      const optionName = `Option 1 name`;
       varientName.push({
-        optionName: getSameHandle[0].optionName,
+        optionName: getSameHandle[0]["Option 1 name"],
         optionValue: getSameHandle.map((itemVar, varIndex) => {
-          const optionValue = `Option 1 value`;
-          varientValue.push({
-            price: itemVar.price,
-            cost: itemVar.cost,
-            sku: itemVar.sku,
-            barcode: itemVar.barcode,
-            variantName: itemVar.optionValue,
+          return varientValue.push({
+            price: itemVar["Default price"],
+            cost: itemVar.Cost,
+            sku: itemVar.SKU,
+            barcode: itemVar.Barcode,
+            variantName: itemVar["Option 1 value"],
           });
         }),
       });
-      const option2Name = `Option 2 name`;
       varientName.push({
-        optionName: getSameHandle[0].option2Name,
+        optionName: getSameHandle[0]["Option 2 name"],
         optionValue: getSameHandle.map((itemVar, varIndex) => {
-          const optionValue = `Option 2 value`;
-          varientValue.push({
-            price: itemVar.price,
-            cost: itemVar.cost,
-            sku: itemVar.sku,
-            barcode: itemVar.barcode,
-            variantName: itemVar.optionValue,
+          return varientValue.push({
+            price: itemVar["Default price"],
+            cost: itemVar.Cost,
+            sku: itemVar.SKU,
+            barcode: itemVar.Barcode,
+            variantName: itemVar["Option 2 value"],
           });
         }),
       });
-      const option3Name = `Option 3 name`;
       varientName.push({
-        optionName: getSameHandle[0].option3Name,
+        optionName: getSameHandle[0]["Option 3 name"],
         optionValue: getSameHandle.map((itemVar, varIndex) => {
-          const optionValue = `Option 3 value`;
-          varientValue.push({
-            price: itemVar.price,
-            cost: itemVar.cost,
-            sku: itemVar.sku,
-            barcode: itemVar.barcode,
-            variantName: itemVar.optionValue,
+          return varientValue.push({
+            price: itemVar["Default price"],
+            cost: itemVar.Cost,
+            sku: itemVar.SKU,
+            barcode: itemVar.Barcode,
+            variantName: itemVar["Option 3 value"],
           });
         }),
       });
       const allCat = await Category.find({ catTitle: item.Category });
       let category = {};
-      if (allCat !== null || allCat.length > 0) {
+      if (allCat !== null && allCat.length !== 0) {
         category = {
           id: allCat[0]._id,
           name: allCat[0].catTitle,
         };
       }
-      const soldByWeight = `Sold by weight`;
-      const trackStock = `Track stock`;
       data.push({
         name: item.Name,
         accountId: accountId,
         category: category,
-        soldByType: item.soldByWeight == "N" ? "Each" : "Sold by weight",
-        price: item.price,
-        cost: item.cost,
-        sku: item.sku,
-        barcode: item.barcode,
-        trackStock: item.trackStock == "N" ? false : true,
+        soldByType: item["Sold by weight"] == "N" ? "Each" : "Sold by weight",
+        price: item["Default price"],
+        cost: item.Cost,
+        sku: item.SKU,
+        barcode: item.Barcode,
+        trackStock: item["Track stock"] == "N" ? false : true,
         varients: varientName,
         stores: storeData,
         modifiers: modifierData,
         createdBy: _id,
       });
+      res.status(200).send(data);
     });
-    res.status(200).send(data);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
