@@ -7,12 +7,131 @@ import ItemList from "../../modals/items/ItemList";
 import uploadFiles from "../fileHandler/uploadFiles";
 import { getOwner } from "../../function/getOwner";
 import Modifier from "../../modals/items/Modifier";
+import Category from "../../modals/items/category";
 import itemTax from "../../modals/settings/taxes/itemTax";
 import Store from "../../modals/Store";
-
+const csv = require("fast-csv");
 const fs = require("fs-extra");
 
 var router = express.Router();
+/* Server Side Record*/
+router.get("/serverSide", async (req, res) => {
+  try {
+    const { accountId } = req.authData;
+    // const { page, limit, storeId } = req.query;
+    let {
+      page,
+      limit,
+      search,
+      stockFilter,
+      categoryFilter,
+      storeId,
+    } = req.query;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    // search = req.query.search.trim();
+    let storeFilter = {};
+    if (storeId !== "0") {
+      storeFilter.stores = { $elemMatch: { id: storeId } };
+    }
+    if (categoryFilter !== "-1" && categoryFilter !== undefined) {
+      storeFilter["category.id"] = categoryFilter;
+    }
+    if (stockFilter !== "-1" && stockFilter !== undefined) {
+      storeFilter.stockId = stockFilter;
+    }
+    if (search !== "" && search !== undefined) {
+      storeFilter = {
+        $or: [
+          { name: { $regex: ".*" + search + ".*", $options: "i" } },
+          {
+            "category.name": {
+              $regex: ".*" + search + ".*",
+              $options: "i",
+            },
+          },
+        ],
+      };
+    }
+    storeFilter.accountId = accountId;
+    let serverSideData = [];
+
+    var result = await ItemList.find({
+      stores: { $elemMatch: { id: storeId } },
+    })
+      .skip(startIndex * endIndex)
+      .limit(endIndex)
+      .exec(function (err, doc) {
+        if (err) {
+          res.status(500).json({ message: error.message });
+          return;
+        }
+        ItemList.countDocuments().exec((err, count) => {
+          doc.forEach((item) => {
+            let price = Number(item.price).toLocaleString("en-IN");
+            price = Number(price).toFixed(2);
+            let cost = Number(item.cost).toLocaleString("en-IN");
+            cost = Number(cost).toFixed(2);
+            let margin = "0";
+            if (+item.cost === +item.price) {
+              margin = "0";
+            } else {
+              margin =
+                +item.price === 0
+                  ? +item.cost * 100
+                  : (+item.cost / +item.price) * 100;
+            }
+            margin = Number(margin).toFixed(2) + " %";
+            const array = [
+              item.name,
+              item["category"].name,
+              price,
+              cost,
+              margin,
+              item.stockQty,
+            ];
+            serverSideData.push(array);
+          });
+
+          const serverResponse = {
+            draw: Number(req.query.draw), // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            recordsTotal: Number(count),
+            recordsFiltered: Number(count),
+            // searching, if there is no searching then totalFiltered = totalData
+            deferLoading: Number(count),
+            data: serverSideData,
+          };
+
+          res.status(200).json(serverResponse);
+          // res.status(200).json({
+          //   doc: doc,
+          //   count: count,
+          //   pages: Math.floor(count / limit) + 1,
+          // });
+        });
+      });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+/*
+router.get("/:id", async (req, res) => {
+  try {
+    const { accountId } = req.authData;
+    const { id } = req.params;
+
+    var result = await ItemList.find({
+      accountId: accountId,
+      _id: id,
+    }).sort({ _id: "desc" });
+    if(result.length > 0) {
+
+      res.status(200).json(result);
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});*/
 
 router.post("/", async (req, res) => {
   var {
@@ -296,7 +415,7 @@ router.get("/search", async (req, res) => {
     if (categoryFilter !== "-1" && categoryFilter !== undefined) {
       storeFilter["category.id"] = categoryFilter;
     }
-    if (stockFilter !== "0" && stockFilter !== undefined) {
+    if (stockFilter !== "-1" && stockFilter !== undefined) {
       storeFilter.stockId = stockFilter;
     }
     if (search !== "" && search !== undefined) {
@@ -375,6 +494,237 @@ router.get("/get_item_stores", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+router.post("/save_csv", async (req, res) => {
+  try {
+    const { accountId, _id } = req.authData;
+    let { csvData } = req.body;
+    csvData = JSON.parse(csvData);
+    const stores = await Store.find().sort({
+      _id: "desc",
+    });
+    const modifier = await Modifier.find().sort({
+      _id: "desc",
+    });
+    let data = [];
+    await (csvData || []).map(async (item, index) => {
+      let storeData = [];
+      let modifierData = [];
+      let varientName = [];
+      let varientValue1 = [];
+      let varientValue2 = [];
+      let varientValue3 = [];
+      var keys = Object.keys(item);
+      (keys || []).map((ite, iteIndex) => {
+        (stores || []).map((stor, storIndex) => {
+          if (ite == `Available for sale [${stor.title}]`) {
+            return storeData.push({
+              id: stor._id,
+              title: stor.title,
+              price: item[`Price [${stor.title}]`],
+              inStock: item[`In stock [${stor.title}]`],
+              lowStock: item[`Low stock [${stor.title}]`],
+              variantName: "",
+              modifiers: Modifier.find({
+                stores: { $elemMatch: { id: stor._id } },
+              })
+                .select("title")
+                .sort({
+                  _id: "desc",
+                }),
+              taxes: itemTax
+                .find({
+                  stores: { $elemMatch: { storeId: stor._id } },
+                  accountId: accountId,
+                })
+                .select("title tax_type tax_rate")
+                .sort({ _id: "desc" }),
+            });
+          }
+        });
+        (modifier || []).map((modi, modiIndex) => {
+          if (
+            `Modifier - "${modi.title}"` == ite ||
+            `Modifier-${modi.title}` == ite
+          ) {
+            modifierData.push({
+              id: modi._id,
+              title: modi.title,
+            });
+          }
+        });
+      });
+
+      const getSameHandle = (csvData || []).filter(
+        (filterVar, varIndex) => filterVar.Handle == item.Handle
+      );
+      if (item.Name !== "" && item.Name !== undefined && item.Name !== null) {
+        if (
+          getSameHandle[0]["Option 1 name"] !== "" &&
+          getSameHandle[0]["Option 1 name"] !== undefined &&
+          getSameHandle[0]["Option 1 name"] !== null
+        ) {
+          getSameHandle.map((itemVar, varIndex) => {
+            varientValue1.push({
+              price: itemVar["Default price"],
+              cost: itemVar.Cost,
+              sku: itemVar.SKU,
+              barcode: itemVar.Barcode,
+              variantName: itemVar["Option 1 value"],
+            });
+          });
+          varientName.push({
+            optionName: getSameHandle[0]["Option 1 name"],
+            optionValue: varientValue1,
+          });
+        }
+        if (
+          getSameHandle[0]["Option 2 name"] !== "" &&
+          getSameHandle[0]["Option 2 name"] !== undefined &&
+          getSameHandle[0]["Option 2 name"] !== null
+        ) {
+          getSameHandle.map((itemVar, varIndex) => {
+            varientValue2.push({
+              price: itemVar["Default price"],
+              cost: itemVar.Cost,
+              sku: itemVar.SKU,
+              barcode: itemVar.Barcode,
+              variantName: itemVar["Option 2 value"],
+            });
+          });
+          varientName.push({
+            optionName: getSameHandle[0]["Option 2 name"],
+            optionValue: varientValue2,
+          });
+        }
+        if (
+          getSameHandle[0]["Option 3 name"] !== "" &&
+          getSameHandle[0]["Option 3 name"] !== undefined &&
+          getSameHandle[0]["Option 3 name"] !== null
+        ) {
+          getSameHandle.map((itemVar, varIndex) => {
+            varientValue3.push({
+              price: itemVar["Default price"],
+              cost: itemVar.Cost,
+              sku: itemVar.SKU,
+              barcode: itemVar.Barcode,
+              variantName: itemVar["Option 3 value"],
+            });
+          });
+          varientName.push({
+            optionName: getSameHandle[0]["Option 3 name"],
+            optionValue: varientValue3,
+          });
+        }
+      }
+
+      let category = {};
+      try {
+        await Category.find({ catTitle: item.Category })
+          .then((catData) => {
+            if (catData !== null && catData.length !== 0) {
+              console.log(catData);
+              console.log(catData.length);
+              category = {
+                id: catData[0]._id,
+                name: catData[0].catTitle,
+              };
+            }
+          })
+          .catch((err) => {
+            console.log(err.message);
+          });
+      } catch (err) {
+        console.log(err.message);
+      }
+
+      // data.push({
+      //   name: item.Name,
+      //   accountId: accountId,
+      //   category: category,
+      //   soldByType: item["Sold by weight"] == "N" ? "Each" : "Sold by weight",
+      //   price: item["Default price"],
+      //   cost: item.Cost,
+      //   sku: item.SKU,
+      //   barcode: item.Barcode,
+      //   trackStock: item["Track stock"] == "N" ? false : true,
+      //   varients: varientName,
+      //   stores: storeData,
+      //   modifiers: modifierData,
+      //   createdBy: _id,
+      // });
+      if (item.Name !== "" && item.Name !== undefined && item.Name !== null) {
+        const newItemList = new ItemList({
+          name: item.Name,
+          accountId: accountId,
+          category: category,
+          soldByType: item["Sold by weight"] == "N" ? "Each" : "Sold by weight",
+          price: item["Default price"],
+          cost: item.Cost,
+          sku: item.SKU,
+          barcode: item.Barcode,
+          trackStock: item["Track stock"] == "N" ? false : true,
+          varients: varientName.length === 0 ? null : variantName,
+          stores: storeData,
+          modifiers: modifierData,
+          taxes: [],
+          repoOnPos: "Color_and_shape",
+          image: "",
+          color: "",
+          shape: "",
+          availableForSale: false,
+          createdBy: _id,
+        });
+        // res.status(200).send(newItemList);
+        try {
+          // console.log("newItemList", newItemList);
+          const result = await newItemList.save();
+          console.log("newItemList", result);
+        } catch (error) {
+          res.status(400).json({ message: error.message });
+        }
+      }
+    });
+    res.status(200).send({ message: "Record Save Successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// router.post("/import-csv", async (req, res) => {
+//   try {
+//     console.log(req.body);
+//     const file = req.body.demo_file;
+//     console.log("file", 'uploads/items/export_items.csv');
+//     fs.createReadStream('uploads/items/export_items.csv')
+//       .pipe(csv.parse({ headers: true }))
+//       // pipe the parsed input into a csv formatter
+//       .pipe(csv.format({ headers: true }))
+//       // Using the transform function from the formatting stream
+//       .transform((row, next) => {
+//         console.log(row);
+//         // User.findById(row.id, (err, user) => {
+//         //   if (err) {
+//         //     return next(err);
+//         //   }
+//         //   return next(null, {
+//         //     id: row.id,
+//         //     firstName: row.first_name,
+//         //     lastName: row.last_name,
+//         //     address: row.address,
+//         //     // properties from user
+//         //     isVerified: user.isVerified,
+//         //     hasLoggedIn: user.hasLoggedIn,
+//         //     age: user.age,
+//         //   });
+//         // });
+//       })
+//       .pipe(process.stdout)
+//       .on("end", () => process.exit());
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
 
 router.use("/categories", categoriesRouter);
 router.use("/discount", discountRouter);
