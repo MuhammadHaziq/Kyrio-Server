@@ -56,7 +56,6 @@ const posDeviceSchema = new mongoose.Schema({
     type: String,
     min: 3,
     max: 255,
-    required: true,
   }
 });
 posDeviceSchema.index(

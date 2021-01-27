@@ -48,51 +48,45 @@ router.post("/getStoreDevice", async (req, res) => {
   try {
     const { _id, accountId } = req.authData;
     const { storeId, UDID } = req.body;
-    console.log(req.body)
+  
     let result = {};
     let condition = {};
     if (storeId === "0") {
       result = await POS_Device.findOne({ accountId: accountId, udid: UDID });
-      if(result !== null){
-        res.status(200).json(result);
+      if(result == null) {
+        result = await POS_Device.findOne({
+          accountId: accountId,
+          isActive: false,
+        });
       }
-      result = await POS_Device.findOne({
-        accountId: accountId,
-        isActive: false,
-      });
     } else {
       result = await POS_Device.findOne({
         "store.storeId": storeId,
         udid: UDID,
       });
-      if(result !== null){
-        res.status(200).json(result);
+      if(result == null){
+        result = await POS_Device.findOne({
+          "store.storeId": storeId,
+          isActive: false,
+        });
       }
-      result = await POS_Device.findOne({
-        "store.storeId": storeId,
-        isActive: false,
-      });
     }
-    // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
 
     if (result !== null) {
-      await POS_Device.updateOne(
+      result = await POS_Device.findByIdAndUpdate(
         { _id: result._id },
         {
           $set: {
             isActive: true,
+            udid: UDID
           },
         }
       );
-      result.isActive = true;
       res.status(200).json(result);
     } else {
       res
         .status(200)
         .json({ message: "Please create POS device for this store!" });
-      // res.status(400).send({//   message:
-      //     "POS Device is not available! Please create a POS Device in this Store from backoffice",
-      // });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
