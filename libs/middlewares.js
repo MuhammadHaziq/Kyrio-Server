@@ -28,28 +28,18 @@ export const checkModules = (req, res, next) => {
           .then((result) => {
             if (result != null) {
               //****************Commented because when this API will trigger only a new role with Owner status will be created
-              // Role.findOne({
-              //   roleName: "Owner",
-              // })
-              //   .then((roleData) => {
-
-                  // if (roleData != null) {
-                  //   req.body.role_id = roleData._id;
-                  //   req.body.roleName = "Owner";
-                  //   next();
-                  // } else {
 
                     let roleData = {
                       roleName: "Owner",
-                      features: result.features.map((itm) => {
-                        return {
-                          featureId: itm._id,
-                          featureName: itm.featureName,
-                          description: itm.description,
-                          icon: itm.icon,
-                          enable: true,
-                        };
-                      }),
+                      // features: result.features.map((itm) => {
+                      //   return {
+                      //     featureId: itm._id,
+                      //     featureName: itm.featureName,
+                      //     description: itm.description,
+                      //     icon: itm.icon,
+                      //     enable: true,
+                      //   };
+                      // }),
                       allowBackoffice: {
                         enable: true,
                         modules: result.backofficeModules.map((itm) => {
@@ -72,34 +62,34 @@ export const checkModules = (req, res, next) => {
                           };
                         }),
                       },
-                      settings: {
-                        settingModules: result.settings.map((itm) => {
-                          return {
-                            moduleId: itm._id,
-                            moduleName: itm.moduleName,
-                            icon: itm.icon,
-                            heading: itm.heading,
-                            span: itm.span,
-                            enable: true,
-                            featureId:
-                              result.features.filter(
-                                (item) =>
-                                  item.featureName.toUpperCase() ===
-                                  itm.moduleName.toUpperCase()
-                              ).length > 0
-                                ? result.features
-                                    .filter(
-                                      (item) =>
-                                        item.featureName.toUpperCase() ===
-                                        itm.moduleName.toUpperCase()
-                                    )
-                                    .map((item) => {
-                                      return item._id;
-                                    })[0]
-                                : "",
-                          };
-                        }),
-                      },
+                      // settings: {
+                      //   settingModules: result.settings.map((itm) => {
+                      //     return {
+                      //       moduleId: itm._id,
+                      //       moduleName: itm.moduleName,
+                      //       icon: itm.icon,
+                      //       heading: itm.heading,
+                      //       span: itm.span,
+                      //       enable: true,
+                      //       featureId:
+                      //         result.features.filter(
+                      //           (item) =>
+                      //             item.featureName.toUpperCase() ===
+                      //             itm.moduleName.toUpperCase()
+                      //         ).length > 0
+                      //           ? result.features
+                      //               .filter(
+                      //                 (item) =>
+                      //                   item.featureName.toUpperCase() ===
+                      //                   itm.moduleName.toUpperCase()
+                      //               )
+                      //               .map((item) => {
+                      //                 return item._id;
+                      //               })[0]
+                      //           : "",
+                      //     };
+                      //   }),
+                      // },
                     };
                     let role = new Role(roleData);
                     role
@@ -115,40 +105,23 @@ export const checkModules = (req, res, next) => {
                           message: `Unable to Save Role ${err.message}`,
                         });
                       });
-                  // }
-                // })
-                // .catch((err) => {
-                //   res.status(403).send({
-                //     type: "server",
-                //     message: `Unable to find Role ${err.message}`,
-                //   });
-                // });
             } else {
               let modules = new Modules(modulesData);
               modules
                 .save()
                 .then((insertedRecord) => {
                   //****************Commented because when this API will trigger only a new role with Owner status will be created
-                  // Role.findOne({
-                  //   roleName: "Owner",
-                  // })
-                  //   .then((roleData) => {
-                  //     if (roleData != null) {
-                  //       req.body.role_id = roleData._id;
-                  //       req.body.roleName = "Owner";
-                  //       next();
-                  //     } else {
                         let roleData = {
                           roleName: "Owner",
-                          features: insertedRecord.features.map((itm) => {
-                            return {
-                              featureId: itm._id,
-                              featureName: itm.featureName,
-                              description: itm.description,
-                              icon: itm.icon,
-                              enable: true,
-                            };
-                          }),
+                          // features: insertedRecord.features.map((itm) => {
+                          //   return {
+                          //     featureId: itm._id,
+                          //     featureName: itm.featureName,
+                          //     description: itm.description,
+                          //     icon: itm.icon,
+                          //     enable: true,
+                          //   };
+                          // }),
                           allowBackoffice: {
                             enable: true,
                             modules: insertedRecord.backofficeModules.map(
@@ -174,36 +147,36 @@ export const checkModules = (req, res, next) => {
                               };
                             }),
                           },
-                          settings: {
-                            settingModules: insertedRecord.settings.map(
-                              (itm) => {
-                                return {
-                                  moduleId: itm._id,
-                                  moduleName: itm.moduleName,
-                                  icon: itm.icon ? itm.icon : "",
-                                  heading: itm.heading ? itm.heading : "",
-                                  span: itm.span ? itm.span : "",
-                                  enable: true,
-                                  featureId:
-                                    insertedRecord.features.filter(
-                                      (item) =>
-                                        item.featureName.toUpperCase() ===
-                                        itm.moduleName.toUpperCase()
-                                    ).length > 0
-                                      ? insertedRecord.features
-                                          .filter(
-                                            (item) =>
-                                              item.featureName.toUpperCase() ===
-                                              itm.moduleName.toUpperCase()
-                                          )
-                                          .map((item) => {
-                                            return item._id;
-                                          })[0]
-                                      : "",
-                                };
-                              }
-                            ),
-                          },
+                          // settings: {
+                          //   settingModules: insertedRecord.settings.map(
+                          //     (itm) => {
+                          //       return {
+                          //         moduleId: itm._id,
+                          //         moduleName: itm.moduleName,
+                          //         icon: itm.icon ? itm.icon : "",
+                          //         heading: itm.heading ? itm.heading : "",
+                          //         span: itm.span ? itm.span : "",
+                          //         enable: true,
+                          //         featureId:
+                          //           insertedRecord.features.filter(
+                          //             (item) =>
+                          //               item.featureName.toUpperCase() ===
+                          //               itm.moduleName.toUpperCase()
+                          //           ).length > 0
+                          //             ? insertedRecord.features
+                          //                 .filter(
+                          //                   (item) =>
+                          //                     item.featureName.toUpperCase() ===
+                          //                     itm.moduleName.toUpperCase()
+                          //                 )
+                          //                 .map((item) => {
+                          //                   return item._id;
+                          //                 })[0]
+                          //             : "",
+                          //       };
+                          //     }
+                          //   ),
+                          // },
                         };
                         let role = new Role(roleData);
                         role
@@ -218,13 +191,6 @@ export const checkModules = (req, res, next) => {
                               message: `Unable to Save Role ${err.message}`,
                             });
                           });
-                      // }
-                    // })
-                    // .catch((err) => {
-                    //   res.status(403).send({
-                    //     message: `Unable to find Role ${err.message}`,
-                    //   });
-                    // });
                 })
                 .catch((err) => {
                   res.status(403).send({
@@ -276,8 +242,8 @@ export const verifyToken = (req, res, next) => {
 
 ***/
 
-export const addModuleWhenSignUp = async (userId, accountId, store) => {
-  console.log(accountId)
+export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
+  
   let paymentTypeStoreId = "";
   let cash = "";
   let card = "";
@@ -294,7 +260,9 @@ export const addModuleWhenSignUp = async (userId, accountId, store) => {
       deviceNo: deviceNo,
       accountId: accountId,
       store: posDeviceData,
-      createdBy: userId
+      createdBy: userId,
+      isActive: typeof UDID !== "undefined" ? true : false,
+      udid: typeof UDID !== "undefined" ? UDID : null,
     });
     await newPOSDevice
       .save()

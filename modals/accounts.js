@@ -29,6 +29,75 @@ const accountsSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  features: [
+    {
+      featureId: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      featureName: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      description: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      icon: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      enable: Boolean,
+    },
+  ],
+  settings: {
+    settingModules: [
+      {
+        moduleId: {
+          type: String,
+          min: 3,
+          max: 255,
+          required: true,
+        },
+        moduleName: {
+          type: String,
+          min: 3,
+          max: 255,
+          required: true,
+        },
+        icon: {
+          type: String,
+          min: 3,
+          max: 255,
+        },
+        heading: {
+          type: String,
+          min: 3,
+          max: 255,
+        },
+        span: {
+          type: String,
+          min: 3,
+          max: 255,
+        },
+
+        enable: Boolean,
+        featureId: {
+          type: String,
+          min: 3,
+          max: 255,
+        },
+      },
+    ],
+  },
   createdBy: {
     type: String,
     min: 6,

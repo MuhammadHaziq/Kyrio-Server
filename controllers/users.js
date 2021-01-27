@@ -2,6 +2,7 @@ import Users from "../modals/users";
 import Role from "../modals/role";
 import Stores from "../modals/Store";
 import Accounts from "../modals/accounts";
+import Modules from "../modals/modules";
 import { checkModules, addModuleWhenSignUp } from "../libs/middlewares";
 import md5 from "md5";
 import express from "express";
@@ -12,7 +13,7 @@ var router = express.Router();
 
 router.post("/signup", checkModules, (req, res) => {
   try {
-    const { email, password, businessName, country, role_id } = req.body;
+    const { email, password, businessName, country, role_id, UDID } = req.body;
     let userId = "";
     let storeObject = "";
     let users = new Users({
@@ -27,14 +28,57 @@ router.post("/signup", checkModules, (req, res) => {
       .save()
       .then(async (result) => {
         userId = result._id;
-        let account = await new Accounts({
-          businessName: businessName,
-          email: email,
-          password: password,
-          timezone: null,
-          language: "English",
-          createdBy: userId,
-        }).save();
+        let account = {};
+        await Modules.findOne()
+        .then(async (result) => {
+          account = await new Accounts({
+            businessName: businessName,
+            email: email,
+            password: password,
+            timezone: null,
+            language: "English",
+            features: result.features.map((itm) => {
+                            return {
+                              featureId: itm._id,
+                              featureName: itm.featureName,
+                              description: itm.description,
+                              icon: itm.icon,
+                              enable: true,
+                            };
+                          }),
+            settings: {
+              settingModules: result.settings.map(
+                (itm) => {
+                  return {
+                    moduleId: itm._id,
+                    moduleName: itm.moduleName,
+                    icon: itm.icon ? itm.icon : "",
+                    heading: itm.heading ? itm.heading : "",
+                    span: itm.span ? itm.span : "",
+                    enable: true,
+                    featureId:
+                      result.features.filter(
+                        (item) =>
+                          item.featureName.toUpperCase() ===
+                          itm.moduleName.toUpperCase()
+                      ).length > 0
+                        ? result.features
+                            .filter(
+                              (item) =>
+                                item.featureName.toUpperCase() ===
+                                itm.moduleName.toUpperCase()
+                            )
+                            .map((item) => {
+                              return item._id;
+                            })[0]
+                        : "",
+                  };
+                }
+              ),
+            },
+            createdBy: userId,
+          }).save();
+        })
         await Users.updateOne(
           { _id: result._id },
           { created_by: result._id, owner_id: result._id, accountId: account._id }
@@ -81,11 +125,13 @@ router.post("/signup", checkModules, (req, res) => {
               message: `Unable To Generate Token: ${err.message}`,
             });
           } else {
-            await addModuleWhenSignUp(userId, account._id, storeObject);
+            await addModuleWhenSignUp(userId, account._id, storeObject, UDID);
             let storesArray = [];
             storesArray.push(store);
             user.UserToken = token;
             user.roleData = roleData;
+            user.features = account.features;
+            user.settings = account.settings;
             user.stores = storesArray;
             res.status(200).send(user);
           }

@@ -17,35 +17,35 @@ const roleSchema = new mongoose.Schema({
     min: 6,
     max: 255
   },
-  features: [
-    {
-      featureId: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      featureName: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      description: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      icon: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      enable: Boolean,
-    },
-  ],
+  // features: [
+  //   {
+  //     featureId: {
+  //       type: String,
+  //       min: 3,
+  //       max: 255,
+  //       required: true,
+  //     },
+  //     featureName: {
+  //       type: String,
+  //       min: 3,
+  //       max: 255,
+  //       required: true,
+  //     },
+  //     description: {
+  //       type: String,
+  //       min: 3,
+  //       max: 255,
+  //       required: true,
+  //     },
+  //     icon: {
+  //       type: String,
+  //       min: 3,
+  //       max: 255,
+  //       required: true,
+  //     },
+  //     enable: Boolean,
+  //   },
+  // ],
   allowBackoffice: {
     enable: Boolean,
     modules: [
@@ -88,46 +88,46 @@ const roleSchema = new mongoose.Schema({
       },
     ],
   },
-  settings: {
-    settingModules: [
-      {
-        moduleId: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
-        },
-        moduleName: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
-        },
-        icon: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
-        heading: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
-        span: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
+  // settings: {
+  //   settingModules: [
+  //     {
+  //       moduleId: {
+  //         type: String,
+  //         min: 3,
+  //         max: 255,
+  //         required: true,
+  //       },
+  //       moduleName: {
+  //         type: String,
+  //         min: 3,
+  //         max: 255,
+  //         required: true,
+  //       },
+  //       icon: {
+  //         type: String,
+  //         min: 3,
+  //         max: 255,
+  //       },
+  //       heading: {
+  //         type: String,
+  //         min: 3,
+  //         max: 255,
+  //       },
+  //       span: {
+  //         type: String,
+  //         min: 3,
+  //         max: 255,
+  //       },
 
-        enable: Boolean,
-        featureId: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
-      },
-    ],
-  },
+  //       enable: Boolean,
+  //       featureId: {
+  //         type: String,
+  //         min: 3,
+  //         max: 255,
+  //       },
+  //     },
+  //   ],
+  // },
   createdAt: {
     type: Date,
     default: Date.now(),
