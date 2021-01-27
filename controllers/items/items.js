@@ -175,7 +175,7 @@ router.post("/", async (req, res) => {
   if (category !== undefined && category !== null) {
     category = JSON.parse(category);
   } else {
-    category = { id: "0", name: "No Category", createdBy: _id };
+    category = null;
   }
 
   // stock = JSON.parse(stock);
@@ -280,7 +280,7 @@ router.patch("/", async (req, res) => {
   if (category !== undefined && category !== null) {
     category = JSON.parse(category);
   } else {
-    category = { id: "0", name: "No Category", createdBy: _id };
+    category = null;
   }
   if (dsd !== undefined) {
     dsd = dsd;

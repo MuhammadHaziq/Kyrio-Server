@@ -10,16 +10,6 @@ import sendEmail from "../libs/sendEmail";
 
 var router = express.Router();
 
-/******* APIs which needs to be created within usercontroller********/ 
-/*
-  1- Get all roles with Access levels like Backoffice enabled/disabled and POS enbaled/disabled and also get total number of employees within the that role also Owner Role will only have 1 employee
-
-  2- Create New roles with Different Access rights
-  3- Get all modules to show them while creating new role
-  4- Create employee with a specific role
-*/
-
-
 router.post("/signup", checkModules, (req, res) => {
   try {
     const { email, password, businessName, country, role_id } = req.body;
