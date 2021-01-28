@@ -84,9 +84,24 @@ router.post("/signup", checkModules, async (req, res) => {
             createdBy: userId,
           }).save();
         })
+        let store = new Stores({
+          title: account.businessName,
+          createdBy: result._id,
+          accountId: account._id
+        });
+        await store
+          .save()
+          .then((response) => {
+            storeObject = response;
+          })
+          .catch((e) => console.log(e.message));
+
         await Users.updateOne(
           { _id: result._id },
-          { created_by: result._id, owner_id: result._id, accountId: account._id }
+          { created_by: result._id, owner_id: result._id, accountId: account._id,  stores: [{
+            id: storeObject._id,
+            name: storeObject.title
+          }]}
         );
         await Role.updateOne(
           { _id: role_id },
@@ -104,17 +119,7 @@ router.post("/signup", checkModules, async (req, res) => {
           accountId: account._id,
           owner_id: result._id,
         };
-        let store = new Stores({
-          title: account.businessName,
-          createdBy: result._id,
-          accountId: account._id
-        });
-        await store
-          .save()
-          .then((response) => {
-            storeObject = response;
-          })
-          .catch((e) => console.log(e.message));
+        
 
         // let emailMessage = {
         //   businessName: result.businessName,
@@ -180,8 +185,8 @@ router.post("/signin", async (req, res) => {
             businessName: account.businessName,
             country: result.country,
             role_id: result.role_id,
-            created_by: result._id,
-            owner_id: result._id,
+            created_by: result.created_by,
+            owner_id: typeof result.owner_id !== "undefined" ? result.owner_id : null,
             accountId: result.accountId
           };
 

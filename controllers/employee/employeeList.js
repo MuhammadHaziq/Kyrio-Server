@@ -14,10 +14,19 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
+    const { storeId } = req.body;
+    
     const { accountId } = req.authData;
-    var result = await Users.find({ accountId: accountId }).sort({
-      _id: "desc",
-    });
+    let result;
+    if(typeof storeId !== "undefined"){
+      result = await Users.find({ accountId: accountId, 'stores.id': storeId }).sort({
+        _id: "desc",
+      });
+    } else {
+      result = await Users.find({ accountId: accountId }).sort({
+        _id: "desc",
+      });
+    }
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -41,7 +50,7 @@ router.get("/get_store_employee_list", async (req, res) => {
         },
       };
     }
-    var result = await EmployeeLists.find(filter).sort({
+    var result = await Users.find(filter).sort({
       _id: "desc",
     });
     res.status(200).json(result);
@@ -94,7 +103,7 @@ router.get("/search", async (req, res) => {
         ],
       };
     }
-    var result = await EmployeeLists.find(filter);
+    var result = await Users.find(filter);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -106,7 +115,7 @@ router.delete("/:ids", async (req, res) => {
     ids = JSON.parse(ids);
     ids.forEach(async (id) => {
       if (ObjectId.isValid(id)) {
-        await EmployeeLists.deleteOne({ _id: id });
+        await Users.deleteOne({ _id: id });
       }
     });
     res.status(200).json({ message: "deleted" });
@@ -154,6 +163,7 @@ router.post("/", async (req, res) => {
               accountId: accountId,
               phone: removeSpaces(phone),
               email: email,
+              password: md5("123456"),
               emailVerified: false,
               role_id: role.id,
               role: role,
