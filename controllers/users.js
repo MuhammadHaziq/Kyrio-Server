@@ -11,18 +11,23 @@ import sendEmail from "../libs/sendEmail";
 
 var router = express.Router();
 
-router.post("/signup", checkModules, (req, res) => {
+router.post("/signup", checkModules, async (req, res) => {
   try {
     const { email, password, businessName, country, role_id, UDID } = req.body;
     let userId = "";
     let storeObject = "";
+    let roleData = await Role.findOne({ _id: role_id });
     let users = new Users({
+      name: roleData.roleName,
       email: email,
       emailVerified: false,
       password: md5(password),
-      businessName: businessName,
       country: country,
       role_id: role_id,
+      role: {
+        id: roleData._id,
+        name: roleData.roleName
+      }
     });
     users
       .save()
@@ -87,12 +92,12 @@ router.post("/signup", checkModules, (req, res) => {
           { _id: role_id },
           { user_id: result._id, accountId: account._id }
         );
-        let roleData = await Role.findOne({ _id: role_id });
+        
         let user = {
           _id: result._id,
           email: result.email,
           emailVerified: result.emailVerified,
-          businessName: result.businessName,
+          businessName: account.businessName,
           country: result.country,
           role_id: result.role_id,
           created_by: result._id,
@@ -100,7 +105,7 @@ router.post("/signup", checkModules, (req, res) => {
           owner_id: result._id,
         };
         let store = new Stores({
-          title: businessName,
+          title: account.businessName,
           createdBy: result._id,
           accountId: account._id
         });
@@ -164,6 +169,7 @@ router.post("/signin", async (req, res) => {
             });
           }
         } else {
+          let account = await Accounts.findOne({_id: result.accountId})
           let roleData = await Role.findOne({ _id: result.role_id });
           let stores = await Stores.find({ createdBy: result._id });
           // var paymentTypeStoreId = stores[0]._id;
@@ -171,7 +177,7 @@ router.post("/signin", async (req, res) => {
             _id: result._id,
             email: result.email,
             emailVerified: result.emailVerified,
-            businessName: result.businessName,
+            businessName: account.businessName,
             country: result.country,
             role_id: result.role_id,
             created_by: result._id,
@@ -188,6 +194,8 @@ router.post("/signin", async (req, res) => {
             }
             user.UserToken = token;
             user.roleData = roleData;
+            user.features = account.features;
+            user.settings = account.settings;
             user.stores = stores;
             res.status(200).send(user);
           });

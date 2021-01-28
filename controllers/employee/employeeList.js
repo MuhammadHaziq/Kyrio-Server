@@ -1,16 +1,21 @@
 import express from "express";
 import EmployeeLists from "../../modals/employee/employeeList";
+import Users from "../../modals/users";
+import Accounts from "../../modals/accounts";
+import Role from "../../modals/role";
 import {
   removeSpaces,
   removeNumberSpaces,
 } from "../../function/validateFunctions";
+import md5 from "md5";
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
+
 
 router.get("/", async (req, res) => {
   try {
     const { accountId } = req.authData;
-    var result = await EmployeeLists.find({ accountId: accountId }).sort({
+    var result = await Users.find({ accountId: accountId }).sort({
       _id: "desc",
     });
     res.status(200).json(result);
@@ -138,20 +143,38 @@ router.post("/", async (req, res) => {
   } else {
     const { _id, accountId } = req.authData;
 
-
+    let role = JSON.parse(roles)
     try {
-      const newEmployee = await new EmployeeLists({
-        name: removeSpaces(name),
-        accountId: accountId,
-        email: removeSpaces(email),
-        phone: removeSpaces(phone),
-        role: JSON.parse(roles),
-        stores: JSON.parse(stores),
-        sendMail: (sendMail),
-        posPin: posPin,
-        created_by: _id,
-      }).save();
-      res.status(200).json(newEmployee);
+      
+      if(role.name !== "Owner") {
+        let user = await Users.findOne({ email: email });
+        if(!user){
+            let users = new Users({
+              name: removeSpaces(name),
+              accountId: accountId,
+              phone: removeSpaces(phone),
+              email: email,
+              emailVerified: false,
+              role_id: role.id,
+              role: role,
+              stores: JSON.parse(stores),
+              sendMail: (sendMail),
+              posPin: posPin,
+              created_by: _id,
+            });
+            users
+              .save()
+              .then(async (result) => {
+                res.status(200).json(result);
+              }).catch(error=>{
+                res.status(400).json({ message: error.message });
+              })
+        } else {
+          res.status(400).json({ message: "Employee already exist with this email" });
+        }
+      } else {
+        res.status(400).json({ message: "Cannot create 2nd Owner of the store" });
+      }
     } catch (error) {
       if (error.code === 11000) {
         res.status(400).json({ message: "Employee Email Already Exist" });
@@ -188,7 +211,7 @@ router.patch("/", async (req, res) => {
   } else {
     const { _id } = req.authData;
     try {
-      let data = {
+      let user = {
         name: removeSpaces(name),
         email: removeSpaces(email),
         phone: removeSpaces(phone),
@@ -198,7 +221,17 @@ router.patch("/", async (req, res) => {
         posPin: posPin,
         created_by: _id,
       };
-      let result = await EmployeeLists.findOneAndUpdate({ _id: id }, data, {
+      // let data = {
+      //   name: removeSpaces(name),
+      //   email: removeSpaces(email),
+      //   phone: removeSpaces(phone),
+      //   role: JSON.parse(roles),
+      //   stores: JSON.parse(stores),
+      //   sendMail: (sendMail),
+      //   posPin: md5(posPin),
+      //   created_by: _id,
+      // };
+      let result = await Users.findOneAndUpdate({ _id: id }, user, {
         new: true,
         upsert: true, // Make this update into an upsert
       });

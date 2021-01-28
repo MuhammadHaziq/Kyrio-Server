@@ -1,27 +1,54 @@
 import mongoose from "mongoose";
 
 const usersSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    min: 3,
+    max: 255,
+  },
   email: {
     type: String,
     min: 3,
     max: 255,
     required: true,
   },
+  phone: {
+    type: String,
+    min: 3,
+    max: 255,
+  },
+  posPin: {
+    type: String,
+    min: 3,
+    max: 255,
+  },
+  sendMail: {
+    type: Boolean,
+    default: false
+  },
   emailVerified: {
     type: Boolean,
     required: true,
   },
+  stores: [
+    {
+      _id: false,
+      id: {
+        type: String,
+        min: 1,
+        max: 255,
+      },
+      name: {
+        type: String,
+        min: 1,
+        max: 255,
+      },
+    },
+  ],
   password: {
     type: String,
-    min: 3,
+    min: 0,
     max: 255,
-    required: true,
-  },
-  businessName: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
   },
   country: {
     type: String,
@@ -32,6 +59,19 @@ const usersSchema = new mongoose.Schema({
     type: String,
     min: 6,
     max: 255,
+  },
+  role: {
+    _id: false,
+    id: {
+      type: String,
+      min: 3,
+      max: 255,
+    },
+    name: {
+      type: String,
+      min: 3,
+      max: 255,
+    },
   },
   created_by: {
     type: String,

@@ -21,6 +21,7 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
+    const { accountId } = req.authData;
     const result = await paymentTypes.find({ accountId: accountId, title: { $ne: "Cash" } });
     res.status(200).json(result);
   } catch (error) {
