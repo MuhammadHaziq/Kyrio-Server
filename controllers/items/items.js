@@ -384,6 +384,21 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+router.get("/storeItems", async (req, res) => {
+  try {
+    const { accountId } = req.authData;
+    const { storeId } = req.query;
+    
+    var result = await ItemList.find({
+      stores: { $elemMatch: { id: storeId } },
+      accountId: accountId,
+    }).select(["_id","category", "availableForSale", "soldByType", "price", "cost", "sku", "barcode", "trackStock", "compositeItem", "stockQty", "varients", "stores.price", "stores.inStock", "stores.lowStock", "modifiers", "taxes", "repoOnPos", "image", "color", "shape", "createdAt", "createdBy"]).sort({ _id: "desc" });
+
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 router.get("/searchByName", async (req, res) => {
   try {
