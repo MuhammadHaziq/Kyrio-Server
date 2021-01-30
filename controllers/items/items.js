@@ -388,13 +388,42 @@ router.get("/storeItems", async (req, res) => {
   try {
     const { accountId } = req.authData;
     const { storeId } = req.query;
-    
-    var result = await ItemList.find({
+
+    var items = await ItemList.find({
       stores: { $elemMatch: { id: storeId } },
       accountId: accountId,
-    }).select(["_id","category", "availableForSale", "soldByType", "price", "cost", "sku", "barcode", "trackStock", "compositeItem", "stockQty", "varients", "stores.price", "stores.inStock", "stores.lowStock", "modifiers", "taxes", "repoOnPos", "image", "color", "shape", "createdAt", "createdBy"]).sort({ _id: "desc" });
+    }).select(["_id","category", "availableForSale", "soldByType", "price", "cost", "sku", "barcode", "trackStock", "compositeItem", "stockQty", "varients", "stores.price", "stores.id", "stores.inStock", "stores.lowStock", "modifiers", "taxes", "repoOnPos", "image", "color", "shape", "createdAt", "createdBy"]).sort({ _id: "desc" });
+    let itemsObjectFilter = [];
+    for(const item of items){
+      itemsObjectFilter.push({
+        _id: item._id,
+        category: item.category,
+        availableForSale: item.availableForSale,
+        soldByType: item.soldByType,
+        price: item.price,
+        cost: item.cost,
+        sku: item.sku,
+        barcode: item.barcode,
+        trackStock: item.trackStock,
+        compositeItem: item.compositeItem,
+        stockQty: item.stockQty,
+        varients: item.varients,
+        storeID: item.stores[0].id,
+        storePrice: item.stores[0].price,
+        inStock: item.stores[0].inStock,
+        lowStock: item.stores[0].lowStock,
+        modifiers: item.modifiers,
+        taxes: item.taxes,
+        repoOnPos: item.repoOnPos,
+        image: item.image,
+        color: item.color,
+        shape: item.shape,
+        createdAt: item.createdAt,
+        createdBy: item.createdBy
+      });
+    }
 
-    res.status(200).json(result);
+    res.status(200).json(itemsObjectFilter);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
