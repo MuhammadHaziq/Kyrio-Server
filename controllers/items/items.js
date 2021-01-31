@@ -392,9 +392,36 @@ router.get("/storeItems", async (req, res) => {
     var items = await ItemList.find({
       stores: { $elemMatch: { id: storeId } },
       accountId: accountId,
-    }).select(["_id","category", "availableForSale", "soldByType", "price", "cost", "sku", "barcode", "trackStock", "compositeItem", "stockQty", "varients", "stores.price", "stores.id", "stores.inStock", "stores.lowStock", "modifiers", "taxes", "repoOnPos", "image", "color", "shape", "createdAt", "createdBy"]).sort({ _id: "desc" });
+    })
+      .select([
+        "_id",
+        "category",
+        "availableForSale",
+        "soldByType",
+        "price",
+        "cost",
+        "sku",
+        "barcode",
+        "trackStock",
+        "compositeItem",
+        "stockQty",
+        "varients",
+        "stores.price",
+        "stores.id",
+        "stores.inStock",
+        "stores.lowStock",
+        "modifiers",
+        "taxes",
+        "repoOnPos",
+        "image",
+        "color",
+        "shape",
+        "createdAt",
+        "createdBy",
+      ])
+      .sort({ _id: "desc" });
     let itemsObjectFilter = [];
-    for(const item of items){
+    for (const item of items) {
       itemsObjectFilter.push({
         _id: item._id,
         category: item.category,
@@ -419,7 +446,7 @@ router.get("/storeItems", async (req, res) => {
         color: item.color,
         shape: item.shape,
         createdAt: item.createdAt,
-        createdBy: item.createdBy
+        createdBy: item.createdBy,
       });
     }
 
@@ -609,18 +636,26 @@ router.post("/save_csv", async (req, res) => {
           getSameHandle[0]["Option 1 name"] !== null
         ) {
           getSameHandle.map((itemVar, varIndex) => {
-            varientValue1.push({
-              price: itemVar["Default price"],
-              cost: itemVar.Cost,
-              sku: itemVar.SKU,
-              barcode: itemVar.Barcode,
-              variantName: itemVar["Option 1 value"],
+            if (
+              itemVar["Option 1 value"] !== "" &&
+              itemVar["Option 1 value"] !== undefined &&
+              itemVar["Option 1 value"] !== null
+            ) {
+              varientValue1.push({
+                price: itemVar["Default price"],
+                cost: itemVar.Cost,
+                sku: itemVar.SKU,
+                barcode: itemVar.Barcode,
+                variantName: itemVar["Option 1 value"],
+              });
+            }
+          });
+          if (varientValue1.length > 0) {
+            varientName.push({
+              optionName: getSameHandle[0]["Option 1 name"],
+              optionValue: varientValue1,
             });
-          });
-          varientName.push({
-            optionName: getSameHandle[0]["Option 1 name"],
-            optionValue: varientValue1,
-          });
+          }
         }
         if (
           getSameHandle[0]["Option 2 name"] !== "" &&
@@ -628,18 +663,26 @@ router.post("/save_csv", async (req, res) => {
           getSameHandle[0]["Option 2 name"] !== null
         ) {
           getSameHandle.map((itemVar, varIndex) => {
-            varientValue2.push({
-              price: itemVar["Default price"],
-              cost: itemVar.Cost,
-              sku: itemVar.SKU,
-              barcode: itemVar.Barcode,
-              variantName: itemVar["Option 2 value"],
+            if (
+              itemVar["Option 2 value"] !== "" &&
+              itemVar["Option 2 value"] !== undefined &&
+              itemVar["Option 2 value"] !== null
+            ) {
+              varientValue2.push({
+                price: itemVar["Default price"],
+                cost: itemVar.Cost,
+                sku: itemVar.SKU,
+                barcode: itemVar.Barcode,
+                variantName: itemVar["Option 2 value"],
+              });
+            }
+          });
+          if (varientValue2.length > 0) {
+            varientName.push({
+              optionName: getSameHandle[0]["Option 2 name"],
+              optionValue: varientValue2,
             });
-          });
-          varientName.push({
-            optionName: getSameHandle[0]["Option 2 name"],
-            optionValue: varientValue2,
-          });
+          }
         }
         if (
           getSameHandle[0]["Option 3 name"] !== "" &&
@@ -647,28 +690,33 @@ router.post("/save_csv", async (req, res) => {
           getSameHandle[0]["Option 3 name"] !== null
         ) {
           getSameHandle.map((itemVar, varIndex) => {
-            varientValue3.push({
-              price: itemVar["Default price"],
-              cost: itemVar.Cost,
-              sku: itemVar.SKU,
-              barcode: itemVar.Barcode,
-              variantName: itemVar["Option 3 value"],
+            if (
+              itemVar["Option 3 value"] !== "" &&
+              itemVar["Option 3 value"] !== undefined &&
+              itemVar["Option 3 value"] !== null
+            ) {
+              varientValue3.push({
+                price: itemVar["Default price"],
+                cost: itemVar.Cost,
+                sku: itemVar.SKU,
+                barcode: itemVar.Barcode,
+                variantName: itemVar["Option 3 value"],
+              });
+            }
+          });
+          if (varientValue3.length > 0) {
+            varientName.push({
+              optionName: getSameHandle[0]["Option 3 name"],
+              optionValue: varientValue3,
             });
-          });
-          varientName.push({
-            optionName: getSameHandle[0]["Option 3 name"],
-            optionValue: varientValue3,
-          });
+          }
         }
       }
-
       let category = {};
       try {
         await Category.find({ catTitle: item.Category })
           .then((catData) => {
             if (catData !== null && catData.length !== 0) {
-              console.log(catData);
-              console.log(catData.length);
               category = {
                 id: catData[0]._id,
                 name: catData[0].catTitle,
@@ -698,6 +746,10 @@ router.post("/save_csv", async (req, res) => {
       //   createdBy: _id,
       // });
       if (item.Name !== "" && item.Name !== undefined && item.Name !== null) {
+        const Exist = await ItemList.find({
+          name: item.Name,
+          sku: item.SKU,
+        }).sort({ _id: "desc" });
         const newItemList = new ItemList({
           name: item.Name,
           accountId: accountId,
@@ -708,7 +760,7 @@ router.post("/save_csv", async (req, res) => {
           sku: item.SKU,
           barcode: item.Barcode,
           trackStock: item["Track stock"] == "N" ? false : true,
-          varients: varientName.length === 0 ? null : variantName,
+          varients: varientName.length === 0 ? null : varientName,
           stores: storeData,
           modifiers: modifierData,
           taxes: [],
@@ -719,13 +771,29 @@ router.post("/save_csv", async (req, res) => {
           availableForSale: false,
           createdBy: _id,
         });
-        // res.status(200).send(newItemList);
-        try {
-          // console.log("newItemList", newItemList);
-          const result = await newItemList.save();
-          console.log("newItemList", result);
-        } catch (error) {
-          res.status(400).json({ message: error.message });
+        console.log("New Item List", newItemList);
+        if (Exist.length > 0 && Exist !== null) {
+          try {
+            await ItemList.updateOne(
+              {
+                name: item.Name,
+                sku: item.SKU,
+              },
+              newItemList
+            );
+            // res.status(201).json(result);
+          } catch (error) {
+            console.log("Durning Update", error.message);
+            // res.status(400).json({ message: error.message });
+          }
+        } else {
+          try {
+            // console.log("newItemList", newItemList);
+            const result = await newItemList.save();
+          } catch (error) {
+            console.log("Durning Insert", error.message);
+            // res.status(400).json({ message: error.message });
+          }
         }
       }
     });
