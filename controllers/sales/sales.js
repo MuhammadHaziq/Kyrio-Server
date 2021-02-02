@@ -1,5 +1,6 @@
 import express from "express";
 import Sales from "../../modals/sales/sales";
+import ItemList from "../../modals/items/ItemList";
 var mongoose = require('mongoose');
 const router = express.Router();
 
@@ -61,7 +62,7 @@ router.post("/", async (req, res) => {
     store,
     created_at
   } = req.body;
-  console.log("test")
+
   var errors = [];
   if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
     errors.push({ ticket_name: `Invalid ticket_name!` });
@@ -86,8 +87,31 @@ router.post("/", async (req, res) => {
     // } else{
     //   refNo = pad(refNo,"5")
     // }
-    
-    
+    // console.log(store)
+    for(const item of items){
+      if(item.trackStock) {
+        var storeItem = await ItemList.findOne({
+          _id: item.id,
+          stores: { $elemMatch: { id: store.storeId } },
+          accountId: accountId,
+        }).select([
+            "stockQty",
+            "stores.price",
+            "stores.inStock",
+            "stores.lowStock",
+          ]);
+          let storeQty = parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity) 
+          let itemQty = parseInt(storeItem.stockQty) - parseInt(item.quantity) 
+         await ItemList.updateOne(
+          {$and: [{ _id: item.id }, { "stores.id": store.storeId }]},
+          {  
+          $set: {
+            "stockQty": itemQty,
+            "stores.$.inStock": storeQty
+          }
+        });
+      }
+    }
     
     try {
       const newSales = await new Sales({
@@ -146,9 +170,9 @@ router.patch("/", async (req, res) => {
   if (!sale_id || typeof sale_id == "undefined" || sale_id == "") {
     errors.push({ sale_id: `Invalid Sale ID!` });
   }
-  if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
-    errors.push({ ticket_name: `Invalid ticket_name!` });
-  }
+  // if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
+  //   errors.push({ ticket_name: `Invalid ticket_name!` });
+  // }
   if (typeof items == "undefined" || items.length <= 0 || items == "") {
     errors.push({ items: `Invalid items!` });
   }

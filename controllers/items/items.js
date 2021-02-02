@@ -182,8 +182,9 @@ router.post("/", async (req, res) => {
   // res.status(200).send(data);
 
   var itemImageName = "";
-  let owner = await getOwner(_id);
-
+  // let owner = await getOwner(_id);
+console.log(repoOnPos)
+console.log(image)
   if (repoOnPos == "image") {
     if (
       req.files != null &&
@@ -193,11 +194,12 @@ router.post("/", async (req, res) => {
       if (typeof req.files.image != "undefined") {
         var uploadResult = await uploadFiles.uploadImages(
           image,
-          `items/${owner._id}`
+          `items/${accountId}`
         );
         if (!uploadResult.success) {
           res.status(404).json({ message: uploadResult.message });
         }
+        console.log(uploadResult.images[0])
         itemImageName = uploadResult.images[0];
         itemColor = "";
         itemShape = "";
@@ -264,7 +266,7 @@ router.patch("/", async (req, res) => {
   if (cost == "" || typeof cost === "undefined" || cost == null) {
     cost = 0;
   }
-  const { _id } = req.authData;
+  const { _id, accountId } = req.authData;
   if (varients !== undefined && varients !== null) {
     varients = JSON.parse(varients);
   }
@@ -301,7 +303,7 @@ router.patch("/", async (req, res) => {
   // res.status(200).send(data);
 
   var itemImageName = "";
-  let owner = await getOwner(_id);
+  // let owner = await getOwner(_id);
 
   var rootDir = process.cwd();
 
@@ -312,13 +314,13 @@ router.patch("/", async (req, res) => {
       typeof req.files != "undefined"
     ) {
       if (typeof req.files.image != "undefined") {
-        let fileUrl = `${rootDir}/uploads/items/${owner._id}/` + imageName;
+        let fileUrl = `${rootDir}/uploads/items/${accountId}/` + imageName;
         if (fs.existsSync(fileUrl)) {
           fs.unlinkSync(fileUrl);
         }
         var uploadResult = await uploadFiles.uploadImages(
           image,
-          `items/${owner._id}`
+          `items/${accountId}`
         );
         if (!uploadResult.success) {
           res.status(404).json({ message: uploadResult.message });
@@ -354,8 +356,7 @@ router.patch("/", async (req, res) => {
     createdBy: _id,
   };
   try {
-    await ItemList.updateOne({ _id: item_id }, data);
-    let result = await ItemList.findOne({ _id: item_id });
+    let result = await ItemList.findOneAndUpdate({ _id: item_id }, data);
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -420,35 +421,35 @@ router.get("/storeItems", async (req, res) => {
         "createdBy",
       ])
       .sort({ _id: "desc" });
-    let itemsObjectFilter = [];
-    for (const item of items) {
-      itemsObjectFilter.push({
-        _id: item._id,
-        category: item.category,
-        availableForSale: item.availableForSale,
-        soldByType: item.soldByType,
-        price: item.price,
-        cost: item.cost,
-        sku: item.sku,
-        barcode: item.barcode,
-        trackStock: item.trackStock,
-        compositeItem: item.compositeItem,
-        stockQty: item.stockQty,
-        varients: item.varients,
-        storeID: item.stores[0].id,
-        storePrice: item.stores[0].price,
-        inStock: item.stores[0].inStock,
-        lowStock: item.stores[0].lowStock,
-        modifiers: item.modifiers,
-        taxes: item.taxes,
-        repoOnPos: item.repoOnPos,
-        image: item.image,
-        color: item.color,
-        shape: item.shape,
-        createdAt: item.createdAt,
-        createdBy: item.createdBy,
-      });
-    }
+    let itemsObjectFilter = items;
+    // for (const item of items) {
+    //   itemsObjectFilter.push({
+    //     _id: item._id,
+    //     category: item.category,
+    //     availableForSale: item.availableForSale,
+    //     soldByType: item.soldByType,
+    //     price: item.price,
+    //     cost: item.cost,
+    //     sku: item.sku,
+    //     barcode: item.barcode,
+    //     trackStock: item.trackStock,
+    //     compositeItem: item.compositeItem,
+    //     stockQty: item.stockQty,
+    //     varients: item.varients,
+    //     storeID: item.stores[0].id,
+    //     storePrice: item.stores[0].price,
+    //     inStock: item.stores[0].inStock,
+    //     lowStock: item.stores[0].lowStock,
+    //     modifiers: item.modifiers,
+    //     taxes: item.taxes,
+    //     repoOnPos: item.repoOnPos,
+    //     image: item.image,
+    //     color: item.color,
+    //     shape: item.shape,
+    //     createdAt: item.createdAt,
+    //     createdBy: item.createdBy,
+    //   });
+    // }
 
     res.status(200).json(itemsObjectFilter);
   } catch (error) {

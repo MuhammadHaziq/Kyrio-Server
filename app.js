@@ -44,7 +44,7 @@ app.use(cookieParser());
 
 app.use("/media", express.static(path.join(__dirname, "./uploads")));
 app.use(
-  "/media/items/:ownerid",
+  "/media/items/:accountId",
   express.static(path.join(__dirname, "./uploads/items"))
 );
 app.use(
