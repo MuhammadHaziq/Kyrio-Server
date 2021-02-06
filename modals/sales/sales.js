@@ -1,21 +1,34 @@
 import mongoose from "mongoose";
 
 const salesSchema = new mongoose.Schema({
+  receipt_number: {
+    type: String,
+    min: 6,
+    max: 255,
+  },
   ticket_name: {
     type: String,
     min: 6,
     max: 255,
+  },
+  receipt_type: {
+    type: String,
+    min: 6,
+    max: 255,
+  },
+  refund_for: {
+    type: String,
+    min: 6,
+    max: 255,
+  },
+  cancelled_at: {
+    type: Date,
   },
   accountId: {
     type: String,
     min: 6,
     max: 255,
     required: true
-  },
-  sale_no: {
-    type: String,
-    min: 6,
-    max: 255,
   },
   sub_total: {
     type: String,
@@ -24,11 +37,6 @@ const salesSchema = new mongoose.Schema({
   },
   sale_timestamp: {
     type: Date,
-  },
-  device_no: {
-    type: String,
-    min: 6,
-    max: 255,
   },
   comments: {
     type: String,
@@ -75,11 +83,6 @@ const salesSchema = new mongoose.Schema({
     type: String,
     min: 3,
     max: 255,
-  },
-  refund_amount: {
-    type: Number,
-    min: 0,
-    max: 1000000,
   },
   items: [{
       id: {
@@ -242,6 +245,10 @@ const salesSchema = new mongoose.Schema({
     max: 255,
   },
   created_at: {
+    type: Date,
+    default: Date.now(),
+  },
+  updated_at: {
     type: Date,
     default: Date.now(),
   },

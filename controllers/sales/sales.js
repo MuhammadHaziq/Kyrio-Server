@@ -43,13 +43,13 @@ router.delete("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   const {
     ticket_name,
+    receipt_type,
     comments,
     open,
-    sale_no,
+    receipt_number,
     sub_total,
     sale_timestamp,
     completed,
-    device_no,
     total_price,
     cash_received,
     cash_return,
@@ -64,6 +64,12 @@ router.post("/", async (req, res) => {
   } = req.body;
 
   var errors = [];
+  if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
+    errors.push({ receipt_number: `Invalid Receipt No!` });
+  }
+  if (!receipt_type || typeof receipt_type == "undefined" || receipt_type == "") {
+    errors.push({ receipt_type: `Invalid Receipt Type!` });
+  }
   if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
     errors.push({ ticket_name: `Invalid ticket_name!` });
   }
@@ -92,7 +98,7 @@ router.post("/", async (req, res) => {
       if(item.trackStock) {
         var storeItem = await ItemList.findOne({
           _id: item.id,
-          stores: { $elemMatch: { id: store.storeId } },
+          stores: { $elemMatch: { id: store.id } },
           accountId: accountId,
         }).select([
             "stockQty",
@@ -103,7 +109,7 @@ router.post("/", async (req, res) => {
           let storeQty = parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity) 
           let itemQty = parseInt(storeItem.stockQty) - parseInt(item.quantity) 
          await ItemList.updateOne(
-          {$and: [{ _id: item.id }, { "stores.id": store.storeId }]},
+          {$and: [{ _id: item.id }, { "stores.id": store.id }]},
           {  
           $set: {
             "stockQty": itemQty,
@@ -115,12 +121,12 @@ router.post("/", async (req, res) => {
     
     try {
       const newSales = await new Sales({
+        receipt_number,
         ticket_name,
+        receipt_type,
         accountId,
-        sale_no,
         sub_total,
         sale_timestamp,
-        device_no,
         comments,
         open,
         completed,
@@ -146,14 +152,17 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.patch("/", async (req, res) => {
+router.post("/refund", async (req, res) => {
   const {
-    sale_id,
-    sub_total,
-    sale_timestamp,
+    receipt_number,
     ticket_name,
+    receipt_type,
+    refund_for,
     comments,
     open,
+    sub_total,
+    sale_timestamp,
+    completed,
     total_price,
     cash_received,
     cash_return,
@@ -166,13 +175,17 @@ router.patch("/", async (req, res) => {
     store,
     created_at
   } = req.body;
+
   var errors = [];
-  if (!sale_id || typeof sale_id == "undefined" || sale_id == "") {
-    errors.push({ sale_id: `Invalid Sale ID!` });
+  if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
+    errors.push({ receipt_number: `Invalid Receipt No!` });
   }
-  // if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
-  //   errors.push({ ticket_name: `Invalid ticket_name!` });
-  // }
+  if (!receipt_type || typeof receipt_type == "undefined" || receipt_type == "") {
+    errors.push({ receipt_type: `Invalid Receipt Type!` });
+  }
+  if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
+    errors.push({ ticket_name: `Invalid ticket_name!` });
+  }
   if (typeof items == "undefined" || items.length <= 0 || items == "") {
     errors.push({ items: `Invalid items!` });
   }
@@ -182,99 +195,161 @@ router.patch("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id } = req.authData;
+    const { _id, accountId } = req.authData;
+
+    let getSale = await Sales.findOne({$and: [{ receipt_number: refund_for }, { accountId: accountId }]});
+      if(getSale){
+     
+    for(const item of items){
+      await Sales.updateOne(
+        {$and: [{ _id: getSale._id }, { "items.id": item.id }]},
+        {
+          $set: {
+            "items.$.refund_quantity": item.quantity,
+            "updated_at": created_at
+          },
+        }
+      )
+      if(item.trackStock) {
+        var storeItem = await ItemList.findOne({
+          _id: item.id,
+          stores: { $elemMatch: { id: store.id } },
+          accountId: accountId,
+        }).select([
+            "stockQty",
+            "stores.price",
+            "stores.inStock",
+            "stores.lowStock",
+          ]);
+          if(storeItem){
+          let storeQty = parseInt(storeItem.stores[0].inStock) + parseInt(item.quantity) 
+          let itemQty = parseInt(storeItem.stockQty) + parseInt(item.quantity) 
+          await ItemList.updateOne(
+                  {$and: [{ _id: item.id }, { "stores.id": store.id }]},
+                  {  
+                  $set: {
+                    "stockQty": itemQty,
+                    "stores.$.inStock": storeQty
+                  }
+                });
+          }
+      }
+    }
     try {
-    
-      let data = {
+      const newRefund = await new Sales({
+        receipt_number,
+        ticket_name,
+        receipt_type,
+        refund_for,
+        accountId,
         sub_total,
         sale_timestamp,
-        ticket_name,
         comments,
         open,
+        completed,
         total_price,
         cash_received,
         cash_return,
         total_after_discount,
-        refund_status: "",
-        refund_amount: 0,
         total_discount,
         total_tax,
+        refund_status: "",
+        refund_amount: 0,
         items,
         discounts,
         variant,
         store,
         created_by: _id,
         created_at
-      };
-      await Sales.updateOne({ _id: sale_id }, data);
-      let getUpdatedSale = await Sales.findOne({ _id: sale_id });
-      if(getUpdatedSale == null){
-        res.status(200).json({message: "No Data Found! Invalid Sale ID"});
-      }else{
-        res.status(200).json(getUpdatedSale);
-      }
+      }).save();
+      let refundedSale = await Sales.findOne({$and: [{ _id: getSale._id }, { accountId: accountId }]});
+      res.status(200).json({refundReceipt: newRefund, saleReceipt: refundedSale});
+    
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
+  } else {
+    res.status(404).json({message: "No Data Found!"});
+  }
   }
 });
-router.patch("/refund", async (req, res) => {
+router.patch("/cancel", async (req, res) => {
   const {
-    sale_id,
-    sub_total,
-    sale_timestamp,
-    refund_amount,
-    total_price,
-    cash_received,
-    cash_return,
-    total_after_discount,
-    total_discount,
-    total_tax,
-    items,
+    receipt_number,
+    storeId,
+    cancelled_at
   } = req.body;
+
   var errors = [];
-  if (!sale_id || typeof sale_id == "undefined" || sale_id == "") {
-    errors.push({ sale_id: `Invalid Sale ID!` });
+  if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
+    errors.push({ receipt_number: `Invalid Receipt No!` });
   }
-  if (typeof items == "undefined" || items.length <= 0 || items == "") {
-    errors.push({ items: `Invalid items!` });
+  if (!cancelled_at || typeof cancelled_at == "undefined" || cancelled_at == "") {
+    errors.push({ cancelled_at: `Invalid Cancelled At!` });
+  }
+  if (typeof storeId == "undefined" || storeId == "") {
+    errors.push({ storeId: `Invalid store ID!` });
   }
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    try {
-      let getRefundedSale = await Sales.findOne({ _id: sale_id });
-      if(getRefundedSale){
-        for (const item of items) {
-          await Sales.updateOne(
-              {$and: [{ _id: sale_id }, { "items.id": item.id }]},
-              {
-                $set: {
-                  "items.$.refund_quantity": item.refund_quantity,
-                  "refund_status": item.refund_quantity == item.quantity ? "Full" : "Partial Refund",
-                  "total_price": total_price,
-                  "sub_total": sub_total,
-                  "sale_timestamp": sale_timestamp,
-                  "cash_received": cash_received,
-                  "total_after_discount": total_after_discount,
-                  "cash_return": cash_return,
-                  "total_discount": total_discount,
-                  "total_tax": total_tax,
-                  "refund_amount": refund_amount
-                },
-              }
-            )
+    const { _id, accountId } = req.authData;
+
+    let getSale = await Sales.findOne({$and: [{ receipt_number: receipt_number }, { accountId: accountId }, { "store.id": storeId }]});
+      if(getSale){
+     
+    for(const item of getSale.items){
+     
+      if(item.trackStock) {
+        
+        var storeItem = await ItemList.findOne({
+          _id: item.id,
+          stores: { $elemMatch: { id: storeId } },
+          accountId: accountId,
+        }).select([
+            "stockQty",
+            "stores.price",
+            "stores.inStock",
+            "stores.lowStock",
+          ]);
+          
+          if(storeItem){
+            let storeQty = parseInt(storeItem.stores[0].inStock);
+            let itemQty = parseInt(storeItem.stockQty);
+            if(getSale.receipt_type == "REFUND"){
+              storeQty = parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity) 
+              itemQty = parseInt(storeItem.stockQty) - parseInt(item.quantity) 
+            } else {
+              storeQty = parseInt(storeItem.stores[0].inStock) + parseInt(item.quantity) 
+              itemQty = parseInt(storeItem.stockQty) + parseInt(item.quantity) 
+            }
+          
+          await ItemList.updateOne(
+                  {$and: [{ _id: item.id }, { "stores.id": storeId }]},
+                  {  
+                  $set: {
+                    "stockQty": itemQty,
+                    "stores.$.inStock": storeQty
+                  }
+                });
           }
-      
-        getRefundedSale = await Sales.findOne({ _id: sale_id });
-        res.status(200).json(getRefundedSale);
-      } else {
-        res.status(404).json({message: "No Data Found!"});
       }
+    }
+    try {
+      let cancelledSale = await Sales.findOneAndUpdate({ _id: getSale._id }, {cancelled_at: cancelled_at}, {
+        new: true,
+        upsert: true, // Make this update into an upsert
+      });
+      res.status(200).json(cancelledSale);
+    
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
+  } else {
+    res.status(404).json({message: "No Data Found!"});
+  }
   }
 });
+
 
 module.exports = router;
