@@ -1,11 +1,28 @@
 import express from "express";
 import Role from "../../modals/role";
+import Modules from "../../modals/modules";
 import {
   removeSpaces,
   removeNumberSpaces,
 } from "../../function/validateFunctions";
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
+
+router.get("/get_roles_modules", async (req, res) => {
+  try {
+    var result = await Modules.find();
+    var specificResult = [];
+    (result || []).map((item) => {
+      specificResult.push({
+        backofficeModules: { enable: false, modules: item.backofficeModules },
+        posModules: { enable: false, modules: item.posModules },
+      });
+    });
+    res.status(200).send(specificResult);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 router.get("/", async (req, res) => {
   try {
@@ -35,13 +52,7 @@ router.delete("/:ids", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const {
-    userId,
-    features,
-    allowBackoffice,
-    allowPOS,
-    settings,
-  } = req.body;
+  const { userId, features, allowBackoffice, allowPOS, settings } = req.body;
   var errors = [];
   if (
     (!features || typeof features == "undefined" || features.lenght === 0) &&
@@ -86,13 +97,7 @@ router.post("/", async (req, res) => {
   }
 });
 router.patch("/", async (req, res) => {
-  const {
-    userId,
-    features,
-    allowBackoffice,
-    allowPOS,
-    settings,
-  } = req.body;
+  const { userId, features, allowBackoffice, allowPOS, settings } = req.body;
   var errors = [];
   if (
     (!features || typeof features == "undefined" || features.lenght === 0) &&
