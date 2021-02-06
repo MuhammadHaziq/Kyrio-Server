@@ -15,8 +15,8 @@ var app = express();
 app.use(cors());
 app.use(
   fileUpload({
-    limits: { fileSize: '2mb' },
-    abortOnLimit: true,
+    // limits: { fileSize: '2mb' },
+    // abortOnLimit: true,
     createParentPath: true,
     limitHandler: (req, res, next) => {
       return res.status(422).send({
