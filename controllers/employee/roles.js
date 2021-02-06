@@ -5,15 +5,6 @@ import Modules from "../../modals/modules";
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
 
-/******* APIs which needs to be created within usercontroller********/ 
-/*
-  1- Get all roles with Access levels like Backoffice enabled/disabled and POS enbaled/disabled and also get total number of employees within the that role also Owner Role will only have 1 employee
-  2- Get all modules to show them while creating new role
-  3- Create New roles with Different Access rights
-  4- Create employee with a specific role
-*/
-
-
 router.get("/:roleId", async (req, res) => {
   try {
     const { roleId } = req.params;
