@@ -13,23 +13,25 @@ import fileUpload from "express-fileupload";
 dotenv.config();
 var app = express();
 app.use(cors());
-app.use(
-  fileUpload({
-    // limits: { fileSize: '2mb' },
-    // abortOnLimit: true,
-    createParentPath: true,
-    limitHandler: (req, res, next) => {
-      return res.status(422).send({
-        success: "false",
-        message: "File size limit has been reached",
-      });
-    },
-  })
-);
-app.use(bodyParser.json());
+// app.use(
+//   fileUpload({
+//     limits: { fileSize: '50mb' },
+//     abortOnLimit: true,
+//     createParentPath: true,
+//     limitHandler: (req, res, next) => {
+//       return res.status(422).send({
+//         success: "false",
+//         message: "File size limit has been reached",
+//       });
+//     },
+//   })
+// );
+app.use(fileUpload());
+app.use(bodyParser.json({limit: '50mb', type: 'application/json'}));
 app.use(
   bodyParser.urlencoded({
-    extended: true,
+    limit: '50mb',
+    extended: true
   })
 );
 // view engine setup
