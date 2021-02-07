@@ -11,15 +11,17 @@ import md5 from "md5";
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
 
-
 router.get("/", async (req, res) => {
   try {
     const { storeId } = req.body;
-    
+
     const { accountId } = req.authData;
     let result;
-    if(typeof storeId !== "undefined"){
-      result = await Users.find({ accountId: accountId, 'stores.id': storeId }).sort({
+    if (typeof storeId !== "undefined") {
+      result = await Users.find({
+        accountId: accountId,
+        "stores.id": storeId,
+      }).sort({
         _id: "desc",
       });
     } else {
@@ -124,10 +126,22 @@ router.delete("/:ids", async (req, res) => {
   }
 });
 
+router.get("/:ids", async (req, res) => {
+  try {
+    var { ids } = req.params;
+    let result = [];
+    if (ObjectId.isValid(ids)) {
+      result = await Users.findOne({ _id: ids });
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 router.post("/", async (req, res) => {
   const { name, email, phone, roles, stores } = req.body;
-  let { posPin, sendMail } = req.body
+  let { posPin, sendMail } = req.body;
   var errors = [];
   if (
     (!name || typeof name == "undefined" || name == "") &&
@@ -138,52 +152,62 @@ router.post("/", async (req, res) => {
     errors.push({ email: `Invalid Employee Email!` });
     errors.push({ phone: `Invalid Employee phone!` });
   }
-  if (posPin !== undefined && posPin === '0000' && posPin === '000' && posPin === '00' && posPin === '0') {
+  if (
+    posPin !== undefined &&
+    posPin === "0000" &&
+    posPin === "000" &&
+    posPin === "00" &&
+    posPin === "0"
+  ) {
     errors.push({ posPin: `Please Enter Pos Pin!` });
   }
   if (sendMail === undefined) {
-    sendMail = false
+    sendMail = false;
   }
   if (posPin === undefined) {
-    posBin = '0000'
+    posBin = "0000";
   }
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     const { _id, accountId } = req.authData;
 
-    let role = JSON.parse(roles)
+    let role = JSON.parse(roles);
     try {
-      
-      if(role.name !== "Owner") {
+      if (role.name !== "Owner") {
         let user = await Users.findOne({ email: email });
-        if(!user){
-            let users = new Users({
-              name: removeSpaces(name),
-              accountId: accountId,
-              phone: removeSpaces(phone),
-              email: email,
-              password: md5("123456"),
-              emailVerified: false,
-              role_id: role.id,
-              role: role,
-              stores: JSON.parse(stores),
-              sendMail: (sendMail),
-              posPin: posPin,
-              created_by: _id,
+        if (!user) {
+          let users = new Users({
+            name: removeSpaces(name),
+            accountId: accountId,
+            phone: removeSpaces(phone),
+            email: email,
+            password: md5("123456"),
+            emailVerified: false,
+            role_id: role.id,
+            role: role,
+            stores: JSON.parse(stores),
+            sendMail: sendMail,
+            posPin: posPin,
+            created_by: _id,
+          });
+          users
+            .save()
+            .then(async (result) => {
+              res.status(200).json(result);
+            })
+            .catch((error) => {
+              res.status(400).json({ message: error.message });
             });
-            users
-              .save()
-              .then(async (result) => {
-                res.status(200).json(result);
-              }).catch(error=>{
-                res.status(400).json({ message: error.message });
-              })
         } else {
-          res.status(400).json({ message: "Employee already exist with this email" });
+          res
+            .status(400)
+            .json({ message: "Employee already exist with this email" });
         }
       } else {
-        res.status(400).json({ message: "Cannot create 2nd Owner of the store" });
+        res
+          .status(400)
+          .json({ message: "Cannot create 2nd Owner of the store" });
       }
     } catch (error) {
       if (error.code === 11000) {
@@ -196,7 +220,7 @@ router.post("/", async (req, res) => {
 });
 router.patch("/", async (req, res) => {
   const { id, name, email, phone, roles, stores } = req.body;
-  let { posPin, sendMail } = req.body
+  let { posPin, sendMail } = req.body;
   var errors = [];
   if (
     (!name || typeof name == "undefined" || name == "") &&
@@ -207,14 +231,20 @@ router.patch("/", async (req, res) => {
     errors.push({ email: `Invalid Employee Email!` });
     errors.push({ phone: `Invalid Employee phone!` });
   }
-  if (posPin !== undefined && posPin === '0000' && posPin === '000' && posPin === '00' && posPin === '0') {
+  if (
+    posPin !== undefined &&
+    posPin === "0000" &&
+    posPin === "000" &&
+    posPin === "00" &&
+    posPin === "0"
+  ) {
     errors.push({ posPin: `Please Enter Pos Pin!` });
   }
   if (sendMail === undefined) {
-    sendMail = false
+    sendMail = false;
   }
   if (posPin === undefined) {
-    posPin = '0000'
+    posPin = "0000";
   }
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
@@ -227,7 +257,7 @@ router.patch("/", async (req, res) => {
         phone: removeSpaces(phone),
         role: JSON.parse(roles),
         stores: JSON.parse(stores),
-        sendMail: (sendMail),
+        sendMail: sendMail,
         posPin: posPin,
         created_by: _id,
       };

@@ -9,7 +9,6 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    
     var result = await TimeCard.aggregate([
       { $unwind: { path: "$timeDetail", preserveNullAndEmptyArrays: true } },
       { $sort: { "timeDetail._id": -1 } },
@@ -58,6 +57,7 @@ router.post("/", async (req, res) => {
     clockOutDate,
     clockInTime,
     clockOutTime,
+    totalWorkingHour,
   } = req.body;
   var errors = [];
   if (!store || typeof store == "undefined" || store == "") {
@@ -101,6 +101,7 @@ router.post("/", async (req, res) => {
             clockOutDate: removeSpaces(clockOutDate),
             clockInTime: removeSpaces(clockInTime),
             clockOutTime: removeSpaces(clockOutTime),
+            totalWorkingHour: removeSpaces(totalWorkingHour),
           },
         ],
         created_by: _id,
@@ -113,7 +114,14 @@ router.post("/", async (req, res) => {
 });
 
 router.patch("/", async (req, res) => {
-  const { id, clockInDate, clockOutDate, clockInTime, clockOutTime } = req.body;
+  const {
+    id,
+    clockInDate,
+    clockOutDate,
+    clockInTime,
+    clockOutTime,
+    totalWorkingHour,
+  } = req.body;
   var errors = [];
   if (!clockInDate || typeof clockInDate == "undefined" || clockInDate == "") {
     errors.push({ clockInDate: "Please Add Clock In Date" });
@@ -145,6 +153,7 @@ router.patch("/", async (req, res) => {
         clockOutDate: removeSpaces(clockOutDate),
         clockInTime: removeSpaces(clockInTime),
         clockOutTime: removeSpaces(clockOutTime),
+        totalWorkingHour: removeSpaces(totalWorkingHour),
         event: "Edited",
       };
       const result = await TimeCard.updateOne(

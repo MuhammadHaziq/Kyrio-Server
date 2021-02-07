@@ -1,6 +1,7 @@
 import express from "express";
 import Role from "../../modals/role";
 import Modules from "../../modals/modules";
+import Users from "../../modals/users";
 import {
   removeSpaces,
   removeNumberSpaces,
@@ -12,11 +13,29 @@ router.get("/get_roles_modules", async (req, res) => {
   try {
     var result = await Modules.find();
     var specificResult = [];
+    var backOffice = [];
+    var posModules = [];
     (result || []).map((item) => {
-      specificResult.push({
-        backofficeModules: { enable: false, modules: item.backofficeModules },
-        posModules: { enable: false, modules: item.posModules },
+      item.backofficeModules.map((back) => {
+        backOffice.push({
+          moduleId: back._id,
+          moduleName: back.moduleName,
+          description:
+            typeof back.description !== "undefined" ? back.description : "",
+        });
       });
+      item.posModules.map((pos) => {
+        posModules.push({
+          moduleId: pos._id,
+          moduleName: pos.moduleName,
+          description:
+            typeof pos.description !== "undefined" ? pos.description : "",
+        });
+      });
+    });
+    specificResult.push({
+      backofficeModules: { enable: false, modules: backOffice },
+      posModules: { enable: false, modules: posModules },
     });
     res.status(200).send(specificResult);
   } catch (err) {
@@ -26,11 +45,39 @@ router.get("/get_roles_modules", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { _id } = req.authData;
-    var result = await Role.find({ user_id: _id }).sort({
+    const { accountId, _id } = req.authData;
+    // var result = await Role.find({ user_id: _id }).sort({
+    //   _id: "desc",
+    // });
+    let accessRights = [];
+
+    var roles = await Role.find({ accountId: accountId }).sort({
       _id: "desc",
     });
-    res.status(200).json(result);
+    for (const role of roles) {
+      let access =
+        role.allowBackoffice.enable && role.allowPOS.enable
+          ? "Back office and POS"
+          : role.allowBackoffice.enable && !role.allowPOS.enable
+          ? "Back office"
+          : !role.allowBackoffice.enable && role.allowPOS.enable
+          ? "POS"
+          : "";
+
+      let NoOfEmployees = await Users.find({
+        role_id: role._id,
+      }).countDocuments();
+      accessRights.push({
+        role_id: role._id,
+        roleName: role.roleName,
+        access: access,
+        NoOfEmployees: NoOfEmployees,
+        allowBackoffice: role.allowBackoffice,
+        allowPOS: role.allowPOS,
+      });
+    }
+    res.status(200).json(accessRights);
+    // res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

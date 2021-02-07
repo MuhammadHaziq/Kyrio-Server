@@ -18,7 +18,7 @@ const timeCardSchema = new mongoose.Schema({
     type: String,
     min: 6,
     max: 255,
-    required: true
+    required: true,
   },
   store: {
     _id: false,
@@ -51,6 +51,11 @@ const timeCardSchema = new mongoose.Schema({
         max: 255,
       },
       clockOutTime: {
+        type: String,
+        min: 1,
+        max: 255,
+      },
+      totalWorkingHour: {
         type: String,
         min: 1,
         max: 255,
