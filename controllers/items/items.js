@@ -183,8 +183,7 @@ router.post("/", async (req, res) => {
 
   var itemImageName = "";
   // let owner = await getOwner(_id);
-console.log(repoOnPos)
-console.log(image)
+
   if (repoOnPos == "image") {
     if (
       req.files != null &&
@@ -371,7 +370,7 @@ router.get("/", async (req, res) => {
     const endIndex = page * limit;
 
     var result = await ItemList.find({
-      stores: { $elemMatch: { id: storeId } },
+      // stores: { $elemMatch: { id: storeId } },
       accountId: accountId,
     }).sort({ _id: "desc" });
     // .select('name -_id  category.categoryId');
@@ -772,7 +771,7 @@ router.post("/save_csv", async (req, res) => {
           availableForSale: false,
           createdBy: _id,
         });
-        console.log("New Item List", newItemList);
+        // console.log("New Item List", newItemList);
         if (Exist.length > 0 && Exist !== null) {
           try {
             await ItemList.updateOne(

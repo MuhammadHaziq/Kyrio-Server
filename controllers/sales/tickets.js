@@ -32,7 +32,7 @@ router.post("/saveOpenTicket", async (req, res) => {
   if (typeof ticket_name == "undefined" || ticket_name.length <= 0) {
     errors.push({ ticket_name: `Invalid tickets!` });
   }
-  if (typeof store == "undefined" || store == "") {
+  if (typeof store == "undefined" || store == "" || store == null || store == {}) {
     errors.push({ store: `Invalid store!` });
   }
   if (errors.length > 0) {
@@ -40,6 +40,7 @@ router.post("/saveOpenTicket", async (req, res) => {
   } else {
     const { _id, accountId } = req.authData;
     try {
+      if(Object.keys(store).length !== 0 && store.constructor === Object){
       const newTickets = await new Tickets({
         ticket_name: ticket_name,
         comments: comments,
@@ -50,6 +51,9 @@ router.post("/saveOpenTicket", async (req, res) => {
       res
         .status(200)
         .json({ message: "Ticket Successfully Added!", newTickets });
+      } else {
+        res.status(400).json({ message: "Store is not selected" });  
+      }
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

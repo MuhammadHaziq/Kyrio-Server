@@ -35,10 +35,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/get_store_employee_list", async (req, res) => {
+router.get("/get_store_employee_list/:storeId", async (req, res) => {
   try {
     const { accountId } = req.authData;
-    const { storeId } = req.query;
+    const { storeId } = req.params;
     let filter = "";
     if (storeId === undefined || storeId === "" || storeId === "0") {
       filter = { accountId: accountId };
