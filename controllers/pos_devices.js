@@ -1,5 +1,6 @@
 import express from "express";
 import POS_Device from "../modals/POS_Device";
+import Shifts from "../modals/employee/shifts";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -82,7 +83,12 @@ router.post("/getStoreDevice", async (req, res) => {
           },
         }
       );
-      res.status(200).json(result);
+      var shift = await Shifts.findOne({ pos_device_id: result._id, closed_at: null, accountId: accountId });
+      if(shift){
+        res.status(200).json({device: result, openShift: shift});
+      } else {
+        res.status(200).json({device: result, openShift: null});
+      }
     } else {
       res
         .status(200)

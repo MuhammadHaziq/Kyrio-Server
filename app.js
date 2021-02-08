@@ -10,8 +10,11 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
 
-dotenv.config();
 var app = express();
+var server = require('http').createServer(app)
+var io = require('socket.io')(server)
+
+dotenv.config();
 app.use(cors());
 // app.use(
 //   fileUpload({
@@ -58,6 +61,12 @@ app.use(
 app.use((req, res, next) => {
   next(createError(404));
 });
+io.on('connection', (socket) => {
+  console.log('a user connected');
+  socket.on('chat message', () => {
+    console.log('New Message');
+  });
+});
 mongoose.connect(
   process.env.NODE_ENV == "production"
     ? process.env.MONGO_LIVE_URL
@@ -72,6 +81,7 @@ mongoose.connect(
     process.env.NODE_ENV == "production"
       ? console.log("Connected to Mongodb Cloud Server")
       : console.log("Connected to Mongodb Local Server");
+      io.emit('chat message', "test");
   }
 );
 mongoose.connection.on("error", (err) => {
@@ -89,4 +99,4 @@ app.use((err, req, res, next) => {
   res.render("error");
 });
 
-module.exports = app;
+module.exports = { app, server };
