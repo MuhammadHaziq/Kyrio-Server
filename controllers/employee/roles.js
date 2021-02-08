@@ -310,7 +310,7 @@ router.patch("/update", async (req, res) => {
             upsert: true, // Make this update into an upsert
           });
           const response = await get_role_summary(roleId, accountId);
-          console.log("1", response);
+          
           if (response.status == true) {
             res.status(200).json(response.data[0]);
           } else {
