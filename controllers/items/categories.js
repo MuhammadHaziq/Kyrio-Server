@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
     catTitle: catTitle,
     accountId: accountId,
     catColor: catColor,
-    createdBy: _id,
+    created_by: _id,
   });
   try {
     const newCatResult = await newCat.save();
@@ -29,7 +29,6 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { accountId } = req.authData;
-    console.log(accountId);
     const allCat = await Category.find({ accountId: accountId }).sort({
       _id: "desc",
     });
@@ -42,8 +41,8 @@ router.get("/", async (req, res) => {
         _id: cate._id,
         catTitle: cate.catTitle,
         catColor: cate.catColor,
-        createdAt: cate.createdAt,
-        createdBy: cate.createdBy,
+        created_at: cate.created_at,
+        created_by: cate.created_by,
         total_items: itemCount,
       });
     }
@@ -81,13 +80,13 @@ router.get("/categoryItem", async (req, res) => {
 *    if (categoryFilter == undefined && categoryFilter == null && categoryFilter == '') {
     *  filters = {
     *    stores: { $elemMatch: { id: storeId } },
-    *    createdBy: _id,
+    *    created_by: _id,
     *  };
     *} else {
     *  filters = {
     *    stores: { $elemMatch: { id: storeId } },
           "category.id": categoryFilter,
-        createdBy: _id,
+        created_by: _id,
       };
     }
 *

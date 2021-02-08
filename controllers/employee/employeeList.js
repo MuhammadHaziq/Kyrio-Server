@@ -140,7 +140,7 @@ router.get("/:ids", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, email, phone, roles, stores } = req.body;
+  const { name, email, phone, roles, stores, enablePin } = req.body;
   let { posPin, sendMail } = req.body;
   var errors = [];
   if (
@@ -189,6 +189,7 @@ router.post("/", async (req, res) => {
             stores: JSON.parse(stores),
             sendMail: sendMail,
             posPin: posPin,
+            enablePin: enablePin,
             created_by: _id,
           });
           users
@@ -219,7 +220,7 @@ router.post("/", async (req, res) => {
   }
 });
 router.patch("/", async (req, res) => {
-  const { id, name, email, phone, roles, stores } = req.body;
+  const { id, name, email, phone, roles, stores, enablePin } = req.body;
   let { posPin, sendMail } = req.body;
   var errors = [];
   if (
@@ -259,6 +260,7 @@ router.patch("/", async (req, res) => {
         stores: JSON.parse(stores),
         sendMail: sendMail,
         posPin: posPin,
+        enablePin: enablePin,
         created_by: _id,
       };
       // let data = {

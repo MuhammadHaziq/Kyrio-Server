@@ -22,6 +22,9 @@ const usersSchema = new mongoose.Schema({
     min: 3,
     max: 255,
   },
+  enablePin: {
+    type: Boolean
+  },
   sendMail: {
     type: Boolean,
     default: false
@@ -89,6 +92,10 @@ const usersSchema = new mongoose.Schema({
     max: 255
   },
   createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+  updated_at: {
     type: Date,
     default: Date.now(),
   },

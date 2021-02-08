@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
     value: value,
     restricted: restricted,
     stores: stores,
-    createdBy: _id,
+    created_by: _id,
   });
   try {
     const result = await newDiscount.save();

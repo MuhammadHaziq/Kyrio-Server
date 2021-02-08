@@ -56,9 +56,9 @@ router.post("/", async (req, res) => {
     total_after_discount,
     total_discount,
     total_tax,
+    customer,
     items,
     discounts,
-    variant,
     store,
     created_at
   } = req.body;
@@ -98,7 +98,7 @@ router.post("/", async (req, res) => {
       if(item.trackStock) {
         var storeItem = await ItemList.findOne({
           _id: item.id,
-          stores: { $elemMatch: { id: store.id } },
+          stores: { $elemMatch: { id: store._id } },
           accountId: accountId,
         }).select([
             "stockQty",
@@ -106,10 +106,10 @@ router.post("/", async (req, res) => {
             "stores.inStock",
             "stores.lowStock",
           ]);
-          let storeQty = parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity) 
+          let storeQty = typeof storeItem.stores !== "undefined" ? parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity) : parseInt(item.quantity)
           let itemQty = parseInt(storeItem.stockQty) - parseInt(item.quantity) 
          await ItemList.updateOne(
-          {$and: [{ _id: item.id }, { "stores.id": store.id }]},
+          {$and: [{ _id: item.id }, { "stores.id": store._id }]},
           {  
           $set: {
             "stockQty": itemQty,
@@ -140,10 +140,11 @@ router.post("/", async (req, res) => {
         refund_amount: 0,
         items,
         discounts,
-        variant,
+        customer,
         store,
         created_by: _id,
-        created_at
+        created_at,
+        updated_at: created_at
       }).save();
       res.status(200).json(newSales);
     } catch (error) {
@@ -171,7 +172,7 @@ router.post("/refund", async (req, res) => {
     total_tax,
     items,
     discounts,
-    variant,
+    customer,
     store,
     created_at
   } = req.body;
@@ -257,10 +258,11 @@ router.post("/refund", async (req, res) => {
         refund_amount: 0,
         items,
         discounts,
-        variant,
+        customer,
         store,
         created_by: _id,
-        created_at
+        created_at,
+        updated_at: created_at
       }).save();
       let refundedSale = await Sales.findOne({$and: [{ _id: getSale._id }, { accountId: accountId }]});
       res.status(200).json({refundReceipt: newRefund, saleReceipt: refundedSale});

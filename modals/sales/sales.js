@@ -106,7 +106,8 @@ const salesSchema = new mongoose.Schema({
         max: 255,
       },
       taxes: [{
-        id: {
+        _id: false,
+        _id: {
             type: String,
             min: 6,
             max: 255,
@@ -128,6 +129,12 @@ const salesSchema = new mongoose.Schema({
           },
       }],
       discounts: [{
+        _id: false,
+        _id: {
+          type: String,
+          min: 6,
+          max: 255,
+        },
         name: {
           type: String,
           min: 6,
@@ -145,7 +152,8 @@ const salesSchema = new mongoose.Schema({
         }
       }],
       variant: {
-        id: {
+        _id: false,
+        _id: {
           type: String,
           min: 6,
           max: 255,
@@ -162,7 +170,8 @@ const salesSchema = new mongoose.Schema({
         },
       },
       modifiers: [{
-        id: {
+        _id: false,
+        _id: {
           type: String,
           min: 6,
           max: 255,
@@ -187,6 +196,12 @@ const salesSchema = new mongoose.Schema({
     }],
   }],
   discounts: [{
+    _id: false,
+    _id: {
+      type: String,
+      min: 6,
+      max: 255,
+    },
     name: {
       type: String,
       min: 6,
@@ -204,7 +219,8 @@ const salesSchema = new mongoose.Schema({
     }
   }],
   dining_option: {
-    id: {
+    _id: false,
+    _id: {
         type: String,
         min: 6,
         max: 255,
@@ -216,7 +232,8 @@ const salesSchema = new mongoose.Schema({
       }
   },
   customer: {
-    id: {
+    _id: false,
+    _id: {
         type: String,
         min: 6,
         max: 255,
@@ -228,7 +245,8 @@ const salesSchema = new mongoose.Schema({
       }
   },
   store: {
-    id: {
+    _id: false,
+    _id: {
         type: String,
         min: 6,
         max: 255,

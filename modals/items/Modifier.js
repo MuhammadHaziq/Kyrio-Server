@@ -57,15 +57,19 @@ const modifierSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  createdAt: {
+  created_at: {
     type: Date,
     default: Date.now(),
   },
-  createdBy: {
+  created_by: {
     type: String,
     min: 3,
     max: 255,
     required: true,
+  },
+  updated_at: {
+    type: Date,
+    default: Date.now(),
   },
 });
 modifierSchema.pre("save", function (next) {

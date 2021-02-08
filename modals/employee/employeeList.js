@@ -68,6 +68,10 @@ const employeeListSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  updated_at: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 employeeListSchema.index(

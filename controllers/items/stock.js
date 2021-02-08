@@ -23,7 +23,7 @@ router.post("/create", async (req, res) => {
     const { _id, accountId } = req.authData;
     const newStcokItem = new Stock({
       stockTitle,
-      createdBy: _id,
+      created_by: _id,
       accountId: accountId
     });
 

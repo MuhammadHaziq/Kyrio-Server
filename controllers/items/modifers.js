@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
       options: jsonOptions,
       stores: jsonStores,
       position: countModifier + 1,
-      createdBy: _id,
+      created_by: _id,
     });
     const result = await newModifier.save();
     res.status(201).json(result);
@@ -46,7 +46,7 @@ router.get("/:storeId", async (req, res) => {
     storeFilter.accountId = accountId;
     // const result = await Modifier.find({
     //   stores: { $elemMatch: { id: storeId } },
-    //   createdBy: _id,
+    //   created_by: _id,
     // }).sort({ _id: "desc" });
     const result = await Modifier.find(storeFilter).sort({ position: "asc" });
     res.status(200).json(result);

@@ -46,7 +46,8 @@ const ticketsSchema = new mongoose.Schema({
     max: 255,
   },
   updated_at: {
-    type: Date
+    type: Date,
+    default: Date.now(),
   },
 });
 

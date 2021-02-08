@@ -13,15 +13,19 @@ const StockSchema = new mongoose.Schema({
     max: 255,
     required: true
   },
-  createdAt: {
+  created_at: {
     type: Date,
     default: Date.now(),
   },
-  createdBy: {
+  created_by: {
     type: String,
     min: 3,
     max: 255,
     required: true,
+  },
+  updated_at: {
+    type: Date,
+    default: Date.now(),
   },
 });
 StockSchema.index(

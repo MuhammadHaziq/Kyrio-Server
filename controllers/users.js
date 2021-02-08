@@ -110,6 +110,7 @@ router.post("/signup", checkModules, async (req, res) => {
         
         let user = {
           _id: result._id,
+          name: result.name,
           email: result.email,
           emailVerified: result.emailVerified,
           businessName: account.businessName,
@@ -118,6 +119,9 @@ router.post("/signup", checkModules, async (req, res) => {
           created_by: result._id,
           accountId: account._id,
           owner_id: result._id,
+          is_owner: typeof result.owner_id !== "undefined" ? true : false,
+          posPin: typeof result.posPin !== "undefined" ? result.posPin : null,
+          enablePin: typeof result.enablePin !== "undefined" ? result.enablePin : null
         };
         
 
@@ -180,6 +184,7 @@ router.post("/signin", async (req, res) => {
           // var paymentTypeStoreId = stores[0]._id;
           let user = {
             _id: result._id,
+            name: result.name,
             email: result.email,
             emailVerified: result.emailVerified,
             businessName: account.businessName,
@@ -187,7 +192,10 @@ router.post("/signin", async (req, res) => {
             role_id: result.role_id,
             created_by: result.created_by,
             owner_id: typeof result.owner_id !== "undefined" ? result.owner_id : null,
-            accountId: result.accountId
+            accountId: result.accountId,
+            is_owner: typeof result.owner_id !== "undefined" ? true : false,
+            posPin: typeof result.posPin !== "undefined" ? result.posPin : null,
+            enablePin: typeof result.enablePin !== "undefined" ? result.enablePin : null
           };
 
           jwt.sign(user, "kyrio_bfghigheu", (err, token) => {

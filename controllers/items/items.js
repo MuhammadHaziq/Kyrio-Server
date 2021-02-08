@@ -225,7 +225,7 @@ router.post("/", async (req, res) => {
     image: itemImageName,
     color: itemColor,
     shape: itemShape,
-    createdBy: _id,
+    created_by: _id,
   });
   try {
     const result = await newItemList.save();
@@ -352,7 +352,7 @@ router.patch("/", async (req, res) => {
     image: itemImageName,
     color: itemColor,
     shape: itemShape,
-    createdBy: _id,
+    created_by: _id,
   };
   try {
     let result = await ItemList.findOneAndUpdate({ _id: item_id }, data);
@@ -416,8 +416,8 @@ router.get("/storeItems", async (req, res) => {
         "image",
         "color",
         "shape",
-        "createdAt",
-        "createdBy",
+        "created_at",
+        "created_by",
       ])
       .sort({ _id: "desc" });
     let itemsObjectFilter = items;
@@ -445,8 +445,8 @@ router.get("/storeItems", async (req, res) => {
     //     image: item.image,
     //     color: item.color,
     //     shape: item.shape,
-    //     createdAt: item.createdAt,
-    //     createdBy: item.createdBy,
+    //     created_at: item.created_at,
+    //     created_by: item.created_by,
     //   });
     // }
 
@@ -743,7 +743,7 @@ router.post("/save_csv", async (req, res) => {
       //   varients: varientName,
       //   stores: storeData,
       //   modifiers: modifierData,
-      //   createdBy: _id,
+      //   created_by: _id,
       // });
       if (item.Name !== "" && item.Name !== undefined && item.Name !== null) {
         const Exist = await ItemList.find({
@@ -769,7 +769,7 @@ router.post("/save_csv", async (req, res) => {
           color: "",
           shape: "",
           availableForSale: false,
-          createdBy: _id,
+          created_by: _id,
         });
         // console.log("New Item List", newItemList);
         if (Exist.length > 0 && Exist !== null) {
@@ -861,7 +861,7 @@ module.exports = router;
 //     name: { $regex: ".*", $options: "i" },
 //     // categoryId: categoryFilter,
 //     // stockId: stockFilter,
-//     createdBy: _id,
+//     created_by: _id,
 //   };
 // } else if (stockFilter == undefined) {
 //   filters = {
@@ -870,7 +870,7 @@ module.exports = router;
 //     name: { $regex: ".*" + search + ".*", $options: "i" },
 //     "category.id": categoryFilter,
 //     // category: { categoryId: categoryFilter },
-//     createdBy: _id,
+//     created_by: _id,
 //   };
 // } else if (categoryFilter == undefined) {
 //   filters = {
@@ -878,7 +878,7 @@ module.exports = router;
 //     stores: storeFilter,
 //     name: { $regex: ".*" + search + ".*", $options: "i" },
 //     stockId: stockFilter,
-//     createdBy: _id,
+//     created_by: _id,
 //   };
 // } else {
 //   filters = {
@@ -889,7 +889,7 @@ module.exports = router;
 //     "category.categoryId": categoryFilter,
 //     // category: { categoryId: categoryFilter },
 //     stockId: stockFilter,
-//     createdBy: _id,
+//     created_by: _id,
 //   };
 // }
 // console.log(filters);
