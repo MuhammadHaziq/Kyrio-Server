@@ -134,4 +134,35 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
+router.get("/row/:id", async (req, res) => {
+  try {
+    const { accountId } = req.authData;
+    const { id } = req.params;
+    const allCat = await Category.find({ _id: id, accountId: accountId }).sort({
+      _id: "desc",
+    });
+    let allCategories = [];
+    for (const cate of allCat) {
+      let itemCount = await ItemList.find({
+        "category.id": cate._id,
+      }).countDocuments();
+      allCategories.push({
+        _id: cate._id,
+        catTitle: cate.catTitle,
+        catColor: cate.catColor,
+        created_at: cate.created_at,
+        created_by: cate.created_by,
+        total_items: itemCount,
+      });
+    }
+    if (allCategories.length > 0) {
+      allCategories = allCategories[0];
+    } else {
+      allCategories = {};
+    }
+    res.status(200).json(allCategories);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 module.exports = router;

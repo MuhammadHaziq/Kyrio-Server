@@ -90,5 +90,20 @@ router.patch("/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+router.get("/row/:id", async (req, res) => {
+  try {
+    const { accountId } = req.authData;
+    const { id } = req.params;
 
+    let storeFilter = {};
+    storeFilter.accountId = accountId;
+    storeFilter._id = id;
+    const result = await Discount.findOne(storeFilter).sort({
+      _id: "desc",
+    });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 module.exports = router;

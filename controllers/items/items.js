@@ -198,7 +198,7 @@ router.post("/", async (req, res) => {
         if (!uploadResult.success) {
           res.status(404).json({ message: uploadResult.message });
         }
-        console.log(uploadResult.images[0])
+        console.log(uploadResult.images[0]);
         itemImageName = uploadResult.images[0];
         itemColor = "";
         itemShape = "";
@@ -384,6 +384,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.get("/storeItems", async (req, res) => {
   try {
     const { accountId } = req.authData;
@@ -561,6 +562,23 @@ router.get("/get_item_stores", async (req, res) => {
       });
     }
     res.status(200).json({ stores: allStores });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get("/row/:id", async (req, res) => {
+  try {
+    const { accountId } = req.authData;
+    const { id } = req.params;
+
+    var result = await ItemList.findOne({
+      _id: id,
+      accountId: accountId,
+    }).sort({ _id: "desc" });
+
+    // result = result.slice(startIndex, endIndex);
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
