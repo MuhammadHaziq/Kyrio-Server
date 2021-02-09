@@ -25,9 +25,6 @@ router.get("/", async (req, res) => {
         },
       },
     ]);
-    // .find({ created_by: _id }).sort({
-    //   "timeDetail.created_at": 1,
-    // });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -204,5 +201,28 @@ router.patch("/", async (req, res) => {
     }
   }
 });
-
+router.get("/row/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    var result = await TimeCard.aggregate([
+      { $unwind: { path: "$timeDetail", preserveNullAndEmptyArrays: true } },
+      { $sort: { "timeDetail._id": -1 } },
+      {
+        $group: {
+          _id: "$_id",
+          employee: {
+            $first: "$employee",
+          },
+          store: {
+            $first: "$store",
+          },
+          timeDetail: { $push: "$timeDetail" },
+        },
+      },
+    ]);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 module.exports = router;

@@ -15,7 +15,11 @@ const roleSchema = new mongoose.Schema({
   accountId: {
     type: String,
     min: 6,
-    max: 255
+    max: 255,
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
   },
   // features: [
   //   {

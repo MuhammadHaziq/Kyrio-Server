@@ -60,7 +60,7 @@ router.get("/", async (req, res) => {
   try {
     const { accountId } = req.authData;
     let accessRights = [];
-    var roles = await Role.find({ accountId: accountId })
+    var roles = await Role.find({ accountId: accountId, isDeleted: false })
       .select(["_id", "roleName", "allowBackoffice.enable", "allowPOS.enable"])
       .sort({
         _id: "desc",
@@ -98,7 +98,11 @@ router.get("/get_role/:roleId", async (req, res) => {
     const { roleId } = req.params;
     const { accountId } = req.authData;
     let accessRights = [];
-    var roles = await Role.find({ accountId: accountId, _id: roleId })
+    var roles = await Role.find({
+      accountId: accountId,
+      _id: roleId,
+      isDeleted: false,
+    })
       .select(["_id", "roleName", "allowBackoffice.enable", "allowPOS.enable"])
       .sort({
         _id: "desc",
@@ -133,7 +137,11 @@ router.get("/get_role/:roleId", async (req, res) => {
 const get_role_summary = async (roleId, accountId) => {
   try {
     let accessRights = [];
-    var roles = await Role.find({ accountId: accountId, _id: roleId })
+    var roles = await Role.find({
+      accountId: accountId,
+      _id: roleId,
+      isDeleted: false,
+    })
       .select(["_id", "roleName", "allowBackoffice.enable", "allowPOS.enable"])
       .sort({
         _id: "desc",
@@ -216,6 +224,7 @@ router.post("/create", async (req, res) => {
           user_id: _id,
           accountId: accountId,
           features: [],
+          isDeleted: false,
           allowBackoffice: {
             enable: backoffice.enable,
             modules: backoffice.modules.map((itm) => {
@@ -310,7 +319,7 @@ router.patch("/update", async (req, res) => {
             upsert: true, // Make this update into an upsert
           });
           const response = await get_role_summary(roleId, accountId);
-          
+
           if (response.status == true) {
             res.status(200).json(response.data[0]);
           } else {
@@ -380,6 +389,40 @@ router.patch("/update", async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+router.delete("/:ids", async (req, res) => {
+  try {
+    let { ids } = req.params;
+    const { accountId } = req.authData;
+    for (const id of JSON.parse(ids)) {
+      var roles = await Role.findOne({ accountId: accountId, _id: id })
+        .select([
+          "_id",
+          "roleName",
+          "allowBackoffice.enable",
+          "allowPOS.enable",
+        ])
+        .sort({
+          _id: "desc",
+        });
+      let NoOfEmployees = await Users.find({
+        role_id: roles._id,
+      }).countDocuments();
+      if (NoOfEmployees > 0) {
+        res
+          .status(500)
+          .json({ message: `This Role Already Have ${NoOfEmployees}` });
+      } else {
+        let updated = await Role.findOneAndUpdate(
+          { _id: id },
+          { isDeleted: true }
+        );
+      }
+    }
+    res.status(200).json({ message: "Role Deleted Successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
