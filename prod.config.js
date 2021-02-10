@@ -6,10 +6,10 @@ module.exports = {
       error_file: "../api_server_log/production/error.log",
       out_file: "../api_server_log/production/out.log",
       args: "one two",
-      instances: 2,
+      instances: 1,
       autorestart: true,
       watch: true,
-      max_memory_restart: "500M",
+      max_memory_restart: "1000M",
       exec_mode: "cluster",
       env: {
         PORT: 3000,
