@@ -12,7 +12,7 @@ router.post("/", async (req, res) => {
     categories: jsonCategoires,
     storeId: storeId,
     createdBy: _id,
-    accountId: accountId
+    accountId: accountId,
   });
   try {
     const result = await newKitchenPrinter.save();
@@ -37,7 +37,18 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
+router.get("/row/:id", async (req, res) => {
+  try {
+    const { _id, accountId } = req.authData;
+    const { id } = req.params;
+    const result = await kitchenPrinter
+      .findOne({ accountId: accountId, _id: id })
+      .sort({ _id: "desc" });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;

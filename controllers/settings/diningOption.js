@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
       storeId: item.storeId,
       storeName: item.storeName,
       position: countDining + 1,
-      isActive:item.isActive
+      isActive: item.isActive,
     });
   });
   // console.log(stores);
@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
     title: title,
     stores: stores,
     createdBy: _id,
-    accountId: accountId
+    accountId: accountId,
   });
   try {
     const result = await newDiningOption.save();
@@ -42,7 +42,9 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { _id, accountId } = req.authData;
-    const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
+    const stores = await Store.find({ accountId: accountId }).sort({
+      _id: "desc",
+    });
     let data = [];
     for (const store of stores) {
       const result = await diningOption
@@ -63,31 +65,75 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+router.get("/row/:id", async (req, res) => {
+  try {
+    const { _id, accountId } = req.authData;
+    const { id } = req.params;
+    const stores = await Store.find({ accountId: accountId }).sort({
+      _id: "desc",
+    });
+    let data = [];
+    for (const store of stores) {
+      const result = await diningOption
+        .find({
+          _id: id,
+          accountId: accountId,
+          stores: { $elemMatch: { storeId: store._id } },
+        })
+        .sort({ _id: "asc" });
 
+      data.push({
+        storeId: store._id,
+        storeName: store.title,
+        title: result !== undefined && result.length > 0 ? result[0].title : "",
+        _id: result !== undefined && result.length > 0 ? result[0]._id : "",
+        accountId:
+          result !== undefined && result.length > 0 ? result[0].accountId : "",
+        createdAt:
+          result !== undefined && result.length > 0 ? result[0].createdAt : "",
+        createdBy:
+          result !== undefined && result.length > 0 ? result[0].createdBy : "",
+        stores:
+          result !== undefined && result.length > 0 ? result[0].stores : "",
+      });
+    }
+    if (data.length > 0) {
+      data = data[0];
+    } else {
+      data = {};
+    }
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 router.post("/app", async (req, res) => {
   try {
     const { storeId } = req.body;
     const { accountId } = req.authData;
-    
+
     const store = await Store.findOne({ _id: storeId }).sort({ _id: "desc" });
-    
-    if(store !== null ) {
-      let result = []
-      var dinings = await diningOption.find({ accountId: accountId })
-      
-      for(const dine of dinings) {
-        for(const dineStore of dine.stores) {
-          if(dineStore.storeId == store._id && dineStore.isActive){
+
+    if (store !== null) {
+      let result = [];
+      var dinings = await diningOption.find({ accountId: accountId });
+
+      for (const dine of dinings) {
+        for (const dineStore of dine.stores) {
+          if (dineStore.storeId == store._id && dineStore.isActive) {
             result.push({
               diningId: dine._id,
               title: dine.title,
               position: dineStore.position,
-              isActive: dineStore.isActive
-            })
+              isActive: dineStore.isActive,
+            });
           }
         }
       }
-      result.sort((positionA, positionB) => parseFloat(positionA.position) - parseFloat(positionB.position));
+      result.sort(
+        (positionA, positionB) =>
+          parseFloat(positionA.position) - parseFloat(positionB.position)
+      );
       res.status(200).json(result);
     } else {
       res.status(400).json({ message: "Store Not Found! Invalid Store ID" });
@@ -103,7 +149,9 @@ router.post("/getStoreDining", async (req, res) => {
     const { storeId } = req.body;
     // let filter = {};
     if (storeId === "0") {
-      const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
+      const stores = await Store.find({ accountId: accountId }).sort({
+        _id: "desc",
+      });
       let data = [];
       for (const store of stores) {
         const result = await diningOption

@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
       paymentType: paymentTypes,
       storeId: storeId,
       createdBy: _id,
-      accountId: accountId
+      accountId: accountId,
     });
     try {
       const result = await newPaymentsTypes.save();
@@ -57,7 +57,19 @@ router.get("/", async (req, res) => {
     const result = await paymentsType.find({
       accountId: accountId,
       storeId: storeId,
-    
+    });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+router.get("/row/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { accountId } = req.authData;
+    const result = await paymentsType.findOne({
+      accountId: accountId,
+      _id: id,
     });
     res.status(200).json(result);
   } catch (error) {

@@ -49,12 +49,12 @@ router.post("/getStoreDevice", async (req, res) => {
   try {
     const { _id, accountId } = req.authData;
     const { storeId, UDID } = req.body;
-  
+
     let result = {};
     let condition = {};
     if (storeId === "0") {
       result = await POS_Device.findOne({ accountId: accountId, udid: UDID });
-      if(result == null) {
+      if (result == null) {
         result = await POS_Device.findOne({
           accountId: accountId,
           isActive: false,
@@ -65,7 +65,7 @@ router.post("/getStoreDevice", async (req, res) => {
         "store.storeId": storeId,
         udid: UDID,
       });
-      if(result == null){
+      if (result == null) {
         result = await POS_Device.findOne({
           "store.storeId": storeId,
           isActive: false,
@@ -79,15 +79,19 @@ router.post("/getStoreDevice", async (req, res) => {
         {
           $set: {
             isActive: true,
-            udid: UDID
+            udid: UDID,
           },
         }
       );
-      var shift = await Shifts.findOne({ pos_device_id: result._id, closed_at: null, accountId: accountId });
-      if(shift){
-        res.status(200).json({device: result, openShift: shift});
+      var shift = await Shifts.findOne({
+        pos_device_id: result._id,
+        closed_at: null,
+        accountId: accountId,
+      });
+      if (shift) {
+        res.status(200).json({ device: result, openShift: shift });
       } else {
-        res.status(200).json({device: result, openShift: null});
+        res.status(200).json({ device: result, openShift: null });
       }
     } else {
       res
@@ -152,5 +156,20 @@ router.patch("/activate/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
+router.get("/row/:id", async (req, res) => {
+  try {
+    // display only login user pos Devices
+    const { _id, accountId } = req.authData;
+    const { id } = req.params;
+    const result = await POS_Device.findOne({
+      accountId: accountId,
+      _id: id,
+    }).sort({
+      _id: "desc",
+    });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 module.exports = router;

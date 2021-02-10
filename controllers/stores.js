@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
     phone: phone,
     description: description,
     createdBy: _id,
-    accountId: accountId
+    accountId: accountId,
   });
   try {
     const result = await newStore.save();
@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
           ],
         },
         createdBy: _id,
-        accountId: accountId
+        accountId: accountId,
       },
       {
         $set: {
@@ -61,7 +61,9 @@ router.get("/", async (req, res) => {
     const { _id, accountId } = req.authData;
 
     // display only login user stores
-    const stores = await Store.find({ accountId: accountId }).sort({ _id: "desc" });
+    const stores = await Store.find({ accountId: accountId }).sort({
+      _id: "desc",
+    });
     let allStores = [];
     for (const store of stores) {
       let devices = await POS_Device.find({
@@ -77,6 +79,40 @@ router.get("/", async (req, res) => {
         createdBy: store.createdBy,
         devices: devices,
       });
+    }
+    res.status(200).json(allStores);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+router.get("/row/:id", async (req, res) => {
+  try {
+    const { _id, accountId } = req.authData;
+    const { id } = req.params;
+    // display only login user stores
+    const stores = await Store.find({ accountId: accountId, _id: id }).sort({
+      _id: "desc",
+    });
+    let allStores = [];
+    for (const store of stores) {
+      let devices = await POS_Device.find({
+        "store.storeId": store._id,
+      }).countDocuments();
+      allStores.push({
+        _id: store._id,
+        title: store.title,
+        address: store.address,
+        phone: store.phone,
+        description: store.description,
+        createdAt: store.createdAt,
+        createdBy: store.createdBy,
+        devices: devices,
+      });
+    }
+    if (allStores.length > 0) {
+      allStores = allStores[0];
+    } else {
+      allStores = {};
     }
     res.status(200).json(allStores);
   } catch (error) {
@@ -134,7 +170,7 @@ router.delete("/:ids", async (req, res) => {
           ],
         },
         createdBy: _id,
-        accountId: accountId
+        accountId: accountId,
       },
       {
         $set: {

@@ -9,7 +9,7 @@ router.post("/", async (req, res) => {
   const newPaymentTypes = new paymentTypes({
     title: title,
     createdBy: _id,
-    accountId: accountId
+    accountId: accountId,
   });
   try {
     const result = await newPaymentTypes.save();
@@ -22,7 +22,10 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { accountId } = req.authData;
-    const result = await paymentTypes.find({ accountId: accountId, title: { $ne: "Cash" } });
+    const result = await paymentTypes.find({
+      accountId: accountId,
+      title: { $ne: "Cash" },
+    });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

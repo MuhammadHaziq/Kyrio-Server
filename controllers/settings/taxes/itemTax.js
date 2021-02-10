@@ -56,6 +56,18 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+router.get("/row/:id", async (req, res) => {
+  try {
+    const { _id, accountId } = req.authData;
+    const { id } = req.params;
+    const result = await itemTax
+      .findOne({ accountId: accountId, _id: id })
+      .sort({ _id: "desc" });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 router.post("/getStoreTaxes", async (req, res) => {
   try {
