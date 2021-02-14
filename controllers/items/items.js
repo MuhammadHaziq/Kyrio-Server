@@ -484,10 +484,18 @@ router.get("/search", async (req, res) => {
     if (storeId !== "0") {
       storeFilter.stores = { $elemMatch: { id: storeId } };
     }
-    if (categoryFilter !== "-1" && categoryFilter !== undefined) {
+    if (
+      categoryFilter !== "-1" &&
+      categoryFilter !== "0" &&
+      categoryFilter !== undefined
+    ) {
       storeFilter["category.id"] = categoryFilter;
     }
-    if (stockFilter !== "-1" && stockFilter !== undefined) {
+    if (
+      stockFilter !== "-1" &&
+      stockFilter !== "0" &&
+      stockFilter !== undefined
+    ) {
       storeFilter.stockId = stockFilter;
     }
     if (search !== "" && search !== undefined) {
@@ -509,6 +517,7 @@ router.get("/search", async (req, res) => {
       // };
     }
     storeFilter.accountId = accountId;
+    console.log(storeFilter);
     var result = await ItemList.find(storeFilter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -605,30 +614,78 @@ router.post("/save_csv", async (req, res) => {
       let varientValue3 = [];
       var keys = Object.keys(item);
       (keys || []).map((ite, iteIndex) => {
-        (stores || []).map((stor, storIndex) => {
-          if (ite == `Available for sale [${stor.title}]`) {
-            return storeData.push({
-              id: stor._id,
-              title: stor.title,
-              price: item[`Price [${stor.title}]`],
-              inStock: item[`In stock [${stor.title}]`],
-              lowStock: item[`Low stock [${stor.title}]`],
-              variantName: "",
-              modifiers: Modifier.find({
-                stores: { $elemMatch: { id: stor._id } },
-              })
-                .select("title")
-                .sort({
-                  _id: "desc",
-                }),
-              taxes: itemTax
-                .find({
-                  stores: { $elemMatch: { storeId: stor._id } },
-                  accountId: accountId,
+        let getStore = ite.match(/([^[\]]+|\[\])/g).map(function (val) {
+          return val === "[]" ? null : val;
+        })[1];
+        (stores || []).map(async (stor, storIndex) => {
+          if (getStore !== undefined && getStore !== null) {
+            // if (ite == `Available for sale [${stor.title}]`) {
+            if (getStore.trim() == stor.title.trim()) {
+              return storeData.push({
+                id: stor._id,
+                title: stor.title,
+                price: item[`Price [${stor.title}]`],
+                inStock: item[`In stock [${stor.title}]`],
+                lowStock: item[`Low stock [${stor.title}]`],
+                variantName: "",
+                modifiers: Modifier.find({
+                  stores: { $elemMatch: { id: stor._id } },
                 })
-                .select("title tax_type tax_rate")
-                .sort({ _id: "desc" }),
-            });
+                  .select("title")
+                  .sort({
+                    _id: "desc",
+                  }),
+                taxes: itemTax
+                  .find({
+                    stores: { $elemMatch: { storeId: stor._id } },
+                    accountId: accountId,
+                  })
+                  .select("title tax_type tax_rate")
+                  .sort({ _id: "desc" }),
+              });
+            } else {
+              const newStore = new Store({
+                title: getStore,
+                address: "",
+                phone: "",
+                description: "",
+                createdBy: _id,
+                accountId: accountId,
+              });
+              try {
+                const result = await newStore.save();
+                return storeData.push({
+                  id: result._id,
+                  title: result.title,
+                  price: item[`Price [${getStore}]`],
+                  inStock: item[`In stock [${getStore}]`],
+                  lowStock: item[`Low stock [${getStore}]`],
+                  variantName: "",
+                  modifiers: Modifier.find({
+                    stores: { $elemMatch: { id: result._id } },
+                  })
+                    .select("title")
+                    .sort({
+                      _id: "desc",
+                    }),
+                  taxes: itemTax
+                    .find({
+                      stores: { $elemMatch: { storeId: result._id } },
+                      accountId: accountId,
+                    })
+                    .select("title tax_type tax_rate")
+                    .sort({ _id: "desc" }),
+                });
+              } catch (error) {
+                if (error.code === 11000) {
+                  console.log({ message: "Store Already Register" });
+                  // res.status(400).json({ message: "Store Already Register By This User" });
+                } else {
+                  console.log({ message: error.message });
+                  // res.status(400).json({ message: error.message });
+                }
+              }
+            }
           }
         });
         (modifier || []).map((modi, modiIndex) => {
