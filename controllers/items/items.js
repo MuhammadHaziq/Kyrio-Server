@@ -593,8 +593,35 @@ router.get("/row/:id", async (req, res) => {
   }
 });
 
+const checkDuplicate = (array) => {
+  var errors = [];
+  // let arr = ["abc", "xy", "bb", "abc"];
+  let result = false;
+  // call some function with callback function as argument
+  result = array.some((element, index) => {
+    return array.indexOf(element) !== index;
+  });
+  if (result) {
+    array.some((element, index) => {
+      if (array.indexOf(element) !== index) {
+        console.log({ index: index, sku: element });
+        errors.push({
+          index: index,
+          name: element,
+          totalLength: element.length,
+        });
+      }
+    });
+    return errors;
+    console.log("Array contains duplicate elements");
+  } else {
+    console.log("Array does not contain duplicate elements");
+  }
+};
+
 router.post("/save_csv", async (req, res) => {
   try {
+    var errors = [];
     const { accountId, _id } = req.authData;
     let { csvData } = req.body;
     csvData = JSON.parse(csvData);
@@ -604,6 +631,44 @@ router.post("/save_csv", async (req, res) => {
     const modifier = await Modifier.find().sort({
       _id: "desc",
     });
+
+    const skuErrors = checkDuplicate(
+      (csvData || []).map((item, index) => {
+        return item.SKU;
+      })
+    );
+    const handleErrors = checkDuplicate(
+      (csvData || []).map((item, index) => {
+        return item.Handle;
+      })
+    );
+    const NameLength = (csvData || [])
+      .map((item, index) => {
+        return item.Name !== undefined && item.Name !== null
+          ? item.Name.length > 63
+            ? { index: index, value: item.Name.length }
+            : { index: index, value: null }
+          : { index: index, value: null };
+      })
+      .filter((item) => {
+        return item.value !== null;
+      });
+    errors.push({
+      skuErrors: skuErrors,
+      handleErrors: handleErrors,
+      NameLength: NameLength,
+    });
+    if (
+      skuErrors.length > 0 ||
+      handleErrors.length > 0 ||
+      NameLength.length > 0
+    ) {
+      res.status(400).json(errors);
+    }
+    // console.log(skuErrors);
+    // console.log(handleErrors);
+    // console.log(NameLength);
+    return false;
     let data = [];
     await (csvData || []).map(async (item, index) => {
       let storeData = [];
@@ -678,10 +743,10 @@ router.post("/save_csv", async (req, res) => {
                 });
               } catch (error) {
                 if (error.code === 11000) {
-                  console.log({ message: "Store Already Register" });
+                  // console.log({ message: "Store Already Register" });
                   // res.status(400).json({ message: "Store Already Register By This User" });
                 } else {
-                  console.log({ message: error.message });
+                  // console.log({ message: error.message });
                   // res.status(400).json({ message: error.message });
                 }
               }
