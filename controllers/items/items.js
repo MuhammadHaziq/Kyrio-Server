@@ -653,10 +653,22 @@ router.post("/save_csv", async (req, res) => {
       .filter((item) => {
         return item.value !== null;
       });
+    const handleLength = (csvData || [])
+      .map((item, index) => {
+        return item.Handle !== undefined && item.Handle !== null
+          ? item.Handle.length > 71
+            ? { index: index, value: item.Handle.length }
+            : { index: index, value: null }
+          : { index: index, value: null };
+      })
+      .filter((item) => {
+        return item.value !== null;
+      });
     errors.push({
       skuErrors: skuErrors,
       handleErrors: handleErrors,
       NameLength: NameLength,
+      handleLength: handleLength,
     });
     if (
       skuErrors.length > 0 ||
