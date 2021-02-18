@@ -24,6 +24,11 @@ const salesSchema = new mongoose.Schema({
   cancelled_at: {
     type: Date,
   },
+  cancelled_by: {
+    type: String,
+    min: 6,
+    max: 255,
+  },
   accountId: {
     type: String,
     min: 6,
@@ -54,17 +59,17 @@ const salesSchema = new mongoose.Schema({
     min: 1,
     max: 100000000000,
   },
+  cost_of_goods: {
+    type: Number,
+    min: 1,
+    max: 100000000000,
+  },
   cash_received: {
     type: Number,
     min: 1,
     max: 100000000000,
   },
   cash_return: {
-    type: Number,
-    min: 0,
-    max: 100000000000,
-  },
-  total_after_discount: {
     type: Number,
     min: 0,
     max: 100000000000,

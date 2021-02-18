@@ -51,9 +51,9 @@ router.post("/", async (req, res) => {
     sale_timestamp,
     completed,
     total_price,
+    cost_of_goods,
     cash_received,
     cash_return,
-    total_after_discount,
     total_discount,
     total_tax,
     customer,
@@ -131,9 +131,9 @@ router.post("/", async (req, res) => {
         open,
         completed,
         total_price,
+        cost_of_goods,
         cash_received,
         cash_return,
-        total_after_discount,
         total_discount,
         total_tax,
         refund_status: "",
@@ -165,9 +165,9 @@ router.post("/refund", async (req, res) => {
     sale_timestamp,
     completed,
     total_price,
+    cost_of_goods,
     cash_received,
     cash_return,
-    total_after_discount,
     total_discount,
     total_tax,
     items,
@@ -249,9 +249,9 @@ router.post("/refund", async (req, res) => {
         open,
         completed,
         total_price,
+        cost_of_goods,
         cash_received,
         cash_return,
-        total_after_discount,
         total_discount,
         total_tax,
         refund_status: "",
@@ -338,7 +338,7 @@ router.patch("/cancel", async (req, res) => {
       }
     }
     try {
-      let cancelledSale = await Sales.findOneAndUpdate({ _id: getSale._id }, {cancelled_at: cancelled_at}, {
+      let cancelledSale = await Sales.findOneAndUpdate({ _id: getSale._id }, {cancelled_at: cancelled_at, cancelled_by: _id}, {
         new: true,
         upsert: true, // Make this update into an upsert
       });
