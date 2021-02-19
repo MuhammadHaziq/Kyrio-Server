@@ -52,7 +52,7 @@ router.post("/saveOpenTicket", async (req, res) => {
         .status(200)
         .json({ message: "Ticket Successfully Added!", newTickets });
       } else {
-        res.status(400).json({ message: "Store is not selected" });  
+        res.status(400).json({ message: "Store is not selected" });
       }
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -67,7 +67,7 @@ router.get("/getStoreTicket/:storeId", async (req, res) => {
     if(storeId === '0') {
       filters.accountId = accountId
     }else {
-      filters.store['id'] = storeId
+      filters['store.id'] = storeId
       filters.accountId = accountId
     }
     // var result = await Tickets.findOne({
