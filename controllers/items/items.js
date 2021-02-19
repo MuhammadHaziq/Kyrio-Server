@@ -517,7 +517,6 @@ router.get("/search", async (req, res) => {
       // };
     }
     storeFilter.accountId = accountId;
-    console.log(storeFilter);
     var result = await ItemList.find(storeFilter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
