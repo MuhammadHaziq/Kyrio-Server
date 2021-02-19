@@ -13,6 +13,7 @@ import paymentsType from "../controllers/settings/paymentTypes/paymentsType.js";
 import itemTax from "../controllers/settings/taxes/itemTax";
 import ticketsRouter from "../controllers/sales/tickets";
 import salesRouter from "../controllers/sales/sales";
+import reportsRouter from "../controllers/reports/index";
 import customersRouter from "../controllers/customers/customers";
 import employeeListRouter from "../controllers/employee/employeeList";
 import shiftsRouter from "../controllers/employee/shifts";
@@ -33,6 +34,7 @@ router.get("/", (req, res, next) => {
 router.use("/users", usersRouter);
 router.use("/tickets", verifyToken, ticketsRouter);
 router.use("/sales", verifyToken, salesRouter);
+router.use("/reports", verifyToken, reportsRouter);
 router.use("/customers", verifyToken, customersRouter);
 router.use("/employee/employeeList", verifyToken, employeeListRouter);
 router.use("/employee/shifts", verifyToken, shiftsRouter);
