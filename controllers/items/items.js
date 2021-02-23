@@ -533,6 +533,7 @@ router.get("/search", async (req, res) => {
       // };
     }
     storeFilter.accountId = accountId;
+    console.log(storeFilter);
     var result = await ItemList.find(storeFilter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -646,18 +647,22 @@ router.post("/save_csv", async (req, res) => {
     const modifier = await Modifier.find().sort({
       _id: "desc",
     });
+    let skuErrors = [];
+    let handleErrors = [];
+    let NameLength = [];
+    let handleLength = [];
 
-    const skuErrors = checkDuplicate(
+    skuErrors = checkDuplicate(
       (csvData || []).map((item, index) => {
         return item.SKU;
       })
     );
-    const handleErrors = checkDuplicate(
+    handleErrors = checkDuplicate(
       (csvData || []).map((item, index) => {
         return item.Handle;
       })
     );
-    const NameLength = (csvData || [])
+    NameLength = (csvData || [])
       .map((item, index) => {
         return item.Name !== undefined && item.Name !== null
           ? item.Name.length > 63
@@ -668,7 +673,7 @@ router.post("/save_csv", async (req, res) => {
       .filter((item) => {
         return item.value !== null;
       });
-    const handleLength = (csvData || [])
+    handleLength = (csvData || [])
       .map((item, index) => {
         return item.Handle !== undefined && item.Handle !== null
           ? item.Handle.length > 71
@@ -891,10 +896,10 @@ router.post("/save_csv", async (req, res) => {
             }
           })
           .catch((err) => {
-            console.log(err.message);
+            console.log("Category", err.message);
           });
       } catch (err) {
-        console.log(err.message);
+        console.log("Category", err.message);
       }
 
       // data.push({
