@@ -184,7 +184,13 @@ router.post("/", async (req, res) => {
   var itemImageName = "";
   // let owner = await getOwner(_id);
 
-  if (repoOnPos == "image") {
+  /*typeof req.files.image != "undefined" Update By Haziq
+      For Add Image If User Select Color After Upload Image
+  */
+  if (
+    repoOnPos == "image" ||
+    (typeof req.files != "undefined" && typeof req.files != "null")
+  ) {
     if (
       req.files != null &&
       req.files != "null" &&
@@ -198,7 +204,6 @@ router.post("/", async (req, res) => {
         if (!uploadResult.success) {
           res.status(404).json({ message: uploadResult.message });
         }
-        console.log(uploadResult.images[0]);
         itemImageName = uploadResult.images[0];
         itemColor = "";
         itemShape = "";
@@ -301,21 +306,32 @@ router.patch("/", async (req, res) => {
   // stock = JSON.parse(stock);
   // res.status(200).send(data);
 
-  var itemImageName = "";
+  // var itemImageName = "";
+  // Add By Haaziq
+  var itemImageName = imageName;
+
   // let owner = await getOwner(_id);
 
   var rootDir = process.cwd();
-
-  if (repoOnPos == "image") {
+  /*typeof req.files.image != "undefined" Update By Haziq
+      For Add Image If User Select Color After Upload Image
+  */
+  if (
+    repoOnPos == "image" ||
+    (typeof req.files != "undefined" && typeof req.files != "null")
+  ) {
     if (
       req.files != null &&
       req.files != "null" &&
       typeof req.files != "undefined"
     ) {
       if (typeof req.files.image != "undefined") {
-        let fileUrl = `${rootDir}/uploads/items/${accountId}/` + imageName;
-        if (fs.existsSync(fileUrl)) {
-          fs.unlinkSync(fileUrl);
+        // Comment By Haziq Add Image Name Validation For Null
+        if (typeof imageName !== "undefined" && typeof imageName !== "null") {
+          let fileUrl = `${rootDir}/uploads/items/${accountId}/` + imageName;
+          if (fs.existsSync(fileUrl)) {
+            fs.unlinkSync(fileUrl);
+          }
         }
         var uploadResult = await uploadFiles.uploadImages(
           image,
