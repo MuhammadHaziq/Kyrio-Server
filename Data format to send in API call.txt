@@ -1,0 +1,138 @@
+If Hours
+{
+    "startDate": "2021-02-19",
+    "endDate": "2021-03-19",
+    "stores": ["id1","id2","id3"],
+    "employees": ["id1","id2","id3"],
+    "divider": "Hours",
+    //Hours format should be 12 hours
+    "graph": [
+        "12:00 AM",
+        "01:00 AM",
+        "02:00 AM",
+        "03:00 AM",
+        "04:00 AM",
+        "05:00 AM"
+        "......",
+    ],
+    // need this formate with year to match with date filter exactly
+    //Format should be 24 hours like 1,2,3,4,5,6,....,20,21,22,23,24
+    matches: [
+        "12:00",
+        "01:00",
+        "02:00",
+        "03:00",
+        "04:00",
+        "05:00",
+        "......",
+        "20:00",
+        "21:00",
+        "22:00",
+        "23:00",
+        "24:00"
+    ]
+}
+If Days
+{
+    "startDate": "2021-02-19",
+    "endDate": "2021-03-25",
+    "stores": ["id1","id2","id3"],
+    "employees": ["id1","id2","id3"],
+    "divider": "Days",
+    "graph": [
+        "Feb 19",
+        "Feb 21",
+        "Feb 22",
+        "Feb 23",
+        "Feb 24", 
+        "Feb 25"
+    ],
+    // need this formate with year to match with date filter exactly
+    matches: [
+        "Feb 19 2021",
+        "Feb 21 2021",
+        "Feb 22 2021",
+        "Feb 23 2021",
+        "Feb 24 2021", 
+        "Feb 25 2021",
+    ]
+}
+If Weeks
+{
+    "startDate": "2021-02-19",
+    "endDate": "2021-04-11",
+    "stores": ["id1","id2","id3"],
+    "employees": ["id1","id2","id3"],
+    "divider": "Weeks",
+    "graph": [
+        "Feb 19 - Feb 25",
+        "Feb 26 - Mar 03",
+        "Mar 04 - Mar 11"
+    ],
+    // need this formate with year to match with date filter exactly
+    matches: [
+        "Feb 19 2021 - Feb 25 2021",
+        "Feb 26 2021 - Mar 03 2021",
+        "Mar 04 2021 - Mar 11 2021",
+    ]
+}
+If Months
+{
+    "startDate": "2021-02-19",
+    "endDate": "2021-04-11",
+    "stores": ["id1","id2","id3"],
+    "employees": ["id1","id2","id3"],
+    "divider": "Weeks",
+    "graph": [
+        "Jan",
+        "Feb",
+        "Mar",
+
+    ],
+    // need this formate with year to match with date filter exactly
+    matches: [
+        "Jan 2021",
+        "Feb 2021",
+        "Mar 2021"
+    ]
+}
+If Quaters
+{
+    "startDate": "2021-02-19",
+    "endDate": "2021-04-11",
+    "stores": ["id1","id2","id3"],
+    "employees": ["id1","id2","id3"],
+    "divider": "Weeks",
+    "graph": [
+        "Jul-01 - Sep-30",
+        "Oct-01 - Dec-31",
+        "Jan-01 - Mar-31",
+
+    ],
+    // need this formate with year to match with date filter exactly
+    matches: [
+        "Jul 01 2020 - Sep 30 2020",
+        "Oct 01 2020 - Dec 31 2020",
+        "Jan 01 2021 - Mar 31 2021",
+    ]
+}
+If Years
+{
+    "startDate": "2021-02-19",
+    "endDate": "2021-04-11",
+    "stores": ["id1","id2","id3"],
+    "employees": ["id1","id2","id3"],
+    "divider": "Weeks",
+    "graph": [
+        "2019",
+        "2020",
+        "2021",
+
+    ],
+    // need this formate with year to match with date filter exactly
+    matches: [
+        "2019",
+        "2020",
+        "2021",
+    ]
+}
