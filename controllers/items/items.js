@@ -388,13 +388,13 @@ router.get("/", async (req, res) => {
     var result = await ItemList.find({
       // stores: { $elemMatch: { id: storeId } },
       accountId: accountId,
-    }).sort({ _id: "desc" });
+    }).sort({ name: "asc" });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {
     //         if (err) return next(err);
     //         res.send(someValue);
     //     });
-    result = result.slice(startIndex, endIndex);
+    // result = result.slice(startIndex, endIndex);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -541,9 +541,9 @@ router.get("/search", async (req, res) => {
   }
 });
 
-router.delete("/:ids", async (req, res) => {
+router.post("/delete", async (req, res) => {
   try {
-    var { ids } = req.params;
+    var { ids } = req.body;
     ids = JSON.parse(ids);
     ids.forEach(async (id) => {
       await ItemList.deleteOne({ _id: id });
