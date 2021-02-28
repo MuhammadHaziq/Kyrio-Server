@@ -1,5 +1,8 @@
 import express from "express";
 import Sales from "../../modals/sales/sales";
+import Category from "../../modals/items/category";
+import ItemList from "../../modals/items/ItemList";
+import groupBy from 'lodash/groupBy';
 const moment = require('moment');
 const router = express.Router();
 
@@ -216,6 +219,141 @@ router.post("/summary", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+router.post("/item", async (req, res) => {
+  try {
+    const {
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      customPeriod,
+      divider
+    } = req.body;
+    const { accountId } = req.authData;
+    // 2021-02-08T19:42:55.586+00:00
+    var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
+    var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
+    
+    var fromDate = moment(startDate,"YYYY-MM-DD HH:mm:ss")
+    var toDate = moment(endDate,"YYYY-MM-DD HH:mm:ss")
+    
+    var sales = await Sales.find({$and: [
+      {"created_at": {$gte: start}},
+      {"created_at": {$lte: end}},
+      {accountId: accountId}
+      ]});
+    let TotalGrossSales = 0;
+    let TotalRefunds = 0;
+    let TotalDiscounts = 0;
+    let TotalNetSale = 0;
+    let CostOfGoods = 0;
+    let TotalGrossProfit = 0;
+    let TotalItemsSold = 0;
+    let TotalItemsRefunded = 0;
+    let TotalMargin = 0;
+    // const allCat = await Category.find({ accountId: accountId }).sort({
+    //   _id: "desc",
+    // });
+    let items = [];
+    let reportData = [];
+      await sales.map(async sale => {
+        await sale.items.map(async item => {
+          // let itemFound = await ItemList.findOne({ accountId: accountId, _id: item.id });
+          // reportData.id = itemFound._id
+          // reportData.name = itemFound.name
+          // reportData.sku = itemFound.sku
+          // reportData.category = typeof itemFound.category !== "undefined" || itemFound.category !== null ? itemFound.category.name : "No category"
+            items.push(item.id)
+        })
+      })
+      const uniqueItems = await groupBy(items, function(n) {
+        return n;
+      });
+      
+      let result = ""
+      for (var itemId of Object.keys(uniqueItems)) {
+        let foundItems = await Sales.find({$and: [
+          {"created_at": {$gte: start}},
+          {"created_at": {$lte: end}},
+          {accountId: accountId},
+          {"items.id": itemId}
+          ]});
+         
+          TotalItemsSold = 0;
+          TotalItemsRefunded = 0;
+          for(const sale of foundItems){
+
+            if(sale.receipt_type == "SALE"){
+              TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
+              TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
+              CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
+              TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
+            } else if(sale.receipt_type == "REFUND"){
+              TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
+              TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
+              CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
+              TotalItemsRefunded++
+            }
+            TotalItemsSold++
+          }
+          TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
+          TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods)
+          TotalMargin = (( ( parseFloat(TotalNetSale) - (CostOfGoods) ) / parseFloat(TotalNetSale) ) * 100).toFixed(2);
+          let itemFound = await ItemList.findOne({ accountId: accountId, _id: itemId });
+          
+          let SalesTotal = {
+            GrossSales: TotalGrossSales,
+            Refunds: TotalRefunds,
+            discounts: TotalDiscounts,
+            NetSales: TotalNetSale,
+            CostOfGoods: CostOfGoods,
+            GrossProfit: TotalGrossProfit,
+            ItemsSold: TotalItemsSold,
+            ItemsRefunded: TotalItemsRefunded,
+            Margin: TotalMargin,
+            id: itemFound._id,
+            name: itemFound.name,
+            sku: itemFound.sku,
+            category: typeof itemFound.category !== "undefined" || itemFound.category !== null ? itemFound.category.name : "No category"
+          }
+          reportData.push(SalesTotal)
+      }
+      // console.log(reportData)
+    let itemsReport = reportData;
+    // for(const sale of sales){
+    //   let reportData = {};
+    //   for(const item of sale.items){
+    //     let itemFound = await ItemList.findOne({ accountId: accountId, _id: item.id });
+    //     reportData.id = itemFound._id
+    //     reportData.name = itemFound.name
+    //     reportData.sku = itemFound.sku
+    //     reportData.category = typeof itemFound.category !== "undefined" || itemFound.category !== null ? itemFound.category.name : "No category"
+
+    //     let itemsSold = await Sales.find({
+    //       "items.$.id": item.id,
+    //     });
+    //     // let itemsSold = await Sales.aggregate([
+    //     //   {$match: { "items.$.id": item.id } },
+    //     //   {$group: { _id: "items.$.id" }}
+    //     // ])
+    //     reportData.itemsSold = itemsSold
+    //     itemsReport.push(reportData)
+    //     console.log(itemsSold)
+    //   //   sales.aggregate([
+    //   //     { $match: {} },
+    //   //     { $group: { _id: null, n: { $sum: 1 } } }
+    //   //  ]); 
+
+    //   }
+    // }
+
+    res.status(500).json({ data: itemsReport });
+
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+});
+
 const getNatural = (num) => {
   return parseFloat(num.toString().split(".")[0]);
 };
