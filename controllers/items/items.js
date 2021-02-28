@@ -691,16 +691,18 @@ router.post("/save_csv", async (req, res) => {
       handleLength: handleLength,
     });
     if (
-      skuErrors.length > 0 ||
-      handleErrors.length > 0 ||
-      NameLength.length > 0
+      typeof skuErrors !== "undefined" &&
+      typeof handleErrors !== "undefined" &&
+      typeof NameLength !== "undefined"
     ) {
-      res.status(400).json(errors);
+      if(skuErrors.length > 0 || handleErrors.length > 0 || NameLength.length > 0){
+        res.status(400).json(errors);
+      }
     }
     // console.log(skuErrors);
     // console.log(handleErrors);
     // console.log(NameLength);
-    return false;
+    // return false;
     let data = [];
     await (csvData || []).map(async (item, index) => {
       let storeData = [];

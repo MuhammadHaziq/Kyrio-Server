@@ -21,9 +21,7 @@ const DiscountSchema = new mongoose.Schema({
   },
   value: {
     type: Number,
-
     max: 100000000000,
-    required: true,
   },
   restricted: {
     type: Boolean,
