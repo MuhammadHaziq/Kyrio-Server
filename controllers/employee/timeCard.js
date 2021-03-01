@@ -25,7 +25,33 @@ router.get("/", async (req, res) => {
         },
       },
     ]);
-    res.status(200).json(result);
+    if (result.length > 0) {
+      let getWithTotalHour = [];
+      for (const i of result) {
+        const totalHour = 0;
+        getWithTotalHour.push({
+          ...i,
+          totalWorkingHour: i.timeDetail
+            .map((item, index) => {
+              return (
+                totalHour +
+                parseInt(
+                  item.totalWorkingHour !== undefined &&
+                    item.totalWorkingHour !== null
+                    ? item.totalWorkingHour
+                    : 0
+                )
+              );
+            })
+            .reduce((a, b) => a + b, 0),
+        });
+      }
+
+      res.status(200).json(getWithTotalHour);
+    } else {
+      res.status(200).json(result);
+    }
+    // res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -221,6 +247,56 @@ router.get("/row/:id", async (req, res) => {
       },
     ]);
     res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+router.get("/totalWorkingHour", async (req, res) => {
+  try {
+    var result = await TimeCard.aggregate([
+      { $unwind: { path: "$timeDetail", preserveNullAndEmptyArrays: true } },
+      { $sort: { "timeDetail._id": -1 } },
+      {
+        $group: {
+          _id: "$_id",
+          employee: {
+            $first: "$employee",
+          },
+          store: {
+            $first: "$store",
+          },
+          timeDetail: { $push: "$timeDetail" },
+        },
+      },
+    ]);
+    if (result.length > 0) {
+      let totalWorkingHour = [];
+      for (const i of result) {
+        const totalHour = 0;
+        totalWorkingHour.push({
+          id: i._id,
+          employeeName: i.employee.name,
+          storeName: i.store.name,
+          totalWorkingHour: i.timeDetail
+            .map((item, index) => {
+              return (
+                totalHour +
+                parseInt(
+                  item.totalWorkingHour !== undefined &&
+                    item.totalWorkingHour !== null
+                    ? item.totalWorkingHour
+                    : 0
+                )
+              );
+            })
+            .reduce((a, b) => a + b, 0),
+        });
+      }
+
+      res.status(200).json(totalWorkingHour);
+    } else {
+      res.status(200).json(result);
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
