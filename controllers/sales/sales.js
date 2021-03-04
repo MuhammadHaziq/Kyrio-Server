@@ -106,16 +106,18 @@ router.post("/", async (req, res) => {
             "stores.inStock",
             "stores.lowStock",
           ]);
+          if(storeItem){
           let storeQty = typeof storeItem.stores !== "undefined" ? parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity) : parseInt(item.quantity)
           let itemQty = parseInt(storeItem.stockQty) - parseInt(item.quantity) 
-         await ItemList.updateOne(
-          {$and: [{ _id: item.id }, { "stores.id": store._id }]},
-          {  
-          $set: {
-            "stockQty": itemQty,
-            "stores.$.inStock": storeQty
-          }
-        });
+          await ItemList.updateOne(
+            {$and: [{ _id: item.id }, { "stores.id": store._id }]},
+            {  
+            $set: {
+              "stockQty": itemQty,
+              "stores.$.inStock": storeQty
+            }
+            });
+        }
       }
     }
     
