@@ -6,15 +6,16 @@ import groupBy from 'lodash/groupBy';
 const moment = require('moment');
 const router = express.Router();
 
-router.post("/summary", async (req, res) => {
+router.post("/summary/backup", async (req, res) => {
   try {
     const {
       startDate,
       endDate,
-      startTime,
-      endTime,
-      customPeriod,
-      divider
+      stores,
+      employees,
+      divider,
+      graph,
+      matches
     } = req.body;
     const { accountId } = req.authData;
     // 2021-02-08T19:42:55.586+00:00
@@ -27,7 +28,9 @@ router.post("/summary", async (req, res) => {
     var sales = await Sales.find({$and: [
       {"created_at": {$gte: start}},
       {"created_at": {$lte: end}},
-      {accountId: accountId}
+      {accountId: accountId},
+      { "store._id": { "$in" : stores} },
+      { created_by: { "$in" : employees} },
       ]});
     let TotalGrossSales = 0;
     let TotalRefunds = 0;
@@ -219,6 +222,38 @@ router.post("/summary", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+router.post("/summary", async (req, res) => {
+  try {
+    const {
+      startDate,
+      endDate,
+      stores,
+      employees,
+      divider,
+      graph,
+      matches
+    } = req.body;
+    const { accountId } = req.authData;
+    // 2021-02-08T19:42:55.586+00:00
+    var start = moment(startDate,"YYYY-MM-DD")
+    var end = moment(endDate,"YYYY-MM-DD").add(1, 'days')
+
+    
+    var sales = await Sales.find({$and: [
+      {"created_at": {$gte: start}},
+      {"created_at": {$lte: end}},
+      {accountId: accountId},
+      { "store._id": { "$in" : stores} },
+      { created_by: { "$in" : employees} },
+      ]});
+      
+     let report = await filterSales(sales, divider, graph, matches)
+     
+    res.status(200).json(report);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 router.post("/item", async (req, res) => {
   try {
     const {
@@ -353,18 +388,338 @@ router.post("/item", async (req, res) => {
       res.status(500).json({ message: error.message });
     }
 });
+async function filterSales(sales, divider, graph, matches){
 
-const getNatural = (num) => {
-  return parseFloat(num.toString().split(".")[0]);
-};
-function convertUTCDateToLocalDate(date) {
-  var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+    let TotalGrossSales = 0;
+    let TotalRefunds = 0;
+    let TotalDiscounts = 0;
+    let TotalNetSale = 0;
+    let CostOfGoods = 0;
+    let TotalGrossProfit = 0;
 
-  var offset = date.getTimezoneOffset() / 60;
-  var hours = date.getHours();
+      for(const sale of sales){
 
-  newDate.setHours(hours - offset);
+        if(sale.receipt_type == "SALE"){
+          TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
+          TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
+          CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
+          TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
+        } else if(sale.receipt_type == "REFUND"){
+          TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
+          TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
+          CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
+        }
+          
 
-  return newDate;   
+         
+      }
+      TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
+      TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods)
+      
+      let SalesTotal = {
+        GrossSales: TotalGrossSales,
+        Refunds: TotalRefunds,
+        discounts: TotalDiscounts,
+        NetSales: TotalNetSale,
+        CostOfGoods: CostOfGoods,
+        GrossProfit: TotalGrossProfit
+      }
+
+      let graphRecord = [];
+
+      if (divider == "Hours") {
+        
+        var i = 0;
+        while (i <= matches.length) {
+          if(typeof matches[i] !== "undefined"){
+            let HourTotalGrossSales = 0;
+            let HourTotalRefunds = 0;
+            let HourTotalDiscounts = 0;
+            let HourTotalNetSale = 0;
+            let HourCostOfGoods = 0;
+            let HourTotalGrossProfit = 0;
+            let totals = 0;
+            
+            let oneHourAhead = typeof matches[i+1] !== "undefined" ? matches[i+1].trim() : "0:00"
+
+              for(const sale of sales){
+              var saleTime = moment(sale.created_at).format("LT");
+              
+              if(saleTime >= matches[i].trim() && saleTime < oneHourAhead){
+                if(sale.receipt_type == "SALE"){
+                  HourTotalNetSale = parseFloat(HourTotalNetSale)+parseFloat(sale.total_price)
+                  HourTotalDiscounts = parseFloat(HourTotalDiscounts)+parseFloat(sale.total_discount)
+                  HourCostOfGoods = parseFloat(HourCostOfGoods)+parseFloat(sale.cost_of_goods)
+                  HourTotalGrossSales = parseFloat(HourTotalGrossSales)+parseFloat(sale.total_price)
+                } else if(sale.receipt_type == "REFUND"){
+                  HourTotalRefunds = parseFloat(HourTotalRefunds)+parseFloat(sale.total_price)
+                  HourTotalDiscounts = parseFloat(HourTotalDiscounts)-parseFloat(sale.total_discount)
+                  HourCostOfGoods = parseFloat(HourCostOfGoods)-parseFloat(sale.cost_of_goods)
+                }
+              } 
+            }
+                HourTotalNetSale = parseFloat(HourTotalGrossSales) - parseFloat(HourTotalDiscounts) - parseFloat(HourTotalRefunds)
+                HourTotalGrossProfit = parseFloat(HourTotalNetSale) - parseFloat(HourCostOfGoods)
+                
+                totals = {
+                  GrossSales: HourTotalGrossSales,
+                  Refunds: HourTotalRefunds,
+                  discounts: HourTotalDiscounts,
+                  NetSales: HourTotalNetSale,
+                  CostOfGoods: HourCostOfGoods,
+                  GrossProfit: HourTotalGrossProfit
+                }
+            graphRecord.push({
+              [graph[i]]: totals
+            })
+          }
+          i++;
+        }
+      } else if (divider == "Days") {
+        
+        var i = 0;
+        while (i <= matches.length) {
+          if(typeof matches[i] !== "undefined"){
+            let HourTotalGrossSales = 0;
+            let HourTotalRefunds = 0;
+            let HourTotalDiscounts = 0;
+            let HourTotalNetSale = 0;
+            let HourCostOfGoods = 0;
+            let HourTotalGrossProfit = 0;
+            let totals = 0;
+            
+              for(const sale of sales){
+                // "Feb 27 2021"
+              var saleDate = moment(sale.created_at).format("MMM DD YYYY")
+              
+              let match = matches[i].trim()
+              if(saleDate == match){
+                if(sale.receipt_type == "SALE"){
+                  HourTotalNetSale = parseFloat(HourTotalNetSale)+parseFloat(sale.total_price)
+                  HourTotalDiscounts = parseFloat(HourTotalDiscounts)+parseFloat(sale.total_discount)
+                  HourCostOfGoods = parseFloat(HourCostOfGoods)+parseFloat(sale.cost_of_goods)
+                  HourTotalGrossSales = parseFloat(HourTotalGrossSales)+parseFloat(sale.total_price)
+                } else if(sale.receipt_type == "REFUND"){
+                  HourTotalRefunds = parseFloat(HourTotalRefunds)+parseFloat(sale.total_price)
+                  HourTotalDiscounts = parseFloat(HourTotalDiscounts)-parseFloat(sale.total_discount)
+                  HourCostOfGoods = parseFloat(HourCostOfGoods)-parseFloat(sale.cost_of_goods)
+                }
+              } 
+            }
+                HourTotalNetSale = parseFloat(HourTotalGrossSales) - parseFloat(HourTotalDiscounts) - parseFloat(HourTotalRefunds)
+                HourTotalGrossProfit = parseFloat(HourTotalNetSale) - parseFloat(HourCostOfGoods)
+                
+                totals = {
+                  GrossSales: HourTotalGrossSales,
+                  Refunds: HourTotalRefunds,
+                  discounts: HourTotalDiscounts,
+                  NetSales: HourTotalNetSale,
+                  CostOfGoods: HourCostOfGoods,
+                  GrossProfit: HourTotalGrossProfit
+                }
+            graphRecord.push({
+              [graph[i]]: totals
+            })
+          }
+          i++;
+        }
+      } else if (divider == "Weeks") {
+        var i = 0;
+        while (i <= matches.length) {
+          if(typeof matches[i] !== "undefined"){
+            let HourTotalGrossSales = 0;
+            let HourTotalRefunds = 0;
+            let HourTotalDiscounts = 0;
+            let HourTotalNetSale = 0;
+            let HourCostOfGoods = 0;
+            let HourTotalGrossProfit = 0;
+            let totals = 0;
+            
+              for(const sale of sales){
+                var saleDate = moment(sale.created_at,"MMM DD YYYY")
+              
+                let match = matches[i].split("-")
+                let startDay = moment(match[0].trim(), "MMM DD YYYY")
+                let endDay = moment(match[1].trim(), "MMM DD YYYY")
+
+                if(saleDate.isSameOrAfter(startDay) && saleDate.isSameOrBefore(endDay)){
+                  if(sale.receipt_type == "SALE"){
+                    HourTotalNetSale = parseFloat(HourTotalNetSale)+parseFloat(sale.total_price)
+                    HourTotalDiscounts = parseFloat(HourTotalDiscounts)+parseFloat(sale.total_discount)
+                    HourCostOfGoods = parseFloat(HourCostOfGoods)+parseFloat(sale.cost_of_goods)
+                    HourTotalGrossSales = parseFloat(HourTotalGrossSales)+parseFloat(sale.total_price)
+                  } else if(sale.receipt_type == "REFUND"){
+                    HourTotalRefunds = parseFloat(HourTotalRefunds)+parseFloat(sale.total_price)
+                    HourTotalDiscounts = parseFloat(HourTotalDiscounts)-parseFloat(sale.total_discount)
+                    HourCostOfGoods = parseFloat(HourCostOfGoods)-parseFloat(sale.cost_of_goods)
+                  }
+                }
+            }
+                HourTotalNetSale = parseFloat(HourTotalGrossSales) - parseFloat(HourTotalDiscounts) - parseFloat(HourTotalRefunds)
+                HourTotalGrossProfit = parseFloat(HourTotalNetSale) - parseFloat(HourCostOfGoods)
+                
+                totals = {
+                  GrossSales: HourTotalGrossSales,
+                  Refunds: HourTotalRefunds,
+                  discounts: HourTotalDiscounts,
+                  NetSales: HourTotalNetSale,
+                  CostOfGoods: HourCostOfGoods,
+                  GrossProfit: HourTotalGrossProfit
+                }
+            graphRecord.push({
+              [graph[i]]: totals
+            })
+          }
+          i++;
+        }
+      } else if (divider == "Months") {
+        var i = 0;
+        while (i <= matches.length) {
+          let HourTotalGrossSales = 0;
+          let HourTotalRefunds = 0;
+          let HourTotalDiscounts = 0;
+          let HourTotalNetSale = 0;
+          let HourCostOfGoods = 0;
+          let HourTotalGrossProfit = 0;
+          let totals = 0;
+          
+            for(const sale of sales){
+            var saleDate = moment(sale.created_at).format("MMM YYYY")
+
+            if(typeof matches[i] !== "undefined"){
+
+              let match = matches[i].trim()
+
+              if(saleDate == match){
+                if(sale.receipt_type == "SALE"){
+                  HourTotalNetSale = parseFloat(HourTotalNetSale)+parseFloat(sale.total_price)
+                  HourTotalDiscounts = parseFloat(HourTotalDiscounts)+parseFloat(sale.total_discount)
+                  HourCostOfGoods = parseFloat(HourCostOfGoods)+parseFloat(sale.cost_of_goods)
+                  HourTotalGrossSales = parseFloat(HourTotalGrossSales)+parseFloat(sale.total_price)
+                } else if(sale.receipt_type == "REFUND"){
+                  HourTotalRefunds = parseFloat(HourTotalRefunds)+parseFloat(sale.total_price)
+                  HourTotalDiscounts = parseFloat(HourTotalDiscounts)-parseFloat(sale.total_discount)
+                  HourCostOfGoods = parseFloat(HourCostOfGoods)-parseFloat(sale.cost_of_goods)
+                }
+              }
+            }
+          }
+              HourTotalNetSale = parseFloat(HourTotalGrossSales) - parseFloat(HourTotalDiscounts) - parseFloat(HourTotalRefunds)
+              HourTotalGrossProfit = parseFloat(HourTotalNetSale) - parseFloat(HourCostOfGoods)
+              
+              totals = {
+                GrossSales: HourTotalGrossSales,
+                Refunds: HourTotalRefunds,
+                discounts: HourTotalDiscounts,
+                NetSales: HourTotalNetSale,
+                CostOfGoods: HourCostOfGoods,
+                GrossProfit: HourTotalGrossProfit
+              }
+          graphRecord.push({
+            [graph[i]]: totals
+          })
+          i++;
+        }
+      } else if (divider == "Quaters") {
+        var i = 0;
+        while (i <= matches.length) {
+          if(typeof matches[i] !== "undefined"){
+            let HourTotalGrossSales = 0;
+            let HourTotalRefunds = 0;
+            let HourTotalDiscounts = 0;
+            let HourTotalNetSale = 0;
+            let HourCostOfGoods = 0;
+            let HourTotalGrossProfit = 0;
+            let totals = 0;
+            
+              for(const sale of sales){
+                var saleDate = moment(sale.created_at,"MMM DD YYYY")
+              
+                let match = matches[i].split("-")
+                let startMonth = moment(match[0].trim(), "MMM DD YYYY")
+                let endMonth = moment(match[1].trim(), "MMM DD YYYY")
+
+                if(saleDate.isSameOrAfter(startMonth) && saleDate.isSameOrBefore(endMonth)){
+                  if(sale.receipt_type == "SALE"){
+                    HourTotalNetSale = parseFloat(HourTotalNetSale)+parseFloat(sale.total_price)
+                    HourTotalDiscounts = parseFloat(HourTotalDiscounts)+parseFloat(sale.total_discount)
+                    HourCostOfGoods = parseFloat(HourCostOfGoods)+parseFloat(sale.cost_of_goods)
+                    HourTotalGrossSales = parseFloat(HourTotalGrossSales)+parseFloat(sale.total_price)
+                  } else if(sale.receipt_type == "REFUND"){
+                    HourTotalRefunds = parseFloat(HourTotalRefunds)+parseFloat(sale.total_price)
+                    HourTotalDiscounts = parseFloat(HourTotalDiscounts)-parseFloat(sale.total_discount)
+                    HourCostOfGoods = parseFloat(HourCostOfGoods)-parseFloat(sale.cost_of_goods)
+                  }
+                }
+            }
+                HourTotalNetSale = parseFloat(HourTotalGrossSales) - parseFloat(HourTotalDiscounts) - parseFloat(HourTotalRefunds)
+                HourTotalGrossProfit = parseFloat(HourTotalNetSale) - parseFloat(HourCostOfGoods)
+                
+                totals = {
+                  GrossSales: HourTotalGrossSales,
+                  Refunds: HourTotalRefunds,
+                  discounts: HourTotalDiscounts,
+                  NetSales: HourTotalNetSale,
+                  CostOfGoods: HourCostOfGoods,
+                  GrossProfit: HourTotalGrossProfit
+                }
+            graphRecord.push({
+              [graph[i]]: totals
+            })
+            
+          }
+          i++;
+        }
+      } else if (divider == "Years") {
+        var i = 0;
+        while (i <= matches.length) {
+          if(typeof matches[i] !== "undefined"){
+            let HourTotalGrossSales = 0;
+            let HourTotalRefunds = 0;
+            let HourTotalDiscounts = 0;
+            let HourTotalNetSale = 0;
+            let HourCostOfGoods = 0;
+            let HourTotalGrossProfit = 0;
+            let totals = 0;
+            
+              for(const sale of sales){
+              var saleDate = moment(sale.created_at).format("YYYY")
+
+                let match = matches[i].trim()
+
+                if(saleDate == match){
+                  if(sale.receipt_type == "SALE"){
+                    HourTotalNetSale = parseFloat(HourTotalNetSale)+parseFloat(sale.total_price)
+                    HourTotalDiscounts = parseFloat(HourTotalDiscounts)+parseFloat(sale.total_discount)
+                    HourCostOfGoods = parseFloat(HourCostOfGoods)+parseFloat(sale.cost_of_goods)
+                    HourTotalGrossSales = parseFloat(HourTotalGrossSales)+parseFloat(sale.total_price)
+                  } else if(sale.receipt_type == "REFUND"){
+                    HourTotalRefunds = parseFloat(HourTotalRefunds)+parseFloat(sale.total_price)
+                    HourTotalDiscounts = parseFloat(HourTotalDiscounts)-parseFloat(sale.total_discount)
+                    HourCostOfGoods = parseFloat(HourCostOfGoods)-parseFloat(sale.cost_of_goods)
+                  }
+                }
+              }
+                HourTotalNetSale = parseFloat(HourTotalGrossSales) - parseFloat(HourTotalDiscounts) - parseFloat(HourTotalRefunds)
+                HourTotalGrossProfit = parseFloat(HourTotalNetSale) - parseFloat(HourCostOfGoods)
+                
+                totals = {
+                  GrossSales: HourTotalGrossSales,
+                  Refunds: HourTotalRefunds,
+                  discounts: HourTotalDiscounts,
+                  NetSales: HourTotalNetSale,
+                  CostOfGoods: HourCostOfGoods,
+                  GrossProfit: HourTotalGrossProfit
+                }
+            graphRecord.push({
+              [graph[i]]: totals
+            })
+          }
+          i++;
+        }
+      }
+
+     return {SalesTotal,
+      graphRecord: graphRecord}
 }
 module.exports = router;

@@ -232,49 +232,35 @@ router.get("/row/:id", async (req, res) => {
   try {
     const { id } = req.params;
     
-    // var times = await TimeCard.find({ _id:id });
-    // let timecards = []
-    // for(const time of times){
-    //   for(const detail of time.timeDetail){
-    //     var a = moment(detail.clockInDate);
-    //     var b = moment(detail.clockOutDate);
-    //     console.log(a.diff(b, 'days'))
-    //     timecards.push({
-    //     _id: time._id,
-    //     card_created_at: time.created_at,
-    //     card_updated_at: time.updated_at,
-    //     storeId: time.store.id,
-    //     storeName: time.store.name,
-    //     employeeId: time.employee.id,
-    //     employeeName: time.employee.name,
-    //     time_id: detail._id,
-    //     event: detail.event,
-    //     time_created_at: detail.created_at,
-    //     clockInDate: detail.clockInDate,
-    //     clockOutDate: detail.clockOutDate,
-    //     clockInTime: detail.clockInTime,
-    //     clockOutTime: detail.clockOutTime,
-    //     totalWorkingHour: 9
-    //     })
+    var times = await TimeCard.find({ _id:id });
+    let timecards = []
+    for(const time of times){
+      for(const detail of time.timeDetail){
+        var a = moment(detail.clockInDate);
+        var b = moment(detail.clockOutDate);
+        console.log(a.diff(b, 'days'))
+        timecards.push({
+        _id: time._id,
+        card_created_at: time.created_at,
+        card_updated_at: time.updated_at,
+        storeId: time.store.id,
+        storeName: time.store.name,
+        employeeId: time.employee.id,
+        employeeName: time.employee.name,
+        time_id: detail._id,
+        event: detail.event,
+        time_created_at: detail.created_at,
+        clockInDate: detail.clockInDate,
+        clockOutDate: detail.clockOutDate,
+        clockInTime: detail.clockInTime,
+        clockOutTime: detail.clockOutTime,
+        totalWorkingHour: 9
+        })
         
-    //   }
+      }
 
-    // }
-    var result = await TimeCard.aggregate([
-      {
-        $match: {
-              _id: id
-          }
-      },
-      // { $sort: { "timeDetail._id": -1 } },
-      {
-        $group : {
-          _id : null
-        }
-      },
-      
-    ]);
-    res.status(200).json(result);
+    }
+    res.status(200).json(timecards);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
