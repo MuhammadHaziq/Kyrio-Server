@@ -144,13 +144,9 @@ router.post("/", async (req, res) => {
   let { posPin, sendMail } = req.body;
   var errors = [];
   if (
-    (!name || typeof name == "undefined" || name == "") &&
-    (!email || typeof email == "undefined" || email == "") &&
-    (!phone || typeof phone == "undefined" || phone == "")
+    (!name || typeof name == "undefined" || name == "")
   ) {
     errors.push({ name: `Invalid Employee Name!` });
-    errors.push({ email: `Invalid Employee Email!` });
-    errors.push({ phone: `Invalid Employee phone!` });
   }
   if (
     posPin !== undefined &&
@@ -175,36 +171,41 @@ router.post("/", async (req, res) => {
     let role = JSON.parse(roles);
     try {
       if (role.name !== "Owner") {
-        let user = await Users.findOne({ email: email });
-        if (!user) {
-          let users = new Users({
-            name: removeSpaces(name),
-            accountId: accountId,
-            phone: removeSpaces(phone),
-            email: email,
-            password: md5("123456"),
-            emailVerified: false,
-            role_id: role.id,
-            role: role,
-            stores: JSON.parse(stores),
-            sendMail: sendMail,
-            posPin: posPin,
-            enablePin: enablePin,
-            created_by: _id,
-          });
-          users
-            .save()
-            .then(async (result) => {
-              res.status(200).json(result);
-            })
-            .catch((error) => {
-              res.status(400).json({ message: error.message });
-            });
-        } else {
-          res
-            .status(400)
-            .json({ message: "Employee already exist with this email" });
+        let user;
+        if(email.trim())
+        {
+          user = await Users.findOne({ email: email });
         }
+        
+          if (!user) {
+            let users = new Users({
+              name: removeSpaces(name),
+              accountId: accountId,
+              phone: removeSpaces(phone),
+              email: email,
+              password: md5("123456"),
+              emailVerified: false,
+              role_id: role.id,
+              role: role,
+              stores: JSON.parse(stores),
+              sendMail: sendMail,
+              posPin: posPin,
+              enablePin: enablePin,
+              created_by: _id,
+            });
+            users
+              .save()
+              .then(async (result) => {
+                res.status(200).json(result);
+              })
+              .catch((error) => {
+                res.status(400).json({ message: error.message });
+              });
+          } else {
+            res
+              .status(400)
+              .json({ message: "Employee already exist with this email" });
+          }
       } else {
         res
           .status(400)

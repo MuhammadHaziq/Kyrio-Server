@@ -10,7 +10,6 @@ const usersSchema = new mongoose.Schema({
     type: String,
     min: 3,
     max: 255,
-    required: true,
   },
   phone: {
     type: String,
@@ -107,6 +106,7 @@ usersSchema.index(
   },
   {
     unique: true,
+    sparse: true
   }
 );
 

@@ -84,6 +84,7 @@ customersSchema.index(
   },
   {
     unique: true,
+    sparse: true
   }
 );
 
