@@ -323,7 +323,9 @@ async function filterSales(startDate, sales, divider, graph, matches){
                   summaryDate = startDay +" - "+endDay
 
                 }
-
+                if(summaryDate == ""){
+                  summaryDate = matches[i].trim()
+                }
 
                 totals = {
                   Date: summaryDate,

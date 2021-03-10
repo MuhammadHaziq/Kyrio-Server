@@ -63,7 +63,7 @@ app.use((req, res, next) => {
 });
 // Connect client with this server and then check if a user has made a connection or not
 io.on('connection', (socket) => {
-  console.log('a user connected');
+    console.log('a user connected');
   socket.on('chat message', () => {
     console.log('New Message');
   });
