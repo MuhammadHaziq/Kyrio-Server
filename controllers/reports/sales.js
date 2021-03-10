@@ -173,20 +173,14 @@ router.post("/item", async (req, res) => {
       res.status(500).json({ message: error.message });
     }
 });
-async function checkDivider(divider, saleCreatedAt, matches, index){
+async function checkDivider(startDate, divider, saleCreatedAt, matches, index){
   if (divider == "Hours") {
-
-    let time = matches[index].trim();
-    let format = "LT"
-    let beforeTime = moment(time).format(format);
-    let afterTime = moment(time).add(1, 'hours').format(format);
-    let saleTime = moment(saleCreatedAt).format(format);
-    // console.log(beforeTime)
-    // console.log(afterTime)
-    // console.log(saleTime)
-    // console.log("-----------------------")
-    return saleTime.isBetween(beforeTime, afterTime, "hour")
-return false
+    
+    let format = "HH"
+    let beforeTime = index
+    let afterTime = index+1
+    let saleTime = moment(saleCreatedAt).format(format)
+    return saleTime >= beforeTime && saleTime < afterTime
 
   } else if (divider == "Days") {
 
@@ -265,7 +259,7 @@ async function filterSales(startDate, sales, divider, graph, matches){
         GrossProfit: TotalGrossProfit
       }
 
-      let record = [];
+      let TableRecord = [];
       let graphRecord = {
         GrossSales: [],
         Refunds: [],
@@ -278,56 +272,84 @@ async function filterSales(startDate, sales, divider, graph, matches){
         var i = 0;
         while (i <= matches.length) {
           if(typeof matches[i] !== "undefined"){
-            let HourTotalGrossSales = 0;
-            let HourTotalRefunds = 0;
-            let HourTotalDiscounts = 0;
-            let HourTotalNetSale = 0;
-            let HourCostOfGoods = 0;
-            let HourTotalGrossProfit = 0;
+            let TotalGrossSales = 0;
+            let TotalRefunds = 0;
+            let TotalDiscounts = 0;
+            let TotalNetSale = 0;
+            let CostOfGoods = 0;
+            let TotalGrossProfit = 0;
+            let TotalMargin = 0;
             let totals = 0;
 
               for(const sale of sales){
               
               if(await checkDivider(startDate, divider, sale.created_at, matches, i)){
                 if(sale.receipt_type == "SALE"){
-                  HourTotalNetSale = parseFloat(HourTotalNetSale)+parseFloat(sale.total_price)
-                  HourTotalDiscounts = parseFloat(HourTotalDiscounts)+parseFloat(sale.total_discount)
-                  HourCostOfGoods = parseFloat(HourCostOfGoods)+parseFloat(sale.cost_of_goods)
-                  HourTotalGrossSales = parseFloat(HourTotalGrossSales)+parseFloat(sale.total_price)
+                  TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
+                  TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
+                  CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
+                  TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
                 } else if(sale.receipt_type == "REFUND"){
-                  HourTotalRefunds = parseFloat(HourTotalRefunds)+parseFloat(sale.total_price)
-                  HourTotalDiscounts = parseFloat(HourTotalDiscounts)-parseFloat(sale.total_discount)
-                  HourCostOfGoods = parseFloat(HourCostOfGoods)-parseFloat(sale.cost_of_goods)
+                  TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
+                  TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
+                  CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
                 }
               } 
             }
-                HourTotalNetSale = parseFloat(HourTotalGrossSales) - parseFloat(HourTotalDiscounts) - parseFloat(HourTotalRefunds)
-                HourTotalGrossProfit = parseFloat(HourTotalNetSale) - parseFloat(HourCostOfGoods)
-                
-                totals = {
-                  GrossSales: HourTotalGrossSales,
-                  Refunds: HourTotalRefunds,
-                  discounts: HourTotalDiscounts,
-                  NetSales: HourTotalNetSale,
-                  CostOfGoods: HourCostOfGoods,
-                  GrossProfit: HourTotalGrossProfit
+                TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
+                TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods)
+
+                TotalMargin = ((parseFloat(TotalGrossProfit) / parseFloat(TotalNetSale))*100).toFixed(2)
+                TotalMargin = isNaN(TotalMargin) ? "0%" : TotalMargin + "%"
+
+                let summaryDate = ""
+                let format = "MMM DD, YYYY"
+                if (divider == "Days") {
+                  
+                  summaryDate = moment(matches[i].trim(), format).format(format)
+
+                } else if (divider == "Weeks") {
+
+                  let match = matches[i].split("-")
+                  let startDay = moment(match[0].trim(), format).format(format)
+                  let endDay = moment(match[1].trim(), format).format(format)
+                  summaryDate = startDay +" - "+endDay
+
+                } else if (divider == "Quaters") {
+                  
+                  let match = matches[i].split("-")
+                  let startDay = moment(match[0].trim(), format).format(format)
+                  let endDay = moment(match[1].trim(), format).format(format)
+                  summaryDate = startDay +" - "+endDay
+
                 }
-            record.push({
-              [graph[i]]: totals
-            })
-            graphRecord.GrossSales.push(HourTotalGrossSales)
-            graphRecord.Refunds.push(HourTotalRefunds)
-            graphRecord.discounts.push(HourTotalDiscounts)
-            graphRecord.NetSales.push(HourTotalNetSale)
-            graphRecord.CostOfGoods.push(HourCostOfGoods)
-            graphRecord.GrossProfit.push(HourTotalGrossProfit)
+
+
+                totals = {
+                  Date: summaryDate,
+                  GrossSales: TotalGrossSales,
+                  Refunds: TotalRefunds,
+                  discounts: TotalDiscounts,
+                  NetSales: TotalNetSale,
+                  CostOfGoods: CostOfGoods,
+                  GrossProfit: TotalGrossProfit,
+                  Margin: TotalMargin,
+                  Tax: 0
+                }
+            TableRecord.push(totals)
+            graphRecord.GrossSales.push(TotalGrossSales)
+            graphRecord.Refunds.push(TotalRefunds)
+            graphRecord.discounts.push(TotalDiscounts)
+            graphRecord.NetSales.push(TotalNetSale)
+            graphRecord.CostOfGoods.push(CostOfGoods)
+            graphRecord.GrossProfit.push(TotalGrossProfit)
           }
           i++;
         }
 
      return {SalesTotal,
       graphRecord: graphRecord,
-      // record: record
+      summary: TableRecord
     }
 }
 module.exports = router;
