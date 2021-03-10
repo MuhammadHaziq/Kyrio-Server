@@ -348,7 +348,9 @@ async function filterSales(startDate, sales, divider, graph, matches){
           }
           i++;
         }
-
+        if(sales.length <= 0){
+          TableRecord = []
+        }
      return {SalesTotal,
       graphRecord: graphRecord,
       summary: TableRecord
