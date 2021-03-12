@@ -195,7 +195,7 @@ export const filterSales = async (sales, divider, matches) => {
       }
     }
   }
-export const filterItemSales = async (sales, divider, matches) => {
+export const filterItemSales = async (sales, divider, matches) => { 
   try{
         let NetSales = []
           
@@ -211,7 +211,6 @@ export const filterItemSales = async (sales, divider, matches) => {
                 for(const sale of sales){
                 
                 if(await checkDivider(divider, sale.created_at, matches, i)){
-                  console.log(true)
                   if(sale.receipt_type == "SALE"){
                     TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
                     TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
