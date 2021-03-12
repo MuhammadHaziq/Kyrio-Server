@@ -86,7 +86,7 @@ router.post("/item", async (req, res) => {
         let TotalItemsRefunded = 0;
         let TotalMargin = 0;
 
-        let foundItems = await Sales.find({$and: [
+        let foundSales = await Sales.find({$and: [
           {"created_at": {$gte: start}},
           {"created_at": {$lte: end}},
           {accountId: accountId},
@@ -98,7 +98,7 @@ router.post("/item", async (req, res) => {
          
           TotalItemsSold = 0;
           TotalItemsRefunded = 0;
-          for(const sale of foundItems){
+          for(const sale of foundSales){
 
             if(sale.receipt_type == "SALE"){
               TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
@@ -140,7 +140,7 @@ router.post("/item", async (req, res) => {
     let topFiveItems = orderBy(reportData, ['NetSales'],['desc']); // Use Lodash to sort array by 'NetSales'
     topFiveItems = slice(topFiveItems, [start=0], [end=5])
     
-    let graphRecord = await filterItemSales(sales, divider, matches);
+    let graphRecord = await filterItemSales(sales, topFiveItems, divider, matches);
 
     res.status(500).json({ itemsReport, topFiveItems, graphRecord });
 
@@ -148,5 +148,33 @@ router.post("/item", async (req, res) => {
       res.status(500).json({ message: error.message });
     }
 });
+
+router.post("/item", async (req, res) => {
+  try {
+    const {
+      startDate,
+      endDate,
+      stores,
+      employees,
+      divider,
+      matches
+    } = req.body;
+    const { accountId } = req.authData;
+    
+    var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
+    var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
+    
+    var sales = await Sales.find({$and: [
+      {"created_at": {$gte: start}},
+      {"created_at": {$lte: end}},
+      {accountId: accountId},
+      { "store._id": { "$in" : stores} },
+      { created_by: { "$in" : employees} },
+      ]});
+      res.status(200).json(sales)
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+})
 
 module.exports = router;

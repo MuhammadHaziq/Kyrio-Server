@@ -1,4 +1,6 @@
 const moment = require('moment');
+import { find } from 'lodash';
+
 // #START# Sale Summary Functions
 
 export const checkDivider = async (divider, saleCreatedAt, matches, index) => { 
@@ -195,7 +197,7 @@ export const filterSales = async (sales, divider, matches) => {
       }
     }
   }
-export const filterItemSales = async (sales, divider, matches) => { 
+export const filterItemSales = async (sales, topFiveItems, divider, matches) => { 
   try{
         let NetSales = []
           
@@ -209,20 +211,22 @@ export const filterItemSales = async (sales, divider, matches) => {
               let CostOfGoods = 0;
   
                 for(const sale of sales){
-                
-                if(await checkDivider(divider, sale.created_at, matches, i)){
-                  if(sale.receipt_type == "SALE"){
-                    TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
-                    TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
-                    CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
-                    TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
-                  } else if(sale.receipt_type == "REFUND"){
-                    TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
-                    TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
-                    CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
+                let found = sale.items.filter(itm => topFiveItems.filter(item => item._id == itm.id))
+                if(found.length > 0){
+                    if(await checkDivider(divider, sale.created_at, matches, i)){
+                      if(sale.receipt_type == "SALE"){
+                        TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
+                        TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
+                        CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
+                        TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
+                      } else if(sale.receipt_type == "REFUND"){
+                        TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
+                        TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
+                        CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
+                      }
+                    } 
                   }
-                } 
-              }
+                }
                   TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
   
               NetSales.push(TotalNetSale)
