@@ -11,7 +11,7 @@ require('babel-register')({
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http')
-let socketapi = require("../socketapi"); // <== Add this line
+// let socketapi = require("../sockets/socketapi"); // <== Add this line
 
 /**
  * Get port from environment and store in Express.
@@ -24,8 +24,12 @@ app.set('port', port);
  * Create HTTP server.
  */
  var server = http.createServer(app);
- socketapi.io.attach(server);
- 
+
+ app.io.attach(server); 
+ require('../sockets/base')(app.io);
+//  socketapi.io.attach(server);
+// var io = require('socket.io')(server);
+//  require('../sockets/base')(io);
 //  var io = require('socket.io')(server)
 
 //  io.on('connection', (socket) => {

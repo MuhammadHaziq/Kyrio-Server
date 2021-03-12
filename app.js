@@ -10,10 +10,15 @@ import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
 
 var app = express();
-
+app.io = require('socket.io')();
 
 dotenv.config();
 app.use(cors());
+// Bind Socket
+app.use(async function (req, res, next) {
+  req.io = app.io
+  next()
+})
 // app.use(
 //   fileUpload({
 //     limits: { fileSize: '50mb' },
