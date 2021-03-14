@@ -620,7 +620,7 @@ const checkDuplicate = (array) => {
   if (result) {
     array.some((element, index) => {
       if (array.indexOf(element) !== index) {
-        console.log({ index: index, sku: element });
+        // console.log({ index: index, sku: element });
         errors.push({
           index: index,
           name: element,
@@ -641,12 +641,7 @@ router.post("/save_csv", async (req, res) => {
     const { accountId, _id } = req.authData;
     let { csvData } = req.body;
     csvData = JSON.parse(csvData);
-    const stores = await Store.find().sort({
-      _id: "desc",
-    });
-    const modifier = await Modifier.find().sort({
-      _id: "desc",
-    });
+
     let skuErrors = [];
     let handleErrors = [];
     let NameLength = [];
@@ -695,7 +690,11 @@ router.post("/save_csv", async (req, res) => {
       typeof handleErrors !== "undefined" &&
       typeof NameLength !== "undefined"
     ) {
-      if(skuErrors.length > 0 || handleErrors.length > 0 || NameLength.length > 0){
+      if (
+        skuErrors.length > 0 ||
+        handleErrors.length > 0 ||
+        NameLength.length > 0
+      ) {
         res.status(400).json(errors);
       }
     }
@@ -704,64 +703,76 @@ router.post("/save_csv", async (req, res) => {
     // console.log(NameLength);
     // return false;
     let data = [];
-    await (csvData || []).map(async (item, index) => {
-      let storeData = [];
-      let modifierData = [];
-      let varientName = [];
-      let varientValue1 = [];
-      let varientValue2 = [];
-      let varientValue3 = [];
-      var keys = Object.keys(item);
-      (keys || []).map((ite, iteIndex) => {
-        let getStore = ite.match(/([^[\]]+|\[\])/g).map(function (val) {
-          return val === "[]" ? null : val;
-        })[1];
-        (stores || []).map(async (stor, storIndex) => {
-          if (getStore !== undefined && getStore !== null) {
-            // if (ite == `Available for sale [${stor.title}]`) {
-            if (getStore.trim() == stor.title.trim()) {
-              return storeData.push({
-                id: stor._id,
-                title: stor.title,
-                price: item[`Price [${stor.title}]`],
-                inStock: item[`In stock [${stor.title}]`],
-                lowStock: item[`Low stock [${stor.title}]`],
-                variantName: "",
-                modifiers: Modifier.find({
-                  stores: { $elemMatch: { id: stor._id } },
-                })
-                  .select("title")
-                  .sort({
-                    _id: "desc",
-                  }),
-                taxes: itemTax
-                  .find({
-                    stores: { $elemMatch: { storeId: stor._id } },
-                    accountId: accountId,
-                  })
-                  .select("title tax_type tax_rate")
-                  .sort({ _id: "desc" }),
-              });
-            } else {
-              const newStore = new Store({
-                title: getStore,
-                address: "",
-                phone: "",
-                description: "",
-                createdBy: _id,
-                accountId: accountId,
-              });
-              try {
-                const result = await newStore.save();
+    var i = 0;
+    let groupSkuErrors = [];
+    let groupHandleErrors = [];
+    let groupNameErrors = [];
+    for (const item of csvData) {
+      if (
+        (typeof item.SKU !== "undefined" ||
+          typeof item.SKU !== "null" ||
+          item.SKU !== null ||
+          item.SKU !== undefined ||
+          item.SKU !== "") &&
+        (item.Name !== "" ||
+          item.Name !== undefined ||
+          item.Name !== null ||
+          typeof item.Name !== "undefined" ||
+          typeof item.Name !== "null") &&
+        (typeof item.Handle !== "undefined" ||
+          typeof item.Handle !== "null" ||
+          item.Handle !== null ||
+          item.Handle !== undefined ||
+          item.Handle !== "")
+      ) {
+        let storeData = [];
+        let modifierData = [];
+        let varientName = [];
+        let varientValue1 = [];
+        let varientValue2 = [];
+        let varientValue3 = [];
+        var keys = Object.keys(item);
+        (keys || []).map(async (ite, iteIndex) => {
+          let getStore = ite.match(/([^[\]]+|\[\])/g).map(function (val) {
+            return val === "[]" ? null : val;
+          })[1];
+          const stores = await Store.find().sort({
+            _id: "desc",
+          });
+          (stores || []).map(async (stor, storIndex) => {
+            if (getStore !== undefined && getStore !== null) {
+              // if (ite == `Available for sale [${stor.title}]`) {
+              if (getStore.trim() == stor.title.trim()) {
                 return storeData.push({
-                  id: result._id,
-                  title: result.title,
-                  price: item[`Price [${getStore}]`],
-                  inStock: item[`In stock [${getStore}]`],
-                  lowStock: item[`Low stock [${getStore}]`],
+                  id: stor._id,
+                  title: stor.title,
+                  price:
+                    typeof item[`Price [${stor.title}]`] !== "undefined" &&
+                    typeof item[`Price [${stor.title}]`] !== "null" &&
+                    !isNaN(item[`Price [${stor.title}]`]) &&
+                    item[`Price [${stor.title}]`] !== null &&
+                    item[`Price [${stor.title}]`] !== ""
+                      ? parseFloat(item[`Price [${stor.title}]`])
+                      : 0,
+                  inStock:
+                    typeof item[`In stock [${stor.title}]`] !== "undefined" &&
+                    typeof item[`In stock [${stor.title}]`] !== "null" &&
+                    !isNaN(item[`In stock [${stor.title}]`]) &&
+                    item[`In stock [${stor.title}]`] !== null &&
+                    item[`In stock [${stor.title}]`] !== ""
+                      ? item[`In stock [${stor.title}]`]
+                      : 0,
+                  lowStock:
+                    typeof item[`Low stock [${stor.title}]`] !== "undefined" &&
+                    typeof item[`Low stock [${stor.title}]`] !== "null" &&
+                    !isNaN(item[`Low stock [${stor.title}]`]) &&
+                    item[`Low stock [${stor.title}]`] !== null &&
+                    item[`Low stock [${stor.title}]`] !== ""
+                      ? item[`Low stock [${stor.title}]`]
+                      : 0,
                   variantName: "",
                   modifiers: Modifier.find({
-                    stores: { $elemMatch: { id: result._id } },
+                    stores: { $elemMatch: { id: stor._id } },
                   })
                     .select("title")
                     .sort({
@@ -769,57 +780,128 @@ router.post("/save_csv", async (req, res) => {
                     }),
                   taxes: itemTax
                     .find({
-                      stores: { $elemMatch: { storeId: result._id } },
+                      stores: { $elemMatch: { storeId: stor._id } },
                       accountId: accountId,
                     })
                     .select("title tax_type tax_rate")
                     .sort({ _id: "desc" }),
                 });
-              } catch (error) {
-                if (error.code === 11000) {
-                  // console.log({ message: "Store Already Register" });
-                  // res.status(400).json({ message: "Store Already Register By This User" });
-                } else {
-                  // console.log({ message: error.message });
-                  // res.status(400).json({ message: error.message });
+              } else {
+                const newStore = new Store({
+                  title: getStore,
+                  address: "",
+                  phone: "",
+                  description: "",
+                  createdBy: _id,
+                  accountId: accountId,
+                });
+                try {
+                  const result = await newStore.save();
+                  return storeData.push({
+                    id: result._id,
+                    title: result.title,
+                    price:
+                      typeof item[`Price [${getStore}]`] !== "undefined" &&
+                      typeof item[`Price [${getStore}]`] !== "null" &&
+                      !isNaN(item[`Price [${getStore}]`]) &&
+                      item[`Price [${getStore}]`] !== null &&
+                      item[`Price [${getStore}]`] !== ""
+                        ? parseFloat(item[`Price [${getStore}]`])
+                        : 0,
+                    inStock:
+                      typeof item[`In stock [${getStore}]`] !== "undefined" &&
+                      typeof item[`In stock [${getStore}]`] !== "null" &&
+                      !isNaN(item[`In stock [${getStore}]`]) &&
+                      item[`In stock [${getStore}]`] !== null &&
+                      item[`In stock [${getStore}]`] !== ""
+                        ? item[`In stock [${getStore}]`]
+                        : 0,
+                    lowStock:
+                      typeof item[`Low stock [${getStore}]`] !== "undefined" &&
+                      typeof item[`Low stock [${getStore}]`] !== "null" &&
+                      !isNaN(item[`Low stock [${getStore}]`]) &&
+                      item[`Low stock [${getStore}]`] !== null &&
+                      item[`Low stock [${getStore}]`] !== ""
+                        ? item[`Low stock [${getStore}]`]
+                        : 0,
+                    variantName: "",
+                    modifiers: Modifier.find({
+                      stores: { $elemMatch: { id: result._id } },
+                    })
+                      .select("title")
+                      .sort({
+                        _id: "desc",
+                      }),
+                    taxes: itemTax
+                      .find({
+                        stores: { $elemMatch: { storeId: result._id } },
+                        accountId: accountId,
+                      })
+                      .select("title tax_type tax_rate")
+                      .sort({ _id: "desc" }),
+                  });
+                } catch (error) {
+                  if (error.code === 11000) {
+                    // console.log({ message: "Store Already Register" });
+                    // res.status(400).json({ message: "Store Already Register By This User" });
+                  } else {
+                    // console.log({ message: error.message });
+                    // res.status(400).json({ message: error.message });
+                  }
                 }
               }
             }
-          }
+          });
+          const modifier = await Modifier.find().sort({
+            _id: "desc",
+          });
+          (modifier || []).map((modi, modiIndex) => {
+            if (
+              `Modifier - "${modi.title}"` == ite ||
+              `Modifier-${modi.title}` == ite
+            ) {
+              modifierData.push({
+                id: modi._id,
+                title: modi.title,
+              });
+            }
+          });
         });
-        (modifier || []).map((modi, modiIndex) => {
-          if (
-            `Modifier - "${modi.title}"` == ite ||
-            `Modifier-${modi.title}` == ite
-          ) {
-            modifierData.push({
-              id: modi._id,
-              title: modi.title,
-            });
-          }
-        });
-      });
 
-      const getSameHandle = (csvData || []).filter(
-        (filterVar, varIndex) => filterVar.Handle == item.Handle
-      );
-      if (item.Name !== "" && item.Name !== undefined && item.Name !== null) {
+        const getSameHandle = (csvData || []).filter(
+          (filterVar, varIndex) => filterVar.Handle == item.Handle
+        );
+        // if (item.Name !== "" || item.Name !== undefined || item.Name !== null) {
         if (
-          getSameHandle[0]["Option 1 name"] !== "" &&
-          getSameHandle[0]["Option 1 name"] !== undefined &&
+          getSameHandle[0]["Option 1 name"] !== "" ||
+          getSameHandle[0]["Option 1 name"] !== undefined ||
           getSameHandle[0]["Option 1 name"] !== null
         ) {
           getSameHandle.map((itemVar, varIndex) => {
             if (
-              itemVar["Option 1 value"] !== "" &&
-              itemVar["Option 1 value"] !== undefined &&
+              itemVar["Option 1 value"] !== "" ||
+              itemVar["Option 1 value"] !== undefined ||
               itemVar["Option 1 value"] !== null
             ) {
               varientValue1.push({
-                price: itemVar["Default price"],
-                cost: itemVar.Cost,
-                sku: itemVar.SKU,
-                barcode: itemVar.Barcode,
+                price:
+                  typeof itemVar["Default price"] !== "undefined" &&
+                  typeof itemVar["Default price"] !== "null" &&
+                  !isNaN(itemVar["Default price"]) &&
+                  itemVar["Default price"] !== null &&
+                  itemVar["Default price"] !== ""
+                    ? parseFloat(itemVar["Default price"])
+                    : 0,
+                cost:
+                  typeof itemVar.Cost !== "undefined" &&
+                  typeof itemVar.Cost !== "null" &&
+                  !isNaN(itemVar.Cost) &&
+                  itemVar.Cost !== null &&
+                  itemVar.Cost !== ""
+                    ? parseFloat(itemVar.Cost)
+                    : 0,
+                sku: Number(itemVar.SKU).toPrecision(),
+                barcode: Number(itemVar.Barcode).toPrecision(),
                 variantName: itemVar["Option 1 value"],
               });
             }
@@ -832,21 +914,35 @@ router.post("/save_csv", async (req, res) => {
           }
         }
         if (
-          getSameHandle[0]["Option 2 name"] !== "" &&
-          getSameHandle[0]["Option 2 name"] !== undefined &&
+          getSameHandle[0]["Option 2 name"] !== "" ||
+          getSameHandle[0]["Option 2 name"] !== undefined ||
           getSameHandle[0]["Option 2 name"] !== null
         ) {
           getSameHandle.map((itemVar, varIndex) => {
             if (
-              itemVar["Option 2 value"] !== "" &&
-              itemVar["Option 2 value"] !== undefined &&
+              itemVar["Option 2 value"] !== "" ||
+              itemVar["Option 2 value"] !== undefined ||
               itemVar["Option 2 value"] !== null
             ) {
               varientValue2.push({
-                price: itemVar["Default price"],
-                cost: itemVar.Cost,
-                sku: itemVar.SKU,
-                barcode: itemVar.Barcode,
+                price:
+                  typeof itemVar["Default price"] !== "undefined" &&
+                  typeof itemVar["Default price"] !== "null" &&
+                  !isNaN(itemVar["Default price"]) &&
+                  itemVar["Default price"] !== null &&
+                  itemVar["Default price"] !== ""
+                    ? parseFloat(itemVar["Default price"])
+                    : 0,
+                cost:
+                  typeof itemVar.Cost !== "undefined" &&
+                  typeof itemVar.Cost !== "null" &&
+                  itemVar.Cost !== null &&
+                  !isNaN(itemVar.Cost) &&
+                  itemVar.Cost !== ""
+                    ? parseFloat(itemVar.Cost)
+                    : 0,
+                sku: Number(itemVar.SKU).toPrecision(),
+                barcode: Number(itemVar.Barcode).toPrecision(),
                 variantName: itemVar["Option 2 value"],
               });
             }
@@ -859,21 +955,35 @@ router.post("/save_csv", async (req, res) => {
           }
         }
         if (
-          getSameHandle[0]["Option 3 name"] !== "" &&
-          getSameHandle[0]["Option 3 name"] !== undefined &&
+          getSameHandle[0]["Option 3 name"] !== "" ||
+          getSameHandle[0]["Option 3 name"] !== undefined ||
           getSameHandle[0]["Option 3 name"] !== null
         ) {
           getSameHandle.map((itemVar, varIndex) => {
             if (
-              itemVar["Option 3 value"] !== "" &&
-              itemVar["Option 3 value"] !== undefined &&
+              itemVar["Option 3 value"] !== "" ||
+              itemVar["Option 3 value"] !== undefined ||
               itemVar["Option 3 value"] !== null
             ) {
               varientValue3.push({
-                price: itemVar["Default price"],
-                cost: itemVar.Cost,
-                sku: itemVar.SKU,
-                barcode: itemVar.Barcode,
+                price:
+                  typeof itemVar["Default price"] !== "undefined" &&
+                  typeof itemVar["Default price"] !== "null" &&
+                  !isNaN(itemVar["Default price"]) &&
+                  itemVar["Default price"] !== null &&
+                  itemVar["Default price"] !== ""
+                    ? parseFloat(itemVar["Default price"])
+                    : 0,
+                cost:
+                  typeof itemVar.Cost !== "undefined" &&
+                  typeof itemVar.Cost !== "null" &&
+                  !isNaN(itemVar.Cost) &&
+                  itemVar.Cost !== null &&
+                  itemVar.Cost !== ""
+                    ? parseFloat(itemVar.Cost)
+                    : 0,
+                sku: Number(itemVar.SKU).toPrecision(),
+                barcode: Number(itemVar.Barcode).toPrecision(),
                 variantName: itemVar["Option 3 value"],
               });
             }
@@ -885,73 +995,72 @@ router.post("/save_csv", async (req, res) => {
             });
           }
         }
-      }
-      let category = {};
-      try {
-        await Category.find({ catTitle: item.Category })
-          .then((catData) => {
-            if (catData !== null && catData.length !== 0) {
-              category = {
-                id: catData[0]._id,
-                name: catData[0].catTitle,
-              };
-            }
-          })
-          .catch((err) => {
-            console.log("Category", err.message);
-          });
-      } catch (err) {
-        console.log("Category", err.message);
-      }
+        // }
+        let category = {};
+        try {
+          await Category.find({ catTitle: item.Category })
+            .then((catData) => {
+              if (catData !== null && catData.length !== 0) {
+                category = {
+                  id: catData[0]._id,
+                  name: catData[0].catTitle,
+                };
+              }
+            })
+            .catch((err) => {
+              console.log("Category", err.message);
+            });
+        } catch (err) {
+          console.log("Category", err.message);
+        }
 
-      // data.push({
-      //   name: item.Name,
-      //   accountId: accountId,
-      //   category: category,
-      //   soldByType: item["Sold by weight"] == "N" ? "Each" : "Sold by weight",
-      //   price: item["Default price"],
-      //   cost: item.Cost,
-      //   sku: item.SKU,
-      //   barcode: item.Barcode,
-      //   trackStock: item["Track stock"] == "N" ? false : true,
-      //   varients: varientName,
-      //   stores: storeData,
-      //   modifiers: modifierData,
-      //   created_by: _id,
-      // });
-      if (item.Name !== "" && item.Name !== undefined && item.Name !== null) {
+        // if (item.Name !== "" || item.Name !== undefined || item.Name !== null) {
         const Exist = await ItemList.find({
           name: item.Name,
-          sku: item.SKU,
+          sku: Number(item.SKU).toPrecision(),
         }).sort({ _id: "desc" });
-        const newItemList = new ItemList({
-          name: item.Name,
-          accountId: accountId,
-          category: category,
-          soldByType: item["Sold by weight"] == "N" ? "Each" : "Sold by weight",
-          price: item["Default price"],
-          cost: item.Cost,
-          sku: item.SKU,
-          barcode: item.Barcode,
-          trackStock: item["Track stock"] == "N" ? false : true,
-          varients: varientName.length === 0 ? null : varientName,
-          stores: storeData,
-          modifiers: modifierData,
-          taxes: [],
-          repoOnPos: "Color_and_shape",
-          image: "",
-          color: "",
-          shape: "",
-          availableForSale: false,
-          created_by: _id,
-        });
-        // console.log("New Item List", newItemList);
         if (Exist.length > 0 && Exist !== null) {
           try {
-            await ItemList.updateOne(
+            const newItemList = {
+              name: item.Name,
+              accountId: accountId,
+              category: category,
+              soldByType:
+                item["Sold by weight"] == "N" ? "Each" : "Sold by weight",
+              price:
+                typeof item["Default price"] !== "undefined" &&
+                typeof item["Default price"] !== "null" &&
+                item["Default price"] !== null &&
+                !isNaN(item["Default price"]) &&
+                item["Default price"] !== ""
+                  ? parseFloat(item["Default price"])
+                  : 0,
+              cost:
+                typeof item.Cost !== "undefined" &&
+                typeof item.Cost !== "null" &&
+                item.Cost !== null &&
+                !isNaN(item.Cost) &&
+                item.Cost !== ""
+                  ? parseFloat(item.Cost)
+                  : 0,
+              sku: Number(item.SKU).toPrecision(),
+              barcode: Number(item.Barcode).toPrecision(),
+              trackStock: item["Track stock"] == "N" ? false : true,
+              varients: varientName.length === 0 ? null : varientName,
+              stores: storeData,
+              modifiers: modifierData,
+              taxes: [],
+              repoOnPos: "Color_and_shape",
+              image: "",
+              color: "",
+              shape: "",
+              availableForSale: false,
+              created_by: _id,
+            };
+            await ItemList.findOneAndUpdate(
               {
                 name: item.Name,
-                sku: item.SKU,
+                sku: Number(item.SKU).toPrecision(),
               },
               newItemList
             );
@@ -961,17 +1070,116 @@ router.post("/save_csv", async (req, res) => {
             // res.status(400).json({ message: error.message });
           }
         } else {
-          try {
-            // console.log("newItemList", newItemList);
-            const result = await newItemList.save();
-          } catch (error) {
-            console.log("Durning Insert", error.message);
-            // res.status(400).json({ message: error.message });
-          }
+          data.push({
+            name: item.Name,
+            accountId: accountId,
+            category: category,
+            soldByType:
+              item["Sold by weight"] == "N" ? "Each" : "Sold by weight",
+            price:
+              typeof item["Default price"] !== "undefined" &&
+              typeof item["Default price"] !== "null" &&
+              item["Default price"] !== null &&
+              !isNaN(item["Default price"]) &&
+              item["Default price"] !== ""
+                ? parseFloat(item["Default price"])
+                : 0,
+            cost:
+              typeof item.Cost !== "undefined" &&
+              typeof item.Cost !== "null" &&
+              item.Cost !== null &&
+              !isNaN(item.Cost) &&
+              item.Cost !== ""
+                ? parseFloat(item.Cost)
+                : 0,
+            sku: Number(item.SKU).toPrecision(),
+            barcode: Number(item.Barcode).toPrecision(),
+            trackStock: item["Track stock"] == "N" ? false : true,
+            varients: varientName.length === 0 ? null : varientName,
+            stores: storeData,
+            modifiers: modifierData,
+            taxes: [],
+            repoOnPos: "Color_and_shape",
+            image: "",
+            color: "",
+            shape: "",
+            availableForSale: false,
+            created_by: _id,
+          });
         }
+
+        // }
       }
-    });
-    res.status(200).send({ message: "Record Save Successfully" });
+      if (
+        typeof item.Name === "undefined" ||
+        typeof item.Name === "null" ||
+        item.Name === null ||
+        item.Name === undefined ||
+        item.Name === ""
+      ) {
+        groupNameErrors.push({
+          index: i,
+        });
+      }
+      if (
+        typeof item.SKU === "undefined" ||
+        typeof item.SKU === "null" ||
+        item.SKU === null ||
+        item.SKU === undefined ||
+        item.SKU === ""
+      ) {
+        groupSkuErrors.push({
+          index: i,
+        });
+      }
+      if (
+        typeof item.Handle === "undefined" ||
+        typeof item.Handle === "null" ||
+        item.Handle === null ||
+        item.Handle === undefined ||
+        item.Handle === ""
+      ) {
+        groupHandleErrors.push({
+          index: i,
+        });
+      }
+
+      console.log("i", i++);
+      console.log("csvData.length", csvData.length);
+    }
+
+    if (
+      typeof groupSkuErrors !== "undefined" &&
+      typeof groupHandleErrors !== "undefined" &&
+      typeof groupNameErrors !== "undefined"
+    ) {
+      if (
+        groupSkuErrors.length > 0 ||
+        groupHandleErrors.length > 0 ||
+        groupNameErrors.length > 0
+      ) {
+        errors.push({
+          groupSkuErrors: groupSkuErrors,
+          groupHandleErrors: groupHandleErrors,
+          groupNameErrors: groupNameErrors,
+        });
+        res.status(400).json(errors);
+      }
+    }
+    try {
+      ItemList.insertMany(data)
+        .then(() => {
+          console.log("Data inserted"); // Success
+          res.status(200).send({ message: "Record Save Successfully" });
+        })
+        .catch((error) => {
+          console.log(error); // Failure
+          res.status(400).json({ message: error.message });
+        });
+    } catch (error) {
+      console.log("Durning Insert", error.message);
+      res.status(400).json({ message: err.message });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
