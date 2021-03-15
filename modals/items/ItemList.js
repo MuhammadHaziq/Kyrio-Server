@@ -73,7 +73,6 @@ const itemListSchema = new mongoose.Schema({
         type: String,
         min: 1,
         max: 255,
-        required: true,
       },
       optionValue: [
         {
@@ -81,7 +80,6 @@ const itemListSchema = new mongoose.Schema({
             type: String,
             min: 1,
             max: 255,
-            required: true,
           },
           price: {
             type: Number,
