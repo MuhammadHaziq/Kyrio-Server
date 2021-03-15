@@ -7,7 +7,7 @@ import { checkModules, addModuleWhenSignUp } from "../libs/middlewares";
 import md5 from "md5";
 import express from "express";
 import jwt from "jsonwebtoken";
-import sendEmail from "../libs/sendEmail";
+// import sendEmail from "../libs/sendEmail";
 
 var router = express.Router();
 

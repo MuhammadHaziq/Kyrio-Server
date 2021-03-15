@@ -145,6 +145,7 @@ router.post("/", async (req, res) => {
         customer,
         store,
         created_by: _id,
+        user: _id,
         created_at,
         updated_at: created_at
       }).save();
@@ -263,6 +264,7 @@ router.post("/refund", async (req, res) => {
         customer,
         store,
         created_by: _id,
+        user: _id,
         created_at,
         updated_at: created_at
       }).save();

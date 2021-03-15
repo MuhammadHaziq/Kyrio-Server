@@ -267,6 +267,10 @@ const salesSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  user: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'users' 
+  },
   created_at: {
     type: Date,
     default: Date.now(),
