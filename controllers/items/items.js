@@ -522,7 +522,7 @@ router.post("/delete", async (req, res) => {
         new: true,
         upsert: true,
       })
-      console.log(del)
+      
       if(del.n > 0 && del.nModified > 0){
         req.io.emit(ITEM_DELETE, {data: ids, user: _id})
       }
