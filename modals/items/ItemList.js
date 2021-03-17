@@ -228,6 +228,15 @@ const itemListSchema = new mongoose.Schema({
     max: 20,
     required: false,
   },
+  deleted: {
+    type: Number,
+    max: 1,
+    default: 0
+  },
+  deleted_at: {
+    type: Date,
+    default: Date.now(),
+  },
   created_at: {
     type: Date,
     default: Date.now(),

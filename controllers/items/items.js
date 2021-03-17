@@ -5,7 +5,7 @@ import modifierRouter from "./modifers";
 import stockRouter from "./stock";
 import ItemList from "../../modals/items/ItemList";
 import uploadFiles from "../fileHandler/uploadFiles";
-import { getOwner } from "../../function/getOwner";
+import { ITEM_INSERT, ITEM_UPDATE, ITEM_DELETE } from "../../libs/socket/events";
 import Modifier from "../../modals/items/Modifier";
 import Category from "../../modals/items/category";
 import itemTax from "../../modals/settings/taxes/itemTax";
@@ -103,35 +103,12 @@ router.get("/serverSide", async (req, res) => {
           };
 
           res.status(200).json(serverResponse);
-          // res.status(200).json({
-          //   doc: doc,
-          //   count: count,
-          //   pages: Math.floor(count / limit) + 1,
-          // });
         });
       });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-/*
-router.get("/:id", async (req, res) => {
-  try {
-    const { accountId } = req.authData;
-    const { id } = req.params;
-
-    var result = await ItemList.find({
-      accountId: accountId,
-      _id: id,
-    }).sort({ _id: "desc" });
-    if(result.length > 0) {
-
-      res.status(200).json(result);
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});*/
 
 router.post("/", async (req, res) => {
   var {
@@ -145,8 +122,6 @@ router.post("/", async (req, res) => {
     repoOnPos,
     trackStock,
     stockQty,
-  } = req.body;
-  var {
     category,
     varients,
     stores,
@@ -154,6 +129,7 @@ router.post("/", async (req, res) => {
     taxes,
     itemColor,
     itemShape,
+    updated_at
   } = req.body;
   var image = req.files ? req.files.image : [];
   if (cost == "" || typeof cost === "undefined" || cost == null) {
@@ -177,9 +153,6 @@ router.post("/", async (req, res) => {
   } else {
     category = null;
   }
-
-  // stock = JSON.parse(stock);
-  // res.status(200).send(data);
 
   var itemImageName = "";
   // let owner = await getOwner(_id);
@@ -231,9 +204,11 @@ router.post("/", async (req, res) => {
     color: itemColor,
     shape: itemShape,
     created_by: _id,
+    updated_at
   });
   try {
     const result = await newItemList.save();
+    req.io.emit(ITEM_INSERT, {data: result, user: _id})
     res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -256,8 +231,6 @@ router.patch("/", async (req, res) => {
     stockQty,
     dsd,
     modifiersStatus,
-  } = req.body;
-  var {
     category,
     varients,
     stores,
@@ -265,6 +238,7 @@ router.patch("/", async (req, res) => {
     taxes,
     itemColor,
     itemShape,
+    updated_at
   } = req.body;
   var image = req.files ? req.files.image : [];
   if (cost == "" || typeof cost === "undefined" || cost == null) {
@@ -298,19 +272,8 @@ router.patch("/", async (req, res) => {
   } else {
     modifiersStatus = false;
   }
-  // varients = JSON.parse(varients);
-  // stores = JSON.parse(stores);
-  // modifiers = JSON.parse(modifiers);
-  // taxes = JSON.parse(taxes);
-  // category = JSON.parse(category);
-  // stock = JSON.parse(stock);
-  // res.status(200).send(data);
 
-  // var itemImageName = "";
-  // Add By Haaziq
   var itemImageName = imageName;
-
-  // let owner = await getOwner(_id);
 
   var rootDir = process.cwd();
   /*typeof req.files.image != "undefined" Update By Haziq
@@ -369,12 +332,14 @@ router.patch("/", async (req, res) => {
     color: itemColor,
     shape: itemShape,
     created_by: _id,
+    updated_at
   };
   try {
     let result = await ItemList.findOneAndUpdate({ _id: item_id }, { $set: data}, {
       new: true,
       upsert: true, // Make this update into an upsert
     });
+    req.io.emit(ITEM_UPDATE, {data: result, user: _id})
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -391,6 +356,7 @@ router.get("/", async (req, res) => {
     var result = await ItemList.find({
       // stores: { $elemMatch: { id: storeId } },
       accountId: accountId,
+      deleted: 0
     }).sort({ name: "asc" });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {
@@ -412,6 +378,7 @@ router.get("/storeItems", async (req, res) => {
     var items = await ItemList.find({
       stores: { $elemMatch: { id: storeId } },
       accountId: accountId,
+      deleted: 0
     })
       .select([
         "_id",
@@ -536,7 +503,8 @@ router.get("/search", async (req, res) => {
       // };
     }
     storeFilter.accountId = accountId;
-    console.log(storeFilter);
+    storeFilter.deleted = 0;
+    
     var result = await ItemList.find(storeFilter).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -547,9 +515,17 @@ router.get("/search", async (req, res) => {
 router.post("/delete", async (req, res) => {
   try {
     var { ids } = req.body;
+    const { _id, accountId } = req.authData;
     ids = JSON.parse(ids);
     ids.forEach(async (id) => {
-      await ItemList.deleteOne({ _id: id });
+      let del = await ItemList.updateOne({ _id: id, accountId: accountId }, { $set: {deleted: 1, deleted_at: Date.now() }}, {
+        new: true,
+        upsert: true,
+      })
+      
+      if(del.n == 1 && del.nModified == 1){
+        req.io.emit(ITEM_DELETE, {data: id, user: _id})
+      }
     });
 
     res.status(200).json({ message: "deleted" });
@@ -603,6 +579,7 @@ router.get("/row/:id", async (req, res) => {
     var result = await ItemList.findOne({
       _id: id,
       accountId: accountId,
+      deleted: 0
     }).sort({ _id: "desc" });
 
     // result = result.slice(startIndex, endIndex);
