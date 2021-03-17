@@ -41,7 +41,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 router.post("/", async (req, res) => {
-  const {
+  var {
     ticket_name,
     receipt_type,
     comments,
@@ -83,17 +83,7 @@ router.post("/", async (req, res) => {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     const { _id, accountId } = req.authData;
-    // let lastSaleRefNo = await Sales.find({ "store.id": store.id });
-    
-    // let maxRefNo = lastSaleRefNo.map(itm => {return itm.refNo} )
-    // console.log(maxRefNo)
-    // let refNo = Math.max(...maxRefNo) + 1;
-    // if(isNaN(refNo) || refNo == null || refNo == "-Infinity"){
-    //   refNo = pad(1,"5")
-    // } else{
-    //   refNo = pad(refNo,"5")
-    // }
-    // console.log(store)
+
     for(const item of items){
       if(item.trackStock) {
         var storeItem = await ItemList.findOne({
@@ -146,8 +136,8 @@ router.post("/", async (req, res) => {
         store,
         created_by: _id,
         user: _id,
-        created_at,
-        updated_at: created_at
+        created_at: sale_timestamp !== null ? sale_timestamp : created_at,
+        updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
       }).save();
       res.status(200).json(newSales);
     } catch (error) {
@@ -265,8 +255,8 @@ router.post("/refund", async (req, res) => {
         store,
         created_by: _id,
         user: _id,
-        created_at,
-        updated_at: created_at
+        created_at: sale_timestamp !== null ? sale_timestamp : created_at,
+        updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
       }).save();
       let refundedSale = await Sales.findOne({$and: [{ _id: getSale._id }, { accountId: accountId }]});
       res.status(200).json({refundReceipt: newRefund, saleReceipt: refundedSale});

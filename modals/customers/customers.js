@@ -63,6 +63,21 @@ const customersSchema = new mongoose.Schema({
     max: 255,
     default: 0,
   },
+  first_visit: {
+    type: String,
+  },
+  last_visit: {
+    type: String,
+  },
+  total_visits: {
+    type: Number,
+  },
+  total_spent: {
+    type: Number,
+  },
+  total_points: {
+    type: Number,
+  },
   created_by: {
     type: String,
     min: 3,

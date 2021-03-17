@@ -371,7 +371,10 @@ router.patch("/", async (req, res) => {
     created_by: _id,
   };
   try {
-    let result = await ItemList.findOneAndUpdate({ _id: item_id }, data);
+    let result = await ItemList.findOneAndUpdate({ _id: item_id }, { $set: data}, {
+      new: true,
+      upsert: true, // Make this update into an upsert
+    });
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -698,10 +701,7 @@ router.post("/save_csv", async (req, res) => {
         res.status(400).json(errors);
       }
     }
-    // console.log(skuErrors);
-    // console.log(handleErrors);
-    // console.log(NameLength);
-    // return false;
+
     let data = [];
     var i = 0;
     let groupSkuErrors = [];
