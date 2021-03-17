@@ -56,13 +56,15 @@ router.post("/", async (req, res) => {
     cash_return,
     total_discount,
     total_tax,
+    dining_option,
     customer,
     items,
     discounts,
     store,
     created_at
   } = req.body;
-
+  console.log(req.body)
+   sale_timestamp = sale_timestamp * 1000
   var errors = [];
   if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
     errors.push({ receipt_number: `Invalid Receipt No!` });
@@ -133,6 +135,7 @@ router.post("/", async (req, res) => {
         items,
         discounts,
         customer,
+        dining_option,
         store,
         created_by: _id,
         user: _id,
@@ -162,6 +165,7 @@ router.post("/refund", async (req, res) => {
     cash_received,
     cash_return,
     total_discount,
+    dining_option,
     total_tax,
     items,
     discounts,
@@ -251,6 +255,7 @@ router.post("/refund", async (req, res) => {
         refund_amount: 0,
         items,
         discounts,
+        dining_option,
         customer,
         store,
         created_by: _id,

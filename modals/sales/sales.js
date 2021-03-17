@@ -262,6 +262,32 @@ const salesSchema = new mongoose.Schema({
         max: 255,
       }
   },
+cashier: {
+    _id: false,
+    _id: {
+        type: String,
+        min: 6,
+        max: 255,
+      },
+    name: {
+        type: String,
+        min: 6,
+        max: 255,
+      }
+  },
+device: {
+    _id: false,
+    _id: {
+        type: String,
+        min: 6,
+        max: 255,
+      },
+    name: {
+        type: String,
+        min: 6,
+        max: 255,
+      }
+  },
   created_by: {
     type: String,
     min: 6,

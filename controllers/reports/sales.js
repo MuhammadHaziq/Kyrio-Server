@@ -34,39 +34,7 @@ router.post("/summary", async (req, res) => {
       { created_by: { "$in" : employees} },
       ]})
 
-      // let test = await Sales.aggregate([
-      //   { $match: { created_at: {$gte: new Date(start), $lte: new Date(end)}, accountId: accountId, "store._id": { "$in" : stores}, created_by: { "$in" : employees} } },
-      //   { $group: {_id: "$items.id", sales: {$push: "$$ROOT"} } },
-      //   { $lookup: {
-      //       from: "itemlists",
-      //       // localField: "items.id",
-      //       // foreignField: "_id",
-      //       let: { "itemId": "$items.id" },
-      //       pipeline: [
-      //         { $match: {
-      //           $expr: { $eq: [ "_id", "$$itemId" ] }
-      //         }}
-      //       ],
-      //       as: "items"
-      //     }
-      //   }
-      // ]);
-
-      // Compte.aggregate([
-      //   { "$match": { "$and": [{ "clientUid": clientUid }] }},
-      //   { "$lookup": {
-      //     "from": "Shop",
-      //     "let": { "shopId": "$shopId" },
-      //     "pipeline": [
-      //       { "$match": {
-      //         "$expr": { "$eq": [ "$shopId", "$$shopId" ] },
-      //         "shopPosId": { "$exists": false }
-      //       }}
-      //     ],
-      //     "as": "shopDescr"
-      //   }}
-      // ])
-
+      console.log(sales)
      let report = await filterSales(sales, divider, matches)
      
     res.status(200).json(report);
