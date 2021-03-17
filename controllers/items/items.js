@@ -517,16 +517,16 @@ router.post("/delete", async (req, res) => {
     var { ids } = req.body;
     const { _id, accountId } = req.authData;
     ids = JSON.parse(ids);
-    ids.forEach(async (id) => {
-      let del = await ItemList.updateOne({ _id: id, accountId: accountId }, { $set: {deleted: 1, deleted_at: Date.now() }}, {
+    // ids.forEach(async (id) => {
+      let del = await ItemList.updateMany({ _id: {$in: ids}, accountId: accountId }, { $set: {deleted: 1, deleted_at: Date.now() }}, {
         new: true,
         upsert: true,
       })
-      
-      if(del.n == 1 && del.nModified == 1){
-        req.io.emit(ITEM_DELETE, {data: id, user: _id})
+      console.log(del)
+      if(del.n > 0 && del.nModified > 0){
+        req.io.emit(ITEM_DELETE, {data: ids, user: _id})
       }
-    });
+    // });
 
     res.status(200).json({ message: "deleted" });
   } catch (error) {
