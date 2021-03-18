@@ -5,7 +5,7 @@ import modifierRouter from "./modifers";
 import stockRouter from "./stock";
 import ItemList from "../../modals/items/ItemList";
 import uploadFiles from "../fileHandler/uploadFiles";
-import { ITEM_INSERT, ITEM_UPDATE, ITEM_DELETE } from "../../libs/socket/events";
+import { ITEM_INSERT, ITEM_UPDATE, ITEM_DELETE } from "../../sockets/events";
 import Modifier from "../../modals/items/Modifier";
 import Category from "../../modals/items/category";
 import itemTax from "../../modals/settings/taxes/itemTax";
