@@ -1,6 +1,7 @@
 import express from "express";
 import Category from "../../modals/items/category";
 import ItemList from "../../modals/items/ItemList";
+import { CATEGORY_INSERT, CATEGORY_UPDATE, CATEGORY_DELETE } from "../../sockets/events";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -14,6 +15,7 @@ router.post("/", async (req, res) => {
   });
   try {
     const newCatResult = await newCat.save();
+    req.io.emit(CATEGORY_INSERT, {data: newCatResult, user: _id})
     res.status(201).json(newCatResult);
   } catch (error) {
     if (error.code === 11000) {
@@ -56,10 +58,21 @@ router.get("/", async (req, res) => {
 router.delete("/:ids", async (req, res) => {
   try {
     var { ids } = req.params;
+    const { _id, accountId } = req.authData;
     ids = JSON.parse(ids);
-    ids.forEach(async (id) => {
-      await Category.deleteOne({ _id: id });
-    });
+
+    // ids.forEach(async (id) => {
+    //   await Category.deleteOne({ _id: id });
+    // });
+
+    let del = await Category.updateMany({ _id: {$in: ids}, accountId: accountId }, { $set: {deleted: 1, deleted_at: Date.now() }}, {
+      new: true,
+      upsert: true,
+    })
+    
+    if(del.n > 0 && del.nModified > 0){
+      req.io.emit(CATEGORY_DELETE, {data: ids, user: _id})
+    }
 
     res.status(200).json({ message: "deleted" });
   } catch (error) {
@@ -113,9 +126,10 @@ router.get("/categoryItem", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   try {
     const { id } = req.params;
+    const { _id, accountId } = req.authData;
     const { catTitle, catColor } = req.body;
     const result = await Category.findOneAndUpdate(
-      { _id: id },
+      { _id: id, accountId: accountId },
       {
         $set: {
           catTitle: catTitle,
@@ -127,7 +141,7 @@ router.patch("/:id", async (req, res) => {
         upsert: true, // Make this update into an upsert
       }
     );
-
+    req.io.emit(CATEGORY_UPDATE, {data: result, user: _id})
     res.status(200).json({ data: result, message: "updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });
