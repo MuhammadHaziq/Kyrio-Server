@@ -304,7 +304,6 @@ router.patch("/", async (req, res) => {
         );
         if (!uploadResult.success) {
           res.status(404).json({ message: uploadResult.message });
-          conn.release();
         }
         itemImageName = uploadResult.images[0];
         itemColor = "";
