@@ -208,7 +208,9 @@ router.post("/", async (req, res) => {
   });
   try {
     const result = await newItemList.save();
+    
     req.io.emit(ITEM_INSERT, {data: result, user: _id})
+
     res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -407,35 +409,35 @@ router.get("/storeItems", async (req, res) => {
         "created_by",
       ])
       .sort({ _id: "desc" });
-    let itemsObjectFilter = items;
-    // for (const item of items) {
-    //   itemsObjectFilter.push({
-    //     _id: item._id,
-    //     category: item.category,
-    //     availableForSale: item.availableForSale,
-    //     soldByType: item.soldByType,
-    //     price: item.price,
-    //     cost: item.cost,
-    //     sku: item.sku,
-    //     barcode: item.barcode,
-    //     trackStock: item.trackStock,
-    //     compositeItem: item.compositeItem,
-    //     stockQty: item.stockQty,
-    //     varients: item.varients,
-    //     storeID: item.stores[0].id,
-    //     storePrice: item.stores[0].price,
-    //     inStock: item.stores[0].inStock,
-    //     lowStock: item.stores[0].lowStock,
-    //     modifiers: item.modifiers,
-    //     taxes: item.taxes,
-    //     repoOnPos: item.repoOnPos,
-    //     image: item.image,
-    //     color: item.color,
-    //     shape: item.shape,
-    //     created_at: item.created_at,
-    //     created_by: item.created_by,
-    //   });
-    // }
+    let itemsObjectFilter = [];
+    for (const item of items) {
+      itemsObjectFilter.push({
+        _id: item._id,
+        category: item.category,
+        availableForSale: item.availableForSale,
+        soldByType: item.soldByType,
+        price: item.price,
+        cost: item.cost,
+        sku: item.sku,
+        barcode: item.barcode,
+        trackStock: item.trackStock,
+        compositeItem: item.compositeItem,
+        stockQty: item.stockQty,
+        varients: item.varients,
+        storeID: item.stores[0].id,
+        storePrice: item.stores[0].price,
+        inStock: item.stores[0].inStock,
+        lowStock: item.stores[0].lowStock,
+        modifiers: item.modifiers,
+        taxes: item.taxes,
+        repoOnPos: item.repoOnPos,
+        image: item.image,
+        color: item.color,
+        shape: item.shape,
+        created_at: item.created_at,
+        created_by: item.created_by,
+      });
+    }
 
     res.status(200).json(itemsObjectFilter);
   } catch (error) {
