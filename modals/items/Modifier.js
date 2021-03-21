@@ -71,6 +71,15 @@ const modifierSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  deleted: {
+    type: Number,
+    max: 1,
+    default: 0
+  },
+  deleted_at: {
+      type: Date,
+      default: Date.now(),
+  },
 });
 modifierSchema.pre("save", function (next) {
   var doc = this;

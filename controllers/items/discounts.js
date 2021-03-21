@@ -1,5 +1,6 @@
 import express from "express";
 import Discount from "../../modals/items/Discount";
+import { DISCOUNT_INSERT, DISCOUNT_UPDATE, DISCOUNT_DELETE } from "../../sockets/events";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -20,6 +21,7 @@ router.post("/", async (req, res) => {
   });
   try {
     const result = await newDiscount.save();
+    req.io.emit(DISCOUNT_INSERT, {data: result, user: _id})
     res.status(201).json(result);
   } catch (error) {
     if (error.code === 11000) {
@@ -50,10 +52,17 @@ router.get("/:storeId", async (req, res) => {
 router.delete("/:ids", async (req, res) => {
   try {
     var { ids } = req.params;
+    const { _id, accountId } = req.authData;
     ids = JSON.parse(ids);
-    ids.forEach(async (id) => {
-      await Discount.deleteOne({ _id: id });
-    });
+    
+    let del = await Discount.updateMany({ _id: {$in: ids}, accountId: accountId }, { $set: {deleted: 1, deleted_at: Date.now() }}, {
+      new: true,
+      upsert: true,
+    })
+    
+    if(del.n > 0 && del.nModified > 0){
+      req.io.emit(DISCOUNT_DELETE, {data: ids, user: _id})
+    }
 
     res.status(200).json({ message: "deleted" });
   } catch (error) {
@@ -64,12 +73,13 @@ router.patch("/:id", async (req, res) => {
   try {
     const { title, type, value, restricted } = req.body;
     const { id } = req.params;
+    const { _id, accountId } = req.authData;
     let { stores } = req.body;
     if (stores !== undefined && stores !== null) {
       stores = JSON.parse(stores);
     }
     const result = await Discount.findOneAndUpdate(
-      { _id: id },
+      { _id: id, accountId: accountId },
       {
         $set: {
           title: title,
@@ -84,7 +94,7 @@ router.patch("/:id", async (req, res) => {
         upsert: true, // Make this update into an upsert
       }
     );
-
+    req.io.emit(DISCOUNT_UPDATE, {data: result, user: _id})
     res.status(200).json({ data: result, message: "updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });

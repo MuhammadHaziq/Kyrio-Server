@@ -32,7 +32,16 @@ const CategorySchema = new mongoose.Schema({
     updated_at: {
         type: Date,
         default: Date.now(),
-      },
+    },
+    deleted: {
+        type: Number,
+        max: 1,
+        default: 0
+    },
+    deleted_at: {
+        type: Date,
+        default: Date.now(),
+    },
 });
 CategorySchema.index(
     {
