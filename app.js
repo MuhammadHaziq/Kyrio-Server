@@ -10,15 +10,15 @@ import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
 
 var app = express();
-app.io = require('socket.io')();
+app.io = require("socket.io")();
 
 dotenv.config();
 app.use(cors());
 // Bind Socket
 app.use(async function (req, res, next) {
-  req.io = app.io
-  next()
-})
+  req.io = app.io;
+  next();
+});
 // app.use(
 //   fileUpload({
 //     limits: { fileSize: '50mb' },
@@ -33,11 +33,11 @@ app.use(async function (req, res, next) {
 //   })
 // );
 app.use(fileUpload());
-app.use(express.json({limit: '50mb', type: 'application/json'}));
+app.use(express.json({ limit: "50mb", type: "application/json" }));
 app.use(
   express.urlencoded({
-    limit: '50mb',
-    extended: true
+    limit: "50mb",
+    extended: true,
   })
 );
 // view engine setup
@@ -58,6 +58,10 @@ app.use(
 app.use(
   "/media/receipt/:storeId",
   express.static(path.join(__dirname, "./uploads/receipt"))
+);
+app.use(
+  "/media/csv/:fileName",
+  express.static(path.join(__dirname, "./uploads/csv"))
 );
 
 // catch 404 and forward to error handler
