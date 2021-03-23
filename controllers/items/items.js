@@ -212,13 +212,8 @@ router.post("/", async (req, res) => {
   });
   try {
     const result = await newItemList.save();
-<<<<<<< HEAD
     req.io.emit(ITEM_INSERT, { data: result, user: _id });
-=======
-    
-    req.io.emit(ITEM_INSERT, {data: result, user: _id})
 
->>>>>>> 9bc711192b240f764e74104b4163de747d37ec29
     res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -634,6 +629,113 @@ const checkDuplicate = (array) => {
   }
 };
 
+router.post("/validate_csv", async (req, res) => {
+  try {
+    var errors = [];
+    let insertFile = [];
+    let updatedFile = [];
+    let data = [];
+    let groupSkuErrors = [];
+    let groupHandleErrors = [];
+    let groupNameErrors = [];
+    const { accountId, _id } = req.authData;
+    let { csvData } = req.body;
+
+    var csvFile = req.files ? req.files.csvFile : "";
+
+    if (
+      (!csvFile || typeof csvFile == "undefined" || csvFile == "") &&
+      csvFile == ""
+    ) {
+      errors.push(`Invalid Csv File!`);
+    }
+    if (errors.length > 0) {
+      res.status(400).send({ message: `Invalid Parameters!`, errors });
+    } else {
+      const imagesName = await uploadCsv([csvFile], `csv/`);
+      if (imagesName.success === true) {
+        var i = 0;
+        var parser = fs
+          .createReadStream(`uploads/csv/${imagesName.images[0]}`)
+          .pipe(csv.parse({ headers: true, ignoreEmpty: true, trim: true }))
+          .on("error", (error) => console.error(error))
+          .on("data", async (row) => {
+            if (
+              typeof row.Name === "undefined" ||
+              typeof row.Name === "null" ||
+              row.Name === null ||
+              row.Name === undefined ||
+              row.Name === ""
+            ) {
+              groupNameErrors.push({
+                index: i,
+              });
+            }
+            if (
+              typeof row.SKU === "undefined" ||
+              typeof row.SKU === "null" ||
+              row.SKU === null ||
+              row.SKU === undefined ||
+              row.SKU === ""
+            ) {
+              groupSkuErrors.push({
+                index: i,
+              });
+            }
+            if (
+              typeof row.Handle === "undefined" ||
+              typeof row.Handle === "null" ||
+              row.Handle === null ||
+              row.Handle === undefined ||
+              row.Handle === ""
+            ) {
+              groupHandleErrors.push({
+                index: i,
+              });
+            }
+            i++;
+            console.log(i);
+          })
+          .on("end", async (rowCount) => {
+            console.log(`Parsed ${rowCount} rows`);
+            await deleteFile(imagesName.images[0], "csv");
+            // console.log(`Parsed ${rowCount} rows`, insertFile, updatedFile);
+            if (
+              typeof groupSkuErrors !== "undefined" &&
+              typeof groupHandleErrors !== "undefined" &&
+              typeof groupNameErrors !== "undefined"
+            ) {
+              if (
+                groupSkuErrors.length > 0 ||
+                groupHandleErrors.length > 0 ||
+                groupNameErrors.length > 0
+              ) {
+                errors.push({
+                  groupSkuErrors: groupSkuErrors,
+                  groupHandleErrors: groupHandleErrors,
+                  groupNameErrors: groupNameErrors,
+                });
+                res.status(400).json(errors);
+              } else {
+                res.status(200).json({
+                  success: true,
+                  message: `${rowCount} items will be import`,
+                });
+              }
+            } else {
+              res.status(200).json({
+                success: true,
+                message: `${rowCount} items will be import`,
+              });
+            }
+          });
+      }
+    }
+  } catch (err) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.post("/save_csv", async (req, res) => {
   try {
     var errors = [];
@@ -724,6 +826,7 @@ router.post("/save_csv", async (req, res) => {
                 name: row.Name,
                 sku: Number(row.SKU).toPrecision(),
                 accountId: accountId,
+                deleted: 0,
               }).sort({ _id: "desc" });
               console.log("handleExist", handleExist);
               const storeModifier = await createStoresFromCSV(
@@ -1144,106 +1247,54 @@ router.post("/save_csv", async (req, res) => {
   }
 });
 
-const createStoresFromCSV = async (item, user_id, accountId) => {
-  const modifierData = [];
-  const storeData = [];
-  try {
-    var keys = Object.keys(item);
-    (keys || []).map(async (ite, iteIndex) => {
-      let getStore = ite.match(/([^[\]]+|\[\])/g).map(function (val) {
-        return val === "[]" ? null : val;
-      })[1];
-      const stores = await Store.find().sort({
-        _id: "desc",
-      });
-      (stores || []).map(async (stor, storIndex) => {
-        if (getStore !== undefined && getStore !== null) {
-          // if (ite == `Available for sale [${stor.title}]`) {
-          if (getStore.trim() == stor.title.trim()) {
-            return storeData.push({
-              id: stor._id,
-              title: stor.title,
-              price:
-                typeof item[`Price [${stor.title}]`] !== "undefined" &&
-                typeof item[`Price [${stor.title}]`] !== "null" &&
-                !isNaN(item[`Price [${stor.title}]`]) &&
-                item[`Price [${stor.title}]`] !== null &&
-                item[`Price [${stor.title}]`] !== ""
-                  ? parseFloat(item[`Price [${stor.title}]`])
-                  : 0,
-              inStock:
-                typeof item[`In stock [${stor.title}]`] !== "undefined" &&
-                typeof item[`In stock [${stor.title}]`] !== "null" &&
-                !isNaN(item[`In stock [${stor.title}]`]) &&
-                item[`In stock [${stor.title}]`] !== null &&
-                item[`In stock [${stor.title}]`] !== ""
-                  ? item[`In stock [${stor.title}]`]
-                  : 0,
-              lowStock:
-                typeof item[`Low stock [${stor.title}]`] !== "undefined" &&
-                typeof item[`Low stock [${stor.title}]`] !== "null" &&
-                !isNaN(item[`Low stock [${stor.title}]`]) &&
-                item[`Low stock [${stor.title}]`] !== null &&
-                item[`Low stock [${stor.title}]`] !== ""
-                  ? item[`Low stock [${stor.title}]`]
-                  : 0,
-              variantName: "",
-              modifiers: Modifier.find({
-                stores: { $elemMatch: { id: stor._id } },
-              })
-                .select("title")
-                .sort({
-                  _id: "desc",
-                }),
-              taxes: itemTax
-                .find({
-                  stores: { $elemMatch: { storeId: stor._id } },
-                  accountId: accountId,
-                })
-                .select("title tax_type tax_rate")
-                .sort({ _id: "desc" }),
-            });
-          } else {
-            const newStore = new Store({
-              title: getStore,
-              address: "",
-              phone: "",
-              description: "",
-              createdBy: user_id,
-              accountId: accountId,
-            });
-            try {
-              const result = await newStore.save();
+const createStoresFromCSV = (item, user_id, accountId) => {
+  return new Promise(async (resolve, reject) => {
+    const modifierData = [];
+    const storeData = [];
+
+    try {
+      var keys = Object.keys(item);
+      (keys || []).map(async (ite, iteIndex) => {
+        let getStore = ite.match(/([^[\]]+|\[\])/g).map(function (val) {
+          return val === "[]" ? null : val;
+        })[1];
+        const stores = await Store.find().sort({
+          _id: "desc",
+        });
+        (stores || []).map(async (stor, storIndex) => {
+          if (getStore !== undefined && getStore !== null) {
+            // if (ite == `Available for sale [${stor.title}]`) {
+            if (getStore.trim() == stor.title.trim()) {
               return storeData.push({
-                id: result._id,
-                title: result.title,
+                id: stor._id,
+                title: stor.title,
                 price:
-                  typeof item[`Price [${getStore}]`] !== "undefined" &&
-                  typeof item[`Price [${getStore}]`] !== "null" &&
-                  !isNaN(item[`Price [${getStore}]`]) &&
-                  item[`Price [${getStore}]`] !== null &&
-                  item[`Price [${getStore}]`] !== ""
-                    ? parseFloat(item[`Price [${getStore}]`])
+                  typeof item[`Price [${stor.title}]`] !== "undefined" &&
+                  typeof item[`Price [${stor.title}]`] !== "null" &&
+                  !isNaN(item[`Price [${stor.title}]`]) &&
+                  item[`Price [${stor.title}]`] !== null &&
+                  item[`Price [${stor.title}]`] !== ""
+                    ? parseFloat(item[`Price [${stor.title}]`])
                     : 0,
                 inStock:
-                  typeof item[`In stock [${getStore}]`] !== "undefined" &&
-                  typeof item[`In stock [${getStore}]`] !== "null" &&
-                  !isNaN(item[`In stock [${getStore}]`]) &&
-                  item[`In stock [${getStore}]`] !== null &&
-                  item[`In stock [${getStore}]`] !== ""
-                    ? item[`In stock [${getStore}]`]
+                  typeof item[`In stock [${stor.title}]`] !== "undefined" &&
+                  typeof item[`In stock [${stor.title}]`] !== "null" &&
+                  !isNaN(item[`In stock [${stor.title}]`]) &&
+                  item[`In stock [${stor.title}]`] !== null &&
+                  item[`In stock [${stor.title}]`] !== ""
+                    ? item[`In stock [${stor.title}]`]
                     : 0,
                 lowStock:
-                  typeof item[`Low stock [${getStore}]`] !== "undefined" &&
-                  typeof item[`Low stock [${getStore}]`] !== "null" &&
-                  !isNaN(item[`Low stock [${getStore}]`]) &&
-                  item[`Low stock [${getStore}]`] !== null &&
-                  item[`Low stock [${getStore}]`] !== ""
-                    ? item[`Low stock [${getStore}]`]
+                  typeof item[`Low stock [${stor.title}]`] !== "undefined" &&
+                  typeof item[`Low stock [${stor.title}]`] !== "null" &&
+                  !isNaN(item[`Low stock [${stor.title}]`]) &&
+                  item[`Low stock [${stor.title}]`] !== null &&
+                  item[`Low stock [${stor.title}]`] !== ""
+                    ? item[`Low stock [${stor.title}]`]
                     : 0,
                 variantName: "",
                 modifiers: Modifier.find({
-                  stores: { $elemMatch: { id: result._id } },
+                  stores: { $elemMatch: { id: stor._id } },
                 })
                   .select("title")
                   .sort({
@@ -1251,51 +1302,104 @@ const createStoresFromCSV = async (item, user_id, accountId) => {
                   }),
                 taxes: itemTax
                   .find({
-                    stores: { $elemMatch: { storeId: result._id } },
+                    stores: { $elemMatch: { storeId: stor._id } },
                     accountId: accountId,
                   })
                   .select("title tax_type tax_rate")
                   .sort({ _id: "desc" }),
               });
-            } catch (error) {
-              if (error.code === 11000) {
-                // console.log({ message: "Store Already Register" });
-                // res.status(400).json({ message: "Store Already Register By This User" });
-              } else {
-                // console.log({ message: error.message });
-                // res.status(400).json({ message: error.message });
+            } else {
+              const newStore = new Store({
+                title: getStore,
+                address: "",
+                phone: "",
+                description: "",
+                createdBy: user_id,
+                accountId: accountId,
+              });
+              try {
+                const result = await newStore.save();
+                return storeData.push({
+                  id: result._id,
+                  title: result.title,
+                  price:
+                    typeof item[`Price [${getStore}]`] !== "undefined" &&
+                    typeof item[`Price [${getStore}]`] !== "null" &&
+                    !isNaN(item[`Price [${getStore}]`]) &&
+                    item[`Price [${getStore}]`] !== null &&
+                    item[`Price [${getStore}]`] !== ""
+                      ? parseFloat(item[`Price [${getStore}]`])
+                      : 0,
+                  inStock:
+                    typeof item[`In stock [${getStore}]`] !== "undefined" &&
+                    typeof item[`In stock [${getStore}]`] !== "null" &&
+                    !isNaN(item[`In stock [${getStore}]`]) &&
+                    item[`In stock [${getStore}]`] !== null &&
+                    item[`In stock [${getStore}]`] !== ""
+                      ? item[`In stock [${getStore}]`]
+                      : 0,
+                  lowStock:
+                    typeof item[`Low stock [${getStore}]`] !== "undefined" &&
+                    typeof item[`Low stock [${getStore}]`] !== "null" &&
+                    !isNaN(item[`Low stock [${getStore}]`]) &&
+                    item[`Low stock [${getStore}]`] !== null &&
+                    item[`Low stock [${getStore}]`] !== ""
+                      ? item[`Low stock [${getStore}]`]
+                      : 0,
+                  variantName: "",
+                  modifiers: Modifier.find({
+                    stores: { $elemMatch: { id: result._id } },
+                  })
+                    .select("title")
+                    .sort({
+                      _id: "desc",
+                    }),
+                  taxes: itemTax
+                    .find({
+                      stores: { $elemMatch: { storeId: result._id } },
+                      accountId: accountId,
+                    })
+                    .select("title tax_type tax_rate")
+                    .sort({ _id: "desc" }),
+                });
+              } catch (error) {
+                if (error.code === 11000) {
+                  // console.log({ message: "Store Already Register" });
+                  // res.status(400).json({ message: "Store Already Register By This User" });
+                } else {
+                  // console.log({ message: error.message });
+                  // res.status(400).json({ message: error.message });
+                }
               }
             }
           }
+        });
+        try {
+          const modifier = await Modifier.find().sort({
+            _id: "desc",
+          });
+          (modifier || []).map((modi, modiIndex) => {
+            if (
+              `Modifier - "${modi.title}"` == ite ||
+              `Modifier-${modi.title}` == ite
+            ) {
+              modifierData.push({
+                id: modi._id,
+                title: modi.title,
+              });
+            }
+          });
+        } catch (err) {
+          console.log("Modifier Catch", err.message);
         }
       });
-      try {
-        const modifier = await Modifier.find().sort({
-          _id: "desc",
-        });
-        (modifier || []).map((modi, modiIndex) => {
-          if (
-            `Modifier - "${modi.title}"` == ite ||
-            `Modifier-${modi.title}` == ite
-          ) {
-            modifierData.push({
-              id: modi._id,
-              title: modi.title,
-            });
-          }
-        });
-      } catch (err) {
-        console.log("Modifier Catch", err.message);
-      }
-    });
-    return { storeData, modifierData, success: true };
-  } catch (err) {
-    console.log("createStoresFromCSV Error", err.message);
-    return { storeData: [], modifierData: [], success: false };
-  }
+      resolve({ storeData, modifierData, success: true });
+    } catch (err) {
+      console.log("createStoresFromCSV Error", err.message);
+      resolve({ storeData: [], modifierData: [], success: false });
+    }
+  });
 };
-
-const insertCsvRow = async (item, user_id, accountId) => {};
 
 // router.post("/import-csv", async (req, res) => {
 //   try {
