@@ -18,13 +18,12 @@ router.get("/", async (req, res) => {
 
 router.post("/create", async (req, res) => {
   try {
-    
     const { stockTitle } = req.body;
     const { _id, accountId } = req.authData;
     const newStcokItem = new Stock({
       stockTitle,
       created_by: _id,
-      accountId: accountId
+      accountId: accountId,
     });
 
     const result = await newStcokItem.save();
