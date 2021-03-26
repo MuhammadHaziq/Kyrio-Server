@@ -602,8 +602,6 @@ router.get("/get_item_taxes", async (req, res) => {
       tax.stores !== undefined && tax.stores !== null && tax.stores.length > 0
         ? tax.stores.map((item) => {
             stores.map((str) => {
-              console.log(item);
-              console.log(str, "str");
               if (item.storeId == str._id) {
                 return storeTax.push({
                   storeId: item.storeId,
@@ -690,7 +688,6 @@ router.get("/row/:id", async (req, res) => {
       // for(ite of result)
       let taxes = [];
       taxes = await get_items_taxes(accountId, result.taxes);
-      console.log(taxes);
       newVarients = {
         accountId: result.accountId,
         availableForSale: result.availableForSale,
@@ -733,7 +730,6 @@ router.get("/row/:id", async (req, res) => {
         });
       }
     }
-    console.log(newVarients, "newVarients");
     newVarients =
       newVarients !== undefined && newVarients !== null ? newVarients : {};
     res.status(200).json(newVarients);
