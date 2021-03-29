@@ -64,7 +64,7 @@ router.post("/", async (req, res) => {
     created_at
   } = req.body;
   if(sale_timestamp !== "" && sale_timestamp !== null){
-   sale_timestamp = sale_timestamp * 1000
+    sale_timestamp = sale_timestamp * 1000
   } else {
     sale_timestamp = Date.now();
   }
