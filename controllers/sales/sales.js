@@ -63,10 +63,10 @@ router.post("/", async (req, res) => {
     store,
     created_at
   } = req.body;
-  if(sale_timestamp !== "" || sale_timestamp !== null){
+  if(sale_timestamp !== "" && sale_timestamp !== null){
    sale_timestamp = sale_timestamp * 1000
   } else {
-    sale_timestamp = new Date();
+    sale_timestamp = Date.now();
   }
   var errors = [];
   if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
