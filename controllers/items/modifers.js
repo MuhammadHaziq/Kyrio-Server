@@ -1,6 +1,10 @@
 import express from "express";
 import Modifier from "../../modals/items/Modifier";
-import { MODIFIER_INSERT, MODIFIER_UPDATE, MODIFIER_DELETE } from "../../sockets/events";
+import {
+  MODIFIER_INSERT,
+  MODIFIER_UPDATE,
+  MODIFIER_DELETE,
+} from "../../sockets/events";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -27,8 +31,8 @@ router.post("/", async (req, res) => {
       created_by: _id,
     });
     const result = await newModifier.save();
-    
-    req.io.emit(MODIFIER_INSERT, {data: result, user: _id})
+
+    req.io.emit(MODIFIER_INSERT, { data: result, user: _id });
 
     res.status(201).json(result);
   } catch (error) {
@@ -39,6 +43,7 @@ router.post("/", async (req, res) => {
     }
   }
 });
+
 router.get("/:storeId", async (req, res) => {
   try {
     const { accountId } = req.authData;
@@ -48,14 +53,16 @@ router.get("/:storeId", async (req, res) => {
       storeFilter.stores = { $elemMatch: { id: storeId } };
     }
     storeFilter.accountId = accountId;
-    
+    storeFilter.deleted = 0;
+
     const result = await Modifier.find(storeFilter).sort({ position: "asc" });
-    
+
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.post("/getStoreModifiers", async (req, res) => {
   try {
     const { accountId } = req.authData;
@@ -63,25 +70,31 @@ router.post("/getStoreModifiers", async (req, res) => {
     const result = await Modifier.find({
       stores: { $elemMatch: { id: storeId } },
       accountId: accountId,
+      deleted: 0,
     }).sort({ postion: "asc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.delete("/:ids", async (req, res) => {
   try {
     var { ids } = req.params;
     const { _id, accountId } = req.authData;
     ids = JSON.parse(ids);
-    
-    let del = await Modifier.updateMany({ _id: {$in: ids}, accountId: accountId }, { $set: {deleted: 1, deleted_at: Date.now() }}, {
-      new: true,
-      upsert: true,
-    })
-    
-    if(del.n > 0 && del.nModified > 0){
-      req.io.emit(MODIFIER_DELETE, {data: ids, user: _id})
+
+    let del = await Modifier.updateMany(
+      { _id: { $in: ids }, accountId: accountId },
+      { $set: { deleted: 1, deleted_at: Date.now() } },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
+
+    if (del.n > 0 && del.nModified > 0) {
+      req.io.emit(MODIFIER_DELETE, { data: ids, user: _id });
     }
 
     res.status(200).json({ message: "deleted" });
@@ -109,9 +122,11 @@ router.patch("/update_position", async (req, res) => {
         }
       );
     });
-    
-    let modifiersUpdated = await Modifier.find({accountId: accountId}).sort({ position: "asc" });
-    req.io.emit(MODIFIER_UPDATE, {data: modifiersUpdated, user: _id})
+
+    let modifiersUpdated = await Modifier.find({ accountId: accountId }).sort({
+      position: "asc",
+    });
+    req.io.emit(MODIFIER_UPDATE, { data: modifiersUpdated, user: _id });
 
     res.status(200).json({ message: "Modifier Position Is Updated" });
   } catch (error) {
@@ -141,9 +156,12 @@ router.patch("/:id", async (req, res) => {
         upsert: true, // Make this update into an upsert
       }
     );
-    
-    let updatedModifier = await Modifier.find({_id: id, accountId: accountId}).sort({ position: "asc" });
-    req.io.emit(MODIFIER_UPDATE, {data: updatedModifier, user: _id})
+
+    let updatedModifier = await Modifier.find({
+      _id: id,
+      accountId: accountId,
+    }).sort({ position: "asc" });
+    req.io.emit(MODIFIER_UPDATE, { data: updatedModifier, user: _id });
 
     res.status(200).json({ message: "Modifier Updated", data: result });
   } catch (error) {
@@ -157,6 +175,7 @@ router.get("/row/:id", async (req, res) => {
     let storeFilter = {};
     storeFilter.accountId = accountId;
     storeFilter._id = id;
+    storeFilter.deleted = 0;
     const result = await Modifier.findOne(storeFilter).sort({
       position: "asc",
     });

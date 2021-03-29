@@ -1,7 +1,11 @@
 import express from "express";
 import Category from "../../modals/items/category";
 import ItemList from "../../modals/items/ItemList";
-import { CATEGORY_INSERT, CATEGORY_UPDATE, CATEGORY_DELETE } from "../../sockets/events";
+import {
+  CATEGORY_INSERT,
+  CATEGORY_UPDATE,
+  CATEGORY_DELETE,
+} from "../../sockets/events";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -15,7 +19,7 @@ router.post("/", async (req, res) => {
   });
   try {
     const newCatResult = await newCat.save();
-    req.io.emit(CATEGORY_INSERT, {data: newCatResult, user: _id})
+    req.io.emit(CATEGORY_INSERT, { data: newCatResult, user: _id });
     res.status(201).json(newCatResult);
   } catch (error) {
     if (error.code === 11000) {
@@ -31,13 +35,17 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { accountId } = req.authData;
-    const allCat = await Category.find({ accountId: accountId }).sort({
+    const allCat = await Category.find({
+      accountId: accountId,
+      deleted: 0,
+    }).sort({
       _id: "desc",
     });
     let allCategories = [];
     for (const cate of allCat) {
       let itemCount = await ItemList.find({
         "category.id": cate._id,
+        deleted: 0,
       }).countDocuments();
       allCategories.push({
         _id: cate._id,
@@ -65,13 +73,17 @@ router.delete("/:ids", async (req, res) => {
     //   await Category.deleteOne({ _id: id });
     // });
 
-    let del = await Category.updateMany({ _id: {$in: ids}, accountId: accountId }, { $set: {deleted: 1, deleted_at: Date.now() }}, {
-      new: true,
-      upsert: true,
-    })
-    
-    if(del.n > 0 && del.nModified > 0){
-      req.io.emit(CATEGORY_DELETE, {data: ids, user: _id})
+    let del = await Category.updateMany(
+      { _id: { $in: ids }, accountId: accountId },
+      { $set: { deleted: 1, deleted_at: Date.now() } },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
+
+    if (del.n > 0 && del.nModified > 0) {
+      req.io.emit(CATEGORY_DELETE, { data: ids, user: _id });
     }
 
     res.status(200).json({ message: "deleted" });
@@ -108,12 +120,14 @@ router.get("/categoryItem", async (req, res) => {
     if (storeId === undefined) {
       filters = {
         accountId: accountId,
+        deleted: 0,
       };
     } else {
       storeId = JSON.parse(storeId);
       filters = {
         stores: { $elemMatch: { id: { $in: storeId } } },
         accountId: accountId,
+        deleted: 0,
       };
     }
 
@@ -141,7 +155,7 @@ router.patch("/:id", async (req, res) => {
         upsert: true, // Make this update into an upsert
       }
     );
-    req.io.emit(CATEGORY_UPDATE, {data: result, user: _id})
+    req.io.emit(CATEGORY_UPDATE, { data: result, user: _id });
     res.status(200).json({ data: result, message: "updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -152,13 +166,18 @@ router.get("/row/:id", async (req, res) => {
   try {
     const { accountId } = req.authData;
     const { id } = req.params;
-    const allCat = await Category.find({ _id: id, accountId: accountId }).sort({
+    const allCat = await Category.find({
+      _id: id,
+      accountId: accountId,
+      deleted: 0,
+    }).sort({
       _id: "desc",
     });
     let allCategories = [];
     for (const cate of allCat) {
       let itemCount = await ItemList.find({
         "category.id": cate._id,
+        deleted: 0,
       }).countDocuments();
       allCategories.push({
         _id: cate._id,

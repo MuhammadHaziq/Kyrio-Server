@@ -11,7 +11,16 @@ const StockSchema = new mongoose.Schema({
     type: String,
     min: 6,
     max: 255,
-    required: true
+    required: true,
+  },
+  deleted: {
+    type: Number,
+    max: 1,
+    default: 0,
+  },
+  deleted_at: {
+    type: Date,
+    default: Date.now(),
   },
   created_at: {
     type: Date,

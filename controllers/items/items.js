@@ -11,7 +11,6 @@ import Category from "../../modals/items/category";
 import itemTax from "../../modals/settings/taxes/itemTax";
 import Store from "../../modals/Store";
 import { uploadCsv, deleteFile } from "../fileHandler/uploadFiles";
-
 // const csv = require("fast-csv");
 const fs = require("fs-extra");
 const csv = require("@fast-csv/parse");
@@ -554,6 +553,9 @@ router.get("/get_item_stores", async (req, res) => {
     const stores = await Store.find({ accountId: accountId }).sort({
       _id: "desc",
     });
+    const taxes = await itemTax
+      .find({ accountId: accountId })
+      .sort({ _id: "desc" });
     let allStores = [];
     for (const store of stores) {
       allStores.push({
@@ -585,19 +587,153 @@ router.get("/get_item_stores", async (req, res) => {
   }
 });
 
+router.get("/get_item_taxes", async (req, res) => {
+  try {
+    const { accountId } = req.authData;
+    const stores = await Store.find({ accountId: accountId }).sort({
+      _id: "desc",
+    });
+    const result = await itemTax
+      .find({ accountId: accountId })
+      .sort({ _id: "desc" });
+    let taxes = [];
+    for (const tax of result) {
+      const storeTax = [];
+      tax.stores !== undefined && tax.stores !== null && tax.stores.length > 0
+        ? tax.stores.map((item) => {
+            stores.map((str) => {
+              if (item.storeId == str._id) {
+                return storeTax.push({
+                  storeId: item.storeId,
+                  storeTitle: item.storeTitle,
+                });
+              }
+            });
+          })
+        : [],
+        taxes.push({
+          id: tax._id,
+          title: tax.title,
+          tax_rate: tax.tax_rate,
+          allStores:
+            tax.stores !== undefined &&
+            tax.stores !== null &&
+            tax.stores.length > 0
+              ? tax.stores.length === stores.length
+                ? true
+                : false
+              : false,
+          stores: storeTax,
+        });
+    }
+    res.status(200).json({ taxes: taxes });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+const get_items_taxes = async (accountId, itemTaxes) => {
+  const stores = await Store.find({ accountId: accountId }).sort({
+    _id: "desc",
+  });
+  let taxes = [];
+  for (const tax_id of itemTaxes) {
+    const result = await itemTax
+      .find({ accountId: accountId, _id: tax_id.id })
+      .sort({ _id: "desc" });
+    for (const tax of result) {
+      const storeTax = [];
+      tax.stores !== undefined && tax.stores !== null && tax.stores.length > 0
+        ? tax.stores.map((item) => {
+            stores.map((str) => {
+              if (item.storeId == str._id) {
+                return storeTax.push({
+                  storeId: item.storeId,
+                  storeTitle: item.storeTitle,
+                });
+              }
+            });
+          })
+        : [];
+      taxes.push({
+        id: tax._id,
+        title: tax.title,
+        tax_rate: tax.tax_rate,
+        allStores:
+          tax.stores !== undefined &&
+          tax.stores !== null &&
+          tax.stores.length > 0
+            ? tax.stores.length === stores.length
+              ? true
+              : false
+            : false,
+        stores: storeTax,
+      });
+    }
+  }
+  return taxes;
+};
+
 router.get("/row/:id", async (req, res) => {
   try {
     const { accountId } = req.authData;
     const { id } = req.params;
-
+    let newVarients = [];
     var result = await ItemList.findOne({
       _id: id,
       accountId: accountId,
       deleted: 0,
     }).sort({ _id: "desc" });
+    if (result !== undefined && result !== null) {
+      // for(ite of result)
+      let taxes = [];
+      taxes = await get_items_taxes(accountId, result.taxes);
+      newVarients = {
+        accountId: result.accountId,
+        availableForSale: result.availableForSale,
+        barcode: result.barcode,
+        category: result.category,
+        color: result.color,
+        compositeItem: result.compositeItem,
+        cost: result.cost,
+        created_at: result.created_at,
+        created_by: result.created_by,
+        deleted: result.deleted,
+        deleted_at: result.deleted_at,
+        image: result.image,
+        modifiers: result.modifiers,
+        name: result.name,
+        price: result.price,
+        repoOnPos: result.repoOnPos,
+        sku: result.sku,
+        soldByType: result.soldByType,
+        stockQty: result.stockQty,
+        stores: result.stores,
+        taxes: taxes,
+        trackStock: result.trackStock,
+        updated_at: result.updated_at,
 
+        _id: result._id,
+      };
+      if (
+        result.varients !== undefined &&
+        result.varients !== null &&
+        result.varients.length > 0
+      ) {
+        newVarients.varients = result.varients.map((item) => {
+          return {
+            _id: item._id,
+            optionName: item.optionName,
+            optionValue: item.optionValue,
+            variantNames: item.optionValue.map((ite) => ite.variantName),
+          };
+        });
+      }
+    }
+    newVarients =
+      newVarients !== undefined && newVarients !== null ? newVarients : {};
+    res.status(200).json(newVarients);
     // result = result.slice(startIndex, endIndex);
-    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

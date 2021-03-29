@@ -41,6 +41,7 @@ router.get("/:storeId", async (req, res) => {
       storeFilter.stores = { $elemMatch: { id: storeId } };
     }
     storeFilter.accountId = accountId;
+    storeFilter.deleted = 0;
     const result = await Discount.find(storeFilter).sort({
       _id: "desc",
     });
@@ -54,12 +55,12 @@ router.delete("/:ids", async (req, res) => {
     var { ids } = req.params;
     const { _id, accountId } = req.authData;
     ids = JSON.parse(ids);
-    
+
     let del = await Discount.updateMany({ _id: {$in: ids}, accountId: accountId }, { $set: {deleted: 1, deleted_at: Date.now() }}, {
       new: true,
       upsert: true,
     })
-    
+
     if(del.n > 0 && del.nModified > 0){
       req.io.emit(DISCOUNT_DELETE, {data: ids, user: _id})
     }
@@ -108,6 +109,7 @@ router.get("/row/:id", async (req, res) => {
     let storeFilter = {};
     storeFilter.accountId = accountId;
     storeFilter._id = id;
+    storeFilter.deleted = 0;
     const result = await Discount.findOne(storeFilter).sort({
       _id: "desc",
     });
