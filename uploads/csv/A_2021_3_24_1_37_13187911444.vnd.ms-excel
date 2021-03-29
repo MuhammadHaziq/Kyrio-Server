@@ -1,0 +1,534 @@
+Handle,SKU,Name,Category,Sold by weight,Option 1 name,Option 1 value,Option 2 name,Option 2 value,Option 3 name,Option 3 value,Default price,Cost,Barcode,SKU of included item,Quantity of included item,Track stock,Available for sale [Demo],Price [Demo],In stock [Demo],Low stock [Demo],Available for sale [Ding Tea - New Malden],Price [Ding Tea - New Malden],In stock [Ding Tea - New Malden],Low stock [Ding Tea - New Malden],Available for sale [Ding Tea Kingston],Price [Ding Tea Kingston],In stock [Ding Tea Kingston],Low stock [Ding Tea Kingston],Available for sale [Grocery Store],Price [Grocery Store],In stock [Grocery Store],Low stock [Grocery Store],"Modifier - ""Size""","Modifier - ""Sugar""","Modifier - ""Ice""","Modifier - ""Toppings""","Modifier - ""g""","Tax - ""VAT"" (20%)","Tax - ""GST"" (8%)","Tax - ""TEST"" (0%)"
+10 Pairs Plastic Melamine Asian Black,4.71E+12,10 Pairs Plastic Melamine Asian Black,ELINTARVIKE,N,,,,,,,3.8,0,4.71E+12,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+5 spice nguv,8.93E+12,5 spice nguv,MAUSTEET,N,,,,,,,2.9,0,8.93E+12,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+A02076 Coconut,9.56E+12,A02076 Coconut,PAKASTE,N,,,,,,,3.5,0,9.56E+12,,,N,Y,3.5,,,Y,3.5,,,Y,3.5,,,Y,3.5,,,N,N,N,N,N,N,N,N
+AC pandan leaves 250g,8.72E+12,AC pandan leaves 250g,PAKASTE,N,,,,,,,2.4,0,8.72E+12,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Acacia,8.85E+12,Acacia,VIHANNES,N,,,,,,,2,0,8.85E+12,,,N,Y,2,,,Y,2,,,Y,2,,,Y,2,,,N,N,N,N,N,N,N,N
+AHG Peanut sauce ,8.89E+12,AHG Peanut sauce,MAUSTEET,N,,,,,,,1.4,0,8.89E+12,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Ajinomot Gyoza chicken ,5.91E+12,Ajinomot Gyoza chicken,PAKASTE,N,,,,,,,7.8,0,5.91E+12,,,N,Y,7.8,,,Y,7.8,,,Y,7.8,,,Y,7.8,,,N,N,N,N,N,N,N,N
+Ajinomoto Crispy Fry Breading mix Original,4.80E+12,Ajinomoto Crispy Fry Breading mix Original,ELINTARVIKE,N,,,,,,,1.4,0,4.80E+12,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Ajinomoto fr,3.70E+12,Ajinomoto fr,MAUSTEET,N,,,,,,,2.8,0,3.70E+12,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Ajinomoto Gyoza,8.86E+12,Ajinomoto Gyoza,PAKASTE,N,,,,,,,7.8,0,8.86E+12,,,N,Y,7.8,,,Y,7.8,,,Y,7.8,,,Y,7.8,,,N,N,N,N,N,N,N,N
+Algue mix su,87703221765,Algue mix su,ELINTARVIKE,N,,,,,,,2.9,0,87703221765,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+ALLGROO Instant Noodles Udon Hot Spicy,8.81E+12,ALLGROO Instant Noodles Udon Hot Spicy,NUUDELI,N,,,,,,,3.8,0,8.81E+12,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Aloe Blueber,8.84E+11,Aloe Blueber,JUOMAT,N,,,,,,,1.99,0,8.84E+11,,,N,Y,1.99,,,Y,1.99,,,Y,1.99,,,Y,1.99,,,N,N,N,N,N,N,N,N
+Alun phen ch,84909006196,Alun phen ch,ELINTARVIKE,N,,,,,,,2.4,0,84909006196,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Argentina be,7.48E+11,Argentina be,ELINTARVIKE,N,,,,,,,5.6,0,7.48E+11,,,N,Y,5.6,,,Y,5.6,,,Y,5.6,,,Y,5.6,,,N,N,N,N,N,N,N,N
+Army Coconut creamy 250ml,16229924263,Army Coconut creamy 250ml,KASTIKE,N,,,,,,,1.85,0,16229924263,,,N,Y,1.85,,,Y,1.85,,,Y,1.85,,,Y,1.85,,,N,N,N,N,N,N,N,N
+Arome Maggi,7.61E+12,Arome Maggi,KASTIKE,N,,,,,,,11.5,0,7.61E+12,,,N,Y,11.5,,,Y,11.5,,,Y,11.5,,,Y,11.5,,,N,N,N,N,N,N,N,N
+Aroy baby co,16229006129,Aroy baby co,SAILYKE,N,,,,,,,1.6,0,16229006129,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Aroy bambo s,16229006525,Aroy bambo s,SAILYKE,N,,,,,,,2.2,0,16229006525,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Aroy bambo st,16229006532,Aroy bambo st,SAILYKE,N,,,,,,,2.2,0,16229006532,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Aroy banana,16229006310,Aroy banana,SAILYKE,N,,,,,,,2.5,0,16229006310,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+Aroy bitter,16229005191,Aroy bitter,SAILYKE,N,,,,,,,2.2,0,16229005191,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Aroy coco cr,16229902506,Aroy coco cr,SAILYKE,N,,,,,,,2.4,0,16229902506,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Aroy coconut creamy 1l,16229909819,Aroy coconut creamy 1l,KASTIKE,N,,,,,,,3.6,0,16229909819,,,N,Y,3.6,,,Y,3.6,,,Y,3.6,,,Y,3.6,,,N,N,N,N,N,N,N,N
+Aroy longan,16229000554,Aroy longan,SAILYKE,N,,,,,,,3.2,0,16229000554,,,N,Y,3.2,,,Y,3.2,,,Y,3.2,,,Y,3.2,,,N,N,N,N,N,N,N,N
+Aroy lychee,16229000561,Aroy lychee,SAILYKE,N,,,,,,,3.2,0,16229000561,,,N,Y,3.2,,,Y,3.2,,,Y,3.2,,,Y,3.2,,,N,N,N,N,N,N,N,N
+"Aroy mit, jac",16229001940,"Aroy mit, jac",SAILYKE,N,,,,,,,3.2,0,16229001940,,,N,Y,3.2,,,Y,3.2,,,Y,3.2,,,Y,3.2,,,N,N,N,N,N,N,N,N
+AROY todday Palm seed ,16229001933,AROY todday Palm seed,ELINTARVIKE,N,,,,,,,3.5,0,16229001933,,,N,Y,3.5,,,Y,3.5,,,Y,3.5,,,Y,3.5,,,N,N,N,N,N,N,N,N
+Aroy toddy p,16229000769,Aroy toddy p,SAILYKE,N,,,,,,,2.8,0,16229000769,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Aroy yanang,-16229007379,Aroy yanang,SAILYKE,N,,,,,,,2.2,0,-16229007379,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Aroy-D Aroy-D Guava in Syrup,16229005436,Aroy-D Aroy-D Guava in Syrup,ELINTARVIKE,N,,,,,,,2.5,0,16229005436,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+Aroy-D Bamboo Shoot,16229006518,Aroy-D Bamboo Shoot,ELINTARVIKE,N,,,,,,,2.2,0,16229006518,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Aroy-D Coconut Milk,16229005122,Aroy-D Coconut Milk,ELINTARVIKE,N,,,,,,,2.2,0,16229005122,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+AROY-D Coconut milk 400ml,16229001711,AROY-D Coconut milk 400ml,JUOMAT,N,,,,,,,2.2,0,16229001711,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+AROY-D TODDY PALM'S SEED & JACKFRUIT,16229000592,AROY-D TODDY PALM'S SEED & JACKFRUIT,ELINTARVIKE,N,,,,,,,3.4,0,16229000592,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Arrowroot St,84909014573,Arrowroot St,ELINTARVIKE,N,,,,,,,2.8,0,84909014573,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Ashoka Garlic Paste,8.90E+12,Ashoka Garlic Paste,ELINTARVIKE,N,,,,,,,2.8,0,8.90E+12,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Assortiment de raviolis vapeur,3.36E+12,Assortiment de raviolis vapeur,PAKASTE,N,,,,,,,8.9,0,3.36E+12,,,N,Y,8.9,,,Y,8.9,,,Y,8.9,,,Y,8.9,,,N,N,N,N,N,N,N,N
+Atlantic razor clam,5.71E+12,Atlantic razor clam,PAKASTE,N,,,,,,,7.9,0,5.71E+12,,,N,Y,7.9,,,Y,7.9,,,Y,7.9,,,Y,7.9,,,N,N,N,N,N,N,N,N
+Attap Fruit In Heavy Syrup,16229000608,Attap Fruit In Heavy Syrup,ELINTARVIKE,N,,,,,,,3.4,0,16229000608,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Bac ha,7.35E+12,Bac ha,PAKASTE,N,,,,,,,1.6,0,7.35E+12,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Bacon Crisps,5.70E+12,Bacon Crisps,ELINTARVIKE,N,,,,,,,3.4,0,5.70E+12,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Baking Soda,5.02E+12,Baking Soda,MAUSTEET,N,,,,,,,1.4,0,5.02E+12,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+BALI Black sesame noodle ,9.00E+12,BALI Black sesame noodle,NUUDELI,N,,,,,,,2.2,0,9.00E+12,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Bambo chops,4.32E+12,Bambo chops,ELINTARVIKE,N,,,,,,,5.5,0,4.32E+12,,,N,Y,5.5,,,Y,5.5,,,Y,5.5,,,Y,5.5,,,N,N,N,N,N,N,N,N
+Bamboo shoot halves in water,16229006549,Bamboo shoot halves in water,ELINTARVIKE,N,,,,,,,2.2,0,16229006549,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Bamboo shovel,6.93E+12,Bamboo shovel,TAVARA 24%,N,,,,,,,1.8,0,6.93E+12,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+bamboo-slices-sour-in-brine-vacuum-400-g,84909007223,Bamboo slices sour in brine vacuum 400 g,MILK,N,,,,,,,1.2,1.2,84909007223,,,N,Y,1.2,,,Y,1.2,,,N,1.2,,,N,1.2,,,N,N,N,N,N,Y,N,N
+Bambu & yana,16229006839,Bambu & yana,SAILYKE,N,,,,,,,2.4,0,16229006839,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Banana blossom in brine,16229007768,Banana blossom in brine,ELINTARVIKE,N,,,,,,,2.2,0,16229007768,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+ BB coconut w,8.94E+12,BB coconut w,JUOMAT,N,,,,,,,2.9,0,8.94E+12,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+BB steadum,4.02E+12,BB steadum,PAKASTE,N,,,,,,,7.8,0,4.02E+12,,,N,Y,7.8,,,Y,7.8,,,Y,7.8,,,Y,7.8,,,N,N,N,N,N,N,N,N
+Bean sauce 450g Mee Chun,77101012065,Bean sauce 450g Mee Chun,KASTIKE,N,,,,,,,2.9,0,77101012065,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Bean sprout in brine,16229907525,Bean sprout in brine,ELINTARVIKE,N,,,,,,,1.9,0,16229907525,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Bean Sprouts,8.73E+12,Bean Sprouts,ELINTARVIKE,N,,,,,,,1.9,0,8.73E+12,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Bean thread,8.52E+11,Bean thread,NUUDELI,N,,,,,,,0.68,0,8.52E+11,,,N,Y,0.68,,,Y,0.68,,,Y,0.68,,,Y,0.68,,,N,N,N,N,N,N,N,N
+Beef ball (bo vo vien gan),3.55E+12,Beef ball (bo vo vien gan),PAKASTE,N,,,,,,,5.9,0,3.55E+12,,,N,Y,5.9,,,Y,5.9,,,Y,5.9,,,Y,5.9,,,N,N,N,N,N,N,N,N
+Beef slices,5.06E+12,Beef slices,PAKASTE,N,,,,,,,7.9,0,5.06E+12,,,N,Y,7.9,,,Y,7.9,,,Y,7.9,,,Y,7.9,,,N,N,N,N,N,N,N,N
+Bella Ginger Drink,6.04E+12,Bella Ginger Drink,JUOMAT,N,,,,,,,5.9,0,6.04E+12,,,N,Y,5.9,,,Y,5.9,,,Y,5.9,,,Y,5.9,,,N,N,N,N,N,N,N,N
+Bgoon saut. s,22392573719,Bgoon saut. s,ELINTARVIKE,N,,,,,,,3.8,0,22392573719,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Black Bean Garlic Sauce - Lee Kum Kee,8895760026,Black Bean Garlic Sauce - Lee Kum Kee,KASTIKE,N,,,,,,,2.9,0,8895760026,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Black Bean Paste 500g,81652034704,Black Bean Paste 500g,KASTIKE,N,,,,,,,4.8,0,81652034704,,,N,Y,4.8,,,Y,4.8,,,Y,4.8,,,Y,4.8,,,N,N,N,N,N,N,N,N
+Black cardam,4.26E+12,Black cardam,MAUSTEET,N,,,,,,,2.9,0,4.26E+12,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Black eye beans,5.01E+12,Black eye beans,SAILYKE,N,,,,,,,1.2,0,5.01E+12,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+black-milk-tea,10027,Black Milk Tea,,N,Size,L,,,,,3.5,0,,,,N,Y,3.5,,,Y,3.5,,,Y,3.5,,,Y,3.5,,,N,Y,Y,Y,N,Y,Y,N
+Blacksesam,78895147889,Blacksesam,ELINTARVIKE,N,,,,,,,4.4,0,78895147889,,,N,Y,4.4,,,Y,4.4,,,Y,4.4,,,Y,4.4,,,N,N,N,N,N,N,N,N
+black-milk-tea,10026,,,,,M,,,,,3,0,,,,,Y,3,,,Y,3,,,Y,3,,,Y,3,,,,,,,,,,
+Bonito seaso,49319110017,Bonito seaso,MAUSTEET,N,,,,,,,2.8,0,49319110017,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Bouil.cube beef/po bo BAO LONG pk 75g,3533,Bouil.cube beef/po bo BAO LONG pk 75g,MAUSTEET,N,,,,,,,0.75,0,3533,,,N,Y,0.75,,,Y,0.75,,,Y,0.75,,,Y,0.75,,,N,N,N,N,N,N,N,N
+Bouil.cube chickn/pho ga BAO LONG pk75g,3532,Bouil.cube chickn/pho ga BAO LONG pk75g,MAUSTEET,N,,,,,,,0.75,0,3532,,,N,Y,0.75,,,Y,0.75,,,Y,0.75,,,Y,0.75,,,N,N,N,N,N,N,N,N
+Bouil.cube hu tieu nam v. BAO LONG pk75g,3538,Bouil.cube hu tieu nam v. BAO LONG pk75g,MAUSTEET,N,,,,,,,0.75,0,3538,,,N,Y,0.75,,,Y,0.75,,,Y,0.75,,,Y,0.75,,,N,N,N,N,N,N,N,N
+Bouil.cube sour/canh chua BAO LONG pk75g,3536,Bouil.cube sour/canh chua BAO LONG pk75g,MAUSTEET,N,,,,,,,0.75,0,3536,,,N,Y,0.75,,,Y,0.75,,,Y,0.75,,,Y,0.75,,,N,N,N,N,N,N,N,N
+Bouilcube clear/bun bo h. BAO LONG pk75g,3530,Bouilcube clear/bun bo h. BAO LONG pk75g,MAUSTEET,N,,,,,,,0.75,0,3530,,,N,Y,0.75,,,Y,0.75,,,Y,0.75,,,Y,0.75,,,N,N,N,N,N,N,N,N
+Bouillon cubes beef KNORR box 20g,16580,Bouillon cubes beef KNORR box 20g,MAUSTEET,N,,,,,,,0.55,0,16580,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Bouillon cubes chicken KNORR box 20g,16581,Bouillon cubes chicken KNORR box 20g,MAUSTEET,N,,,,,,,0.55,0,16581,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Bouillon cubes pork KNORR box 20g,16582,Bouillon cubes pork KNORR box 20g,MAUSTEET,N,,,,,,,0.55,0,16582,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Bouillon cubes shitake KNORR box 20g,16583,Bouillon cubes shitake KNORR box 20g,MAUSTEET,N,,,,,,,0.55,0,16583,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Bouillon cubes tom yum KNORR box 24g,16584,Bouillon cubes tom yum KNORR box 24g,MAUSTEET,N,,,,,,,0.55,0,16584,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+breakfest,10018,Breakfest,DRINKS,N,,,,,,,variable,,,10007,1,N,Y,variable,,,Y,variable,,,N,variable,,,N,variable,,,N,N,N,N,N,Y,N,N
+Brioches au porc laqué,3.47E+12,Brioches au porc laqué,PAKASTE,N,,,,,,,6.4,0,3.47E+12,,,N,Y,6.4,,,Y,6.4,,,Y,6.4,,,Y,6.4,,,N,N,N,N,N,N,N,N
+monster-boba,10003,Brown Sugar Monster Boba,,N,Sizes,L,,,,,4.65,0,,,,Y,Y,4.65,-1,,Y,4.65,0,,N,4.65,0,,N,4.65,0,,N,Y,Y,Y,N,Y,N,N
+monster-boba,10001,,,,,M,,,,,4.15,0,,,,,Y,4.15,-10,,Y,4.15,-2,,N,4.15,0,,N,4.15,0,,,,,,,,,
+BubbleTea karamell,6.95E+12,BubbleTea karamell,JUOMAT,N,,,,,,,3.4,0,6.95E+12,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+BubbleTea matcha,4.90E+12,BubbleTea matcha,JUOMAT,N,,,,,,,3.4,0,4.90E+12,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+"Buddha Red bean, dau do",7.62E+11,"Buddha Red bean, dau do",ELINTARVIKE,N,,,,,,,2.4,0,7.62E+11,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Buenas Halo-Halo,4.81E+12,Buenas Halo-Halo,ELINTARVIKE,N,,,,,,,2.9,0,4.81E+12,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Bulbogi hotp,87703315969,Bulbogi hotp,ELINTARVIKE,N,,,,,,,3.4,0,87703315969,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Bun tuoi vie,4.93E+12,Bun tuoi vie,NUUDELI,N,,,,,,,1.8,0,4.93E+12,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+burger,10006,Burger,,N,,,,,,,5,0,,,,Y,N,2,0,,Y,13,-6,,N,4,0,,N,5,0,,N,N,N,N,N,Y,N,N
+Butter ghee,5.03E+12,Butter ghee,ELINTARVIKE,N,,,,,,,7.9,0,5.03E+12,,,N,Y,7.9,,,Y,7.9,,,Y,7.9,,,Y,7.9,,,N,N,N,N,N,N,N,N
+Calamansi 500ml Cool Taste,22392271653,Calamansi 500ml Cool Taste,JUOMAT,N,,,,,,,2.4,0,22392271653,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Candy mango dried PHIL.BR bg 100g,11168,Candy mango dried PHIL.BR bg 100g,SNACK,N,,,,,,,2.4,0,11168,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Canned AROY D Young Jackfruit,16229007775,Canned AROY D Young Jackfruit,ELINTARVIKE,N,,,,,,,2.2,0,16229007775,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Ch rambutan,44738045261,Ch rambutan,SAILYKE,N,,,,,,,3.4,0,44738045261,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Chair Crabe,3.38E+12,Chair Crabe,PAKASTE,N,,,,,,,16.9,0,3.38E+12,,,N,Y,16.9,,,Y,16.9,,,Y,16.9,,,Y,16.9,,,N,N,N,N,N,N,N,N
+Chao ot tofu,6.91E+12,Chao ot tofu,MAUSTEET,N,,,,,,,2.9,0,6.91E+12,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Chili bean sauce,78895731033,Chili bean sauce,KASTIKE,N,,,,,,,3.8,0,78895731033,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Chili oil,78895733563,Chili oil,ELINTARVIKE,N,,,,,,,3.8,0,78895733563,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Chilli paste in oil MAE PRANOM jr 114g,8756,Chilli paste in oil MAE PRANOM jr 114g,ELINTARVIKE,N,,,,,,,2.4,0,8756,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Chilli paste in oil MAE PRANOM jr 513g,8755,Chilli paste in oil MAE PRANOM jr 513g,ELINTARVIKE,N,,,,,,,5.8,0,8755,,,N,Y,5.8,,,Y,5.8,,,Y,5.8,,,Y,5.8,,,N,N,N,N,N,N,N,N
+Chilli paste oelek WMILL jr 200g,8005,Chilli paste oelek WMILL jr 200g,ELINTARVIKE,N,,,,,,,1.6,0,8005,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Chilli paste oelek WMILL jr 750g,8003,Chilli paste oelek WMILL jr 750g,ELINTARVIKE,N,,,,,,,3.8,0,8003,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Chilli paste sawan MAE PRANOM jr 67g,8745,Chilli paste sawan MAE PRANOM jr 67g,ELINTARVIKE,N,,,,,,,2.4,0,8745,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Chilli sauce (seafood) TD bt 300ml,8624,Chilli sauce (seafood) TD bt 300ml,KASTIKE,N,,,,,,,3.8,0,8624,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Chilli sauce (spring roll) TD bt 300ml,8627,Chilli sauce (spring roll) TD bt 300ml,KASTIKE,N,,,,,,,3.8,0,8627,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Chilli sauce (spring roll) TD bt 700ml,8628,Chilli sauce (spring roll) TD bt 700ml,KASTIKE,N,,,,,,,3.8,0,8628,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Chilli sauce HB bt 300ml,8688,Chilli sauce HB bt 300ml,KASTIKE,N,,,,,,,2.4,0,8688,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Chilli sauce hot HB bt 700ml,8694,Chilli sauce hot HB bt 700ml,KASTIKE,N,,,,,,,3.8,0,8694,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Chilli sauce sweet black THAI D. bt300ml,8609,Chilli sauce sweet black THAI D. bt300ml,KASTIKE,N,,,,,,,2.8,0,8609,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Chinese Sausage,3.45E+12,Chinese Sausage,PAKASTE,N,,,,,,,7.5,0,3.45E+12,,,N,Y,7.5,,,Y,7.5,,,Y,7.5,,,Y,7.5,,,N,N,N,N,N,N,N,N
+Chinkiang vinegar,6.90E+12,Chinkiang vinegar,KASTIKE,N,,,,,,,2.7,0,6.90E+12,,,N,Y,2.7,,,Y,2.7,,,Y,2.7,,,Y,2.7,,,N,N,N,N,N,N,N,N
+choco pie iso lotte,\8801062160709,choco pie iso lotte,SNACK,N,,,,,,,4.8,0,\8801062160709,,,N,Y,4.8,,,Y,4.8,,,Y,4.8,,,Y,4.8,,,N,N,N,N,N,N,N,N
+Chongga kimc,8.87E+11,Chongga kimc,ELINTARVIKE,N,,,,,,,4.4,0,8.87E+11,,,N,Y,4.4,,,Y,4.4,,,Y,4.4,,,Y,4.4,,,N,N,N,N,N,N,N,N
+CJ Hetbahn Cupbahn Cooked White Rice with Black Bean Sauce,8.07E+11,CJ Hetbahn Cupbahn Cooked White Rice with Black Bean Sauce,ELINTARVIKE,N,,,,,,,2.4,0,8.07E+11,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+CJ Korean BBQ Chicken & Pork,8.07E+12,CJ Korean BBQ Chicken & Pork,KASTIKE,N,,,,,,,4.4,0,8.07E+12,,,N,Y,4.4,,,Y,4.4,,,Y,4.4,,,Y,4.4,,,N,N,N,N,N,N,N,N
+Ck rambutan,44738045315,Ck rambutan,SAILYKE,N,,,,,,,3.6,0,44738045315,,,N,Y,3.6,,,Y,3.6,,,Y,3.6,,,Y,3.6,,,N,N,N,N,N,N,N,N
+Cock Baby Ginger In Brine Strips,84909006066,Cock Baby Ginger In Brine Strips,ELINTARVIKE,N,,,,,,,2.8,0,84909006066,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Cock banh da,84909000385,Cock banh da,NUUDELI,N,,,,,,,1.8,0,84909000385,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Cock Brand Cock Chinese Noodles,84909021465,Cock Brand Cock Chinese Noodles,ELINTARVIKE,N,,,,,,,2.4,0,84909021465,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Cock Brand Tapioca Pearls,84909007087,Cock Brand Tapioca Pearls,ELINTARVIKE,N,,,,,,,1.9,0,84909007087,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Cock cai chu,84909000316,Cock cai chu,ELINTARVIKE,N,,,,,,,1.2,0,84909000316,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Cock dau xan,84909000484,Cock dau xan,ELINTARVIKE,N,,,,,,,2.2,0,84909000484,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Cock Fish Sauce,84909900104,Cock Fish Sauce,KASTIKE,N,,,,,,,2.4,0,84909900104,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Cock fisk sauce 200ml,84909900098,Cock fisk sauce 200ml,KASTIKE,N,,,,,,,1.55,0,84909900098,,,N,Y,1.55,,,Y,1.55,,,Y,1.55,,,Y,1.55,,,N,N,N,N,N,N,N,N
+Cock lotus,84909001672,Cock lotus,SAILYKE,N,,,,,,,2.5,0,84909001672,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+COCK Massaman Curry,84909001948,COCK Massaman Curry,KASTIKE,N,,,,,,,2.9,0,84909001948,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Cock Palm Sugar 100g,84909005458,Cock Palm Sugar 100g,ELINTARVIKE,N,,,,,,,1.5,0,84909005458,,,N,Y,1.5,,,Y,1.5,,,Y,1.5,,,Y,1.5,,,N,N,N,N,N,N,N,N
+COCK Panang curry ,84909001924,COCK Panang curry,KASTIKE,N,,,,,,,2.9,0,84909001924,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Cock pho nuu,84909302267,Cock pho nuu,NUUDELI,N,,,,,,,2,0,84909302267,,,N,Y,2,,,Y,2,,,Y,2,,,Y,2,,,N,N,N,N,N,N,N,N
+Cock pick.ga,84909002037,Cock pick.ga,SAILYKE,N,,,,,,,2.9,0,84909002037,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Cock red curry,84909002341,Cock red curry,KASTIKE,N,,,,,,,2.9,0,84909002341,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Cock sticky rice flour 400g,84909000781,Cock sticky rice flour 400g,ELINTARVIKE,N,,,,,,,1.6,0,84909000781,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Cock Tamarind candy Hot,84909006332,Cock Tamarind candy Hot,SNACK,N,,,,,,,1.5,0,84909006332,,,N,Y,1.5,,,Y,1.5,,,Y,1.5,,,Y,1.5,,,N,N,N,N,N,N,N,N
+Cock tapio p,84909012685,Cock tapio p,ELINTARVIKE,N,,,,,,,1.95,0,84909012685,,,N,Y,1.95,,,Y,1.95,,,Y,1.95,,,Y,1.95,,,N,N,N,N,N,N,N,N
+"COCK, Chilli Sauce for Seafood Cock",84909007414,"COCK, Chilli Sauce for Seafood Cock",KASTIKE,N,,,,,,,2.6,0,84909007414,,,N,Y,2.6,,,Y,2.6,,,Y,2.6,,,Y,2.6,,,N,N,N,N,N,N,N,N
+Coconut,16229914578,Coconut,JUOMAT,N,,,,,,,3.5,0,16229914578,,,N,Y,3.5,,,Y,3.5,,,Y,3.5,,,Y,3.5,,,N,N,N,N,N,N,N,N
+Coconut flou,4.79E+12,Coconut flou,ELINTARVIKE,N,,,,,,,2.8,0,4.79E+12,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Coconut juice,16229901141,Coconut juice,JUOMAT,N,,,,,,,1.4,0,16229901141,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+"Coconut juice, roasted",16229902643,"Coconut juice, roasted",JUOMAT,N,,,,,,,1.4,0,16229902643,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Coconut shagima,6.54E+11,Coconut shagima,SNACK,N,,,,,,,2.4,0,6.54E+11,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Coconut vine,q222222222022392576215,Coconut vine,KASTIKE,N,,,,,,,0,0,q222222222022392576215,,,N,Y,0,,,Y,0,,,Y,0,,,Y,0,,,N,N,N,N,N,N,N,N
+Coconut Vinegar (Suka Ng Niyog),22392576215,Coconut Vinegar (Suka Ng Niyog),JUOMAT,N,,,,,,,2.8,0,22392576215,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Coconut water COCOXIM Tetra pk 1000ml,11100,Coconut water COCOXIM Tetra pk 1000ml,JUOMAT,N,,,,,,,3.5,0,11100,,,N,Y,3.5,,,Y,3.5,,,Y,3.5,,,Y,3.5,,,N,N,N,N,N,N,N,N
+"Coconut water, pur, 100% natural",16229914561,"Coconut water, pur, 100% natural",JUOMAT,N,,,,,,,2.4,0,16229914561,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Coconut whip,93856993404,Coconut whip,KASTIKE,N,,,,,,,2.8,0,93856993404,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+coffee,10020,COFFEE,,N,TEMPERATURE,COLD,,,,,variable,5,,,,N,Y,variable,,,Y,variable,,,Y,variable,,,Y,variable,,,Y,Y,Y,Y,N,Y,N,N
+coffee,10019,,,,,HOT,,,,,variable,5,,,,,Y,variable,,,Y,variable,,,Y,variable,,,Y,variable,,,,,,,,,,
+coke,10007,Coke,,N,,,,,,,1,0,,,,Y,Y,1,-7,,Y,1,-7,,N,1,0,,N,1,0,,N,N,N,N,N,Y,N,N
+COMPLETA Coffee Whitener,8.71E+12,COMPLETA Coffee Whitener,JUOMAT,N,,,,,,,3.5,0,8.71E+12,,,N,Y,3.5,,,Y,3.5,,,Y,3.5,,,Y,3.5,,,N,N,N,N,N,N,N,N
+Cookies peanut SW.SAILING box 136g,16750,Cookies peanut SW.SAILING box 136g,SNACK,N,,,,,,,1.6,0,16750,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Cookies sesame teng teng NMARIS bg 35g,16129,Cookies sesame teng teng NMARIS bg 35g,SNACK,N,,,,,,,1.4,0,16129,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Cornstarch sticks Bihon SUPER Q pk 454g,3344,Cornstarch sticks Bihon SUPER Q pk 454g,ELINTARVIKE,N,,,,,,,2.4,0,3344,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Crisps banana DANCO FOOD sc 150g,75600,Crisps banana DANCO FOOD sc 150g,SNACK,N,,,,,,,2.9,0,75600,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Crispy noodl,90399883513,Crispy noodl,NUUDELI,N,,,,,,,3.4,0,90399883513,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Crispy seaweed,8.01E+11,Crispy seaweed,SNACK,N,,,,,,,3.8,0,8.01E+11,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+"Curry paste, Matsaman",84909009005,"Curry paste, Matsaman",MAUSTEET,N,,,,,,,1.2,0,84909009005,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+"Curry paste, Panang",84909002648,"Curry paste, Panang",MAUSTEET,N,,,,,,,5.8,0,84909002648,,,N,Y,5.8,,,Y,5.8,,,Y,5.8,,,Y,5.8,,,N,N,N,N,N,N,N,N
+"Curry paste, red",84909002198,"Curry paste, red",MAUSTEET,N,,,,,,,1.2,0,84909002198,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+"Curry paste, yellow",84909002662,"Curry paste, yellow",MAUSTEET,N,,,,,,,1.2,0,84909002662,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Curry sauce,74880061710,Curry sauce,KASTIKE,N,,,,,,,2.8,0,74880061710,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Cuttlefish Rolls,8.44E+12,Cuttlefish Rolls,ELINTARVIKE,N,,,,,,,5.8,0,8.44E+12,,,N,Y,5.8,,,Y,5.8,,,Y,5.8,,,Y,5.8,,,N,N,N,N,N,N,N,N
+Cypressa Tahini,5.00E+12,Cypressa Tahini,ELINTARVIKE,N,,,,,,,3.8,0,5.00E+12,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Datu Puti Toyomansi Soy Sauce,7.38E+11,Datu Puti Toyomansi Soy Sauce,KASTIKE,N,,,,,,,2.8,0,7.38E+11,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Dessert agar agar GOLD CUP pk 25g,16112,Dessert agar agar GOLD CUP pk 25g,SNACK,N,,,,,,,1.9,0,16112,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Dessert n.d.c. assorted COCON jr1.28kg,11844,Dessert n.d.c. assorted COCON jr1.28kg,SNACK,N,,,,,,,7.5,0,11844,,,N,Y,7.5,,,Y,7.5,,,Y,7.5,,,Y,7.5,,,N,N,N,N,N,N,N,N
+Dried Green Mango,7.16E+11,Dried Green Mango,ELINTARVIKE,N,,,,,,,3.2,0,7.16E+11,,,N,Y,3.2,,,Y,3.2,,,Y,3.2,,,Y,3.2,,,N,N,N,N,N,N,N,N
+ Dried shiitake without stem,6.92E+12,Dried shiitake without stem,ELINTARVIKE,N,,,,,,,4.4,0,6.92E+12,,,N,Y,4.4,,,Y,4.4,,,Y,4.4,,,Y,4.4,,,N,N,N,N,N,N,N,N
+Drink coco MOGU MOGU btl 320ml,75131,Drink coco MOGU MOGU btl 320ml,JUOMAT,N,,,,,,,2.4,0,75131,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drink grapes MOGU MOGU btl 320ml,75135,Drink grapes MOGU MOGU btl 320ml,JUOMAT,N,,,,,,,2.4,0,75135,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drink lychee MOGU MOGU btl 320ml,75134,Drink lychee MOGU MOGU btl 320ml,JUOMAT,N,,,,,,,2.4,0,75134,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drink mango MOGU MOGU btl 320ml,75130,Drink mango MOGU MOGU btl 320ml,JUOMAT,N,,,,,,,2.4,0,75130,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drink pineapple MOGU MOGU btl 320ml,75133,Drink pineapple MOGU MOGU btl 320ml,JUOMAT,N,,,,,,,2.4,0,75133,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drink strawberry MOGU MOGU btl 320ml,75132,Drink strawberry MOGU MOGU btl 320ml,JUOMAT,N,,,,,,,2.4,0,75132,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drinks Black current MOGU MOGU btl 320ml,75139,Drinks Black current MOGU MOGU btl 320ml,JUOMAT,N,,,,,,,2.4,0,75139,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drinks calamansi COOL TASTE pk 500ml,11130,Drinks calamansi COOL TASTE pk 500ml,JUOMAT,N,,,,,,,2.4,0,11130,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drinks cocon mlk match COCOXIM t-pk330ml,11083,Drinks cocon mlk match COCOXIM t-pk330ml,JUOMAT,N,,,,,,,2.4,0,11083,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drinks cocon. mlk choc COCOXIM t-pk330ml,11081,Drinks cocon. mlk choc COCOXIM t-pk330ml,JUOMAT,N,,,,,,,2.4,0,11081,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drinks cocon. mlk coff COCOXIM t-pk330ml,11082,Drinks cocon. mlk coff COCOXIM t-pk330ml,JUOMAT,N,,,,,,,2.4,0,11082,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drinks energy CARABAO bt 150ml,11670,Drinks energy CARABAO bt 150ml,JUOMAT,N,,,,,,,1.2,0,11670,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Drinks energy CARABAO can 330 ml,11665,Drinks energy CARABAO can 330 ml,JUOMAT,N,,,,,,,1.5,0,11665,,,N,Y,1.5,,,Y,1.5,,,Y,1.5,,,Y,1.5,,,N,N,N,N,N,N,N,N
+Drinks Ginger ale SCHWEPPES can 330ml,11828,Drinks Ginger ale SCHWEPPES can 330ml,JUOMAT,N,,,,,,,1.7,0,11828,,,N,Y,1.7,,,Y,1.7,,,Y,1.7,,,Y,1.7,,,N,N,N,N,N,N,N,N
+Drinks Kor. gins.drink WONDERF. can240ml,11470,Drinks Kor. gins.drink WONDERF. can240ml,JUOMAT,N,,,,,,,1.4,0,11470,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Drinks Lychee aloe vera JEFI cn 240ml,11141,Drinks Lychee aloe vera JEFI cn 240ml,JUOMAT,N,,,,,,,1.4,0,11141,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Drinks lychee juice JEFI can 250ml,11312,Drinks lychee juice JEFI can 250ml,JUOMAT,N,,,,,,,1.4,0,11312,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Drinks mango nectar PHIL.BR can 250ml,11060,Drinks mango nectar PHIL.BR can 250ml,JUOMAT,N,,,,,,,1.4,0,11060,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Drinks Melon drink MOGU MOGU btl 320ml,75138,Drinks Melon drink MOGU MOGU btl 320ml,JUOMAT,N,,,,,,,2.4,0,75138,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Drinks soy VITAMILK bt 300ml,11399,Drinks soy VITAMILK bt 300ml,JUOMAT,N,,,,,,,1.4,0,11399,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Drinks soy VITAMILK tetra pak 250ml,11382,Drinks soy VITAMILK tetra pak 250ml,JUOMAT,N,,,,,,,1.2,0,11382,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Drinks soy-multi grain V-SOY pk 200ml,11407,Drinks soy-multi grain V-SOY pk 200ml,JUOMAT,N,,,,,,,0.95,0,11407,,,N,Y,0.95,,,Y,0.95,,,Y,0.95,,,Y,0.95,,,N,N,N,N,N,N,N,N
+Drinks soy-multi grain V-SOY pk 300ml,11419,Drinks soy-multi grain V-SOY pk 300ml,JUOMAT,N,,,,,,,1.4,0,11419,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Ecuador 16/,4.05E+12,Ecuador 16/,PAKASTE,N,,,,,,,14.9,0,4.05E+12,,,N,Y,14.9,,,Y,14.9,,,Y,14.9,,,Y,14.9,,,N,N,N,N,N,N,N,N
+Enoki mushro,6.94E+12,Enoki mushro,ELINTARVIKE,N,,,,,,,1.2,0,6.94E+12,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Evaporated milk,87162431,Evaporated milk,ELINTARVIKE,N,,,,,,,2.4,0,87162431,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+FAMILIA 500G CHICKEN LIVERS,6.41E+12,FAMILIA 500G CHICKEN LIVERS,PAKASTE,N,,,,,,,2.5,0,6.41E+12,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+fish,10021,Fish,,Y,,,,,,,5,1,,,,Y,Y,5,0,0,Y,5,-15,0,Y,5,0,,Y,5,0,,N,N,N,N,N,Y,N,N
+muhammad,10004,Fish $1.5/kg,,Y,,,,,,,1.5,0,1234,,,Y,Y,1.5,-36,,Y,1.5,-5,,N,1.5,0,,N,1.5,0,,N,N,N,N,N,Y,N,N
+Fish mackerel in tomato sauce SF can155g,6179,Fish mackerel in tomato sauce SF can155g,KASTIKE,N,,,,,,,1.7,0,6179,,,N,Y,1.7,,,Y,1.7,,,Y,1.7,,,Y,1.7,,,N,N,N,N,N,N,N,N
+Fish Sauce A-qual. TIPAROS PET-bt 700ml,8603,Fish Sauce A-qual. TIPAROS PET-bt 700ml,KASTIKE,N,,,,,,,2.4,0,8603,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Fish sauce A-quality SQUID bt 300ml,8141,Fish sauce A-quality SQUID bt 300ml,KASTIKE,N,,,,,,,1.4,0,8141,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+"Fish sauce, A quality 45% anchovy 12 x 725 ml",84909003836,"Fish sauce, A quality 45% anchovy 12 x 725 ml",KASTIKE,N,,,,,,,2.1,0,84909003836,,,N,Y,2.1,,,Y,2.1,,,Y,2.1,,,Y,2.1,,,N,N,N,N,N,N,N,N
+Foco birds n,16229904470,Foco birds n,JUOMAT,N,,,,,,,1.75,0,16229904470,,,N,Y,1.75,,,Y,1.75,,,Y,1.75,,,Y,1.75,,,N,N,N,N,N,N,N,N
+Foco Coconut Juice,16229919306,Foco Coconut Juice,JUOMAT,N,,,,,,,3.8,0,16229919306,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+FOCO Lychee Drink,16229901226,FOCO Lychee Drink,JUOMAT,N,,,,,,,1.4,0,16229901226,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+ FOCO Mango nectar,16229901172,FOCO Mango nectar,JUOMAT,N,,,,,,,1.55,0,16229901172,,,N,Y,1.55,,,Y,1.55,,,Y,1.55,,,Y,1.55,,,N,N,N,N,N,N,N,N
+FOCO Mangosteen Nectar,16229909048,FOCO Mangosteen Nectar,JUOMAT,N,,,,,,,1.4,0,16229909048,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+FOCO Tamarind Drink ,16229901158,FOCO Tamarind Drink,JUOMAT,N,,,,,,,1.4,0,16229901158,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+french-fries,10005,French Fries,,N,,,,,,,1,0,,,,Y,Y,1,0,,Y,1,-6,3,Y,1,0,,N,1,0,,N,N,N,N,N,Y,N,N
+Fresh Fried Tofu 170g,3.26E+12,Fresh Fried Tofu 170g,ELINTARVIKE,N,,,,,,,2.8,0,3.26E+12,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Frozen blanched,58438100601,Frozen blanched,PAKASTE,N,,,,,,,35.9,0,58438100601,,,N,Y,35.9,,,Y,35.9,,,Y,35.9,,,Y,35.9,,,N,N,N,N,N,N,N,N
+Frozen Spring Rolls,16229502157,Frozen Spring Rolls,ELINTARVIKE,N,,,,,,,2.95,0,16229502157,,,N,Y,2.95,,,Y,2.95,,,Y,2.95,,,Y,2.95,,,N,N,N,N,N,N,N,N
+Fruit jelly,6.01E+12,Fruit jelly,SNACK,N,,,,,,,2.8,0,6.01E+12,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Fungus black,6.97E+12,Fungus black,ELINTARVIKE,N,,,,,,,3,0,6.97E+12,,,N,Y,3,,,Y,3,,,Y,3,,,Y,3,,,N,N,N,N,N,N,N,N
+Garlic 500G,7.47E+12,Garlic 500G,VIHANNES,N,,,,,,,3.9,0,7.47E+12,,,N,Y,3.9,,,Y,3.9,,,Y,3.9,,,Y,3.9,,,N,N,N,N,N,N,N,N
+Gc tamarin c,30891053892,Gc tamarin c,SNACK,N,,,,,,,2.4,0,30891053892,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+genki ramune,4.59E+12,genki ramune,JUOMAT,N,,,,,,,2.8,0,4.59E+12,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+"Ginger Bon, Big Jar 620g",8.99E+12,"Ginger Bon, Big Jar 620g",SNACK,N,,,,,,,7.9,0,8.99E+12,,,N,Y,7.9,,,Y,7.9,,,Y,7.9,,,Y,7.9,,,N,N,N,N,N,N,N,N
+Glass Spoon ,3.33E+12,Glass Spoon,TAVARA 24%,N,,,,,,,1.5,0,3.33E+12,,,N,Y,1.5,,,Y,1.5,,,Y,1.5,,,Y,1.5,,,N,N,N,N,N,N,N,N
+GRAHAMS HONET CR,7.51E+11,GRAHAMS HONET CR,SNACK,N,,,,,,,2.4,0,7.51E+11,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Grain Bar Rice,87703012028,Grain Bar Rice,ELINTARVIKE,N,,,,,,,2.8,0,87703012028,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Grain noodle,84909026613,Grain noodle,NUUDELI,N,,,,,,,1.8,0,84909026613,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Grain rice 5,84909002273,Grain rice 5,ELINTARVIKE,N,,,,,,,3.2,0,84909002273,,,N,Y,3.2,,,Y,3.2,,,Y,3.2,,,Y,3.2,,,N,N,N,N,N,N,N,N
+Grape Ramune,74410742133,Grape Ramune,JUOMAT,N,,,,,,,2.8,0,74410742133,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Green curry paste,84909002365,Green curry paste,KASTIKE,N,,,,,,,2.9,0,84909002365,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Guilin Chilli Sauce Lee Kum Kee,78895730074,Guilin Chilli Sauce Lee Kum Kee,KASTIKE,N,,,,,,,3.4,0,78895730074,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Happy Birthday card,5.04E+12,Happy Birthday card,TAVARA 24%,N,,,,,,,2,0,5.04E+12,,,N,Y,2,,,Y,2,,,Y,2,,,Y,2,,,N,N,N,N,N,N,N,N
+happy-meal,10008,Happy Meal,,N,,,,,,,2.99,,,10005,1,N,Y,2.99,,,Y,2.99,,,N,2.99,,,N,2.99,,,N,N,N,N,N,Y,N,N
+HB Thin soy sauce 700ml,8.50E+11,HB Thin soy sauce 700ml,KASTIKE,N,,,,,,,2.8,0,8.50E+11,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+HELSINKI desinfektioaine 500ml,6.43E+12,HELSINKI desinfektioaine 500ml,TAVARA 24%,N,,,,,,,8.9,0,6.43E+12,,,N,Y,8.9,,,Y,8.9,,,Y,8.9,,,Y,8.9,,,N,N,N,N,N,N,N,N
+"Hoisin 2,27k",78895700053,"Hoisin 2,27k",SAILYKE,N,,,,,,,9.8,0,78895700053,,,N,Y,9.8,,,Y,9.8,,,Y,9.8,,,Y,9.8,,,N,N,N,N,N,N,N,N
+Hoisin Sauce,78895700022,Hoisin Sauce,ELINTARVIKE,N,,,,,,,2.9,0,78895700022,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Hot chicken udon,87703220867,Hot chicken udon,NUUDELI,N,,,,,,,3,0,87703220867,,,N,Y,3,,,Y,3,,,Y,3,,,Y,3,,,N,N,N,N,N,N,N,N
+HUNAJA PES,8.70E+12,HUNAJA PES,ELINTARVIKE,N,,,,,,,3.8,0,8.70E+12,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+hwdudw,10023,Hwdudw,,N,,,,,,,variable,0,,,,N,Y,variable,,,Y,variable,,,Y,variable,,,Y,variable,,,N,N,N,N,N,Y,N,N
+Indo shrimp,89686170139,Indo shrimp,NUUDELI,N,,,,,,,0.58,0,89686170139,,,N,Y,0.58,,,Y,0.58,,,Y,0.58,,,Y,0.58,,,N,N,N,N,N,N,N,N
+Indomie Mi Goreng Fried Instant Noodles,1.01E+13,Indomie Mi Goreng Fried Instant Noodles,NUUDELI,N,,,,,,,0.49,0,1.01E+13,,,N,Y,0.49,,,Y,0.49,,,Y,0.49,,,Y,0.49,,,N,N,N,N,N,N,N,N
+Inst ndl hot chick stew SAMYANG pk5x145g,9241,Inst ndl hot chick stew SAMYANG pk5x145g,NUUDELI,N,,,,,,,1.9,0,9241,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Inst. ndls chicken sriracha YUMYUM pk60g,3609,Inst. ndls chicken sriracha YUMYUM pk60g,NUUDELI,N,,,,,,,0.45,0,3609,,,N,Y,0.45,,,Y,0.45,,,Y,0.45,,,Y,0.45,,,N,N,N,N,N,N,N,N
+Inst. Nood. demae seafood NISSIN pk 100g,36051,Inst. Nood. demae seafood NISSIN pk 100g,NUUDELI,N,,,,,,,1.4,0,36051,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Nood. demae sesame NISSIN pk 100g,35041,Inst. Nood. demae sesame NISSIN pk 100g,NUUDELI,N,,,,,,,1.4,0,35041,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Nood. Soba chilli NISSIN bag 110g,13069,Inst. Nood. Soba chilli NISSIN bag 110g,NUUDELI,N,,,,,,,1.4,0,13069,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Nood. Soba chilli NISSIN cup 92g,13065,Inst. Nood. Soba chilli NISSIN cup 92g,NUUDELI,N,,,,,,,1.8,0,13065,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Inst. Nood. Soba classic NISSIN bag 109g,13070,Inst. Nood. Soba classic NISSIN bag 109g,NUUDELI,N,,,,,,,1.4,0,13070,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Nood. Soba classic NISSIN cup 90g,13066,Inst. Nood. Soba classic NISSIN cup 90g,NUUDELI,N,,,,,,,1.8,0,13066,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Inst. Nood. Soba curry NISSIN bag 108g,13071,Inst. Nood. Soba curry NISSIN bag 108g,NUUDELI,N,,,,,,,1.4,0,13071,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Nood. Soba Teriyaki NISSIN bag110g,13068,Inst. Nood. Soba Teriyaki NISSIN bag110g,NUUDELI,N,,,,,,,1.4,0,13068,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Nood. Soba Teriyaki NISSIN cup 90g,13064,Inst. Nood. Soba Teriyaki NISSIN cup 90g,NUUDELI,N,,,,,,,1.8,0,13064,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Inst. Noodl. demae chicken NISSIN pk100g,35011,Inst. Noodl. demae chicken NISSIN pk100g,NUUDELI,N,,,,,,,1.4,0,35011,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Noodle shrimp tom y. YUMYUM pk60g,3588,Inst. Noodle shrimp tom y. YUMYUM pk60g,NUUDELI,N,,,,,,,0.45,0,3588,,,N,Y,0.45,,,Y,0.45,,,Y,0.45,,,Y,0.45,,,N,N,N,N,N,N,N,N
+Inst. noodles Bul Nak PALDO bg 4x130g,9290,Inst. noodles Bul Nak PALDO bg 4x130g,NUUDELI,N,,,,,,,1.9,0,9290,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Inst. Noodles chicken INDOMIE pk 70g,3118,Inst. Noodles chicken INDOMIE pk 70g,NUUDELI,N,,,,,,,0.55,0,3118,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Inst. Noodles chicken YUM YUM pk 60g,3564,Inst. Noodles chicken YUM YUM pk 60g,NUUDELI,N,,,,,,,0.45,0,3564,,,N,Y,0.45,,,Y,0.45,,,Y,0.45,,,Y,0.45,,,N,N,N,N,N,N,N,N
+Inst. Noodles demae hot NISSIN pk 100g,36111,Inst. Noodles demae hot NISSIN pk 100g,NUUDELI,N,,,,,,,1.4,0,36111,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Noodles demae pork NISSIN pk100g,36081,Inst. Noodles demae pork NISSIN pk100g,NUUDELI,N,,,,,,,1.4,0,36081,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Noodles duck YUM YUM pk 60g,3563,Inst. Noodles duck YUM YUM pk 60g,NUUDELI,N,,,,,,,0.45,0,3563,,,N,Y,0.45,,,Y,0.45,,,Y,0.45,,,Y,0.45,,,N,N,N,N,N,N,N,N
+Inst. noodles hot chicken SAMYANG 5x140g,9240,Inst. noodles hot chicken SAMYANG 5x140g,NUUDELI,N,,,,,,,1.9,0,9240,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Inst. Noodles p.c. calamansi LM! pk 60g,3595,Inst. Noodles p.c. calamansi LM! pk 60g,NUUDELI,N,,,,,,,0.55,0,3595,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Inst. Noodles p.c. chilli LM! pk 60g,3594,Inst. Noodles p.c. chilli LM! pk 60g,NUUDELI,N,,,,,,,0.55,0,3594,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Inst. noodles p.c. Chillimansi LM! pk60g,3635,Inst. noodles p.c. Chillimansi LM! pk60g,NUUDELI,N,,,,,,,0.55,0,3635,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Inst. Noodles pancit canton LM! Pk 60g,3562,Inst. Noodles pancit canton LM! Pk 60g,NUUDELI,N,,,,,,,0.55,0,3562,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Inst. Noodles shrimp YUM YUM pk 60g,3566,Inst. Noodles shrimp YUM YUM pk 60g,NUUDELI,N,,,,,,,0.45,0,3566,,,N,Y,0.45,,,Y,0.45,,,Y,0.45,,,Y,0.45,,,N,N,N,N,N,N,N,N
+Inst. Noodles spicy beef NISSIN pk 100g,35054,Inst. Noodles spicy beef NISSIN pk 100g,NUUDELI,N,,,,,,,1.4,0,35054,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Inst. Noodles udon kimchi HANIL pk 210g,9366,Inst. Noodles udon kimchi HANIL pk 210g,NUUDELI,N,,,,,,,1.7,0,9366,,,N,Y,1.7,,,Y,1.7,,,Y,1.7,,,Y,1.7,,,N,N,N,N,N,N,N,N
+Inst. Noodles vegetable YUM YUM cup 70g,3486,Inst. Noodles vegetable YUM YUM cup 70g,NUUDELI,N,,,,,,,1.2,0,3486,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Inst. Noodles vegetable YUM YUM pk 60g,3569,Inst. Noodles vegetable YUM YUM pk 60g,NUUDELI,N,,,,,,,0.45,0,3569,,,N,Y,0.45,,,Y,0.45,,,Y,0.45,,,Y,0.45,,,N,N,N,N,N,N,N,N
+Inst. rice noodles TomYum YUMYUM cup,3628,Inst. rice noodles TomYum YUMYUM cup,NUUDELI,N,,,,,,,1.2,0,3628,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Inst. Rice porridge chicken MAMA bg 50g,16906,Inst. Rice porridge chicken MAMA bg 50g,NUUDELI,N,,,,,,,1.2,0,16906,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Inst. Rice porridge pork MAMA bg 50g,16908,Inst. Rice porridge pork MAMA bg 50g,NUUDELI,N,,,,,,,1.2,0,16908,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Inst.ndles Volcano chick PALDO bg 140g,9277,Inst.ndles Volcano chick PALDO bg 140g,NUUDELI,N,,,,,,,1.9,0,9277,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Inst.ndls Jin Ramyon hot OTTOGI bg 120g,19487,Inst.ndls Jin Ramyon hot OTTOGI bg 120g,NUUDELI,N,,,,,,,1.7,0,19487,,,N,Y,1.7,,,Y,1.7,,,Y,1.7,,,Y,1.7,,,N,N,N,N,N,N,N,N
+Inst.ndls Jin Ramyon mild OTTOGI bg 120g,19486,Inst.ndls Jin Ramyon mild OTTOGI bg 120g,NUUDELI,N,,,,,,,1.7,0,19486,,,N,Y,1.7,,,Y,1.7,,,Y,1.7,,,Y,1.7,,,N,N,N,N,N,N,N,N
+Inst.noodles Jja Jang Men PALDO bg 200g,9289,Inst.noodles Jja Jang Men PALDO bg 200g,NUUDELI,N,,,,,,,1.9,0,9289,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Inst.Noodles oriental st. WAI WAI pk 60g,3550,Inst.Noodles oriental st. WAI WAI pk 60g,NUUDELI,N,,,,,,,0.49,0,3550,,,N,Y,0.49,,,Y,0.49,,,Y,0.49,,,Y,0.49,,,N,N,N,N,N,N,N,N
+Instant Noodles extra hot chick SAMYANGpk5x140g,9242,Instant Noodles extra hot chick SAMYANGpk5x140g,NUUDELI,N,,,,,,,1.9,0,9242,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+"Instant noodles, Mi Goreng classic 40 x 80 g",89686170733,"Instant noodles, Mi Goreng classic 40 x 80 g",NUUDELI,N,,,,,,,0.55,0,89686170733,,,N,Y,0.55,,,Y,0.55,,,Y,0.55,,,Y,0.55,,,N,N,N,N,N,N,N,N
+Instant paste beef flavour,84909001481,Instant paste beef flavour,NUUDELI,N,,,,,,,2.8,0,84909001481,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Instant paste Tom Yum,84909001238,Instant paste Tom Yum,NUUDELI,N,,,,,,,2.8,0,84909001238,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+item-alv-24,10002,Item ALV 24,,N,,,,,,,10,0,,,,N,Y,10,,,Y,10,,,N,10,,,N,10,,,N,N,N,N,N,Y,N,N
+Jajangmen bo,6.48E+11,Jajangmen bo,NUUDELI,N,,,,,,,2.8,0,6.48E+11,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Japachae noodl sauce,87703154759,Japachae noodl sauce,KASTIKE,N,,,,,,,5,0,87703154759,,,N,Y,5,,,Y,5,,,Y,5,,,Y,5,,,N,N,N,N,N,N,N,N
+Japan GARASHA Genmaicha,4.98E+12,Japan GARASHA Genmaicha,JUOMAT,N,,,,,,,5.8,0,4.98E+12,,,N,Y,5.8,,,Y,5.8,,,Y,5.8,,,Y,5.8,,,N,N,N,N,N,N,N,N
+Japanese pon,4.97E+12,Japanese pon,KASTIKE,N,,,,,,,4.8,0,4.97E+12,,,N,Y,4.8,,,Y,4.8,,,Y,4.8,,,Y,4.8,,,N,N,N,N,N,N,N,N
+"Joss Material, women clothes",8.15E+11,"Joss Material, women clothes",TAVARA 24%,N,,,,,,,2.5,0,8.15E+11,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+Kanimie,4.01E+12,Kanimie,PAKASTE,N,,,,,,,4.5,0,4.01E+12,,,N,Y,4.5,,,Y,4.5,,,Y,4.5,,,Y,4.5,,,N,N,N,N,N,N,N,N
+kerma,10000,Kerma,MILK,N,,,,,,,5,0,1234,,,N,Y,5,,,Y,5,,,Y,5,,,Y,5,,,N,N,N,N,N,Y,N,N
+Kho tay seaw,8.95E+11,Kho tay seaw,ELINTARVIKE,N,,,,,,,1.9,0,8.95E+11,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Kimchi hotpo,87703315990,Kimchi hotpo,ELINTARVIKE,N,,,,,,,3.4,0,87703315990,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Kimchi poggi,8.08E+11,Kimchi poggi,ELINTARVIKE,N,,,,,,,5.9,0,8.08E+11,,,N,Y,5.9,,,Y,5.9,,,Y,5.9,,,Y,5.9,,,N,N,N,N,N,N,N,N
+Kimmy kimchi,8.83E+11,Kimmy kimchi,SNACK,N,,,,,,,2.5,0,8.83E+11,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+Konjac noodles organic SOYUM bg 270g,55212,Konjac noodles organic SOYUM bg 270g,NUUDELI,N,,,,,,,2.4,0,55212,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+"Koon Chun Sauce Factory, Hoisin Sauce",20717230156,"Koon Chun Sauce Factory, Hoisin Sauce",KASTIKE,N,,,,,,,2.8,0,20717230156,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Korea 100% sweet potato,8.80E+12,Korea 100% sweet potato,SNACK,N,,,,,,,1.9,0,8.80E+12,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Korea seaweed,87703009776,Korea seaweed,ELINTARVIKE,N,,,,,,,4.8,0,87703009776,,,N,Y,4.8,,,Y,4.8,,,Y,4.8,,,Y,4.8,,,N,N,N,N,N,N,N,N
+Korena Mat Kimchi 500g,8.08E+12,Korena Mat Kimchi 500g,ELINTARVIKE,N,,,,,,,5.9,0,8.08E+12,,,N,Y,5.9,,,Y,5.9,,,Y,5.9,,,Y,5.9,,,N,N,N,N,N,N,N,N
+Lee Kum Kee  De Chili,8895743067,Lee Kum Kee  De Chili,KASTIKE,N,,,,,,,0,0,8895743067,,,N,Y,0,,,Y,0,,,Y,0,,,Y,0,,,N,N,N,N,N,N,N,N
+Lee Kum Kee Char Siu Sauce,78895740035,Lee Kum Kee Char Siu Sauce,KASTIKE,N,,,,,,,2.9,0,78895740035,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Lee Kum Kee Chinese Plum Sauce,78895123005,Lee Kum Kee Chinese Plum Sauce,KASTIKE,N,,,,,,,2.9,0,78895123005,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Lee Kum Kee Peking Duck Sauce,78895124095,Lee Kum Kee Peking Duck Sauce,KASTIKE,N,,,,,,,2.9,0,78895124095,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Lee Kum Kee Premium Dark Soy Sauce,78895126389,Lee Kum Kee Premium Dark Soy Sauce,KASTIKE,N,,,,,,,2.9,0,78895126389,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Lee Kum Kee Vegetarian Stir Fry Sauce,78895100853,Lee Kum Kee Vegetarian Stir Fry Sauce,KASTIKE,N,,,,,,,3.4,0,78895100853,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Lee Kum Kee XO Sauce 220g,78895407044,Lee Kum Kee XO Sauce 220g,KASTIKE,N,,,,,,,14.5,0,78895407044,,,N,Y,14.5,,,Y,14.5,,,Y,14.5,,,Y,14.5,,,N,N,N,N,N,N,N,N
+Lemon Grass Powder,84909005762,Lemon Grass Powder,ELINTARVIKE,N,,,,,,,2.4,0,84909005762,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Lk sweet soy,78895147308,Lk sweet soy,KASTIKE,N,,,,,,,2.7,0,78895147308,,,N,Y,2.7,,,Y,2.7,,,Y,2.7,,,Y,2.7,,,N,N,N,N,N,N,N,N
+LKK Black bean,78895760026,LKK Black bean,SAILYKE,N,,,,,,,2.9,0,78895760026,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+LKK Black pe,78895941609,LKK Black pe,SAILYKE,N,,,,,,,2.9,0,78895941609,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Lkk Chicken Marinade 410ml,78895800319,Lkk Chicken Marinade 410ml,KASTIKE,N,,,,,,,2.8,0,78895800319,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Lkk Chin Chow Chilli oil,78895743067,Lkk Chin Chow Chilli oil,KASTIKE,N,,,,,,,5.8,0,78895743067,,,N,Y,5.8,,,Y,5.8,,,Y,5.8,,,Y,5.8,,,N,N,N,N,N,N,N,N
+LKK Deluxe s,78895133035,LKK Deluxe s,KASTIKE,N,,,,,,,2.7,0,78895133035,,,N,Y,2.7,,,Y,2.7,,,Y,2.7,,,Y,2.7,,,N,N,N,N,N,N,N,N
+LKK Sparerib,78895741025,LKK Sparerib,SAILYKE,N,,,,,,,2.9,0,78895741025,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Lkk vegan oyster sauce 510g,78895152531,Lkk vegan oyster sauce 510g,KASTIKE,N,,,,,,,3.4,0,78895152531,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Lo tai heo,79763110066,Lo tai heo,SNACK,N,,,,,,,1.7,0,79763110066,,,N,Y,1.7,,,Y,1.7,,,Y,1.7,,,Y,1.7,,,N,N,N,N,N,N,N,N
+Ma Hwa Cookies Biscuit,79763110073,Ma Hwa Cookies Biscuit,SNACK,N,,,,,,,1.7,0,79763110073,,,N,Y,1.7,,,Y,1.7,,,Y,1.7,,,Y,1.7,,,N,N,N,N,N,N,N,N
+Ma Ling Luncheon Meat,75069270015,Ma Ling Luncheon Meat,ELINTARVIKE,N,,,,,,,3.8,0,75069270015,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+MAMA BROWN RICE VERMICELLI,52066001804,MAMA BROWN RICE VERMICELLI,ELINTARVIKE,N,,,,,,,2.4,0,52066001804,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Mango nectar sweetened 30 x 250 ml,33748000124,Mango nectar sweetened 30 x 250 ml,ELINTARVIKE,N,,,,,,,1.4,0,33748000124,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Mango Slices In Syrup,16229000653,Mango Slices In Syrup,ELINTARVIKE,N,,,,,,,2.5,0,16229000653,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+Mangoes green dried PHIL.BR bg 100g,11185,Mangoes green dried PHIL.BR bg 100g,ELINTARVIKE,N,,,,,,,3.2,0,11185,,,N,Y,3.2,,,Y,3.2,,,Y,3.2,,,Y,3.2,,,N,N,N,N,N,N,N,N
+Marinade mix spicy ch. wings LOBO bg 50g,16843,Marinade mix spicy ch. wings LOBO bg 50g,ELINTARVIKE,N,,,,,,,1.2,0,16843,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+matcha,10025,Matcha,,N,,,,,,,variable,0,,,,N,Y,variable,,,Y,variable,,,Y,variable,,,Y,variable,,,N,N,N,N,N,Y,N,N
+Matcha Latte,8.89E+11,Matcha Latte,JUOMAT,N,,,,,,,5.5,0,8.89E+11,,,N,Y,5.5,,,Y,5.5,,,Y,5.5,,,Y,5.5,,,N,N,N,N,N,N,N,N
+Mb fruitmix,22392576536,Mb fruitmix,ELINTARVIKE,N,,,,,,,3.2,0,22392576536,,,N,Y,3.2,,,Y,3.2,,,Y,3.2,,,Y,3.2,,,N,N,N,N,N,N,N,N
+Mee Chun Red Vinegar,77101041324,Mee Chun Red Vinegar,KASTIKE,N,,,,,,,2.7,0,77101041324,,,N,Y,2.7,,,Y,2.7,,,Y,2.7,,,Y,2.7,,,N,N,N,N,N,N,N,N
+milk-tea,10022,Milk Tea,,N,,,,,,,5,0,,,,Y,Y,5,0,0,Y,5,-1,0,Y,5,0,,Y,5,0,,N,N,N,N,N,Y,N,N
+milk-tea-1,10024,Milk Tea,,N,,,,,,,variable,5.55,,,,N,Y,variable,,,Y,variable,,,Y,variable,,,Y,variable,,,N,N,N,N,N,N,N,N
+milk-tea-2,10028,Milk Tea,,N,,,,,,,2,3,,,,N,Y,3,,,Y,4,,,Y,1,,,Y,2,,,N,N,N,N,N,Y,Y,N
+milk-tea-3,10030,Milk Tea,,N,Size,L,,,,,5,3,,,,Y,Y,5,0,,Y,1,-1,,Y,5,0,,Y,5,0,,N,N,N,N,N,Y,Y,N
+milk-tea-3,10029,,,,,M,,,,,4,3,,,,,Y,4,0,,Y,1,5,4,Y,4,0,,Y,4,0,,N,N,N,N,N,,,
+milk-tea-4,10032,Milk Tea,,N,Size,L,,,,,3,0,,,,Y,Y,3,0,,Y,4,-1,,Y,3,0,,Y,3,0,,N,N,N,N,N,Y,Y,N
+milk-tea-4,10031,,,,,M,,,,,2,0,,,,,Y,2,0,,Y,4,-1,,Y,2,0,,Y,2,0,,N,N,N,N,N,,,
+Mini ricemoc,7.23E+12,Mini ricemoc,SNACK,N,,,,,,,5.9,0,7.23E+12,,,N,Y,5.9,,,Y,5.9,,,Y,5.9,,,Y,5.9,,,N,N,N,N,N,N,N,N
+mint,8.51E+11,mint,YRTTI,N,,,,,,,2.5,0,8.51E+11,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+More Silken Tofu,85696608037,More Silken Tofu,ELINTARVIKE,N,,,,,,,2.6,0,85696608037,,,N,Y,2.6,,,Y,2.6,,,Y,2.6,,,Y,2.6,,,N,N,N,N,N,N,N,N
+MSG Sodium glutamate AJINOMOTO pk 200g,25971,MSG Sodium glutamate AJINOMOTO pk 200g,MAUSTEET,N,,,,,,,1.8,0,25971,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Mung bean 40,84909003492,Mung bean 40,ELINTARVIKE,N,,,,,,,1.95,0,84909003492,,,N,Y,1.95,,,Y,1.95,,,Y,1.95,,,Y,1.95,,,N,N,N,N,N,N,N,N
+Mushroom Flavour Soy Sauce,78895135268,Mushroom Flavour Soy Sauce,KASTIKE,N,,,,,,,3.6,0,78895135268,,,N,Y,3.6,,,Y,3.6,,,Y,3.6,,,Y,3.6,,,N,N,N,N,N,N,N,N
+Mushroom sauce vegetarian HB bt 300ml,8640,Mushroom sauce vegetarian HB bt 300ml,KASTIKE,N,,,,,,,2.8,0,8640,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Mushroom sauce vegetarian HB bt 700ml,8641,Mushroom sauce vegetarian HB bt 700ml,KASTIKE,N,,,,,,,3.8,0,8641,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+N. soba class,6.00E+12,N. soba class,NUUDELI,N,,,,,,,1.85,0,6.00E+12,,,N,Y,1.85,,,Y,1.85,,,Y,1.85,,,Y,1.85,,,N,N,N,N,N,N,N,N
+"Nature Charm, Banana blossom",93856993640,"Nature Charm, Banana blossom",SAILYKE,N,,,,,,,2.2,0,93856993640,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Nestle Carnation Evaporated Milk,7.62E+12,Nestle Carnation Evaporated Milk,ELINTARVIKE,N,,,,,,,2.4,0,7.62E+12,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+NF Bamboo box f. sweet rice Ø 13cm pc,19316,NF Bamboo box f. sweet rice Ø 13cm pc,TAVARA 24%,N,,,,,,,9.8,0,19316,,,N,Y,9.8,,,Y,9.8,,,Y,9.8,,,Y,9.8,,,N,N,N,N,N,N,N,N
+"NF Bamboo chopsticks 26,5cm bg 10 prs",20161,"NF Bamboo chopsticks 26,5cm bg 10 prs",TAVARA 24%,N,,,,,,,2.4,0,20161,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+NF Bamboo steamer 20cm 3 pieces box/set,19319,NF Bamboo steamer 20cm 3 pieces box/set,TAVARA 24%,N,,,,,,,12.9,0,19319,,,N,Y,12.9,,,Y,12.9,,,Y,12.9,,,Y,12.9,,,N,N,N,N,N,N,N,N
+NF Ceramic Lucky Pig pink 10cm 1pc,20469,NF Ceramic Lucky Pig pink 10cm 1pc,TAVARA 24%,N,,,,,,,9.8,0,20469,,,N,Y,9.8,,,Y,9.8,,,Y,9.8,,,Y,9.8,,,N,N,N,N,N,N,N,N
+NF Chopsticks bamb. 22.5CM bg/(100)pairs,19205,NF Chopsticks bamb. 22.5CM bg/(100)pairs,TAVARA 24%,N,,,,,,,4.9,0,19205,,,N,Y,4.9,,,Y,4.9,,,Y,4.9,,,Y,4.9,,,N,N,N,N,N,N,N,N
+NF Facial Cl. cucumber ESKINOL btl225ml,19496,NF Facial Cl. cucumber ESKINOL btl225ml,TAVARA 24%,N,,,,,,,3.8,0,19496,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+NF Facial Cl. lemon ESKINOL btl 225ml,19497,NF Facial Cl. lemon ESKINOL btl 225ml,TAVARA 24%,N,,,,,,,3.8,0,19497,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+NF Facial Cl. papaya ESKINOL btl 225ml,19498,NF Facial Cl. papaya ESKINOL btl 225ml,TAVARA 24%,N,,,,,,,3.8,0,19498,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+NF Facial cleanser ESKINOL bt 225ml,19514,NF Facial cleanser ESKINOL bt 225ml,TAVARA 24%,N,,,,,,,3.8,0,19514,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+NF Inc. sticks smokel. 30.5cm WCL bg 80g,19856,NF Inc. sticks smokel. 30.5cm WCL bg 80g,TAVARA 24%,N,,,,,,,1.95,0,19856,,,N,Y,1.95,,,Y,1.95,,,Y,1.95,,,Y,1.95,,,N,N,N,N,N,N,N,N
+NF Incense sticks pk 250g,19860,NF Incense sticks pk 250g,TAVARA 24%,N,,,,,,,2.8,0,19860,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+NF Incense sticks pk 500g,19859,NF Incense sticks pk 500g,TAVARA 24%,N,,,,,,,3.9,0,19859,,,N,Y,3.9,,,Y,3.9,,,Y,3.9,,,Y,3.9,,,N,N,N,N,N,N,N,N
+NF Knife set bamboo pr. 5pcs LIVEON 1set,20057,NF Knife set bamboo pr. 5pcs LIVEON 1set,TAVARA 24%,N,,,,,,,19.8,0,20057,,,N,Y,19.8,,,Y,19.8,,,Y,19.8,,,Y,19.8,,,N,N,N,N,N,N,N,N
+NF Sushi mat&spoon pk/set,19386,NF Sushi mat&spoon pk/set,TAVARA 24%,N,,,,,,,3.4,0,19386,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+NF Sushi mould Maki large ct 1 set,50308,NF Sushi mould Maki large ct 1 set,TAVARA 24%,N,,,,,,,3.8,0,50308,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+NF Sushi mould Nigiri ct 1 set,50309,NF Sushi mould Nigiri ct 1 set,TAVARA 24%,N,,,,,,,3.6,0,50309,,,N,Y,3.6,,,Y,3.6,,,Y,3.6,,,Y,3.6,,,N,N,N,N,N,N,N,N
+NF Wok flat 38 cm,20039,NF Wok flat 38 cm,TAVARA 24%,N,,,,,,,36,0,20039,,,N,Y,36,,,Y,36,,,Y,36,,,Y,36,,,N,N,N,N,N,N,N,N
+nhan,6.98E+12,nhan,TAVARA 24%,N,,,,,,,4.9,0,6.98E+12,,,N,Y,4.9,,,Y,4.9,,,Y,4.9,,,Y,4.9,,,N,N,N,N,N,N,N,N
+NONGSHIM Sweet Potato Snack,31146211005,NONGSHIM Sweet Potato Snack,SNACK,N,,,,,,,1.3,0,31146211005,,,N,Y,1.3,,,Y,1.3,,,Y,1.3,,,Y,1.3,,,N,N,N,N,N,N,N,N
+Noodles pancit canton MONIKA pk 227g,3304,Noodles pancit canton MONIKA pk 227g,NUUDELI,N,,,,,,,2.2,0,3304,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Noodles q.c. SPRING HAPPINESS pk 500g,3731,Noodles q.c. SPRING HAPPINESS pk 500g,NUUDELI,N,,,,,,,1.5,0,3731,,,N,Y,1.5,,,Y,1.5,,,Y,1.5,,,Y,1.5,,,N,N,N,N,N,N,N,N
+Noodles tapioca pk 400g,3521,Noodles tapioca pk 400g,NUUDELI,N,,,,,,,1.95,0,3521,,,N,Y,1.95,,,Y,1.95,,,Y,1.95,,,Y,1.95,,,N,N,N,N,N,N,N,N
+Oil groundnut HS bt 1L,10053,Oil groundnut HS bt 1L,ELINTARVIKE,N,,,,,,,3.8,0,10053,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Oil sesame roasted OH AIK GUAN bt 150ml,10501,Oil sesame roasted OH AIK GUAN bt 150ml,ELINTARVIKE,N,,,,,,,2.8,0,10501,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Oil sesame roasted OH AIK GUAN bt 360ml,10502,Oil sesame roasted OH AIK GUAN bt 360ml,ELINTARVIKE,N,,,,,,,4.8,0,10502,,,N,Y,4.8,,,Y,4.8,,,Y,4.8,,,Y,4.8,,,N,N,N,N,N,N,N,N
+Okra whole 250g,/7350072777380,Okra whole 250g,PAKASTE,N,,,,,,,1.95,0,/7350072777380,,,N,Y,1.95,,,Y,1.95,,,Y,1.95,,,Y,1.95,,,N,N,N,N,N,N,N,N
+Organic Licorice - Black Soft,6.42E+12,Organic Licorice - Black Soft,SNACK,N,,,,,,,2.4,0,6.42E+12,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+P.A.N.,7.59E+12,P.A.N.,ELINTARVIKE,N,,,,,,,2.8,0,7.59E+12,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Palm Sugar,84909003904,Palm Sugar,ELINTARVIKE,N,,,,,,,2.5,0,84909003904,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+Picled ging,84909901149,Picled ging,SAILYKE,N,,,,,,,2.8,0,84909901149,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Plantaijnn chips Sweet  85g,8.16E+11,Plantaijnn chips Sweet  85g,SNACK,N,,,,,,,1.4,0,8.16E+11,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Prawn crackers HANAMI bg 15g,4116,Prawn crackers HANAMI bg 15g,SNACK,N,,,,,,,0.49,0,4116,,,N,Y,0.49,,,Y,0.49,,,Y,0.49,,,Y,0.49,,,N,N,N,N,N,N,N,N
+Preserv. radi,84909000729,Preserv. radi,ELINTARVIKE,N,,,,,,,2.7,0,84909000729,,,N,Y,2.7,,,Y,2.7,,,Y,2.7,,,Y,2.7,,,N,N,N,N,N,N,N,N
+Preserved ra,30891053755,Preserved ra,MAUSTEET,N,,,,,,,1.4,0,30891053755,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Preserved Radish,30891054134,Preserved Radish,ELINTARVIKE,N,,,,,,,1.6,0,30891054134,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Purple yam,22392873147,Purple yam,ELINTARVIKE,N,,,,,,,4,0,22392873147,,,N,Y,4,,,Y,4,,,Y,4,,,Y,4,,,N,N,N,N,N,N,N,N
+Quail Eggs,4.75E+12,Quail Eggs,ELINTARVIKE,N,,,,,,,3.4,0,4.75E+12,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Rambutan pin,16229000547,Rambutan pin,SAILYKE,N,,,,,,,3.4,0,16229000547,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+"RED BOAT Fish sauce 40""N Sm",8.60E+11,"RED BOAT Fish sauce 40""N Sm",KASTIKE,N,,,,,,,4.8,0,8.60E+11,,,N,Y,4.8,,,Y,4.8,,,Y,4.8,,,Y,4.8,,,N,N,N,N,N,N,N,N
+"RED BOAT Fish sauce 40""N, La",7.36E+11,"RED BOAT Fish sauce 40""N, La",KASTIKE,N,,,,,,,16.9,0,7.36E+11,,,N,Y,16.9,,,Y,16.9,,,Y,16.9,,,Y,16.9,,,N,N,N,N,N,N,N,N
+Red chil pep,31146029679,Red chil pep,MAUSTEET,N,,,,,,,5.8,0,31146029679,,,N,Y,5.8,,,Y,5.8,,,Y,5.8,,,Y,5.8,,,N,N,N,N,N,N,N,N
+Rice cake hot&sp Halal TOPOKKI cup 140g,9300,Rice cake hot&sp Halal TOPOKKI cup 140g,ELINTARVIKE,N,,,,,,,3.4,0,9300,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Rice cake Jjajang TOPOKKI cup 120g,9302,Rice cake Jjajang TOPOKKI cup 120g,ELINTARVIKE,N,,,,,,,3.4,0,9302,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Rice cake sweet & spicy TOPOKKI cup 140g,9301,Rice cake sweet & spicy TOPOKKI cup 140g,ELINTARVIKE,N,,,,,,,3.4,0,9301,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Rice crackers corn&cheese BINBIN bg 105g,4257,Rice crackers corn&cheese BINBIN bg 105g,SNACK,N,,,,,,,2.8,0,4257,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Rice flour,84909000774,Rice flour,ELINTARVIKE,N,,,,,,,1.4,0,84909000774,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Rice for sushi ROYAL TIGER bg 1kg,1034,Rice for sushi ROYAL TIGER bg 1kg,ELINTARVIKE,N,,,,,,,2.8,0,1034,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Rice glutinous BETTER bg 1kg,1093,Rice glutinous BETTER bg 1kg,ELINTARVIKE,N,,,,,,,3.4,0,1093,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Rice jasmine ROYAL TIGER bg 1kg,1032,Rice jasmine ROYAL TIGER bg 1kg,ELINTARVIKE,N,,,,,,,2.5,0,1032,,,N,Y,2.5,,,Y,2.5,,,Y,2.5,,,Y,2.5,,,N,N,N,N,N,N,N,N
+Rice vermicelli Vietnamese pk 400g,3522,Rice vermicelli Vietnamese pk 400g,NUUDELI,N,,,,,,,1.95,0,3522,,,N,Y,1.95,,,Y,1.95,,,Y,1.95,,,Y,1.95,,,N,N,N,N,N,N,N,N
+Rice vermicelli WAI WAI pk 400g,3255,Rice vermicelli WAI WAI pk 400g,NUUDELI,N,,,,,,,2.2,0,3255,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Ricecrackers coconut BIN BIN bg 150g,4254,Ricecrackers coconut BIN BIN bg 150g,SNACK,N,,,,,,,2.8,0,4254,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Ricecrackers hot seaweed BIN BIN bg 135g,4256,Ricecrackers hot seaweed BIN BIN bg 135g,SNACK,N,,,,,,,2.8,0,4256,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Ricecrackers natural BIN BIN bg 150g,4251,Ricecrackers natural BIN BIN bg 150g,SNACK,N,,,,,,,2.6,0,4251,,,N,Y,2.6,,,Y,2.6,,,Y,2.6,,,Y,2.6,,,N,N,N,N,N,N,N,N
+Ricecrackers seaweed BIN BIN bg 150g,4252,Ricecrackers seaweed BIN BIN bg 150g,SNACK,N,,,,,,,2.8,0,4252,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Ricecrackers snow BIN BIN bg 150g,4253,Ricecrackers snow BIN BIN bg 150g,SNACK,N,,,,,,,2.8,0,4253,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Rooh Afza Drink,8.96E+12,Rooh Afza Drink,JUOMAT,N,,,,,,,5.9,0,8.96E+12,,,N,Y,5.9,,,Y,5.9,,,Y,5.9,,,Y,5.9,,,N,N,N,N,N,N,N,N
+S&B Wasabi Powder,49181173,S&B Wasabi Powder,ELINTARVIKE,N,,,,,,,2.9,0,49181173,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Salt Lemon candy,4.56E+12,Salt Lemon candy,SNACK,N,,,,,,,2.4,0,4.56E+12,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Salted Radish,68697224000,Salted Radish,ELINTARVIKE,N,,,,,,,1.6,0,68697224000,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Sambal Oelek Chili Paste Extra Garlic Thailand Flying Goose,87666033474,Sambal Oelek Chili Paste Extra Garlic Thailand Flying Goose,ELINTARVIKE,N,,,,,,,2.4,0,87666033474,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Samyang Ramen Original Flavour,74603005212,Samyang Ramen Original Flavour,NUUDELI,N,,,,,,,1.7,0,74603005212,,,N,Y,1.7,,,Y,1.7,,,Y,1.7,,,Y,1.7,,,N,N,N,N,N,N,N,N
+SANWI Black Sugar,4.72E+12,SANWI Black Sugar,ELINTARVIKE,N,,,,,,,3.8,0,4.72E+12,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Sard. tom.sauce&chilli\red MEGA can 155g,6511,Sard. tom.sauce&chilli\red MEGA can 155g,ELINTARVIKE,N,,,,,,,1.2,0,6511,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Sard. tom.sauce&chilli\red MEGA can 425g,6519,Sard. tom.sauce&chilli\red MEGA can 425g,ELINTARVIKE,N,,,,,,,2.4,0,6519,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Sardines,5.60E+12,Sardines,PAKASTE,N,,,,,,,5.9,0,5.60E+12,,,N,Y,5.9,,,Y,5.9,,,Y,5.9,,,Y,5.9,,,N,N,N,N,N,N,N,N
+Sardines in soy oil MEGA can 155g,6513,Sardines in soy oil MEGA can 155g,ELINTARVIKE,N,,,,,,,1.2,0,6513,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Sardines tom. sauce\green MEGA can 155g,6510,Sardines tom. sauce\green MEGA can 155g,ELINTARVIKE,N,,,,,,,1.2,0,6510,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+sauce for Pad Thai LOBO pk 120g,16944,sauce for Pad Thai LOBO pk 120g,ELINTARVIKE,N,,,,,,,1.6,0,16944,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Sea-laver roasted seasoned A+ pk 5g,9357,Sea-laver roasted seasoned A+ pk 5g,SNACK,N,,,,,,,2.4,0,9357,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Seafood hot,87703315983,Seafood hot,ELINTARVIKE,N,,,,,,,3.4,0,87703315983,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Seasoned Seaweed w/ Green Tea,87703201576,Seasoned Seaweed w/ Green Tea,ELINTARVIKE,N,,,,,,,0.85,0,87703201576,,,N,Y,0.85,,,Y,0.85,,,Y,0.85,,,Y,0.85,,,N,N,N,N,N,N,N,N
+Seaweed dried KWANGCHEON pk 50g,9440,Seaweed dried KWANGCHEON pk 50g,ELINTARVIKE,N,,,,,,,2.8,0,9440,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Seaweed snack almond sesame pk 35g,4237,Seaweed snack almond sesame pk 35g,SNACK,N,,,,,,,1.95,0,4237,,,N,Y,1.95,,,Y,1.95,,,Y,1.95,,,Y,1.95,,,N,N,N,N,N,N,N,N
+Seaweed snack crispy TAOKAENOI bg 32g,50212,Seaweed snack crispy TAOKAENOI bg 32g,SNACK,N,,,,,,,2.8,0,50212,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Seaweed snack spicy Hi Temp. TKN bg 40g,50218,Seaweed snack spicy Hi Temp. TKN bg 40g,SNACK,N,,,,,,,2.8,0,50218,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Seaweed snack spicy TAOKAENOI bag 32g,50213,Seaweed snack spicy TAOKAENOI bag 32g,SNACK,N,,,,,,,2.8,0,50213,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Seaweed snack TYG fl. TAOKAENOI bag 32g,50215,Seaweed snack TYG fl. TAOKAENOI bag 32g,SNACK,N,,,,,,,2.8,0,50215,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+sesameseed w,84909011725,sesameseed w,ELINTARVIKE,N,,,,,,,2.8,0,84909011725,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+shirataki,8.05E+12,shirataki,NUUDELI,N,,,,,,,2.4,0,8.05E+12,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Shrimp Chips,31146216321,Shrimp Chips,SNACK,N,,,,,,,1.6,0,31146216321,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Silken tofu,85696608044,Silken tofu,ELINTARVIKE,N,,,,,,,2.4,0,85696608044,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Silver Swan Special Soy Sauce,79809001624,Silver Swan Special Soy Sauce,KASTIKE,N,,,,,,,2.8,0,79809001624,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Snack ndles chicken/garl.YUM YUM bg 25g,4236,Snack ndles chicken/garl.YUM YUM bg 25g,SNACK,N,,,,,,,0.45,0,4236,,,N,Y,0.45,,,Y,0.45,,,Y,0.45,,,Y,0.45,,,N,N,N,N,N,N,N,N
+Snack noodles BBQ YUM YUM bg 25g,4235,Snack noodles BBQ YUM YUM bg 25g,SNACK,N,,,,,,,0.45,0,4235,,,N,Y,0.45,,,Y,0.45,,,Y,0.45,,,Y,0.45,,,N,N,N,N,N,N,N,N
+Snacks bananachips bg 200g,16453,Snacks bananachips bg 200g,SNACK,N,,,,,,,2.4,0,16453,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Snacks fr pork rind bbq OKSNACKS bg150g,4025,Snacks fr pork rind bbq OKSNACKS bg150g,SNACK,N,,,,,,,3.4,0,4025,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Snacks fr. pork rind KAIN-NA bg100g,4022,Snacks fr. pork rind KAIN-NA bg100g,SNACK,N,,,,,,,2.9,0,4022,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Snacks fr. pork rind KAIN-NA bg90g,4023,Snacks fr. pork rind KAIN-NA bg90g,SNACK,N,,,,,,,2.6,0,4023,,,N,Y,2.6,,,Y,2.6,,,Y,2.6,,,Y,2.6,,,N,N,N,N,N,N,N,N
+Snacks fr. pork rind OKSNACKS bg150g,4019,Snacks fr. pork rind OKSNACKS bg150g,SNACK,N,,,,,,,3.4,0,4019,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Snacks fried pork rind OKSNACKS bg 50g,4018,Snacks fried pork rind OKSNACKS bg 50g,SNACK,N,,,,,,,2.4,0,4018,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Snacks peanuts GT bg 500g,15204,Snacks peanuts GT bg 500g,SNACK,N,,,,,,,3.8,0,15204,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Soup mix chicken powder LOBO bg 500g,16824,Soup mix chicken powder LOBO bg 500g,MAUSTEET,N,,,,,,,4.8,0,16824,,,N,Y,4.8,,,Y,4.8,,,Y,4.8,,,Y,4.8,,,N,N,N,N,N,N,N,N
+Soup mix tamarind KNORR bg 40g,16111,Soup mix tamarind KNORR bg 40g,MAUSTEET,N,,,,,,,1.2,0,16111,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Soup mix tamarind MAMA SITA'S bg 50g,16507,Soup mix tamarind MAMA SITA'S bg 50g,MAUSTEET,N,,,,,,,1.2,0,16507,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Soup mix tamarind&taro KNORR bg 22g,16109,Soup mix tamarind&taro KNORR bg 22g,MAUSTEET,N,,,,,,,0.89,0,16109,,,N,Y,0.89,,,Y,0.89,,,Y,0.89,,,Y,0.89,,,N,N,N,N,N,N,N,N
+Soup mix tom ka LOBO cup 400g,16455,Soup mix tom ka LOBO cup 400g,MAUSTEET,N,,,,,,,3.4,0,16455,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Soup mix tom yum LOBO bg 30g,16383,Soup mix tom yum LOBO bg 30g,MAUSTEET,N,,,,,,,1.2,0,16383,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Soup mix tom yum LOBO cup 400g,16456,Soup mix tom yum LOBO cup 400g,MAUSTEET,N,,,,,,,3.4,0,16456,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+"Soursop, nectar",16229919238,"Soursop, nectar",JUOMAT,N,,,,,,,3.5,0,16229919238,,,N,Y,3.5,,,Y,3.5,,,Y,3.5,,,Y,3.5,,,N,N,N,N,N,N,N,N
+Sp. paste oriental fried rice LOBO bg25g,16836,Sp. paste oriental fried rice LOBO bg25g,MAUSTEET,N,,,,,,,1.2,0,16836,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spare Rib Sauce - Lee Kum Kee,8895741025,Spare Rib Sauce - Lee Kum Kee,KASTIKE,N,,,,,,,2.9,0,8895741025,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Spice mix chicken MOUNTAIN bg 170g,15551,Spice mix chicken MOUNTAIN bg 170g,MAUSTEET,N,,,,,,,2.8,0,15551,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Spice mix for chicken KNORR bg 68g,16586,Spice mix for chicken KNORR bg 68g,MAUSTEET,N,,,,,,,1.8,0,16586,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Spice mix for pork KNORR bg 68g,16587,Spice mix for pork KNORR bg 68g,MAUSTEET,N,,,,,,,1.8,0,16587,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Spice mix pork MOUNTAIN bg 170g,15552,Spice mix pork MOUNTAIN bg 170g,MAUSTEET,N,,,,,,,2.8,0,15552,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Spice paste Chinese 5-spices LOBO bg 65g,16802,Spice paste Chinese 5-spices LOBO bg 65g,MAUSTEET,N,,,,,,,1.2,0,16802,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spice paste for seafood LOBO bg 60g,16818,Spice paste for seafood LOBO bg 60g,MAUSTEET,N,,,,,,,1.8,0,16818,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Spice paste green curry LOBO bg 50g,16809,Spice paste green curry LOBO bg 50g,MAUSTEET,N,,,,,,,1.2,0,16809,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spice paste laab namtok LOBO bg 30g,16841,Spice paste laab namtok LOBO bg 30g,MAUSTEET,N,,,,,,,1.2,0,16841,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spice paste masman curry LOBO bg 50g,16812,Spice paste masman curry LOBO bg 50g,MAUSTEET,N,,,,,,,1.2,0,16812,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spice paste nam powder LOBO bg 70g,16804,Spice paste nam powder LOBO bg 70g,MAUSTEET,N,,,,,,,1.4,0,16804,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Spice paste nam ya curry LOBO bg 60g,16712,Spice paste nam ya curry LOBO bg 60g,MAUSTEET,N,,,,,,,1.2,0,16712,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spice paste nam ya LOBO cup 400g,16454,Spice paste nam ya LOBO cup 400g,MAUSTEET,N,,,,,,,3.4,0,16454,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Spice paste noodle soup pho AHG bg 50g,15337,Spice paste noodle soup pho AHG bg 50g,MAUSTEET,N,,,,,,,1.6,0,15337,,,N,Y,1.6,,,Y,1.6,,,Y,1.6,,,Y,1.6,,,N,N,N,N,N,N,N,N
+Spice paste panang curry LOBO bg 50g,16917,Spice paste panang curry LOBO bg 50g,MAUSTEET,N,,,,,,,1.2,0,16917,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spice paste pepper&garlic LOBO bg 30g,16983,Spice paste pepper&garlic LOBO bg 30g,MAUSTEET,N,,,,,,,1.4,0,16983,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Spice paste red curry LOBO cup 400g,16458,Spice paste red curry LOBO cup 400g,MAUSTEET,N,,,,,,,3.4,0,16458,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Spice paste roast. red pork LOBO bg 100g,16803,Spice paste roast. red pork LOBO bg 100g,MAUSTEET,N,,,,,,,1.4,0,16803,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Spice paste satay marinade LOBO bg 35g,16811,Spice paste satay marinade LOBO bg 35g,MAUSTEET,N,,,,,,,1.2,0,16811,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spice paste sour veget. Curry LOBO bg50g,16919,Spice paste sour veget. Curry LOBO bg50g,MAUSTEET,N,,,,,,,1.2,0,16919,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spice paste sweet&sour sauce LOBO bg 30g,16807,Spice paste sweet&sour sauce LOBO bg 30g,MAUSTEET,N,,,,,,,1.2,0,16807,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spice paste vindaloo curry PATAK jr283gr,8753,Spice paste vindaloo curry PATAK jr283gr,MAUSTEET,N,,,,,,,3.4,0,8753,,,N,Y,3.4,,,Y,3.4,,,Y,3.4,,,Y,3.4,,,N,N,N,N,N,N,N,N
+Spice paste yellow curry LOBO bg 50g,16817,Spice paste yellow curry LOBO bg 50g,MAUSTEET,N,,,,,,,1.2,0,16817,,,N,Y,1.2,,,Y,1.2,,,Y,1.2,,,Y,1.2,,,N,N,N,N,N,N,N,N
+Spices chilli dried extra hot TRS bg 50g,16745,Spices chilli dried extra hot TRS bg 50g,MAUSTEET,N,,,,,,,1.9,0,16745,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Spices Chilli pepper ground DHF jr 50g,17091,Spices Chilli pepper ground DHF jr 50g,MAUSTEET,N,,,,,,,2.8,0,17091,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Spices Chilli powder DHF jr 60g,17092,Spices Chilli powder DHF jr 60g,MAUSTEET,N,,,,,,,2.8,0,17092,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Spices chilli TRS bg 100g,16728,Spices chilli TRS bg 100g,MAUSTEET,N,,,,,,,2.2,0,16728,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Spices fish&chilli powd. THAI DERM pk28g,8762,Spices fish&chilli powd. THAI DERM pk28g,MAUSTEET,N,,,,,,,1.4,0,8762,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Spices fried shallot TD jr 80g,16618,Spices fried shallot TD jr 80g,ELINTARVIKE,N,,,,,,,2.9,0,16618,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Spices m. seasalt-chilli-apr. DHF jr120g,17088,Spices m. seasalt-chilli-apr. DHF jr120g,MAUSTEET,N,,,,,,,2.8,0,17088,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Spices mix salt-chilli DHF jr 120g,17084,Spices mix salt-chilli DHF jr 120g,MAUSTEET,N,,,,,,,2.8,0,17084,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Spices mix salt-chilli-lem. DHF jr 120g,17086,Spices mix salt-chilli-lem. DHF jr 120g,MAUSTEET,N,,,,,,,2.8,0,17086,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Spices mix salt-pepper-lem.lf DHF jr120g,17087,Spices mix salt-pepper-lem.lf DHF jr120g,MAUSTEET,N,,,,,,,2.8,0,17087,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Spices mix salt-shrimp DH FOODS jr 120g,17085,Spices mix salt-shrimp DH FOODS jr 120g,MAUSTEET,N,,,,,,,2.8,0,17085,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+"Spices shrimp,fish, chilli cr. TD bg28g",8761,"Spices shrimp,fish, chilli cr. TD bg28g",MAUSTEET,N,,,,,,,1.4,0,8761,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Split mug b,84909003751,Split mug b,ELINTARVIKE,N,,,,,,,3.8,0,84909003751,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Squid nc mam,bnnnnn8850620888074,Squid nc mam,KASTIKE,N,,,,,,,2.4,0,bnnnnn8850620888074,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Sriracha Hot Chilli Onion Sauce,87666052857,Sriracha Hot Chilli Onion Sauce,KASTIKE,N,,,,,,,0,0,87666052857,,,N,Y,0,,,Y,0,,,Y,0,,,Y,0,,,N,N,N,N,N,N,N,N
+ST Casava,7.83E+12,ST Casava,ELINTARVIKE,N,,,,,,,2.2,0,7.83E+12,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Sugar cane ,16229106102,Sugar cane,JUOMAT,N,,,,,,,1.4,0,16229106102,,,N,Y,1.4,,,Y,1.4,,,Y,1.4,,,Y,1.4,,,N,N,N,N,N,N,N,N
+Sugar rock MITRPHOL bg 500g,15404,Sugar rock MITRPHOL bg 500g,ELINTARVIKE,N,,,,,,,2.8,0,15404,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Suk udon no,87703013483,Suk udon no,NUUDELI,N,,,,,,,3.9,0,87703013483,,,N,Y,3.9,,,Y,3.9,,,Y,3.9,,,Y,3.9,,,N,N,N,N,N,N,N,N
+SunLee Bean Vermicek 10piece,9.08E+13,SunLee Bean Vermicek 10piece,NUUDELI,N,,,,,,,4.9,0,9.08E+13,,,N,Y,4.9,,,Y,4.9,,,Y,4.9,,,Y,4.9,,,N,N,N,N,N,N,N,N
+Sunlee Mungbean vermicel 40g,-7.62E+11,Sunlee Mungbean vermicel 40g,NUUDELI,N,,,,,,,0.59,0,-7.62E+11,,,N,Y,0.59,,,Y,0.59,,,Y,0.59,,,Y,0.59,,,N,N,N,N,N,N,N,N
+Sushi Mold Futomaki,3.74E+12,Sushi Mold Futomaki,ELINTARVIKE,N,,,,,,,4.8,0,3.74E+12,,,N,Y,4.8,,,Y,4.8,,,Y,4.8,,,Y,4.8,,,N,N,N,N,N,N,N,N
+Sw calmar s,72185507582,Sw calmar s,PAKASTE,N,,,,,,,10.9,0,72185507582,,,N,Y,10.9,,,Y,10.9,,,Y,10.9,,,Y,10.9,,,N,N,N,N,N,N,N,N
+Sweet & sour sauce FG bt 455ml,39511,Sweet & sour sauce FG bt 455ml,KASTIKE,N,,,,,,,0,0,39511,,,N,Y,0,,,Y,0,,,Y,0,,,Y,0,,,N,N,N,N,N,N,N,N
+Sweet chilli sauce for chicken,84909023049,Sweet chilli sauce for chicken,KASTIKE,N,,,,,,,0,0,84909023049,,,N,Y,0,,,Y,0,,,Y,0,,,Y,0,,,N,N,N,N,N,N,N,N
+Sweet corn color,87703119703,Sweet corn color,PAKASTE,N,,,,,,,2.8,0,87703119703,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Sweet Potato in Caramel Sauce,8.88E+12,Sweet Potato in Caramel Sauce,SNACK,N,,,,,,,4.4,0,8.88E+12,,,N,Y,4.4,,,Y,4.4,,,Y,4.4,,,Y,4.4,,,N,N,N,N,N,N,N,N
+Sweet potato noodle,87703001688,Sweet potato noodle,NUUDELI,N,,,,,,,3.8,0,87703001688,,,N,Y,3.8,,,Y,3.8,,,Y,3.8,,,Y,3.8,,,N,N,N,N,N,N,N,N
+Sweet Soy Sauce,7.12E+11,Sweet Soy Sauce,KASTIKE,N,,,,,,,0,0,7.12E+11,,,N,Y,0,,,Y,0,,,Y,0,,,Y,0,,,N,N,N,N,N,N,N,N
+t-shirt,10016,T-Shirt,,N,Size,L,Colours,Blue,,,5,0,,,,Y,Y,5,0,,Y,5,0,,N,5,0,,N,5,0,,N,N,N,N,N,Y,N,N
+t-shirt,10017,,,,,L,,Green,,,5,0,,,,,Y,5,0,,Y,5,0,,N,5,0,,N,5,0,,N,N,N,N,N,,,
+t-shirt,10015,,,,,L,,Red,,,5,0,,,,,Y,5,0,,Y,5,0,,N,5,0,,N,5,0,,N,N,N,N,N,,,
+t-shirt,10013,,,,,M,,Blue,,,5,0,,,,,Y,5,0,,Y,5,0,,N,5,0,,N,5,0,,N,N,N,N,N,,,
+t-shirt,10014,,,,,M,,Green,,,5,0,,,,,Y,5,0,,Y,5,0,,N,5,0,,N,5,0,,N,N,N,N,N,,,
+t-shirt,10012,,,,,M,,Red,,,5,0,,,,,Y,5,0,,Y,5,0,,N,5,0,,N,5,0,,N,N,N,N,N,,,
+t-shirt,10010,,,,,S,,Blue,,,5,0,,,,,Y,5,0,,Y,5,0,,N,5,0,,N,5,0,,N,N,N,N,N,,,
+t-shirt,10011,,,,,S,,Green,,,5,0,,,,,Y,5,0,,Y,5,0,,N,5,0,,N,5,0,,N,N,N,N,N,,,
+t-shirt,10009,,,,,S,,Red,,,5,0,,,,,Y,5,0,,Y,5,0,,N,5,0,,N,5,0,,N,N,N,N,N,,,
+TABASCO Pepper Sauce,11210135840,TABASCO Pepper Sauce,KASTIKE,N,,,,,,,14.5,0,11210135840,,,N,Y,14.5,,,Y,14.5,,,Y,14.5,,,Y,14.5,,,N,N,N,N,N,N,N,N
+Tapioca bot,84909000798,Tapioca bot,ELINTARVIKE,N,,,,,,,1.5,0,84909000798,,,N,Y,1.5,,,Y,1.5,,,Y,1.5,,,Y,1.5,,,N,N,N,N,N,N,N,N
+Tapioca pear,84909012043,Tapioca pear,ELINTARVIKE,N,,,,,,,2.2,0,84909012043,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Tea brown rice OISHI bt 500ml,11243,Tea brown rice OISHI bt 500ml,ELINTARVIKE,N,,,,,,,1.99,0,11243,,,N,Y,1.99,,,Y,1.99,,,Y,1.99,,,Y,1.99,,,N,N,N,N,N,N,N,N
+"Tea Green,  vihreä tee Hunan pk 100g",18662,"Tea Green,  vihreä tee Hunan pk 100g",JUOMAT,N,,,,,,,2.4,0,18662,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Tea gunpowder GREETING PINE box 125g,16166,Tea gunpowder GREETING PINE box 125g,JUOMAT,N,,,,,,,1.8,0,16166,,,N,Y,1.8,,,Y,1.8,,,Y,1.8,,,Y,1.8,,,N,N,N,N,N,N,N,N
+Tea mug,2.02E+12,Tea mug,TAVARA 24%,N,,,,,,,12,0,2.02E+12,,,N,Y,12,,,Y,12,,,Y,12,,,Y,12,,,N,N,N,N,N,N,N,N
+Teriyaki sauce TD btl 300ml,8616,Teriyaki sauce TD btl 300ml,KASTIKE,N,,,,,,,0,0,8616,,,N,Y,0,,,Y,0,,,Y,0,,,Y,0,,,N,N,N,N,N,N,N,N
+Teriyaki udon,87703182455,Teriyaki udon,NUUDELI,N,,,,,,,3.6,0,87703182455,,,N,Y,3.6,,,Y,3.6,,,Y,3.6,,,Y,3.6,,,N,N,N,N,N,N,N,N
+thai-milk-tea,123,Thai Milk Tea,,N,,,,,,,0.2,5,456,,,Y,Y,0.2,0,0,Y,20,5,0,Y,0.2,0,0,N,0.2,0,,N,N,N,N,N,Y,N,N
+Thai sausage set S Krok E-San LOBO pk75g,16845,Thai sausage set S Krok E-San LOBO pk75g,MAUSTEET,N,,,,,,,2.4,0,16845,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Thai sausage set Sai Oua LOBO pk 60g,16846,Thai sausage set Sai Oua LOBO pk 60g,MAUSTEET,N,,,,,,,2.4,0,16846,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Three Crabs Brand Vietnamese Fish Sauce,50561846326,Three Crabs Brand Vietnamese Fish Sauce,ELINTARVIKE,N,,,,,,,6.9,0,50561846326,,,N,Y,6.9,,,Y,6.9,,,Y,6.9,,,Y,6.9,,,N,N,N,N,N,N,N,N
+Three Crabs Premium Fish Sauce,7.94E+12,Three Crabs Premium Fish Sauce,KASTIKE,N,,,,,,,6.9,0,7.94E+12,,,N,Y,6.9,,,Y,6.9,,,Y,6.9,,,Y,6.9,,,N,N,N,N,N,N,N,N
+Tiparos Fish Sauce,21723778885,Tiparos Fish Sauce,KASTIKE,N,,,,,,,2.4,0,21723778885,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Todday palm paste,84909901170,Todday palm paste,ELINTARVIKE,N,,,,,,,2.8,0,84909901170,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+tom yum,84909006608,tom yum,KASTIKE,N,,,,,,,5.8,0,84909006608,,,N,Y,5.8,,,Y,5.8,,,Y,5.8,,,Y,5.8,,,N,N,N,N,N,N,N,N
+Udong seafood,74603003102,Udong seafood,NUUDELI,N,,,,,,,1,0,74603003102,,,N,Y,1,,,Y,1,,,Y,1,,,Y,1,,,N,N,N,N,N,N,N,N
+ufc banana sauce,14285002253,ufc banana sauce,KASTIKE,N,,,,,,,1.7,0,14285002253,,,N,Y,1.7,,,Y,1.7,,,Y,1.7,,,Y,1.7,,,N,N,N,N,N,N,N,N
+UNICA Mackerel Tomato ,7.80E+12,UNICA Mackerel Tomato,SAILYKE,N,,,,,,,2.4,0,7.80E+12,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Vandevi Asafoetida Hing Powder,8.91E+12,Vandevi Asafoetida Hing Powder,ELINTARVIKE,N,,,,,,,2.4,0,8.91E+12,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+VEGAN Condensed coconut milk,93856992193,VEGAN Condensed coconut milk,ELINTARVIKE,N,,,,,,,2.8,0,93856992193,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Vicks VapoRub,4.99E+12,Vicks VapoRub,TAVARA 24%,N,,,,,,,4.8,0,4.99E+12,,,N,Y,4.8,,,Y,4.8,,,Y,4.8,,,Y,4.8,,,N,N,N,N,N,N,N,N
+Vinegar coconut MONIKA bt 750ml,8218,Vinegar coconut MONIKA bt 750ml,ELINTARVIKE,N,,,,,,,2.8,0,8218,,,N,Y,2.8,,,Y,2.8,,,Y,2.8,,,Y,2.8,,,N,N,N,N,N,N,N,N
+Vuohenlihaa kg,2.11E+12,Vuohenlihaa kg,PAKASTE,N,,,,,,,8.5,0,2.11E+12,,,N,Y,8.5,,,Y,8.5,,,Y,8.5,,,Y,8.5,,,N,N,N,N,N,N,N,N
+WHITE BEAN,84909006707,WHITE BEAN,ELINTARVIKE,N,,,,,,,0,0,84909006707,,,N,Y,0,,,Y,0,,,Y,0,,,Y,0,,,N,N,N,N,N,N,N,N
+Wonton pastel,87292817,Wonton pastel,PAKASTE,N,,,,,,,2.6,0,87292817,,,N,Y,2.6,,,Y,2.6,,,Y,2.6,,,Y,2.6,,,N,N,N,N,N,N,N,N
+Wonton pastry 200g Happy Boy 60 x 200g,87292794,Wonton pastry 200g Happy Boy 60 x 200g,PAKASTE,N,,,,,,,2.4,0,87292794,,,N,Y,2.4,,,Y,2.4,,,Y,2.4,,,Y,2.4,,,N,N,N,N,N,N,N,N
+Yanang leaves extract,16229007379,Yanang leaves extract,ELINTARVIKE,N,,,,,,,2.2,0,16229007379,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N
+Yellow curry paste,84909002358,Yellow curry paste,KASTIKE,N,,,,,,,2.9,0,84909002358,,,N,Y,2.9,,,Y,2.9,,,Y,2.9,,,Y,2.9,,,N,N,N,N,N,N,N,N
+Young jackfr,93856993190,Young jackfr,SAILYKE,N,,,,,,,1.9,0,93856993190,,,N,Y,1.9,,,Y,1.9,,,Y,1.9,,,Y,1.9,,,N,N,N,N,N,N,N,N
+Zeisner Worcestershire-Sauce,4.00E+12,Zeisner Worcestershire-Sauce,KASTIKE,N,,,,,,,2.2,0,4.00E+12,,,N,Y,2.2,,,Y,2.2,,,Y,2.2,,,Y,2.2,,,N,N,N,N,N,N,N,N

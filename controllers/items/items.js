@@ -660,17 +660,17 @@ router.post("/validate_csv", async (req, res) => {
           .pipe(csv.parse({ headers: true, ignoreEmpty: true, trim: true }))
           .on("error", (error) => console.error(error))
           .on("data", async (row) => {
-            if (
-              typeof row.Name === "undefined" ||
-              typeof row.Name === "null" ||
-              row.Name === null ||
-              row.Name === undefined ||
-              row.Name === ""
-            ) {
-              groupNameErrors.push({
-                index: i,
-              });
-            }
+            // if (
+            //   typeof row.Name === "undefined" ||
+            //   typeof row.Name === "null" ||
+            //   row.Name === null ||
+            //   row.Name === undefined ||
+            //   row.Name === ""
+            // ) {
+            //   groupNameErrors.push({
+            //     index: i,
+            //   });
+            // }
             if (
               typeof row.SKU === "undefined" ||
               typeof row.SKU === "null" ||
@@ -682,17 +682,17 @@ router.post("/validate_csv", async (req, res) => {
                 index: i,
               });
             }
-            if (
-              typeof row.Handle === "undefined" ||
-              typeof row.Handle === "null" ||
-              row.Handle === null ||
-              row.Handle === undefined ||
-              row.Handle === ""
-            ) {
-              groupHandleErrors.push({
-                index: i,
-              });
-            }
+            // if (
+            //   typeof row.Handle === "undefined" ||
+            //   typeof row.Handle === "null" ||
+            //   row.Handle === null ||
+            //   row.Handle === undefined ||
+            //   row.Handle === ""
+            // ) {
+            //   groupHandleErrors.push({
+            //     index: i,
+            //   });
+            // }
             i++;
             console.log(i);
           })

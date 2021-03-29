@@ -5,7 +5,6 @@ const itemListSchema = new mongoose.Schema({
     type: String,
     min: 3,
     max: 255,
-    required: true,
   },
   accountId: {
     type: String,
@@ -27,13 +26,11 @@ const itemListSchema = new mongoose.Schema({
   },
   availableForSale: {
     type: Boolean,
-    required: true,
   },
   soldByType: {
     type: String,
     min: 3,
     max: 255,
-    required: true,
   },
   price: {
     type: Number,
@@ -211,22 +208,18 @@ const itemListSchema = new mongoose.Schema({
   repoOnPos: {
     type: String,
     max: 14,
-    required: true,
   },
   image: {
     type: String,
     max: 255,
-    required: false,
   },
   color: {
     type: String,
     max: 20,
-    required: false,
   },
   shape: {
     type: String,
     max: 20,
-    required: false,
   },
   deleted: {
     type: Number,
