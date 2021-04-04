@@ -29,168 +29,168 @@ export const checkModules = (req, res, next) => {
             if (result != null) {
               //****************Commented because when this API will trigger only a new role with Owner status will be created
 
-                    let roleData = {
-                      roleName: "Owner",
-                      // features: result.features.map((itm) => {
-                      //   return {
-                      //     featureId: itm._id,
-                      //     featureName: itm.featureName,
-                      //     description: itm.description,
-                      //     icon: itm.icon,
-                      //     enable: true,
-                      //   };
-                      // }),
-                      allowBackoffice: {
-                        enable: true,
-                        modules: result.backofficeModules.map((itm) => {
-                          return {
-                            moduleId: itm._id,
-                            moduleName: itm.moduleName,
-                            isMenu: itm.isMenu,
-                            isChild: itm.isChild,
-                            enable: true,
-                          };
-                        }),
-                      },
-                      allowPOS: {
-                        enable: true,
-                        modules: result.posModules.map((itm) => {
-                          return {
-                            moduleId: itm._id,
-                            moduleName: itm.moduleName,
-                            enable: true,
-                          };
-                        }),
-                      },
-                      // settings: {
-                      //   settingModules: result.settings.map((itm) => {
-                      //     return {
-                      //       moduleId: itm._id,
-                      //       moduleName: itm.moduleName,
-                      //       icon: itm.icon,
-                      //       heading: itm.heading,
-                      //       span: itm.span,
-                      //       enable: true,
-                      //       featureId:
-                      //         result.features.filter(
-                      //           (item) =>
-                      //             item.featureName.toUpperCase() ===
-                      //             itm.moduleName.toUpperCase()
-                      //         ).length > 0
-                      //           ? result.features
-                      //               .filter(
-                      //                 (item) =>
-                      //                   item.featureName.toUpperCase() ===
-                      //                   itm.moduleName.toUpperCase()
-                      //               )
-                      //               .map((item) => {
-                      //                 return item._id;
-                      //               })[0]
-                      //           : "",
-                      //     };
-                      //   }),
-                      // },
+              let roleData = {
+                roleName: "Owner",
+                // features: result.features.map((itm) => {
+                //   return {
+                //     featureId: itm._id,
+                //     featureName: itm.featureName,
+                //     description: itm.description,
+                //     icon: itm.icon,
+                //     enable: true,
+                //   };
+                // }),
+                allowBackoffice: {
+                  enable: true,
+                  modules: result.backofficeModules.map((itm) => {
+                    return {
+                      moduleId: itm._id,
+                      moduleName: itm.moduleName,
+                      isMenu: itm.isMenu,
+                      isChild: itm.isChild,
+                      enable: true,
                     };
-                    let role = new Role(roleData);
-                    role
-                      .save()
-                      .then((RoleInserted) => {
-                        req.body.role_id = RoleInserted._id;
-                        req.body.roleName = "Owner";
-                        next();
-                      })
-                      .catch((err) => {
-                        res.status(403).send({
-                          type: "server",
-                          message: `Unable to Save Role ${err.message}`,
-                        });
-                      });
+                  }),
+                },
+                allowPOS: {
+                  enable: true,
+                  modules: result.posModules.map((itm) => {
+                    return {
+                      moduleId: itm._id,
+                      moduleName: itm.moduleName,
+                      enable: true,
+                    };
+                  }),
+                },
+                // settings: {
+                //   settingModules: result.settings.map((itm) => {
+                //     return {
+                //       moduleId: itm._id,
+                //       moduleName: itm.moduleName,
+                //       icon: itm.icon,
+                //       heading: itm.heading,
+                //       span: itm.span,
+                //       enable: true,
+                //       featureId:
+                //         result.features.filter(
+                //           (item) =>
+                //             item.featureName.toUpperCase() ===
+                //             itm.moduleName.toUpperCase()
+                //         ).length > 0
+                //           ? result.features
+                //               .filter(
+                //                 (item) =>
+                //                   item.featureName.toUpperCase() ===
+                //                   itm.moduleName.toUpperCase()
+                //               )
+                //               .map((item) => {
+                //                 return item._id;
+                //               })[0]
+                //           : "",
+                //     };
+                //   }),
+                // },
+              };
+              let role = new Role(roleData);
+              role
+                .save()
+                .then((RoleInserted) => {
+                  req.body.role_id = RoleInserted._id;
+                  req.body.roleName = "Owner";
+                  next();
+                })
+                .catch((err) => {
+                  res.status(403).send({
+                    type: "server",
+                    message: `Unable to Save Role ${err.message}`,
+                  });
+                });
             } else {
               let modules = new Modules(modulesData);
               modules
                 .save()
                 .then((insertedRecord) => {
                   //****************Commented because when this API will trigger only a new role with Owner status will be created
-                        let roleData = {
-                          roleName: "Owner",
-                          // features: insertedRecord.features.map((itm) => {
-                          //   return {
-                          //     featureId: itm._id,
-                          //     featureName: itm.featureName,
-                          //     description: itm.description,
-                          //     icon: itm.icon,
-                          //     enable: true,
-                          //   };
-                          // }),
-                          allowBackoffice: {
+                  let roleData = {
+                    roleName: "Owner",
+                    // features: insertedRecord.features.map((itm) => {
+                    //   return {
+                    //     featureId: itm._id,
+                    //     featureName: itm.featureName,
+                    //     description: itm.description,
+                    //     icon: itm.icon,
+                    //     enable: true,
+                    //   };
+                    // }),
+                    allowBackoffice: {
+                      enable: true,
+                      modules: insertedRecord.backofficeModules.map(
+                        (itm) => {
+                          return {
+                            moduleId: itm._id,
+                            moduleName: itm.moduleName,
+                            features: itm.features,
+                            isMenu: itm.isMenu,
+                            isChild: itm.isChild,
                             enable: true,
-                            modules: insertedRecord.backofficeModules.map(
-                              (itm) => {
-                                return {
-                                  moduleId: itm._id,
-                                  moduleName: itm.moduleName,
-                                  features: itm.features,
-                                  isMenu: itm.isMenu,
-                                  isChild: itm.isChild,
-                                  enable: true,
-                                };
-                              }
-                            ),
-                          },
-                          allowPOS: {
-                            enable: true,
-                            modules: insertedRecord.posModules.map((itm) => {
-                              return {
-                                moduleId: itm._id,
-                                moduleName: itm.moduleName,
-                                enable: true,
-                              };
-                            }),
-                          },
-                          // settings: {
-                          //   settingModules: insertedRecord.settings.map(
-                          //     (itm) => {
-                          //       return {
-                          //         moduleId: itm._id,
-                          //         moduleName: itm.moduleName,
-                          //         icon: itm.icon ? itm.icon : "",
-                          //         heading: itm.heading ? itm.heading : "",
-                          //         span: itm.span ? itm.span : "",
-                          //         enable: true,
-                          //         featureId:
-                          //           insertedRecord.features.filter(
-                          //             (item) =>
-                          //               item.featureName.toUpperCase() ===
-                          //               itm.moduleName.toUpperCase()
-                          //           ).length > 0
-                          //             ? insertedRecord.features
-                          //                 .filter(
-                          //                   (item) =>
-                          //                     item.featureName.toUpperCase() ===
-                          //                     itm.moduleName.toUpperCase()
-                          //                 )
-                          //                 .map((item) => {
-                          //                   return item._id;
-                          //                 })[0]
-                          //             : "",
-                          //       };
-                          //     }
-                          //   ),
-                          // },
+                          };
+                        }
+                      ),
+                    },
+                    allowPOS: {
+                      enable: true,
+                      modules: insertedRecord.posModules.map((itm) => {
+                        return {
+                          moduleId: itm._id,
+                          moduleName: itm.moduleName,
+                          enable: true,
                         };
-                        let role = new Role(roleData);
-                        role
-                          .save()
-                          .then((RoleInserted) => {
-                            req.body.role_id = RoleInserted._id;
-                            req.body.roleName = "Owner";
-                            next();
-                          })
-                          .catch((err) => {
-                            res.status(403).send({
-                              message: `Unable to Save Role ${err.message}`,
-                            });
-                          });
+                      }),
+                    },
+                    // settings: {
+                    //   settingModules: insertedRecord.settings.map(
+                    //     (itm) => {
+                    //       return {
+                    //         moduleId: itm._id,
+                    //         moduleName: itm.moduleName,
+                    //         icon: itm.icon ? itm.icon : "",
+                    //         heading: itm.heading ? itm.heading : "",
+                    //         span: itm.span ? itm.span : "",
+                    //         enable: true,
+                    //         featureId:
+                    //           insertedRecord.features.filter(
+                    //             (item) =>
+                    //               item.featureName.toUpperCase() ===
+                    //               itm.moduleName.toUpperCase()
+                    //           ).length > 0
+                    //             ? insertedRecord.features
+                    //                 .filter(
+                    //                   (item) =>
+                    //                     item.featureName.toUpperCase() ===
+                    //                     itm.moduleName.toUpperCase()
+                    //                 )
+                    //                 .map((item) => {
+                    //                   return item._id;
+                    //                 })[0]
+                    //             : "",
+                    //       };
+                    //     }
+                    //   ),
+                    // },
+                  };
+                  let role = new Role(roleData);
+                  role
+                    .save()
+                    .then((RoleInserted) => {
+                      req.body.role_id = RoleInserted._id;
+                      req.body.roleName = "Owner";
+                      next();
+                    })
+                    .catch((err) => {
+                      res.status(403).send({
+                        message: `Unable to Save Role ${err.message}`,
+                      });
+                    });
                 })
                 .catch((err) => {
                   res.status(403).send({
@@ -224,15 +224,23 @@ export const verifyToken = (req, res, next) => {
     req.token = bearerToken;
     jwt.verify(bearerToken, "kyrio_bfghigheu", (err, authData) => {
       if (err) {
-        res.sendStatus(403);
+        res.sendStatus(401);
       } else {
-        req.authData = authData;
-        next();
+        Users.find({ _id: authData._id }).then(response => {
+          if (response.length > 0) {
+            req.authData = authData;
+            next();
+          } else {
+            res.sendStatus(401);
+          }
+
+        })
+
       }
     });
     // Next middleware
   } else {
-    res.sendStatus(403);
+    res.sendStatus(401);
   }
 };
 
@@ -243,7 +251,7 @@ export const verifyToken = (req, res, next) => {
 ***/
 
 export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
-  
+
   let paymentTypeStoreId = "";
   let cash = "";
   let card = "";
@@ -253,8 +261,8 @@ export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
     storeName: store.title,
   };
   try {
-    let result = await POS_Device.find({ accountId: accountId }).sort({deviceNo: -1}).limit(1);
-    let deviceNo = typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo)+1 : 1;
+    let result = await POS_Device.find({ accountId: accountId }).sort({ deviceNo: -1 }).limit(1);
+    let deviceNo = typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo) + 1 : 1;
     const newPOSDevice = new POS_Device({
       title: "POS Device",
       deviceNo: deviceNo,
@@ -273,7 +281,7 @@ export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
   } catch (error) {
     console.log("POS Device Catch Error", error.message);
   }
-  
+
   try {
     await diningOption
       .create(
