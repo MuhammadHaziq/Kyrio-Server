@@ -26,7 +26,7 @@ const paymentsTypeSchema = new mongoose.Schema({
   },
   cashPaymentRound: {
     type: Number,
-    defaulr: null,
+    default: null,
   },
   createdAt: {
     type: Date,
