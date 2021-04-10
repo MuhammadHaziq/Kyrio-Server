@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const ShiftsSchema = new mongoose.Schema({
   store: {
     _id: false,
-    id: {
+    _id: {
       type: String,
       min: 1,
       max: 255,
@@ -93,7 +93,7 @@ const ShiftsSchema = new mongoose.Schema({
   },
   taxes: [{
     _id: false,
-    id: {
+    _id: {
         type: String,
         min: 1,
         max: 255,
@@ -105,7 +105,7 @@ const ShiftsSchema = new mongoose.Schema({
     }],
    payments: [{
     _id: false,
-    id: {
+    _id: {
         type: String,
         min: 1,
         max: 255,
