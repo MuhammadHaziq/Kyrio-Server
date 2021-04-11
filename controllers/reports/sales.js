@@ -33,8 +33,6 @@ router.post("/summary", async (req, res) => {
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]})
-
-      console.log(sales)
      let report = await filterSales(sales, divider, matches)
      
     res.status(200).json(report);

@@ -145,7 +145,7 @@ router.post("/open", async (req, res) => {
                 store, pos_device_id, opened_at, opened_by_employee, starting_cash, actual_cash, created_at, accountId: accountId, created_by: _id, created_at: created_at, updated_at: created_at
             });
             shift.save().then((insert) => {
-                  res.status(200).json({message: `Shift Opened`, openShift:insert});
+                  res.status(200).json(insert);
                 })
                 .catch((err) => {
                   res.status(403).send({
@@ -155,6 +155,7 @@ router.post("/open", async (req, res) => {
             } else {
                 res.status(201).send({
                     message: `Cannot open shift an older shift is never closed please close that first!`,
+                    open: true,
                     openShift
                   });
             }
