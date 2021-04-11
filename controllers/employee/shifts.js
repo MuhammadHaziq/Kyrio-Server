@@ -140,11 +140,14 @@ router.post("/open", async (req, res) => {
             res.status(400).send({ message: `Invalid Parameters!`, errors });
         } else {
             var openShift = await Shifts.findOne({ pos_device_id: pos_device_id, closed_at: null, accountId: accountId });
+            
             if(!openShift){
             let shift = new Shifts({
                 store, pos_device_id, opened_at, opened_by_employee, starting_cash, actual_cash, created_at, accountId: accountId, created_by: _id, created_at: created_at, updated_at: created_at
             });
             shift.save().then((insert) => {
+                insert.message = '';
+                insert.alreadyOpen = false
                   res.status(200).json(insert);
                 })
                 .catch((err) => {
@@ -153,11 +156,10 @@ router.post("/open", async (req, res) => {
                   });
                 });
             } else {
-                res.status(201).send({
-                    message: `Cannot open shift an older shift is never closed please close that first!`,
-                    open: true,
-                    openShift
-                  });
+                
+                openShift.message = `Cannot open shift an older shift is never closed please close that first!`
+                openShift.alreadyOpen = true
+                res.status(201).send(openShift);
             }
         }
     } catch (error) {

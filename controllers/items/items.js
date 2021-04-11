@@ -355,6 +355,19 @@ router.patch("/", async (req, res) => {
   }
 });
 
+router.get("/sku", async (req, res) => {
+  try {
+    const { accountId } = req.authData;
+    var result = await ItemList.findOne({
+      accountId: accountId,
+      deleted: 0,
+    }) .select(["sku"]).sort({created_at: -1})
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.get("/", async (req, res) => {
   try {
     const { accountId } = req.authData;
