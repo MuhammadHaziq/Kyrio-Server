@@ -7,7 +7,7 @@ import ItemList from "../../modals/items/ItemList";
 import uploadFiles from "../fileHandler/uploadFiles";
 import { ITEM_INSERT, ITEM_UPDATE, ITEM_DELETE } from "../../sockets/events";
 import Modifier from "../../modals/items/Modifier";
-import Category from "../../modals/items/category";
+import SkuHistory from "../../modals/items/skuHistory";
 import itemTax from "../../modals/settings/taxes/itemTax";
 import Store from "../../modals/Store";
 import { uploadCsv, deleteFile } from "../fileHandler/uploadFiles";
@@ -384,11 +384,11 @@ router.get("/sku", async (req, res) => {
       accountId: accountId,
       deleted: 0,
     }).select("sku").sort({created_at: -1})
-    console.log(sku)
+    console.log(result)
     if(result){
       res.status(200).json({sku: result.sku});
     } else { 
-      res.status(200).json({sku: "10000"});
+      res.status(200).json({sku: "10001"});
     }
     
   } catch (error) {
