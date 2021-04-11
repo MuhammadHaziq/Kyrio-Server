@@ -256,6 +256,7 @@ router.patch("/", async (req, res) => {
         price,
         cost,
         sku,
+        oldSKU,
         barcode,
         repoOnPos,
         trackStock,
@@ -308,7 +309,7 @@ router.patch("/", async (req, res) => {
         sku: sku,
         deleted: 0,
       })
-      if(checkSKU.length == 1){
+      if(checkSKU.length == 1 && oldSKU !== "false"){
         var itemImageName = imageName;
 
         var rootDir = process.cwd();
@@ -383,7 +384,7 @@ router.patch("/", async (req, res) => {
           req.io.emit(ITEM_UPDATE, { data: result, user: _id });
           res.status(201).json(result);
       } else {
-        res.status(400).json({ message: "Error creating item! Item with such SKU already exists." });
+        res.status(400).json({ message: "Error editing item! Item with such SKU already exists." });
       }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -415,7 +416,7 @@ router.get("/sku", async (req, res) => {
       res.status(200).json({sku: newSKU});
     } else { 
       const newSkuHistory = new SkuHistory({
-        sku: "10001",
+        sku: "10000",
         accountId: accountId,
         created_by: _id,
         created_at: Date.now(),

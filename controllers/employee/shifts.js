@@ -209,18 +209,18 @@ router.post("/open", async (req, res) => {
 
 router.patch("/close", async (req, res) => {
     try {
-        const { shift_id, closed_at, closed_by_employee, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, updated_at } = req.body;
+        const { _id, closed_at, closed_by_employee, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, updated_at } = req.body;
         const { accountId } = req.authData;
         var errors = [];
-        if (!shift_id || typeof shift_id == "undefined" || shift_id == "" || shift_id == null) { 
-            errors.push({ shift_id: `Invalid shift_id!` });
+        if (!_id || typeof _id == "undefined" || _id == "" || _id == null) { 
+            errors.push({ _id: `Invalid _id!` });
         }
         if (errors.length > 0) {
             res.status(400).send({ message: `Invalid Parameters!`, errors });
         } else {
-            var alreadyExist = await Shifts.findOne({ _id: shift_id, accountId: accountId });
+            var alreadyExist = await Shifts.findOne({ _id: _id, accountId: accountId });
             if(alreadyExist){
-                let updated = await Shifts.findOneAndUpdate({ _id: shift_id }, {
+                let updated = await Shifts.findOneAndUpdate({ _id: _id }, {
                     closed_at, closed_by_employee, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, accountId, updated_at
                 });
                     res.status(200).json(updated);
