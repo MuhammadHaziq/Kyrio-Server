@@ -171,23 +171,6 @@ router.post("/open", async (req, res) => {
                   });
                 });
             } else {
-                // let shift = {
-                //     _id: openShift._id,
-                //     created_at: openShift.created_at,
-                //     updated_at: openShift.updated_at,
-                //     store: openShift.store,
-                //     pos_device_id: openShift.pos_device_id,
-                //     opened_at: openShift.opened_at,
-                //     opened_by_employee: openShift.opened_by_employee,
-                //     starting_cash: openShift.starting_cash,
-                //     actual_cash: openShift.actual_cash,
-                //     accountId: openShift.accountId,
-                //     created_by: openShift.created_by,
-                //     taxes: openShift.taxes,
-                //     payments: openShift.payments,
-                //     message: `Cannot open shift an older shift is never closed please close that first!`,
-                //     alreadyOpen: true
-                // }
                 let shift = {
                     created_at: typeof openShift.created_at !== "undefined" ? openShift.created_at : '',
                     updated_at: typeof openShift.updated_at !== "undefined" ? openShift.updated_at : '',
