@@ -303,12 +303,12 @@ router.patch("/", async (req, res) => {
       } else {
         modifiersStatus = false;
       }
-      let checkSKU = await ItemList.findOne({
+      let checkSKU = await ItemList.find({
         accountId: accountId,
         sku: sku,
         deleted: 0,
       })
-      if(!checkSKU){
+      if(checkSKU.length == 1){
         var itemImageName = imageName;
 
         var rootDir = process.cwd();
