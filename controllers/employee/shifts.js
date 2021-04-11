@@ -146,9 +146,24 @@ router.post("/open", async (req, res) => {
                 store, pos_device_id, opened_at, opened_by_employee, starting_cash, actual_cash, created_at, accountId: accountId, created_by: _id, created_at: created_at, updated_at: created_at
             });
             shift.save().then((insert) => {
-                insert.message = '';
-                insert.alreadyOpen = false
-                  res.status(200).json(insert);
+                    let shift = {
+                        _id: insert._id,
+                        created_at: insert.created_at,
+                        updated_at: insert.updated_at,
+                        store: insert.store,
+                        pos_device_id: insert.pos_device_id,
+                        opened_at: insert.opened_at,
+                        opened_by_employee: insert.opened_by_employee,
+                        starting_cash: insert.starting_cash,
+                        actual_cash: insert.actual_cash,
+                        accountId: insert.accountId,
+                        created_by: insert.created_by,
+                        taxes: insert.taxes,
+                        payments: insert.payments,
+                        message: '',
+                        alreadyOpen: false
+                    }
+                  res.status(200).json(shift);
                 })
                 .catch((err) => {
                   res.status(403).send({
@@ -156,10 +171,24 @@ router.post("/open", async (req, res) => {
                   });
                 });
             } else {
-                
-                openShift.message = `Cannot open shift an older shift is never closed please close that first!`
-                openShift.alreadyOpen = true
-                res.status(201).send(openShift);
+                let shift = {
+                    _id: openShift._id,
+                    created_at: openShift.created_at,
+                    updated_at: openShift.updated_at,
+                    store: openShift.store,
+                    pos_device_id: openShift.pos_device_id,
+                    opened_at: openShift.opened_at,
+                    opened_by_employee: openShift.opened_by_employee,
+                    starting_cash: openShift.starting_cash,
+                    actual_cash: openShift.actual_cash,
+                    accountId: openShift.accountId,
+                    created_by: openShift.created_by,
+                    taxes: openShift.taxes,
+                    payments: openShift.payments,
+                    message: `Cannot open shift an older shift is never closed please close that first!`,
+                    alreadyOpen: true
+                }
+                res.status(201).send(shift);
             }
         }
     } catch (error) {

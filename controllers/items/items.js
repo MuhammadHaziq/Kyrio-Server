@@ -113,243 +113,264 @@ router.get("/serverSide", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  var {
-    name,
-    availableForSale,
-    soldByType,
-    price,
-    cost,
-    sku,
-    barcode,
-    repoOnPos,
-    trackStock,
-    stockQty,
-    category,
-    varients,
-    stores,
-    modifiers,
-    taxes,
-    itemColor,
-    itemShape,
-    updated_at,
-  } = req.body;
-  var image = req.files ? req.files.image : [];
-  if (cost == "" || typeof cost === "undefined" || cost == null) {
-    cost = 0;
-  }
-  const { _id, accountId } = req.authData;
-  if (varients !== undefined && varients !== null) {
-    varients = JSON.parse(varients);
-  }
-  if (stores !== undefined && stores !== null) {
-    stores = JSON.parse(stores);
-  }
-  if (modifiers !== undefined && modifiers !== null) {
-    modifiers = JSON.parse(modifiers);
-  }
-  if (taxes !== undefined && taxes !== null) {
-    taxes = JSON.parse(taxes);
-  }
-  if (category !== undefined && category !== null) {
-    category = JSON.parse(category);
-  } else {
-    category = null;
-  }
-  name = name !== null || name !== undefined ? name.trim() : "";
-
-  var itemImageName = "";
-  // let owner = await getOwner(_id);
-
-  /*typeof req.files.image != "undefined" Update By Haziq
-      For Add Image If User Select Color After Upload Image
-  */
-  if (
-    repoOnPos == "image" ||
-    (typeof req.files != "undefined" && typeof req.files != "null")
-  ) {
-    if (
-      req.files != null &&
-      req.files != "null" &&
-      typeof req.files != "undefined"
-    ) {
-      if (typeof req.files.image != "undefined") {
-        var uploadResult = await uploadFiles.uploadImages(
-          image,
-          `items/${accountId}`
-        );
-        if (!uploadResult.success) {
-          res.status(404).json({ message: uploadResult.message });
-        }
-        itemImageName = uploadResult.images[0];
-        itemColor = "";
-        itemShape = "";
-      }
-    }
-  }
-  const newItemList = new ItemList({
-    name,
-    accountId,
-    category,
-    availableForSale,
-    soldByType,
-    price,
-    cost,
-    sku,
-    barcode,
-    trackStock,
-    stockQty,
-    varients,
-    stores,
-    modifiers,
-    taxes,
-    repoOnPos,
-    image: itemImageName,
-    color: itemColor,
-    shape: itemShape,
-    created_by: _id,
-    updated_at,
-  });
   try {
-    const result = await newItemList.save();
-    req.io.emit(ITEM_INSERT, { data: result, user: _id });
+    var {
+      name,
+      availableForSale,
+      soldByType,
+      price,
+      cost,
+      sku,
+      barcode,
+      repoOnPos,
+      trackStock,
+      stockQty,
+      category,
+      varients,
+      stores,
+      modifiers,
+      taxes,
+      itemColor,
+      itemShape,
+      updated_at,
+    } = req.body;
+    var image = req.files ? req.files.image : [];
+    if (cost == "" || typeof cost === "undefined" || cost == null) {
+      cost = 0;
+    }
+    const { _id, accountId } = req.authData;
+    if (varients !== undefined && varients !== null) {
+      varients = JSON.parse(varients);
+    }
+    if (stores !== undefined && stores !== null) {
+      stores = JSON.parse(stores);
+    }
+    if (modifiers !== undefined && modifiers !== null) {
+      modifiers = JSON.parse(modifiers);
+    }
+    if (taxes !== undefined && taxes !== null) {
+      taxes = JSON.parse(taxes);
+    }
+    if (category !== undefined && category !== null) {
+      category = JSON.parse(category);
+    } else {
+      category = null;
+    }
+    let checkSKU = await ItemList.findOne({
+      accountId: accountId,
+      sku: sku,
+      deleted: 0,
+    })
+    if(!checkSKU){
+      name = name !== null || name !== undefined ? name.trim() : "";
 
-    res.status(200).json(result);
+      var itemImageName = "";
+      // let owner = await getOwner(_id);
+
+      /*typeof req.files.image != "undefined" Update By Haziq
+          For Add Image If User Select Color After Upload Image
+      */
+      if (
+        repoOnPos == "image" ||
+        (typeof req.files != "undefined" && typeof req.files != "null")
+      ) {
+        if (
+          req.files != null &&
+          req.files != "null" &&
+          typeof req.files != "undefined"
+        ) {
+          if (typeof req.files.image != "undefined") {
+            var uploadResult = await uploadFiles.uploadImages(
+              image,
+              `items/${accountId}`
+            );
+            if (!uploadResult.success) {
+              res.status(404).json({ message: uploadResult.message });
+            }
+            itemImageName = uploadResult.images[0];
+            itemColor = "";
+            itemShape = "";
+          }
+        }
+      }
+      const newItemList = new ItemList({
+        name,
+        accountId,
+        category,
+        availableForSale,
+        soldByType,
+        price,
+        cost,
+        sku,
+        barcode,
+        trackStock,
+        stockQty,
+        varients,
+        stores,
+        modifiers,
+        taxes,
+        repoOnPos,
+        image: itemImageName,
+        color: itemColor,
+        shape: itemShape,
+        created_by: _id,
+        updated_at,
+      });
+    
+      
+      const result = await newItemList.save();
+      req.io.emit(ITEM_INSERT, { data: result, user: _id });
+
+      res.status(200).json(result);
+   
+    } else {
+      res.status(400).json({ message: "Error creating item! Item with such SKU already exists." });
+    }
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
 router.patch("/", async (req, res) => {
-  var {
-    item_id,
-    name,
-    imageName,
-    availableForSale,
-    soldByType,
-    price,
-    cost,
-    sku,
-    barcode,
-    repoOnPos,
-    trackStock,
-    stockQty,
-    dsd,
-    modifiersStatus,
-    category,
-    varients,
-    stores,
-    modifiers,
-    taxes,
-    itemColor,
-    itemShape,
-    updated_at,
-  } = req.body;
-  var image = req.files ? req.files.image : [];
-  if (cost == "" || typeof cost === "undefined" || cost == null) {
-    cost = 0;
-  }
-  const { _id, accountId } = req.authData;
-  if (varients !== undefined && varients !== null) {
-    varients = JSON.parse(varients);
-  }
-  if (stores !== undefined && stores !== null) {
-    stores = JSON.parse(stores);
-  }
-  if (modifiers !== undefined && modifiers !== null) {
-    modifiers = JSON.parse(modifiers);
-  }
-  if (taxes !== undefined && taxes !== null) {
-    taxes = JSON.parse(taxes);
-  }
-  if (category !== undefined && category !== null) {
-    category = JSON.parse(category);
-  } else {
-    category = null;
-  }
-  if (dsd !== undefined) {
-    dsd = dsd;
-  } else {
-    dsd = false;
-  }
-  if (modifiersStatus !== undefined) {
-    modifiersStatus = modifiersStatus;
-  } else {
-    modifiersStatus = false;
-  }
+  try {
+      var {
+        item_id,
+        name,
+        imageName,
+        availableForSale,
+        soldByType,
+        price,
+        cost,
+        sku,
+        barcode,
+        repoOnPos,
+        trackStock,
+        stockQty,
+        dsd,
+        modifiersStatus,
+        category,
+        varients,
+        stores,
+        modifiers,
+        taxes,
+        itemColor,
+        itemShape,
+        updated_at,
+      } = req.body;
+      var image = req.files ? req.files.image : [];
+      if (cost == "" || typeof cost === "undefined" || cost == null) {
+        cost = 0;
+      }
+      const { _id, accountId } = req.authData;
+      if (varients !== undefined && varients !== null) {
+        varients = JSON.parse(varients);
+      }
+      if (stores !== undefined && stores !== null) {
+        stores = JSON.parse(stores);
+      }
+      if (modifiers !== undefined && modifiers !== null) {
+        modifiers = JSON.parse(modifiers);
+      }
+      if (taxes !== undefined && taxes !== null) {
+        taxes = JSON.parse(taxes);
+      }
+      if (category !== undefined && category !== null) {
+        category = JSON.parse(category);
+      } else {
+        category = null;
+      }
+      if (dsd !== undefined) {
+        dsd = dsd;
+      } else {
+        dsd = false;
+      }
+      if (modifiersStatus !== undefined) {
+        modifiersStatus = modifiersStatus;
+      } else {
+        modifiersStatus = false;
+      }
+      let checkSKU = await ItemList.findOne({
+        accountId: accountId,
+        sku: sku,
+        deleted: 0,
+      })
+      if(!checkSKU){
+        var itemImageName = imageName;
 
-  var itemImageName = imageName;
-
-  var rootDir = process.cwd();
-  /*typeof req.files.image != "undefined" Update By Haziq
-      For Add Image If User Select Color After Upload Image
-  */
-  if (
-    repoOnPos == "image" ||
-    (typeof req.files != "undefined" && typeof req.files != "null")
-  ) {
-    if (
-      req.files != null &&
-      req.files != "null" &&
-      typeof req.files != "undefined"
-    ) {
-      if (typeof req.files.image != "undefined") {
-        // Comment By Haziq Add Image Name Validation For Null
-        if (typeof imageName !== "undefined" && typeof imageName !== "null") {
-          let fileUrl = `${rootDir}/uploads/items/${accountId}/` + imageName;
-          if (fs.existsSync(fileUrl)) {
-            fs.unlinkSync(fileUrl);
+        var rootDir = process.cwd();
+        /*typeof req.files.image != "undefined" Update By Haziq
+            For Add Image If User Select Color After Upload Image
+        */
+        if (
+          repoOnPos == "image" ||
+          (typeof req.files != "undefined" && typeof req.files != "null")
+        ) {
+          if (
+            req.files != null &&
+            req.files != "null" &&
+            typeof req.files != "undefined"
+          ) {
+            if (typeof req.files.image != "undefined") {
+              // Comment By Haziq Add Image Name Validation For Null
+              if (typeof imageName !== "undefined" && typeof imageName !== "null") {
+                let fileUrl = `${rootDir}/uploads/items/${accountId}/` + imageName;
+                if (fs.existsSync(fileUrl)) {
+                  fs.unlinkSync(fileUrl);
+                }
+              }
+              var uploadResult = await uploadFiles.uploadImages(
+                image,
+                `items/${accountId}`
+              );
+              if (!uploadResult.success) {
+                res.status(404).json({ message: uploadResult.message });
+              }
+              itemImageName = uploadResult.images[0];
+              itemColor = "";
+              itemShape = "";
+            }
           }
         }
-        var uploadResult = await uploadFiles.uploadImages(
-          image,
-          `items/${accountId}`
-        );
-        if (!uploadResult.success) {
-          res.status(404).json({ message: uploadResult.message });
-        }
-        itemImageName = uploadResult.images[0];
-        itemColor = "";
-        itemShape = "";
-      }
-    }
-  }
-  name = name !== null || name !== undefined ? name.trim() : "";
+        name = name !== null || name !== undefined ? name.trim() : "";
 
-  let data = {
-    name,
-    category,
-    availableForSale,
-    soldByType,
-    price,
-    cost,
-    sku,
-    barcode,
-    trackStock,
-    modifiersStatus,
-    dsd,
-    stockQty,
-    varients,
-    stores,
-    modifiers,
-    taxes,
-    repoOnPos,
-    image: itemImageName,
-    color: itemColor,
-    shape: itemShape,
-    created_by: _id,
-    updated_at,
-  };
-  try {
-    let result = await ItemList.findOneAndUpdate(
-      { _id: item_id },
-      { $set: data },
-      {
-        new: true,
-        upsert: true, // Make this update into an upsert
+        let data = {
+          name,
+          category,
+          availableForSale,
+          soldByType,
+          price,
+          cost,
+          sku,
+          barcode,
+          trackStock,
+          modifiersStatus,
+          dsd,
+          stockQty,
+          varients,
+          stores,
+          modifiers,
+          taxes,
+          repoOnPos,
+          image: itemImageName,
+          color: itemColor,
+          shape: itemShape,
+          created_by: _id,
+          updated_at,
+        };
+      
+          let result = await ItemList.findOneAndUpdate(
+            { _id: item_id },
+            { $set: data },
+            {
+              new: true,
+              upsert: true, // Make this update into an upsert
+            }
+          );
+          req.io.emit(ITEM_UPDATE, { data: result, user: _id });
+          res.status(201).json(result);
+      } else {
+        res.status(400).json({ message: "Error creating item! Item with such SKU already exists." });
       }
-    );
-    req.io.emit(ITEM_UPDATE, { data: result, user: _id });
-    res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -358,11 +379,18 @@ router.patch("/", async (req, res) => {
 router.get("/sku", async (req, res) => {
   try {
     const { accountId } = req.authData;
+    let sku = ""
     var result = await ItemList.findOne({
       accountId: accountId,
       deleted: 0,
-    }) .select(["sku"]).sort({created_at: -1})
-    res.status(200).json(result);
+    }).select("sku").sort({created_at: -1})
+    console.log(sku)
+    if(result){
+      res.status(200).json({sku: result.sku});
+    } else { 
+      res.status(200).json({sku: "10000"});
+    }
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
