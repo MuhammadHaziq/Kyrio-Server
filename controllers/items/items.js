@@ -121,6 +121,7 @@ router.post("/", async (req, res) => {
       price,
       cost,
       sku,
+      autoSKU,
       barcode,
       repoOnPos,
       trackStock,
@@ -134,6 +135,7 @@ router.post("/", async (req, res) => {
       itemShape,
       updated_at,
     } = req.body;
+   
     var image = req.files ? req.files.image : [];
     if (cost == "" || typeof cost === "undefined" || cost == null) {
       cost = 0;
@@ -216,8 +218,20 @@ router.post("/", async (req, res) => {
         created_by: _id,
         updated_at,
       });
-    
-      
+      if(autoSKU == "true" || autoSKU == true){
+        await SkuHistory.findOneAndUpdate(
+          { accountId: accountId },
+          { $set: {
+            sku: sku,
+            updated_by: _id,
+            updated_at: Date.now(),
+          } },
+          {
+            new: true,
+            upsert: true
+          }
+        );
+      }
       const result = await newItemList.save();
       req.io.emit(ITEM_INSERT, { data: result, user: _id });
 
@@ -378,17 +392,38 @@ router.patch("/", async (req, res) => {
 
 router.get("/sku", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    let sku = ""
-    var result = await ItemList.findOne({
+    const { accountId, _id } = req.authData;
+    
+    var skuFound = await SkuHistory.findOne({
       accountId: accountId,
-      deleted: 0,
-    }).select("sku").sort({created_at: -1})
-    console.log(result)
-    if(result){
-      res.status(200).json({sku: result.sku});
+    }).sort({created_at: -1})
+
+    if(skuFound){
+      let newSKU = "";
+      for(var i = 1; i <= 99999; i++){
+        newSKU = parseInt(skuFound.sku) + i
+        var itemFound = await ItemList.findOne({
+          sku: newSKU,
+          accountId: accountId,
+          deleted: 0,
+        }).select("sku").sort({created_at: -1})
+        if(!itemFound){
+          break;
+        } 
+      }
+      
+      res.status(200).json({sku: newSKU});
     } else { 
-      res.status(200).json({sku: "10001"});
+      const newSkuHistory = new SkuHistory({
+        sku: "10001",
+        accountId: accountId,
+        created_by: _id,
+        created_at: Date.now(),
+        updated_by: _id,
+        updated_at: Date.now(),
+      });
+      const newSKU = await newSkuHistory.save();
+      res.status(200).json({sku: newSKU.sku});
     }
     
   } catch (error) {

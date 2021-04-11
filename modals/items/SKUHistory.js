@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const skuHistorySchema = new mongoose.Schema({
   sku: {
     type: String,
-    min: 3,
-    max: 255,
+    min: 5,
+    max: 40,
     required: true,
   },
   accountId: {
@@ -22,6 +22,11 @@ const skuHistorySchema = new mongoose.Schema({
     min: 3,
     max: 255,
     required: true,
+  },
+  updated_by: {
+    type: String,
+    min: 3,
+    max: 255,
   },
   updated_at: {
     type: Date,
