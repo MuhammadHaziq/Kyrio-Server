@@ -93,14 +93,14 @@ const customersSchema = new mongoose.Schema({
   },
 });
 
-customersSchema.index(
-  {
-    email: 1,
-  },
-  {
-    unique: true,
-    sparse: true
-  }
-);
+// customersSchema.index(
+//   {
+//     email: 1,
+//   },
+//   {
+//     unique: true,
+//     sparse: true
+//   }
+// );
 
 module.exports = mongoose.model("customers", customersSchema);

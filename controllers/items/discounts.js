@@ -43,7 +43,7 @@ router.get("/:storeId", async (req, res) => {
     storeFilter.accountId = accountId;
     storeFilter.deleted = 0;
     const result = await Discount.find(storeFilter).sort({
-      _id: "desc",
+      title: 1,
     });
     res.status(200).json(result);
   } catch (error) {
@@ -111,7 +111,7 @@ router.get("/row/:id", async (req, res) => {
     storeFilter._id = id;
     storeFilter.deleted = 0;
     const result = await Discount.findOne(storeFilter).sort({
-      _id: "desc",
+      title: 1,
     });
     res.status(200).json(result);
   } catch (error) {

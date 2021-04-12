@@ -1,12 +1,6 @@
 import express from "express";
-import EmployeeLists from "../../modals/employee/employeeList";
 import Users from "../../modals/users";
-import Accounts from "../../modals/accounts";
-import Role from "../../modals/role";
-import {
-  removeSpaces,
-  removeNumberSpaces,
-} from "../../function/validateFunctions";
+import { removeSpaces } from "../../function/validateFunctions";
 import md5 from "md5";
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
@@ -22,11 +16,11 @@ router.get("/", async (req, res) => {
         accountId: accountId,
         "stores.id": storeId,
       }).sort({
-        _id: "desc",
+        name: 1
       });
     } else {
       result = await Users.find({ accountId: accountId }).sort({
-        _id: "desc",
+        name: 1
       });
     }
     res.status(200).json(result);
@@ -53,7 +47,7 @@ router.get("/get_store_employee_list/:storeId", async (req, res) => {
       };
     }
     var result = await Users.find(filter).sort({
-      _id: "desc",
+      name: 1
     });
     res.status(200).json(result);
   } catch (error) {
@@ -105,7 +99,7 @@ router.get("/search", async (req, res) => {
         ],
       };
     }
-    var result = await Users.find(filter);
+    var result = await Users.find(filter).sort({name: 1});
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -264,16 +258,6 @@ router.patch("/", async (req, res) => {
         enablePin: enablePin,
         created_by: _id,
       };
-      // let data = {
-      //   name: removeSpaces(name),
-      //   email: removeSpaces(email),
-      //   phone: removeSpaces(phone),
-      //   role: JSON.parse(roles),
-      //   stores: JSON.parse(stores),
-      //   sendMail: (sendMail),
-      //   posPin: md5(posPin),
-      //   created_by: _id,
-      // };
       let result = await Users.findOneAndUpdate({ _id: id }, user, {
         new: true,
         upsert: true, // Make this update into an upsert

@@ -55,7 +55,7 @@ router.get("/:storeId", async (req, res) => {
     storeFilter.accountId = accountId;
     storeFilter.deleted = 0;
 
-    const result = await Modifier.find(storeFilter).sort({ position: "asc" });
+    const result = await Modifier.find(storeFilter).sort({ position: 1 });
 
     res.status(200).json(result);
   } catch (error) {
@@ -160,7 +160,7 @@ router.patch("/:id", async (req, res) => {
     let updatedModifier = await Modifier.find({
       _id: id,
       accountId: accountId,
-    }).sort({ position: "asc" });
+    }).sort({ position: 1 });
     req.io.emit(MODIFIER_UPDATE, { data: updatedModifier, user: _id });
 
     res.status(200).json({ message: "Modifier Updated", data: result });

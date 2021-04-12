@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/all", async (req, res) => {
   try {
     const { accountId } = req.authData;
-    var result = await Customers.find({ accountId: accountId }).sort({ _id: "desc" });
+    var result = await Customers.find({ accountId: accountId }).sort({ name: 1 });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -28,7 +28,7 @@ router.get("/:search", async (req, res) => {
         { name: { $regex: ".*" + search + ".*", $options: "i" } },
         { email: { $regex: ".*" + search + ".*", $options: "i" } },
       ],
-    });
+    }).sort({ name: 1 });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -91,24 +91,29 @@ router.post("/", async (req, res) => {
   } else {
     const { _id, accountId } = req.authData;
     try {
-      const newCustomer = await new Customers({
-        name: removeSpaces(name),
-        accountId: accountId,
-        email: removeSpaces(email),
-        phone: removeSpaces(phone),
-        address: removeSpaces(address),
-        city: removeSpaces(city),
-        region: removeSpaces(region),
-        postal_code: removeSpaces(postal_code),
-        country: country,
-        customer_code: removeSpaces(customer_code),
-        note: removeSpaces(note),
-        created_by: _id,
-      }).save();
-      res.status(200).json(newCustomer);
+      let checkCustomer = await Customers.findOne({ accountId: accountId, email: email});
+      if(checkCustomer && email !== ""){
+        res.status(400).json({ message: "Customer with this email already exist" });
+      } else{
+        const newCustomer = await new Customers({
+          name: removeSpaces(name),
+          accountId: accountId,
+          email: removeSpaces(email),
+          phone: removeSpaces(phone),
+          address: removeSpaces(address),
+          city: removeSpaces(city),
+          region: removeSpaces(region),
+          postal_code: removeSpaces(postal_code),
+          country: country,
+          customer_code: removeSpaces(customer_code),
+          note: removeSpaces(note),
+          created_by: _id,
+        }).save();
+        res.status(200).json(newCustomer);
+      }
     } catch (error) {
       if (error.code === 11000) {
-        res.status(400).json({ message: "Customer Email ALready Exist" });
+        res.status(400).json({ message: "Customer with this email already exist" });
       } else {
         res.status(400).json({ message: error.message });
       }

@@ -11,6 +11,7 @@ import SkuHistory from "../../modals/items/skuHistory";
 import itemTax from "../../modals/settings/taxes/itemTax";
 import Store from "../../modals/Store";
 import { uploadCsv, deleteFile } from "../fileHandler/uploadFiles";
+import { min } from 'lodash';
 // const csv = require("fast-csv");
 const fs = require("fs-extra");
 const csv = require("@fast-csv/parse");
@@ -62,7 +63,7 @@ router.get("/serverSide", async (req, res) => {
       stores: { $elemMatch: { id: storeId } },
     })
       .skip(startIndex * endIndex)
-      .limit(endIndex)
+      .limit(endIndex).sort({name: 1})
       .exec(function (err, doc) {
         if (err) {
           res.status(500).json({ message: error.message });
@@ -256,7 +257,6 @@ router.patch("/", async (req, res) => {
         price,
         cost,
         sku,
-        oldSKU,
         barcode,
         repoOnPos,
         trackStock,
@@ -305,11 +305,12 @@ router.patch("/", async (req, res) => {
         modifiersStatus = false;
       }
       let checkSKU = await ItemList.find({
-        accountId: accountId,
-        sku: sku,
-        deleted: 0,
-      })
-      if(checkSKU.length == 1 && oldSKU !== "false"){
+          accountId: accountId,
+          sku: sku,
+          deleted: 0,
+          _id: {$ne : item_id}
+        })
+      if(checkSKU.length <= 0){
         var itemImageName = imageName;
 
         var rootDir = process.cwd();
@@ -397,7 +398,7 @@ router.get("/sku", async (req, res) => {
     
     var skuFound = await SkuHistory.findOne({
       accountId: accountId,
-    }).sort({created_at: -1})
+    })
 
     if(skuFound){
       let newSKU = "";
@@ -443,7 +444,7 @@ router.get("/", async (req, res) => {
       // stores: { $elemMatch: { id: storeId } },
       accountId: accountId,
       deleted: 0,
-    }).sort({ name: "asc" });
+    }).sort({ name: 1 });
     // .select('name -_id  category.categoryId');
     // result.exec(function (err, someValue) {
     //         if (err) return next(err);
@@ -492,7 +493,7 @@ router.get("/storeItems", async (req, res) => {
         "created_at",
         "created_by",
       ])
-      .sort({ _id: "desc" });
+      .sort({ name: 1});
     let itemsObjectFilter = [];
     for (const item of items) {
       itemsObjectFilter.push({
@@ -540,7 +541,7 @@ router.get("/searchByName", async (req, res) => {
       name: { $regex: ".*" + name + ".*", $options: "i" },
     };
 
-    var result = await ItemList.find(filters).sort({ _id: "desc" });
+    var result = await ItemList.find(filters).sort({ name: 1 });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -591,7 +592,7 @@ router.get("/search", async (req, res) => {
     storeFilter.accountId = accountId;
     storeFilter.deleted = 0;
 
-    var result = await ItemList.find(storeFilter).sort({ _id: "desc" });
+    var result = await ItemList.find(storeFilter).sort({ name: 1 });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -617,7 +618,29 @@ router.post("/delete", async (req, res) => {
       req.io.emit(ITEM_DELETE, { data: ids, user: _id });
     }
     // });
-
+    var SKUs = await ItemList.find({
+      _id: {$in: ids},
+      accountId: accountId
+    }).select("sku")
+    let finalSKUs = SKUs.filter(itm => parseInt(itm.sku) >= 10000).map(function(obj) {
+      return obj.sku;
+    })
+    let minSKU = min(finalSKUs) - 1
+    if(minSKU !== "" && minSKU !== null){
+      await SkuHistory.findOneAndUpdate(
+        { accountId: accountId },
+        { $set: {
+          sku: minSKU,
+          updated_by: _id,
+          updated_at: Date.now()
+        } },
+        {
+          new: true,
+          upsert: true, // Make this update into an upsert
+        }
+      );
+    }
+    
     res.status(200).json({ message: "deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
       accountId: accountId,
       deleted: 0,
     }).sort({
-      _id: "desc",
+      catTitle: 1,
     });
     let allCategories = [];
     for (const cate of allCat) {
@@ -131,7 +131,9 @@ router.get("/categoryItem", async (req, res) => {
       };
     }
 
-    var result = await ItemList.find(filters);
+    var result = await ItemList.find(filters).sort({
+      catTitle: 1,
+    });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -171,7 +173,7 @@ router.get("/row/:id", async (req, res) => {
       accountId: accountId,
       deleted: 0,
     }).sort({
-      _id: "desc",
+      catTitle: 1,
     });
     let allCategories = [];
     for (const cate of allCat) {
