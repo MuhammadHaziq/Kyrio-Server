@@ -56,7 +56,7 @@ const salesSchema = new mongoose.Schema({
   },
   total_price: {
     type: Number,
-    min: 1,
+    min: 0,
     max: 100000000000,
   },
   cost_of_goods: {
@@ -66,7 +66,7 @@ const salesSchema = new mongoose.Schema({
   },
   cash_received: {
     type: Number,
-    min: 1,
+    min: 0,
     max: 100000000000,
   },
   cash_return: {
