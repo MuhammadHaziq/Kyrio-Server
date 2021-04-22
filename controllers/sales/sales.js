@@ -188,6 +188,9 @@ router.post("/refund", async (req, res) => {
   } = req.body;
 
   var errors = [];
+  if (!refund_for || typeof refund_for == "undefined" || refund_for == "") {
+    errors.push({ refund_for: `Invalid Refund For!` });
+  }
   if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
     errors.push({ receipt_number: `Invalid Receipt No!` });
   }
