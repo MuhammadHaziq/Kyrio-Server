@@ -1,6 +1,7 @@
 import express from "express";
 import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
+import { REFUND_RECEIPT } from "../../sockets/events";
 var mongoose = require('mongoose');
 const router = express.Router();
 
@@ -249,47 +250,47 @@ router.post("/refund", async (req, res) => {
                 }
             }
           }
-          try {
-            const newRefund = await new Sales({
-              receipt_number,
-              ticket_name,
-              receipt_type,
-              refund_for,
-              accountId,
-              sub_total,
-              sale_timestamp,
-              comments,
-              open,
-              completed,
-              total_price,
-              cost_of_goods,
-              cash_received,
-              cash_return,
-              total_discount,
-              total_tax,
-              refund_status: "",
-              refund_amount,
-              items,
-              discounts,
-              dining_option,
-              customer,
-              payment_method,
-              cashier,
-              device,
-              store,
-              created_by: _id,
-              user: _id,
-              created_at: sale_timestamp !== null ? sale_timestamp : created_at,
-              updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
-            }).save();
-            let refundedSale = await Sales.findOne({$and: [{ _id: getSale._id }, { accountId: accountId }]});
-            res.status(200).json({refundReceipt: newRefund, saleReceipt: refundedSale});
-          
-          } catch (error) {
-            res.status(400).json({ message: error.message });
-          }
-    } else {
-      res.status(400).json({message: "No Sale Data Found! Invalid Refund For."});
+      }
+    }
+    try {
+      const newRefund = await new Sales({
+        receipt_number,
+        ticket_name,
+        receipt_type,
+        refund_for,
+        accountId,
+        sub_total,
+        sale_timestamp,
+        comments,
+        open,
+        completed,
+        total_price,
+        cost_of_goods,
+        cash_received,
+        cash_return,
+        total_discount,
+        total_tax,
+        refund_status: "",
+        refund_amount,
+        items,
+        discounts,
+        dining_option,
+        customer,
+        payment_method,
+        cashier,
+        device,
+        store,
+        created_by: _id,
+        user: _id,
+        created_at: sale_timestamp !== null ? sale_timestamp : created_at,
+        updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
+      }).save();
+      let refundedSale = await Sales.findOne({$and: [{ _id: getSale._id }, { accountId: accountId }]});
+      req.io.emit(REFUND_RECEIPT, { data: {refundReceipt: newRefund, saleReceipt: refundedSale}, user: _id });
+      res.status(200).json(newRefund);
+    
+    } catch (error) {
+      res.status(400).json({ message: error.message });
     }
   }
 });
