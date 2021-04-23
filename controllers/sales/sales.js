@@ -214,83 +214,83 @@ router.post("/refund", async (req, res) => {
     let getSale = await Sales.findOne({$and: [{ receipt_number: refund_for }, { accountId: accountId }]});
       if(getSale){
      
-    for(const item of items){
-      await Sales.updateOne(
-        {$and: [{ _id: getSale._id }, { "items.id": item.id }]},
-        {
-          $set: {
-            "items.$.refund_quantity": item.quantity,
-            "updated_at": created_at
-          },
-        }
-      )
-      if(item.trackStock) {
-        var storeItem = await ItemList.findOne({
-          _id: item.id,
-          stores: { $elemMatch: { id: store.id } },
-          accountId: accountId,
-        }).select([
-            "stockQty",
-            "stores.price",
-            "stores.inStock",
-            "stores.lowStock",
-          ]);
-          if(storeItem){
-          let storeQty = parseInt(storeItem.stores[0].inStock) + parseInt(item.quantity) 
-          let itemQty = parseInt(storeItem.stockQty) + parseInt(item.quantity) 
-          await ItemList.updateOne(
-                  {$and: [{ _id: item.id }, { "stores.id": store.id }]},
-                  {  
-                  $set: {
-                    "stockQty": itemQty,
-                    "stores.$.inStock": storeQty
-                  }
-                });
+          for(const item of items){
+            await Sales.updateOne(
+              {$and: [{ _id: getSale._id }, { "items.id": item.id }]},
+              {
+                $set: {
+                  "items.$.refund_quantity": item.quantity,
+                  "updated_at": created_at
+                },
+              }
+            )
+            if(item.trackStock) {
+              var storeItem = await ItemList.findOne({
+                _id: item.id,
+                stores: { $elemMatch: { id: store.id } },
+                accountId: accountId,
+              }).select([
+                  "stockQty",
+                  "stores.price",
+                  "stores.inStock",
+                  "stores.lowStock",
+                ]);
+                if(storeItem){
+                let storeQty = parseInt(storeItem.stores[0].inStock) + parseInt(item.quantity) 
+                let itemQty = parseInt(storeItem.stockQty) + parseInt(item.quantity) 
+                await ItemList.updateOne(
+                        {$and: [{ _id: item.id }, { "stores.id": store.id }]},
+                        {  
+                        $set: {
+                          "stockQty": itemQty,
+                          "stores.$.inStock": storeQty
+                        }
+                      });
+                }
+            }
           }
-      }
+          try {
+            const newRefund = await new Sales({
+              receipt_number,
+              ticket_name,
+              receipt_type,
+              refund_for,
+              accountId,
+              sub_total,
+              sale_timestamp,
+              comments,
+              open,
+              completed,
+              total_price,
+              cost_of_goods,
+              cash_received,
+              cash_return,
+              total_discount,
+              total_tax,
+              refund_status: "",
+              refund_amount,
+              items,
+              discounts,
+              dining_option,
+              customer,
+              payment_method,
+              cashier,
+              device,
+              store,
+              created_by: _id,
+              user: _id,
+              created_at: sale_timestamp !== null ? sale_timestamp : created_at,
+              updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
+            }).save();
+            let refundedSale = await Sales.findOne({$and: [{ _id: getSale._id }, { accountId: accountId }]});
+            res.status(200).json({refundReceipt: newRefund, saleReceipt: refundedSale});
+          
+          } catch (error) {
+            res.status(400).json({ message: error.message });
+          }
+    } else {
+      res.status(400).json({message: "No Sale Data Found! Invalid Refund For."});
     }
-    try {
-      const newRefund = await new Sales({
-        receipt_number,
-        ticket_name,
-        receipt_type,
-        refund_for,
-        accountId,
-        sub_total,
-        sale_timestamp,
-        comments,
-        open,
-        completed,
-        total_price,
-        cost_of_goods,
-        cash_received,
-        cash_return,
-        total_discount,
-        total_tax,
-        refund_status: "",
-        refund_amount,
-        items,
-        discounts,
-        dining_option,
-        customer,
-        payment_method,
-        cashier,
-        device,
-        store,
-        created_by: _id,
-        user: _id,
-        created_at: sale_timestamp !== null ? sale_timestamp : created_at,
-        updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
-      }).save();
-      let refundedSale = await Sales.findOne({$and: [{ _id: getSale._id }, { accountId: accountId }]});
-      res.status(200).json({refundReceipt: newRefund, saleReceipt: refundedSale});
-    
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
-  } else {
-    res.status(404).json({message: "No Data Found!"});
-  }
   }
 });
 router.patch("/cancel", async (req, res) => {
