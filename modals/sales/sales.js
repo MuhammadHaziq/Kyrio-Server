@@ -33,7 +33,7 @@ const salesSchema = new mongoose.Schema({
     type: String,
     min: 6,
     max: 255,
-    required: true
+    required: true,
   },
   sub_total: {
     type: String,
@@ -49,10 +49,10 @@ const salesSchema = new mongoose.Schema({
     max: 255,
   },
   open: {
-    type: Boolean
+    type: Boolean,
   },
   completed: {
-    type: Boolean
+    type: Boolean,
   },
   total_price: {
     type: Number,
@@ -94,12 +94,18 @@ const salesSchema = new mongoose.Schema({
     min: 3,
     max: 255,
   },
+  refund_amount: {
+    type: Number,
+    min: 0,
+    max: 1000000,
+  },
   payment_method: {
     type: String,
     min: 3,
     max: 255,
   },
-  items: [{
+  items: [
+    {
       id: {
         type: String,
         min: 6,
@@ -110,15 +116,33 @@ const salesSchema = new mongoose.Schema({
         min: 0,
         max: 255,
       },
-      soldByType: {
+      comment: {
         type: String,
         min: 0,
         max: 255,
+      },
+      sold_by_type: {
+        type: String,
+        min: 0,
+        max: 255,
+      },
+      item_number: {
+        type: Number,
+        min: 0,
+        max: 10000,
       },
       price: {
         type: Number,
         min: 1,
         max: 100000000000,
+      },
+      cost: {
+        type: Number,
+        min: 0,
+        max: 100000000000,
+      },
+      track_stock: {
+        type: Boolean,
       },
       quantity: {
         type: Number,
@@ -150,57 +174,73 @@ const salesSchema = new mongoose.Schema({
         min: 0,
         max: 100000000000,
       },
-      taxes: [{
-        _id: false,
-        _id: {
+      taxes: [
+        {
+          _id: false,
+          _id: {
             type: String,
             min: 6,
             max: 255,
           },
-        name: {
+          isChecked: {
+            type: Boolean,
+          },
+          isEnabled: {
+            type: Boolean,
+          },
+          taxOption: {
             type: String,
             min: 4,
             max: 255,
           },
-        type: {
+          title: {
             type: String,
             min: 4,
             max: 255,
           },
-        value: {
+          taxType: {
+            type: String,
+            min: 4,
+            max: 255,
+          },
+          tax_rate: {
             type: Number,
             min: 0,
             max: 1000000,
           },
-        option: {
+        },
+      ],
+      discounts: [
+        {
+          _id: false,
+          _id: {
             type: String,
-            min: 0,
+            min: 6,
             max: 255,
+          },
+          isChecked: {
+            type: Boolean,
+          },
+          restricted: {
+            type: Boolean,
+          },
+          title: {
+            type: String,
+            min: 6,
+            max: 255,
+          },
+          type: {
+            type: String,
+            min: 2,
+            max: 255,
+          },
+          value: {
+            type: Number,
+            min: 0,
+            max: 1000000,
+          },
         },
-      }],
-      discounts: [{
-        _id: false,
-        _id: {
-          type: String,
-          min: 6,
-          max: 255,
-        },
-        name: {
-          type: String,
-          min: 6,
-          max: 255,
-        },
-        value: {
-          type: Number,
-          min: 2,
-          max: 1000000,
-        },
-        type: {
-          type: String,
-          min: 2,
-          max: 255,
-        }
-      }],
+      ],
       variant: {
         _id: false,
         _id: {
@@ -219,133 +259,155 @@ const salesSchema = new mongoose.Schema({
           max: 255,
         },
       },
-      modifiers: [{
-        _id: false,
-        _id: {
-          type: String,
-          min: 6,
-          max: 255,
-        },
-        name: {
-          type: String,
-          min: 6,
-          max: 255,
-        },
-        options: [{
-          name: {
-              type: String,
-              min: 6,
-              max: 255,
+      modifiers: [
+        {
+          _id: false,
+          _id: {
+            type: String,
+            min: 6,
+            max: 255,
+          },
+          isChecked: {
+            type: Boolean,
+          },
+          isEnabled: {
+            type: Boolean,
+          },
+          title: {
+            type: String,
+            min: 6,
+            max: 255,
+          },
+          options: [
+            {
+              _id: false,
+              isChecked: {
+                type: Boolean,
+              },
+              option_modifier_id: {
+                type: String,
+                min: 6,
+                max: 255,
+              },
+              option_name: {
+                type: String,
+                min: 6,
+                max: 255,
+              },
+              price: {
+                type: Number,
+                min: 1,
+                max: 255,
+              },
             },
-          price: {
-              type: Number,
-              min: 1,
-              max: 255,
-            },
-        }]
-    }],
-  }],
-  discounts: [{
-    _id: false,
-    _id: {
-      type: String,
-      min: 6,
-      max: 255,
+          ],
+        },
+      ],
     },
-    name: {
-      type: String,
-      min: 6,
-      max: 255,
-    },
-    value: {
-      type: Number,
-      min: 2,
-      max: 1000000,
-    },
-    type: {
-      type: String,
-      min: 2,
-      max: 255,
-    }
-  }],
-  dining_option: {
-    _id: false,
-    _id: {
+  ],
+  discounts: [
+    {
+      _id: false,
+      _id: {
         type: String,
         min: 6,
         max: 255,
       },
-    name: {
+      title: {
         type: String,
         min: 6,
         max: 255,
-      }
+      },
+      value: {
+        type: Number,
+        min: 2,
+        max: 1000000,
+      },
+      type: {
+        type: String,
+        min: 2,
+        max: 255,
+      },
+    },
+  ],
+  dining_option: {
+    _id: false,
+    _id: {
+      type: String,
+      min: 6,
+      max: 255,
+    },
+    name: {
+      type: String,
+      min: 6,
+      max: 255,
+    },
   },
   customer: {
     _id: false,
     _id: {
-        type: String,
-        min: 6,
-        max: 255,
-      },
+      type: String,
+      min: 6,
+      max: 255,
+    },
     name: {
-        type: String,
-        min: 6,
-        max: 255,
-      },
+      type: String,
+      min: 6,
+      max: 255,
+    },
     email: {
-        type: String,
-        min: 6,
-        max: 255,
-      }
+      type: String,
+      min: 6,
+      max: 255,
+    },
   },
   store: {
     _id: false,
     _id: {
-        type: String,
-        min: 6,
-        max: 255,
-      },
+      type: String,
+      min: 6,
+      max: 255,
+    },
     name: {
-        type: String,
-        min: 6,
-        max: 255,
-      }
+      type: String,
+      min: 6,
+      max: 255,
+    },
   },
-cashier: {
+  cashier: {
     _id: false,
     _id: {
-        type: String,
-        min: 6,
-        max: 255,
-      },
+      type: String,
+      min: 6,
+      max: 255,
+    },
     name: {
-        type: String,
-        min: 6,
-        max: 255,
-      }
+      type: String,
+      min: 6,
+      max: 255,
+    },
   },
-device: {
+  device: {
     _id: false,
     _id: {
-        type: String,
-        min: 6,
-        max: 255,
-      },
+      type: String,
+      min: 6,
+      max: 255,
+    },
     name: {
-        type: String,
-        min: 6,
-        max: 255,
-      }
+      type: String,
+      min: 6,
+      max: 255,
+    },
   },
   created_by: {
     type: String,
     min: 6,
     max: 255,
   },
-  user: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'users' 
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
   created_at: {
     type: Date,

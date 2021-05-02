@@ -1,4 +1,4 @@
-import mongoose, { mongo, models } from "mongoose";
+import mongoose from "mongoose";
 
 const posDeviceSchema = new mongoose.Schema({
   title: {

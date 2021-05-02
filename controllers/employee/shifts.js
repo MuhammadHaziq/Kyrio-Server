@@ -93,11 +93,11 @@ router.post("/", async (req, res) => {
 });
 router.patch("/", async (req, res) => {
     try {
-        const { shift_id, store, pos_device_id, opened_at, closed_at, opened_by_employee, closed_by_employee, starting_cash, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, updated_at } = req.body;
-        const { accountId, _id } = req.authData;
+        const { _id, store, pos_device_id, opened_at, closed_at, opened_by_employee, closed_by_employee, starting_cash, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, updated_at } = req.body;
+        const { accountId } = req.authData;
         var errors = [];
-        if (!shift_id || typeof shift_id == "undefined" || shift_id == "" || shift_id == null) { 
-        errors.push({ shift_id: `Invalid shift_id!` });
+        if (!_id || typeof _id == "undefined" || _id == "" || _id == null) { 
+        errors.push({ _id: `Invalid _id!` });
         }
         if ((typeof store == "undefined" || store == "" || store == null || store == {} && (Object.keys(store).length !== 0 && store.constructor === Object))) {
             errors.push({ store: `Invalid store!` });
@@ -108,9 +108,9 @@ router.patch("/", async (req, res) => {
         if (errors.length > 0) {
             res.status(400).send({ message: `Invalid Parameters!`, errors });
         } else {
-            var alreadyExist = await Shifts.findOne({ _id: shift_id, accountId: accountId });
+            var alreadyExist = await Shifts.findOne({ _id: _id, accountId: accountId });
             if(alreadyExist){
-                let updated = await Shifts.findOneAndUpdate({ _id: shift_id }, {
+                let updated = await Shifts.findOneAndUpdate({ _id: _id }, {
                     store, pos_device_id, opened_at, closed_at, opened_by_employee, closed_by_employee, starting_cash, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, accountId:accountId, updated_at: updated_at
                 }, {
                 new: true,
