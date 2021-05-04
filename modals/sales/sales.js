@@ -262,21 +262,24 @@ const salesSchema = new mongoose.Schema({
       modifiers: [
         {
           _id: false,
-          _id: {
-            type: String,
-            min: 6,
-            max: 255,
-          },
-          isChecked: {
-            type: Boolean,
-          },
-          isEnabled: {
-            type: Boolean,
-          },
-          title: {
-            type: String,
-            min: 6,
-            max: 255,
+          modifier: {
+            _id: false,
+              _id: {
+              type: String,
+              min: 6,
+              max: 255,
+            },
+            isChecked: {
+              type: Boolean,
+            },
+            isEnabled: {
+              type: Boolean,
+            },
+            title: {
+              type: String,
+              min: 6,
+              max: 255,
+            },
           },
           options: [
             {
