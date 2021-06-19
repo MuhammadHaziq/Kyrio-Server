@@ -78,10 +78,8 @@ const moduleSchema = new mongoose.Schema({
       enable: Boolean,
     },
   ],
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
+},{
+  timestamps: true
 });
 
 module.exports = mongoose.model("module", moduleSchema);

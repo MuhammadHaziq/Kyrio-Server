@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.get("/all", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    var allSales = await Sales.find({ accountId: accountId }).sort({ _id: "desc" });
+    const { account } = req.authData;
+    var allSales = await Sales.find({ account: account }).sort({ _id: "desc" });
     res.status(200).json(allSales);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -17,13 +17,13 @@ router.get("/all", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { ticket, sale_id } = req.body;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     let check = mongoose.Types.ObjectId.isValid(sale_id);
     let searchResult;
     if (check) {
-      searchResult = await Sales.find({ $or: [{ 'ticket_name': ticket }, { '_id': sale_id }], accountId: accountId }).sort({ _id: "desc" });
+      searchResult = await Sales.find({ $or: [{ 'ticket_name': ticket }, { '_id': sale_id }], account: account }).sort({ _id: "desc" });
     } else {
-      searchResult = await Sales.find({ $or: [{ 'ticket_name': ticket }], accountId: accountId }).sort({ _id: "desc" });
+      searchResult = await Sales.find({ $or: [{ 'ticket_name': ticket }], account: account }).sort({ _id: "desc" });
     }
 
     res.status(200).json(searchResult);
@@ -91,14 +91,14 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
 
     for (const item of items) {
       if (item.trackStock) {
         var storeItem = await ItemList.findOne({
           _id: item.id,
           stores: { $elemMatch: { id: store._id } },
-          accountId: accountId,
+          account: account,
         }).select([
           "stockQty",
           "stores.price",
@@ -125,7 +125,7 @@ router.post("/", async (req, res) => {
         receipt_number,
         ticket_name,
         receipt_type,
-        accountId,
+        account,
         sub_total,
         sale_timestamp,
         comments,
@@ -210,9 +210,9 @@ router.post("/refund", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
 
-    let getSale = await Sales.findOne({ $and: [{ receipt_number: refund_for }, { accountId: accountId }] });
+    let getSale = await Sales.findOne({ $and: [{ receipt_number: refund_for }, { account: account }] });
     if (getSale) {
 
       for (const item of items) {
@@ -229,7 +229,7 @@ router.post("/refund", async (req, res) => {
           var storeItem = await ItemList.findOne({
             _id: item.id,
             stores: { $elemMatch: { id: store.id } },
-            accountId: accountId,
+            account: account,
           }).select([
             "stockQty",
             "stores.price",
@@ -256,7 +256,7 @@ router.post("/refund", async (req, res) => {
           ticket_name,
           receipt_type,
           refund_for,
-          accountId,
+          account,
           sub_total,
           sale_timestamp,
           comments,
@@ -283,8 +283,8 @@ router.post("/refund", async (req, res) => {
           created_at: sale_timestamp !== null ? sale_timestamp : created_at,
           updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
         }).save();
-        let refundedSale = await Sales.findOne({ $and: [{ _id: getSale._id }, { accountId: accountId }] });
-        req.io.emit(REFUND_RECEIPT, { data: { refundReceipt: newRefund, saleReceipt: refundedSale }, user: _id });
+        let refundedSale = await Sales.findOne({ $and: [{ _id: getSale._id }, { account: account }] });
+        req.io.to(account).emit(REFUND_RECEIPT, { data: { refundReceipt: newRefund, saleReceipt: refundedSale }, user: _id });
         res.status(200).json(newRefund);
 
       } catch (error) {
@@ -316,9 +316,9 @@ router.patch("/cancel", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
 
-    let getSale = await Sales.findOne({ $and: [{ receipt_number: receipt_number }, { accountId: accountId }, { "store.id": storeId }] });
+    let getSale = await Sales.findOne({ $and: [{ receipt_number: receipt_number }, { account: account }, { "store.id": storeId }] });
     if (getSale) {
 
       for (const item of getSale.items) {
@@ -328,7 +328,7 @@ router.patch("/cancel", async (req, res) => {
           var storeItem = await ItemList.findOne({
             _id: item.id,
             stores: { $elemMatch: { id: storeId } },
-            accountId: accountId,
+            account: account,
           }).select([
             "stockQty",
             "stores.price",

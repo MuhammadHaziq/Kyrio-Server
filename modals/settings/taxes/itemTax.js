@@ -11,123 +11,40 @@ const itemTaxSchema = new mongoose.Schema({
     type: Number,
     min: 0,
   },
-  taxType: {
-      type: String,
-      min: 3,
-      max: 255,
-      required: true
-  },
-  taxOption: {
-      type: String,
-      min: 1,
-      max: 255,
-      required: true
-  },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
-  },
   tax_type: {
-    id: {
-      type: String,
-      min: 0,
-    },
-    title: {
-      type: String,
-      min: 0,
-    },
-  },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "taxesType",
+  },  
   tax_option: {
-    id: {
-      type: String,
-      min: 0,
-    },
-    title: {
-      type: String,
-      min: 0,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "taxesOption",
+  },  
+  stores: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+  }],  
+  dinings: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "diningOption",
+  }],
+  categories: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "categries",
+  }],
+  items: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "itemList",
+  }],
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
-  stores: {
-    type: [
-      {
-        storeId: {
-          type: String,
-          min: 1,
-          max: 255,
-        },
-        storeTitle: {
-          type: String,
-          min: 1,
-          max: 255,
-        },
-      },
-    ],
-  },
-  dinings: {
-    type: [
-      {
-        diningId: {
-          type: String,
-          min: 1,
-          max: 255,
-        },
-        diningTitle: {
-          type: String,
-          min: 1,
-          max: 255,
-        },
-      },
-    ],
-  },
-  categories: {
-    type: [
-      {
-        categoryId: {
-          type: String,
-          min: 1,
-          max: 255,
-        },
-        categoryTitle: {
-          type: String,
-          min: 1,
-          max: 255,
-        },
-      },
-    ],
-  },
-  items: {
-    type: [
-      {
-        itemId: {
-          type: String,
-          min: 1,
-          max: 255,
-        },
-        itemName: {
-          type: String,
-          min: 1,
-          max: 255,
-        },
-        categoryId: {
-          type: String,
-          min: 1,
-          max: 255,
-        },
-      },
-    ],
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  createdBy: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
+  created_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+  }
+},{
+  timestamps: true
 });
 
 itemTaxSchema.index(
@@ -136,6 +53,7 @@ itemTaxSchema.index(
   },
   {
     unique: true,
+    sparse: true
   }
 );
 

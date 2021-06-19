@@ -5,10 +5,10 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, store } = req.body;
-  let jsonStore = JSON.parse(store);
-  const { _id, accountId } = req.authData;
+  // let jsonStore = JSON.parse(store);
+  const { _id, account } = req.authData;
 
-  let result = await POS_Device.find({ "store.storeId": jsonStore.storeId })
+  let result = await POS_Device.find({ store: store })
     .sort({ deviceNo: -1 })
     .limit(1);
   let deviceNo =
@@ -18,9 +18,9 @@ router.post("/", async (req, res) => {
     title: title,
     deviceNo: deviceNo,
     noOfSales: 0,
-    store: jsonStore,
+    store: store,
     createdBy: _id,
-    accountId: accountId,
+    account: account,
   });
   try {
     const result = await newPOSDevice.save();
@@ -36,8 +36,8 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     // display only login user pos Devices
-    const { _id, accountId } = req.authData;
-    const result = await POS_Device.find({ accountId: accountId }).sort({
+    const { _id, account } = req.authData;
+    const result = await POS_Device.find({ account: account }).populate('store', ["_id","title"]).sort({
       _id: "desc",
     });
     res.status(200).json(result);
@@ -47,29 +47,29 @@ router.get("/", async (req, res) => {
 });
 router.post("/getStoreDevice", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const { storeId, UDID } = req.body;
 
     let result = {};
     let condition = {};
     if (storeId === "0") {
-      result = await POS_Device.findOne({ accountId: accountId, udid: UDID });
+      result = await POS_Device.findOne({ account: account, udid: UDID }).populate('store', ["_id","title"]);
       if (result == null) {
         result = await POS_Device.findOne({
-          accountId: accountId,
+          account: account,
           isActive: false,
-        });
+        }).populate('store', ["_id","title"]);
       }
     } else {
       result = await POS_Device.findOne({
-        "store.storeId": storeId,
+        "store": storeId,
         udid: UDID,
-      });
+      }).populate('store', ["_id","title"]);
       if (result == null) {
         result = await POS_Device.findOne({
-          "store.storeId": storeId,
+          "store": storeId,
           isActive: false,
-        });
+        }).populate('store', ["_id","title"]);
       }
     }
 
@@ -82,11 +82,11 @@ router.post("/getStoreDevice", async (req, res) => {
             udid: UDID,
           },
         }
-      );
+      ).populate('store', ["_id","title"]);
       var shift = await Shifts.findOne({
         pos_device_id: result._id,
         closed_at: null,
-        accountId: accountId,
+        account: account,
       });
       if (shift) {
         res.status(200).json({ device: result, openShift: shift });
@@ -159,12 +159,12 @@ router.patch("/activate/:id", async (req, res) => {
 router.get("/row/:id", async (req, res) => {
   try {
     // display only login user pos Devices
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const { id } = req.params;
     const result = await POS_Device.findOne({
-      accountId: accountId,
+      account: account,
       _id: id,
-    }).sort({
+    }).populate('store', ["_id","title"]).sort({
       _id: "desc",
     });
     res.status(200).json(result);

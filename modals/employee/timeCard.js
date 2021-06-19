@@ -14,7 +14,7 @@ const timeCardSchema = new mongoose.Schema({
       max: 255,
     },
   },
-  accountId: {
+  account: {
     type: String,
     min: 6,
     max: 255,

@@ -4,12 +4,12 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title } = req.body;
-  const { _id, accountId } = req.authData;
+  const { _id, account } = req.authData;
 
   const newPaymentTypes = new paymentTypes({
     title: title,
     createdBy: _id,
-    accountId: accountId,
+    account: account,
   });
   try {
     const result = await newPaymentTypes.save();
@@ -21,9 +21,9 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const result = await paymentTypes.find({
-      accountId: accountId,
+      account: account,
       title: { $ne: "Cash" },
     });
     res.status(200).json(result);

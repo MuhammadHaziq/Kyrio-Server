@@ -13,7 +13,9 @@ async function uploadImages(files, folder) {
 
   try {
     if (!fs.existsSync(pciturePath)) {
-      fs.mkdirSync(pciturePath);
+      fs.mkdirSync(pciturePath, {
+        recursive: true
+      });
     }
     //getting time & date
     var today = new Date();
@@ -79,7 +81,9 @@ async function uploadCsv(files, folder) {
 
   try {
     if (!fs.existsSync(csvFolder)) {
-      fs.mkdirSync(csvFolder);
+      fs.mkdirSync(csvFolder,{
+        recursive: true
+      });
     }
     //getting time & date
     var today = new Date();

@@ -9,17 +9,17 @@ import {
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const { catTitle, catColor } = req.body;
-  const { _id, accountId } = req.authData;
+  const { title, color } = req.body;
+  const { _id, account } = req.authData;
   const newCat = new Category({
-    catTitle: catTitle,
-    accountId: accountId,
-    catColor: catColor,
+    title: title,
+    account: account,
+    color: color,
     created_by: _id,
   });
   try {
     const newCatResult = await newCat.save();
-    req.io.emit(CATEGORY_INSERT, { data: newCatResult, user: _id });
+    req.io.to(account).emit(CATEGORY_INSERT, { data: newCatResult, user: _id });
     res.status(201).json(newCatResult);
   } catch (error) {
     if (error.code === 11000) {
@@ -34,12 +34,12 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const allCat = await Category.find({
-      accountId: accountId,
+      account: account,
       deleted: 0,
     }).sort({
-      catTitle: 1,
+      title: 1,
     });
     let allCategories = [];
     for (const cate of allCat) {
@@ -49,10 +49,9 @@ router.get("/", async (req, res) => {
       }).countDocuments();
       allCategories.push({
         _id: cate._id,
-        catTitle: cate.catTitle,
-        catColor: cate.catColor,
-        created_at: cate.created_at,
-        created_by: cate.created_by,
+        title: cate.title,
+        color: cate.color,
+        createdBy: cate.created_by,
         total_items: itemCount,
       });
     }
@@ -66,7 +65,7 @@ router.get("/", async (req, res) => {
 router.delete("/:ids", async (req, res) => {
   try {
     var { ids } = req.params;
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     ids = JSON.parse(ids);
 
     // ids.forEach(async (id) => {
@@ -74,8 +73,8 @@ router.delete("/:ids", async (req, res) => {
     // });
 
     let del = await Category.updateMany(
-      { _id: { $in: ids }, accountId: accountId },
-      { $set: { deleted: 1, deleted_at: Date.now() } },
+      { _id: { $in: ids }, account: account },
+      { $set: { deleted: 1, deletedAt: Date.now() } },
       {
         new: true,
         upsert: true,
@@ -83,7 +82,7 @@ router.delete("/:ids", async (req, res) => {
     );
 
     if (del.n > 0 && del.nModified > 0) {
-      req.io.emit(CATEGORY_DELETE, { data: ids, user: _id });
+      req.io.to(account).emit(CATEGORY_DELETE, { data: ids, user: _id });
     }
 
     res.status(200).json({ message: "deleted" });
@@ -93,7 +92,7 @@ router.delete("/:ids", async (req, res) => {
 });
 
 router.get("/categoryItem", async (req, res) => {
-  const { _id, accountId } = req.authData;
+  const { _id, account } = req.authData;
   // Old Quer Work in ModalSelectItemsTax(React)
   // let { categoryFilter, storeId } = req.query;
   // Old Quer Work in UpdateTax(React)
@@ -119,20 +118,20 @@ router.get("/categoryItem", async (req, res) => {
     */
     if (storeId === undefined) {
       filters = {
-        accountId: accountId,
+        account: account,
         deleted: 0,
       };
     } else {
       storeId = JSON.parse(storeId);
       filters = {
         stores: { $elemMatch: { id: { $in: storeId } } },
-        accountId: accountId,
+        account: account,
         deleted: 0,
       };
     }
 
     var result = await ItemList.find(filters).sort({
-      catTitle: 1,
+      title: 1,
     });
     res.status(200).json(result);
   } catch (error) {
@@ -142,14 +141,14 @@ router.get("/categoryItem", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { _id, accountId } = req.authData;
-    const { catTitle, catColor } = req.body;
+    const { _id, account } = req.authData;
+    const { title, color } = req.body;
     const result = await Category.findOneAndUpdate(
-      { _id: id, accountId: accountId },
+      { _id: id, account: account },
       {
         $set: {
-          catTitle: catTitle,
-          catColor: catColor,
+          title: title,
+          color: color,
         },
       },
       {
@@ -157,7 +156,7 @@ router.patch("/:id", async (req, res) => {
         upsert: true, // Make this update into an upsert
       }
     );
-    req.io.emit(CATEGORY_UPDATE, { data: result, user: _id });
+    req.io.to(account).emit(CATEGORY_UPDATE, { data: result, user: _id });
     res.status(200).json({ data: result, message: "updated" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -166,14 +165,14 @@ router.patch("/:id", async (req, res) => {
 
 router.get("/row/:id", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const { id } = req.params;
     const allCat = await Category.find({
       _id: id,
-      accountId: accountId,
+      account: account,
       deleted: 0,
     }).sort({
-      catTitle: 1,
+      title: 1,
     });
     let allCategories = [];
     for (const cate of allCat) {
@@ -183,10 +182,9 @@ router.get("/row/:id", async (req, res) => {
       }).countDocuments();
       allCategories.push({
         _id: cate._id,
-        catTitle: cate.catTitle,
-        catColor: cate.catColor,
-        created_at: cate.created_at,
-        created_by: cate.created_by,
+        title: cate.title,
+        color: cate.color,
+        createdBy: cate.created_by,
         total_items: itemCount,
       });
     }

@@ -8,7 +8,7 @@ router.get("/:shiftid", async (req, res) => {
   try {
       
         const { shiftid } = req.params;
-        const { accountId } = req.authData;
+        const { account } = req.authData;
         var errors = [];
         if (!shiftid || typeof shiftid == "undefined" || shiftid == "") {
         errors.push({ shiftid: `Invalid Shift ID!` });
@@ -16,7 +16,7 @@ router.get("/:shiftid", async (req, res) => {
         if (errors.length > 0) {
             res.status(400).send({ message: `Invalid Parameters!`, errors });
         } else {
-            var shift = await Shifts.findOne({ _id: shiftid, accountId: accountId });
+            var shift = await Shifts.findOne({ _id: shiftid, account: account });
             if(shift){
                 res.status(200).json(shift);
             } else {
@@ -29,8 +29,8 @@ router.get("/:shiftid", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    var shift = await Shifts.find({ accountId: accountId }).sort({
+    const { account } = req.authData;
+    var shift = await Shifts.find({ account: account }).sort({
       _id: "desc",
     });
     res.status(200).json(shift);
@@ -63,7 +63,7 @@ router.post("/", async (req, res) => {
         taxes,
         payments,
         created_at } = req.body;
-    const { accountId, _id } = req.authData;
+    const { account, _id } = req.authData;
     var errors = [];
     if ((typeof store == "undefined" || store == "" || store == null || store == {} && (Object.keys(store).length !== 0 && store.constructor === Object))) {
         errors.push({ store: `Invalid store!` });
@@ -76,7 +76,7 @@ router.post("/", async (req, res) => {
     } else {
 
     let shift = new Shifts({
-        store, pos_device_id, opened_at, closed_at, opened_by_employee, closed_by_employee, starting_cash, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, accountId:accountId, created_by: _id, created_at: created_at, updated_at: created_at
+        store, pos_device_id, opened_at, closed_at, opened_by_employee, closed_by_employee, starting_cash, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, account:account, created_by: _id, created_at: created_at, updated_at: created_at
     });
     shift.save().then((insert) => {
           res.status(200).json(insert);
@@ -94,7 +94,7 @@ router.post("/", async (req, res) => {
 router.patch("/", async (req, res) => {
     try {
         const { _id, store, pos_device_id, opened_at, closed_at, opened_by_employee, closed_by_employee, starting_cash, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, updated_at } = req.body;
-        const { accountId } = req.authData;
+        const { account } = req.authData;
         var errors = [];
         if (!_id || typeof _id == "undefined" || _id == "" || _id == null) { 
         errors.push({ _id: `Invalid _id!` });
@@ -108,10 +108,10 @@ router.patch("/", async (req, res) => {
         if (errors.length > 0) {
             res.status(400).send({ message: `Invalid Parameters!`, errors });
         } else {
-            var alreadyExist = await Shifts.findOne({ _id: _id, accountId: accountId });
+            var alreadyExist = await Shifts.findOne({ _id: _id, account: account });
             if(alreadyExist){
                 let updated = await Shifts.findOneAndUpdate({ _id: _id }, {
-                    store, pos_device_id, opened_at, closed_at, opened_by_employee, closed_by_employee, starting_cash, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, accountId:accountId, updated_at: updated_at
+                    store, pos_device_id, opened_at, closed_at, opened_by_employee, closed_by_employee, starting_cash, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, account:account, updated_at: updated_at
                 }, {
                 new: true,
                 upsert: true, // Make this update into an upsert
@@ -128,7 +128,7 @@ router.patch("/", async (req, res) => {
 router.post("/open", async (req, res) => {
     try {
         const { store, pos_device_id, opened_at, opened_by_employee, starting_cash, actual_cash, created_at } = req.body;
-        const { accountId, _id } = req.authData;
+        const { account, _id } = req.authData;
         var errors = [];
         if ((typeof store == "undefined" || store == "" || store == null || store == {} && (Object.keys(store).length !== 0 && store.constructor === Object))) {
             errors.push({ store: `Invalid store!` });
@@ -139,11 +139,11 @@ router.post("/open", async (req, res) => {
         if (errors.length > 0) {
             res.status(400).send({ message: `Invalid Parameters!`, errors });
         } else {
-            var openShift = await Shifts.findOne({ pos_device_id: pos_device_id, closed_at: null, accountId: accountId });
+            var openShift = await Shifts.findOne({ pos_device_id: pos_device_id, closed_at: null, account: account });
             
             if(!openShift){
             let shift = new Shifts({
-                store, pos_device_id, opened_at, opened_by_employee, starting_cash, actual_cash, created_at, accountId: accountId, created_by: _id, created_at: created_at, updated_at: created_at
+                store, pos_device_id, opened_at, opened_by_employee, starting_cash, actual_cash, created_at, account: account, created_by: _id, created_at: created_at, updated_at: created_at
             });
             shift.save().then((insert) => {
                     let shift = {
@@ -156,7 +156,7 @@ router.post("/open", async (req, res) => {
                         opened_by_employee: insert.opened_by_employee,
                         starting_cash: insert.starting_cash,
                         actual_cash: insert.actual_cash,
-                        accountId: insert.accountId,
+                        account: insert.account,
                         created_by: insert.created_by,
                         taxes: insert.taxes,
                         payments: insert.payments,
@@ -196,7 +196,7 @@ router.post("/open", async (req, res) => {
                     surcharge: typeof openShift.surcharge !== "undefined" ? openShift.surcharge : 0,
                     taxes: typeof openShift.taxes !== "undefined" ? openShift.taxes : [],
                     payments: typeof openShift.payments !== "undefined" ? openShift.payments : [],
-                    accountId: typeof openShift.accountId !== "undefined" ? openShift.accountId : '',
+                    account: typeof openShift.account !== "undefined" ? openShift.account : '',
                     created_by: typeof openShift.created_by !== "undefined" ? openShift.created_by : '',
                 }
                 res.status(201).send(shift);
@@ -210,7 +210,7 @@ router.post("/open", async (req, res) => {
 router.patch("/close", async (req, res) => {
     try {
         const { _id, closed_at, closed_by_employee, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, updated_at } = req.body;
-        const { accountId } = req.authData;
+        const { account } = req.authData;
         var errors = [];
         if (!_id || typeof _id == "undefined" || _id == "" || _id == null) { 
             errors.push({ _id: `Invalid _id!` });
@@ -218,10 +218,10 @@ router.patch("/close", async (req, res) => {
         if (errors.length > 0) {
             res.status(400).send({ message: `Invalid Parameters!`, errors });
         } else {
-            var alreadyExist = await Shifts.findOne({ _id: _id, accountId: accountId });
+            var alreadyExist = await Shifts.findOne({ _id: _id, account: account });
             if(alreadyExist){
                 let updated = await Shifts.findOneAndUpdate({ _id: _id }, {
-                    closed_at, closed_by_employee, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, accountId, updated_at
+                    closed_at, closed_by_employee, cash_payments, cash_refunds, paid_in, paid_out, expected_cash, actual_cash, gross_sales, refunds, discounts, net_sales, tip, surcharge, taxes, payments, account, updated_at
                 });
                     res.status(200).json(updated);
             } else {

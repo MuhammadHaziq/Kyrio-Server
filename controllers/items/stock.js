@@ -4,8 +4,8 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    await Stock.find({ accountId: accountId }, (err, result) => {
+    const { account } = req.authData;
+    await Stock.find({ account: account }, (err, result) => {
       if (err) {
         conosle.log("Get Stock Error", err.message);
       }
@@ -19,11 +19,11 @@ router.get("/", async (req, res) => {
 router.post("/create", async (req, res) => {
   try {
     const { stockTitle } = req.body;
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const newStcokItem = new Stock({
       stockTitle,
       created_by: _id,
-      accountId: accountId,
+      account: account,
     });
 
     const result = await newStcokItem.save();

@@ -9,8 +9,8 @@ const router = express.Router();
 
 router.get("/all", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    var result = await Customers.find({ accountId: accountId }).sort({ name: 1 });
+    const { account } = req.authData;
+    var result = await Customers.find({ account: account }).sort({ name: 1 });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -19,11 +19,11 @@ router.get("/all", async (req, res) => {
 router.get("/:search", async (req, res) => {
   try {
     const { search } = req.params;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     // email: { $regex: ".*" + search + ".*", $options: "i" },
 
     var result = await Customers.find({
-      accountId: accountId,
+      account: account,
       $or: [
         { name: { $regex: ".*" + search + ".*", $options: "i" } },
         { email: { $regex: ".*" + search + ".*", $options: "i" } },
@@ -89,15 +89,15 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     try {
-      let checkCustomer = await Customers.findOne({ accountId: accountId, email: email});
+      let checkCustomer = await Customers.findOne({ account: account, email: email});
       if(checkCustomer && email !== ""){
         res.status(400).json({ message: "Customer with this email already exist" });
       } else{
         const newCustomer = await new Customers({
           name: removeSpaces(name),
-          accountId: accountId,
+          account: account,
           email: removeSpaces(email),
           phone: removeSpaces(phone),
           address: removeSpaces(address),

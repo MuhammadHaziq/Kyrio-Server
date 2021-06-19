@@ -6,29 +6,28 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, store, isSelected } = req.body;
-  const jsonStore = JSON.parse(store);
-  const { _id, accountId } = req.authData;
+  
+  const { _id, account } = req.authData;
   const countDining = await diningOption.countDocuments();
   let stores = [];
-  jsonStore.map((item, index) => {
+  store.map((item, index) => {
     return stores.push({
-      storeId: item.storeId,
-      storeName: item.storeName,
+      store: item.storeId,
       position: countDining + 1,
       isActive: item.isActive,
     });
   });
   // console.log(stores);
-  const newDiningOption = new diningOption({
+  const newDiningOption = await new diningOption({
     title: title,
     stores: stores,
     createdBy: _id,
-    accountId: accountId,
+    account: account,
   });
   try {
-    const result = await newDiningOption.save();
-
-    res.status(201).json(result);
+    const insert = await newDiningOption.save();
+    const result = await diningOption.findOne({ account: account, _id: insert._id }).populate('stores.store', ["_id","title"])
+    res.status(200).json(result);
   } catch (error) {
     if (error.code === 11000) {
       res.status(400).json({ message: "Dining Already Register In Store" });
@@ -41,17 +40,17 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
-    const stores = await Store.find({ accountId: accountId }).sort({
+    const { _id, account } = req.authData;
+    const stores = await Store.find({ account: account }).sort({
       _id: "desc",
     });
     let data = [];
     for (const store of stores) {
       const result = await diningOption
         .find({
-          accountId: accountId,
-          stores: { $elemMatch: { storeId: store._id } },
-        })
+          account: account,
+          stores: { $elemMatch: { store: store._id } },
+        }).populate('stores.store', ["_id","title"])
         .sort({ _id: "asc" });
 
       data.push({
@@ -67,34 +66,31 @@ router.get("/", async (req, res) => {
 });
 router.get("/row/:id", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const { id } = req.params;
-    const stores = await Store.find({ accountId: accountId }).sort({
+    const stores = await Store.find({ account: account }).sort({
       _id: "desc",
     });
     let data = [];
     for (const store of stores) {
       const result = await diningOption
-        .find({
+        .findOne({
           _id: id,
-          accountId: accountId,
-          stores: { $elemMatch: { storeId: store._id } },
-        })
+          account: account
+        }).populate('stores.store', ["_id","title"])
         .sort({ _id: "asc" });
 
       data.push({
         storeId: store._id,
         storeName: store.title,
-        title: result !== undefined && result.length > 0 ? result[0].title : "",
-        _id: result !== undefined && result.length > 0 ? result[0]._id : "",
-        accountId:
-          result !== undefined && result.length > 0 ? result[0].accountId : "",
-        createdAt:
-          result !== undefined && result.length > 0 ? result[0].createdAt : "",
+        title: result.title !== undefined ? result.title : "",
+        _id: result._id !== undefined ? result._id : "",
+        account:
+          result.account !== undefined ? result.account : "",
         createdBy:
-          result !== undefined && result.length > 0 ? result[0].createdBy : "",
+          result.createdBy !== undefined ? result.createdBy : "",
         stores:
-          result !== undefined && result.length > 0 ? result[0].stores : "",
+          result.stores !== undefined ? result.stores : "",
       });
     }
     if (data.length > 0) {
@@ -110,17 +106,17 @@ router.get("/row/:id", async (req, res) => {
 router.post("/app", async (req, res) => {
   try {
     const { storeId } = req.body;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
 
     const store = await Store.findOne({ _id: storeId }).sort({ _id: "desc" });
 
     if (store !== null) {
       let result = [];
-      var dinings = await diningOption.find({ accountId: accountId });
+      var dinings = await diningOption.find({ account: account }).populate('stores.store', ["_id","title"]);
 
       for (const dine of dinings) {
         for (const dineStore of dine.stores) {
-          if (dineStore.storeId == store._id && dineStore.isActive) {
+          if (dineStore.store._id == store._id && dineStore.isActive) {
             result.push({
               diningId: dine._id,
               title: dine.title,
@@ -145,20 +141,20 @@ router.post("/app", async (req, res) => {
 
 router.post("/getStoreDining", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const { storeId } = req.body;
     // let filter = {};
     if (storeId === "0") {
-      const stores = await Store.find({ accountId: accountId }).sort({
+      const stores = await Store.find({ account: account }).sort({
         _id: "desc",
       });
       let data = [];
       for (const store of stores) {
         const result = await diningOption
           .find({
-            stores: { $elemMatch: { storeId: store._id } },
-            accountId: accountId,
-          })
+            stores: { $elemMatch: { store: { $in: store._id } } },
+            account: account,
+          }).populate('stores.store', ["_id","title"])
           .sort({ _id: "asc" });
 
         data.push({
@@ -171,15 +167,15 @@ router.post("/getStoreDining", async (req, res) => {
     } else {
       const stores = await Store.find({
         _id: storeId,
-        accountId: accountId,
+        account: account,
       });
       let data = [];
       for (const store of stores) {
         const result = await diningOption
           .find({
-            stores: { $elemMatch: { storeId: store._id } },
-            accountId: accountId,
-          })
+            stores: { $elemMatch: { store: { $in: store._id } } },
+            account: account,
+          }).populate('stores.store', ["_id","title"])
           .sort({ _id: "asc" });
 
         data.push({
@@ -198,31 +194,13 @@ router.post("/getStoreDining", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    var { stores, checkAll } = req.body;
-    if (checkAll === false) {
-      if (stores !== undefined && stores !== null && stores.length > 0) {
-        await diningOption.findOneAndUpdate(
-          { _id: id },
-          {
-            $set: {
-              stores: JSON.parse(stores),
-            },
-          },
-          {
-            new: true,
-            upsert: true, // Make this update into an upsert
-          }
-        );
-      }
-    } else {
       await diningOption.deleteOne({
         _id: id,
       });
-    }
 
     res.status(200).json({ message: "Dining Option Deleted Successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -230,13 +208,23 @@ router.patch("/", async (req, res) => {
   try {
     const { id, title, store, isSelected } = req.body;
     let jsonStore = JSON.parse(store);
+    const countDining = await diningOption.countDocuments();
+   
+    let stores = [];
+    jsonStore.map((item, index) => {
+      return stores.push({
+        store: item.storeId,
+        position: countDining + 1,
+        isActive: item.isActive,
+      });
+    });
     const { _id } = req.authData;
     const result = await diningOption.findOneAndUpdate(
       { _id: id },
       {
         $set: {
           title: title,
-          stores: jsonStore,
+          stores: stores,
           createdBy: _id,
         },
       },
@@ -244,7 +232,7 @@ router.patch("/", async (req, res) => {
         new: true,
         upsert: true, // Make this update into an upsert
       }
-    );
+    ).populate('stores.store', ["_id","title"]);
 
     res.status(200).json({ message: "Dining Is Updated", data: result });
   } catch (error) {
@@ -254,11 +242,10 @@ router.patch("/", async (req, res) => {
 
 router.patch("/update_position", async (req, res) => {
   try {
-    let { data, storeId } = req.body;
-    data = JSON.parse(data);
+    const { data, storeId } = req.body;
     await (data || []).map(async (item) => {
-      const result = await diningOption.findOneAndUpdate(
-        { _id: item.id, stores: { $elemMatch: { storeId: storeId } } },
+      await diningOption.updateOne(
+        { _id: item._id, stores: { $elemMatch: { store: storeId } } },
         {
           $set: {
             "stores.$.position": item.position,
@@ -279,12 +266,12 @@ router.patch("/update_position", async (req, res) => {
 
 router.patch("/update_availabilty", async (req, res) => {
   try {
-    let { data, storeId } = req.body;
-    data = JSON.parse(data);
+    const { data, storeId } = req.body;
+    console.log(data)
     await (data || []).map(async (item) => {
       // { _id: item.id, stores: { $elemMatch: { storeId: storeId } } },
       const result = await diningOption.findOneAndUpdate(
-        { _id: item.id, stores: { $elemMatch: { storeId: storeId } } },
+        { _id: item._id, stores: { $elemMatch: { store: {$in: storeId } } } },
         {
           $set: {
             "stores.$.isActive": item.isActive,

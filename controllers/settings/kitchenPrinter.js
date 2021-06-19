@@ -3,20 +3,21 @@ import kitchenPrinter from "../../modals/settings/kitchenPrinter";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const { name, categories, storeId } = req.body;
-  let jsonCategoires = JSON.parse(categories);
-  const { _id, accountId } = req.authData;
+  const { title, categories, store } = req.body;
+  const { _id, account } = req.authData;
 
   const newKitchenPrinter = new kitchenPrinter({
-    name: name,
-    categories: jsonCategoires,
-    storeId: storeId,
+    title: title,
+    categories: categories,
+    store: store,
     createdBy: _id,
-    accountId: accountId,
+    account: account,
   });
   try {
-    const result = await newKitchenPrinter.save();
-
+    const insert = await newKitchenPrinter.save();
+    const result = await kitchenPrinter
+    .findOne({ account: account, _id: insert._id }).populate('categories', ["_id","title"]).populate('store', ["_id","title"])
+    .sort({ _id: "desc" });
     res.status(201).json(result);
   } catch (error) {
     if (error.code === 11000) {
@@ -28,9 +29,9 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const result = await kitchenPrinter
-      .find({ accountId: accountId })
+      .find({ account: account }).populate('categories', ["_id","title"]).populate('store', ["_id","title"])
       .sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -39,10 +40,10 @@ router.get("/", async (req, res) => {
 });
 router.get("/row/:id", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const { id } = req.params;
     const result = await kitchenPrinter
-      .findOne({ accountId: accountId, _id: id })
+      .findOne({ account: account, _id: id }).populate('categories', ["_id","title"]).populate('store', ["_id","title"])
       .sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -52,10 +53,10 @@ router.get("/row/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     id = JSON.parse(id);
     for (const kitId of id) {
-      await kitchenPrinter.deleteOne({ _id: kitId, accountId: accountId });
+      await kitchenPrinter.deleteOne({ _id: kitId, account: account });
     }
 
     res.status(200).json({ message: "deleted" });
@@ -65,23 +66,21 @@ router.delete("/:id", async (req, res) => {
 });
 router.patch("/", async (req, res) => {
   try {
-    const { id, name, categories, storeId } = req.body;
-    let jsonCategoires = JSON.parse(categories);
-    // { _id: id, storeId: storeId, createdBy: _id },
+    const { id, title, categories, storeId } = req.body;
     const updatedRecord = await kitchenPrinter.findOneAndUpdate(
       { _id: id },
       // { _id: id, storeId: storeId },
       {
         $set: {
-          name: name,
-          categories: jsonCategoires,
+          title: title,
+          categories: categories,
         },
       },
       {
         new: true,
         upsert: true, // Make this update into an upsert
       }
-    );
+    ).populate('categories', ["_id","title"]).populate('store', ["_id","title"]);
 
     res
       .status(200)

@@ -6,7 +6,7 @@ router.get("/:storeid", async (req, res) => {
   try {
     var { storeid } = req.body;
 
-    var result = await Tickets.find({ "store.id": storeid }).sort({
+    var result = await Tickets.find({ store: storeid }).populate('store', ["_id","title"]).sort({
       _id: "desc",
     });
 
@@ -30,7 +30,6 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   }
-  if (Object.keys(store).length !== 0 && store.constructor === Object) {
     if (typeof ticket_name !== "undefined" && ticket_name.length === 0) {
       try {
         let result = await Tickets.deleteOne({ _id: ticket_id });
@@ -39,15 +38,13 @@ router.post("/", async (req, res) => {
         res.status(500).json({ message: error.message });
       }
     } else {
-      const { _id, accountId } = req.authData;
+      const { _id, account } = req.authData;
       try {
         let data = {
           ticket_name: ticket_name,
           comments: comments,
           store: store,
-          accountId: accountId,
-          updated_by: _id,
-          updated_at: Date.now(),
+          account: account,
         };
         let result = await Tickets.updateOne({ _id: ticket_id }, data);
         res.status(200).json(result);
@@ -55,9 +52,6 @@ router.post("/", async (req, res) => {
         res.status(400).json({ message: error.message });
       }
     }
-  } else {
-    res.status(400).json({ message: "Store is not selected" });
-  }
 });
 // End Delete Update Open Ticket
 
@@ -68,26 +62,30 @@ router.post("/saveOpenTicket", async (req, res) => {
   if (typeof ticket_name == "undefined" || ticket_name.length <= 0) {
     errors.push({ ticket_name: `Invalid tickets!` });
   }
+  if (errors.length > 0) {
+    res.status(400).send({ message: `Please add predefined ticket!`, errors });
+  }
   if (
     typeof store == "undefined" ||
     store == "" ||
     store == null ||
-    store == {}
+    store == 0
   ) {
     errors.push({ store: `Invalid store!` });
   }
   if (errors.length > 0) {
-    res.status(400).send({ message: `Invalid Parameters!`, errors });
+    res.status(400).send({ message: `Please select store!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     try {
-      if (Object.keys(store).length !== 0 && store.constructor === Object) {
+      if (store !== 0) {
+        await Tickets.deleteMany({ store: store });
         const newTickets = await new Tickets({
           ticket_name: ticket_name,
           comments: comments,
           store: store,
-          created_by: _id,
-          accountId: accountId,
+          createdBy: _id,
+          account: account,
         }).save();
         res
           .status(200)
@@ -103,16 +101,16 @@ router.post("/saveOpenTicket", async (req, res) => {
 router.get("/getStoreTicket/:storeId", async (req, res) => {
   try {
     var { storeId } = req.params;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     let filters = {};
     if (storeId === "0") {
-      filters.accountId = accountId;
+      filters.account = account;
     } else {
-      filters["store.id"] = storeId;
-      filters.accountId = accountId;
+      filters["store"] = storeId;
+      filters.account = account;
     }
     // var result = await Tickets.findOne({
-    //   "store.id": storeId,
+    //   "store:": storeId,
     // }).sort({ _id: "desc" });
     var result = await Tickets.findOne(filters).sort({ _id: "desc" });
     let itemList = [];
@@ -181,15 +179,13 @@ router.patch("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     try {
       let data = {
         ticket_name: ticket_name,
         comments: comments,
         store: store,
-        accountId: accountId,
-        updated_by: _id,
-        updated_at: Date.now(),
+        account: account
       };
       let result = await Tickets.updateOne({ _id: ticket_id }, data);
       res.status(200).json(result);

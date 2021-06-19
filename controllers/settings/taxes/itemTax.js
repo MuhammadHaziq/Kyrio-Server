@@ -8,22 +8,13 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, tax_rate, tex } = req.body;
-  const { accountId, _id } = req.authData;
+  const { account, _id } = req.authData;
   let { tax_type, tax_option, stores, dinings, categories, items } = req.body;
-  stores = JSON.parse(stores);
-  dinings = JSON.parse(dinings);
-  categories = JSON.parse(categories);
-  items = JSON.parse(items);
-  tax_option = JSON.parse(tax_option);
-  tax_type = JSON.parse(tax_type);
-  const taxType = tax_type.title;
-  const taxOption = tax_option.title;
+
   const newItemTax = new itemTax({
     title: title,
     tax_rate: tax_rate,
-    accountId: accountId,
-    taxType,
-    taxOption,
+    account: account,
     tax_type: tax_type,
     tax_option: tax_option,
     stores: stores,
@@ -47,9 +38,9 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const result = await itemTax
-      .find({ accountId: accountId })
+      .find({ account: account })
       .sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -58,10 +49,10 @@ router.get("/", async (req, res) => {
 });
 router.get("/row/:id", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { account } = req.authData;
     const { id } = req.params;
     const result = await itemTax
-      .findOne({ accountId: accountId, _id: id })
+      .findOne({ account: account, _id: id })
       .sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -71,20 +62,20 @@ router.get("/row/:id", async (req, res) => {
 
 router.post("/getStoreTaxes", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const { storeId } = req.body;
     let filter = {};
     if (storeId == 0) {
       filter = {
-        accountId: accountId,
+        account: account,
       };
     } else {
       filter = {
-        stores: { $elemMatch: { storeId: storeId } },
-        accountId: accountId,
+        stores: { $in: storeId },
+        account: account,
       };
     }
-    const result = await itemTax.find(filter).sort({ _id: "desc" });
+    const result = await itemTax.find(filter).populate('stores', ["_id","title"]).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -93,15 +84,12 @@ router.post("/getStoreTaxes", async (req, res) => {
 
 router.get("/categories", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    const allCat = await Category.find({ accountId: accountId }).sort({
+    const { account } = req.authData;
+    const allCat = await Category.find({ account: account }).sort({
       _id: "desc",
     });
     let allCategories = [];
     for (const cate of allCat) {
-      let itemCount = await ItemList.find({
-        "category.id": cate._id,
-      }).countDocuments();
       allCategories.push({
         _id: cate._id,
         catTitle: cate.catTitle,
@@ -117,82 +105,39 @@ router.get("/categories", async (req, res) => {
   }
 });
 
-// router.post("/getTaxDining", async (req, res) => {
-//   try {
-//     const { _id, accountId } = req.authData;
-//     let { storeId } = req.body;
-//     storeId = JSON.parse(storeId);
-//     let filter = {};
-//     if (storeId == 0) {
-//       filter = {
-//         createdBy: _id,
-//       };
-//     } else {
-//       filter = {
-//         storeId: { $in: storeId },
-//         createdBy: _id,
-//       };
-//     }
-//     // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
-//     const result = await diningOption2.find(filter);
-//     if (result !== null && result !== undefined) {
-//       // Get Only Unique names
-//       // var unique = [...new Set(result.map((item) => item.title.toUpperCase()))];
-//
-//       //  Get Unique Objects
-//       let titles = [];
-//       result.map((item) => {
-//         item.diningOptions.map((ite) => {
-//           return titles.push({ title: ite.title });
-//         });
-//       });
-//       var unique = titles.filter(
-//         ((set) => (f) =>
-//           !set.has(f.title.toUpperCase()) && set.add(f.title.toUpperCase()))(
-//           new Set()
-//         )
-//       );
-//
-//       res.status(200).json(unique);
-//     } else {
-//       res.status(200).json([]);
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
 router.post("/getTaxDining", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    let { storeId } = req.body;
-    storeId = JSON.parse(storeId);
+    const { account } = req.authData;
+    let { stores } = req.body;
     let filter = {};
-    if (storeId == 0) {
+    if (stores == 0) {
       filter = {
-        accountId: accountId,
+        account: account,
       };
     } else {
+      console.log(stores)
       filter = {
-        stores: { $elemMatch: { storeId: { $in: storeId } } },
-        accountId: accountId,
+        // stores: { $in: storeId},
+        stores: { $elemMatch: { store: { $in: stores } } },
+        account: account,
       };
     }
     // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
-    const result = await diningOption.find(filter);
+    const result = await diningOption.find(filter).populate('stores.store', ["_id","title"]);
+
     if (result !== null && result !== undefined) {
       // Get Only Unique names
       // var unique = [...new Set(result.map((item) => item.title.toUpperCase()))];
 
       //  Get Unique Objects
-      var unique = result.filter(
-        ((set) => (f) =>
-          !set.has(f.title.toUpperCase()) && set.add(f.title.toUpperCase()))(
-          new Set()
-        )
-      );
+      // var unique = result.filter(
+      //   ((set) => (f) =>
+      //     !set.has(f.title.toUpperCase()) && set.add(f.title.toUpperCase()))(
+      //     new Set()
+      //   )
+      // );
 
-      res.status(200).json(unique);
+      res.status(200).json(result);
     } else {
       res.status(200).json([]);
     }
@@ -203,25 +148,17 @@ router.post("/getTaxDining", async (req, res) => {
 
 router.patch("/", async (req, res) => {
   const { title, tax_rate, tex, id } = req.body;
-  const { _id } = req.authData;
+  const { _id, account } = req.authData;
   let { tax_type, tax_option, stores, dinings, categories, items } = req.body;
-  stores = JSON.parse(stores);
-  dinings = JSON.parse(dinings);
-  categories = JSON.parse(categories);
-  items = JSON.parse(items);
-  tax_option = JSON.parse(tax_option);
-  tax_type = JSON.parse(tax_type);
-  const taxType = tax_type.title;
-  const taxOption = tax_option.title;
+
   try {
     const updatedRecord = await itemTax.findOneAndUpdate(
       { _id: id },
       {
         $set: {
           title: title,
-          taxType,
-          taxOption,
           tax_rate: tax_rate,
+          account: account,
           tax_type: tax_type,
           tax_option: tax_option,
           stores: stores,
@@ -245,10 +182,10 @@ router.patch("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     id = JSON.parse(id);
     for (const taxId of id) {
-      await itemTax.deleteOne({ _id: taxId, accountId: accountId });
+      await itemTax.deleteOne({ _id: taxId, account: account });
     }
     res.status(200).json({ message: "deleted" });
   } catch (error) {

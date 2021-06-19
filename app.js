@@ -8,9 +8,18 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
+import { Server } from 'socket.io';
+import redisAdapter from 'socket.io-redis';
 
 var app = express();
-app.io = require("socket.io")();
+// app.io = require("socket.io")();
+
+
+
+const io = new Server();
+io.adapter(redisAdapter());
+
+app.io = io
 
 dotenv.config();
 app.use(cors());
@@ -52,7 +61,7 @@ app.use(cookieParser());
 
 app.use("/media", express.static(path.join(__dirname, "./uploads")));
 app.use(
-  "/media/items/:accountId",
+  "/media/items/:account",
   express.static(path.join(__dirname, "./uploads/items"))
 );
 app.use(

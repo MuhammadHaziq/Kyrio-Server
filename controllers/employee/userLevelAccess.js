@@ -1,6 +1,6 @@
 import express from "express";
 import Role from "../../modals/role";
-import Modules from "../../modals/modules";
+import Modules from "../../modals/modules/modules";
 import Users from "../../modals/users";
 import {
   removeSpaces,
@@ -45,13 +45,13 @@ router.get("/get_roles_modules", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { accountId, _id } = req.authData;
+    const { account, _id } = req.authData;
     // var result = await Role.find({ user_id: _id }).sort({
     //   _id: "desc",
     // });
     let accessRights = [];
 
-    var roles = await Role.find({ accountId: accountId }).sort({
+    var roles = await Role.find({ account: account }).sort({
       _id: "desc",
     });
     for (const role of roles) {
@@ -69,7 +69,7 @@ router.get("/", async (req, res) => {
       }).countDocuments();
       accessRights.push({
         role_id: role._id,
-        roleName: role.roleName,
+        title: role.title,
         access: access,
         NoOfEmployees: NoOfEmployees,
         allowBackoffice: role.allowBackoffice,
@@ -109,25 +109,25 @@ router.post("/", async (req, res) => {
     (!allowPOS || typeof allowPOS == "undefined" || allowPOS.lenght === 0) &&
     (!settings || typeof settings == "undefined" || settings.lenght === 0) &&
     (!userId || typeof userId == "undefined" || userId == "") &&
-    (!accountId || typeof accountId == "undefined" || accountId == "")
+    (!account || typeof account == "undefined" || account == "")
   ) {
     errors.push({ features: `Employee Features Are Empty!` });
     errors.push({ allowBackoffice: `Employee Back Office Are Empty!` });
     errors.push({ allowPOS: `Employee POS Are Empty!` });
     errors.push({ settings: `Employee Settings Are Empty!` });
     errors.push({ userId: `Invalid User Id!` });
-    errors.push({ accountId: `Invalid Account Id!` });
+    errors.push({ account: `Invalid Account Id!` });
   }
 
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     try {
       const newRole = await new Role({
-        roleName: removeSpaces(roleName),
+        title: removeSpaces(title),
         user_id: removeSpaces(userId),
-        accountId: accountId,
+        account: account,
         features: JSON.parse(features),
         allowBackoffice: JSON.parse(allowBackoffice),
         allowPOS: JSON.parse(allowPOS),
@@ -154,20 +154,20 @@ router.patch("/", async (req, res) => {
     (!allowPOS || typeof allowPOS == "undefined" || allowPOS.lenght === 0) &&
     (!settings || typeof settings == "undefined" || settings.lenght === 0) &&
     (!userId || typeof userId == "undefined" || userId == "") &&
-    (!accountId || typeof accountId == "undefined" || accountId == "")
+    (!account || typeof account == "undefined" || account == "")
   ) {
     errors.push({ features: `Employee Features Are Empty!` });
     errors.push({ allowBackoffice: `Employee Back Office Are Empty!` });
     errors.push({ allowPOS: `Employee POS Are Empty!` });
     errors.push({ settings: `Employee Settings Are Empty!` });
     errors.push({ userId: `Invalid User Id!` });
-    errors.push({ accountId: `Invalid Account Id!` });
+    errors.push({ account: `Invalid Account Id!` });
   }
 
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     try {
       let data = {
         features: JSON.parse(features),
@@ -176,7 +176,7 @@ router.patch("/", async (req, res) => {
         settings: JSON.parse(settings),
       };
       let result = await Role.findOneAndUpdate(
-        { _id: id, user_id: userId, accountId: accountId },
+        { _id: id, user_id: userId, account: account },
         data,
         {
           new: true,

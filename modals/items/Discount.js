@@ -7,12 +7,6 @@ const DiscountSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
-  },
   type: {
     type: String,
     min: 3,
@@ -29,43 +23,29 @@ const DiscountSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  stores: [
-    {
-      id: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-      title: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-    },
-  ],
-  created_at: {
-    type: Date,
-    default: Date.now(),
+  stores: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+  }],
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
-  created_by: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  updated_at: {
-    type: Date,
-    default: Date.now(),
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
   deleted: {
     type: Number,
     max: 1,
     default: 0
   },
-  deleted_at: {
+  deletedAt: {
       type: Date,
       default: Date.now(),
   },
+},{
+  timestamps: true
 });
 
 module.exports = mongoose.model("discount", DiscountSchema);

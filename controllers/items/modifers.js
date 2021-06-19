@@ -13,26 +13,26 @@ router.post("/", async (req, res) => {
     var typeName = type !== undefined ? type : "";
     var jsonOptions =
       typeof options !== "undefined" && options.length > 0
-        ? JSON.parse(options)
+        ? options
         : [];
     var jsonStores =
       typeof stores !== "undefined" && stores.length > 0
-        ? JSON.parse(stores)
+        ? stores
         : [];
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const countModifier = await Modifier.countDocuments();
     const newModifier = new Modifier({
       title: title,
-      accountId: accountId,
+      account: account,
       type: typeName,
       options: jsonOptions,
       stores: jsonStores,
       position: countModifier + 1,
-      created_by: _id,
+      createdBy: _id,
     });
     const result = await newModifier.save();
 
-    req.io.emit(MODIFIER_INSERT, { data: result, user: _id });
+    req.io.to(account).emit(MODIFIER_INSERT, { data: result, user: _id });
 
     res.status(201).json(result);
   } catch (error) {
@@ -46,16 +46,16 @@ router.post("/", async (req, res) => {
 
 router.get("/:storeId", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const { storeId } = req.params;
     let storeFilter = {};
     if (storeId !== "0") {
-      storeFilter.stores = { $elemMatch: { id: storeId } };
+      storeFilter.stores = { $in: storeId };
     }
-    storeFilter.accountId = accountId;
+    storeFilter.account = account;
     storeFilter.deleted = 0;
 
-    const result = await Modifier.find(storeFilter).sort({ position: 1 });
+    const result = await Modifier.find(storeFilter).populate('stores', ["_id","title"]).sort({ position: 1 });
 
     res.status(200).json(result);
   } catch (error) {
@@ -65,13 +65,13 @@ router.get("/:storeId", async (req, res) => {
 
 router.post("/getStoreModifiers", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const { storeId } = req.body;
     const result = await Modifier.find({
-      stores: { $elemMatch: { id: storeId } },
-      accountId: accountId,
+      stores: { $in: storeId },
+      account: account,
       deleted: 0,
-    }).sort({ postion: "asc" });
+    }).populate('stores', ["_id","title"]).sort({ postion: "asc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -81,12 +81,12 @@ router.post("/getStoreModifiers", async (req, res) => {
 router.delete("/:ids", async (req, res) => {
   try {
     var { ids } = req.params;
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     ids = JSON.parse(ids);
 
     let del = await Modifier.updateMany(
-      { _id: { $in: ids }, accountId: accountId },
-      { $set: { deleted: 1, deleted_at: Date.now() } },
+      { _id: { $in: ids }, account: account },
+      { $set: { deleted: 1, deletedAt: Date.now() } },
       {
         new: true,
         upsert: true,
@@ -94,7 +94,7 @@ router.delete("/:ids", async (req, res) => {
     );
 
     if (del.n > 0 && del.nModified > 0) {
-      req.io.emit(MODIFIER_DELETE, { data: ids, user: _id });
+      req.io.to(account).emit(MODIFIER_DELETE, { data: ids, user: _id });
     }
 
     res.status(200).json({ message: "deleted" });
@@ -105,12 +105,11 @@ router.delete("/:ids", async (req, res) => {
 
 router.patch("/update_position", async (req, res) => {
   try {
-    let { data } = req.body;
-    const { _id, accountId } = req.authData;
-    data = JSON.parse(data);
-    await (data || []).map(async (item) => {
+    let { modifier } = req.body;
+    const { _id, account } = req.authData;
+    await (modifier || []).map(async (item) => {
       const result = await Modifier.findOneAndUpdate(
-        { _id: item.id, accountId: accountId },
+        { _id: item.id, account: account },
         {
           $set: {
             position: item.position,
@@ -121,12 +120,13 @@ router.patch("/update_position", async (req, res) => {
           upsert: true, // Make this update into an upsert
         }
       );
+      console.log(result)
     });
 
-    let modifiersUpdated = await Modifier.find({ accountId: accountId }).sort({
+    let modifiersUpdated = await Modifier.find({ account: account }).populate('stores', ["_id","title"]).sort({
       position: "asc",
     });
-    req.io.emit(MODIFIER_UPDATE, { data: modifiersUpdated, user: _id });
+    req.io.to(account).emit(MODIFIER_UPDATE, { data: modifiersUpdated, user: _id });
 
     res.status(200).json({ message: "Modifier Position Is Updated" });
   } catch (error) {
@@ -137,31 +137,25 @@ router.patch("/update_position", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   try {
     const { title, options, stores } = req.body;
-    const { _id, accountId } = req.authData;
-    var jsonOptions = JSON.parse(options);
-    let jsonStores = JSON.parse(stores);
+    const { _id, account } = req.authData;
     const { id } = req.params;
 
     const result = await Modifier.findOneAndUpdate(
-      { _id: id, accountId: accountId },
+      { _id: id, account: account },
       {
         $set: {
           title: title,
-          options: jsonOptions,
-          stores: jsonStores,
+          options: options,
+          stores: stores,
         },
       },
       {
         new: true,
         upsert: true, // Make this update into an upsert
       }
-    );
+    ).populate('stores', ["_id","title"]).sort({ position: 1 });
 
-    let updatedModifier = await Modifier.find({
-      _id: id,
-      accountId: accountId,
-    }).sort({ position: 1 });
-    req.io.emit(MODIFIER_UPDATE, { data: updatedModifier, user: _id });
+    req.io.to(account).emit(MODIFIER_UPDATE, { data: result, user: _id });
 
     res.status(200).json({ message: "Modifier Updated", data: result });
   } catch (error) {
@@ -170,13 +164,13 @@ router.patch("/:id", async (req, res) => {
 });
 router.get("/row/:id", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const { id } = req.params;
     let storeFilter = {};
-    storeFilter.accountId = accountId;
+    storeFilter.account = account;
     storeFilter._id = id;
     storeFilter.deleted = 0;
-    const result = await Modifier.findOne(storeFilter).sort({
+    const result = await Modifier.findOne(storeFilter).populate('stores', ["_id","title"]).sort({
       position: "asc",
     });
     res.status(200).json(result);

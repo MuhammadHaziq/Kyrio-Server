@@ -31,82 +31,86 @@ const accountsSchema = new mongoose.Schema({
   },
   features: [
     {
-      featureId: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      featureName: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      description: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      icon: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
+      feature: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "features",
       },
       enable: Boolean,
+      // featureId: {
+      //   type: String,
+      //   min: 3,
+      //   max: 255,
+      //   required: true,
+      // },
+      // featureName: {
+      //   type: String,
+      //   min: 3,
+      //   max: 255,
+      //   required: true,
+      // },
+      // description: {
+      //   type: String,
+      //   min: 3,
+      //   max: 255,
+      //   required: true,
+      // },
+      // icon: {
+      //   type: String,
+      //   min: 3,
+      //   max: 255,
+      //   required: true,
+      // },
     },
   ],
-  settings: {
-    settingModules: [
-      {
-        moduleId: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
+  settings: [{
+        module: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "settings",
         },
-        moduleName: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
-        },
-        icon: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
-        heading: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
-        span: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
-
         enable: Boolean,
-        featureId: {
-          type: String,
-          min: 3,
-          max: 255,
+        feature: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "features",
         },
-      },
-    ],
-  },
-  createdBy: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
+        // moduleId: {
+        //   type: String,
+        //   min: 3,
+        //   max: 255,
+        //   required: true,
+        // },
+        // moduleName: {
+        //   type: String,
+        //   min: 3,
+        //   max: 255,
+        //   required: true,
+        // },
+        // icon: {
+        //   type: String,
+        //   min: 3,
+        //   max: 255,
+        // },
+        // heading: {
+        //   type: String,
+        //   min: 3,
+        //   max: 255,
+        // },
+        // span: {
+        //   type: String,
+        //   min: 3,
+        //   max: 255,
+        // },
+        // featureId: {
+        //   type: String,
+        //   min: 3,
+        //   max: 255,
+        // },
+      }],
+      createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+      }
+},{
+  timestamps: true
 });
 
 accountsSchema.index(
@@ -115,6 +119,7 @@ accountsSchema.index(
   },
   {
     unique: true,
+    sparse: true
   }
 );
 

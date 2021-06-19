@@ -21,7 +21,7 @@ router.post("/summary", async (req, res) => {
     
     // req.io.emit("sale",{message: "Sale Summary"})
 
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     // 2021-02-08T19:42:55.586+00:00
     var start = moment(startDate,"YYYY-MM-DD")
     var end = moment(endDate,"YYYY-MM-DD").add(1, 'days')
@@ -29,7 +29,7 @@ router.post("/summary", async (req, res) => {
     
     var sales = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
-      {accountId: accountId},
+      {account: account},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]})
@@ -50,14 +50,14 @@ router.post("/item", async (req, res) => {
       divider,
       matches
     } = req.body;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     
     var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
     var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
     
     var sales = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
-      {accountId: accountId},
+      {account: account},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]});
@@ -68,7 +68,7 @@ router.post("/item", async (req, res) => {
     let itemKeys = Object.keys(items)
 
     let itemsFound = await ItemList.find({$and: [
-      { accountId: accountId},
+      { account: account},
       { _id: { "$in" : itemKeys} },
       ]})
     
@@ -148,14 +148,14 @@ router.post("/category", async (req, res) => {
       stores,
       employees
     } = req.body;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     
     var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
     var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
     
     var sales = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
-      {accountId: accountId},
+      {account: account},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]});
@@ -166,7 +166,7 @@ router.post("/category", async (req, res) => {
       let itemKeys = Object.keys(items)
 
       let itemsFound = await ItemList.find({$and: [
-        { accountId: accountId},
+        { account: account},
         { _id: { "$in" : itemKeys} },
         ]})
       
@@ -247,13 +247,13 @@ router.post("/employee", async (req, res) => {
       stores,
       employees
     } = req.body;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     
     var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
     var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
     
     let sales = await Sales.aggregate([
-      { $match: { created_at: {$gte: new Date(start), $lte: new Date(end)}, accountId: accountId, "store._id": { "$in" : stores}, created_by: { "$in" : employees} } },
+      { $match: { created_at: {$gte: new Date(start), $lte: new Date(end)}, account: account, "store._id": { "$in" : stores}, created_by: { "$in" : employees} } },
       { $group: {_id: "$created_by", sales: {$push: "$$ROOT"} } },
     ]);
     
@@ -262,7 +262,7 @@ router.post("/employee", async (req, res) => {
       for (var empSale of sales) {
         
             let emp = await Users.findOne({$and: [
-              { accountId: accountId},
+              { account: account},
               { _id: { "$in" : empSale._id} },
             ]}).select("name")
     
@@ -326,14 +326,14 @@ router.post("/receipts", async (req, res) => {
       stores,
       employees,
     } = req.body;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     
     var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
     var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
     
     var receipts = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
-      {accountId: accountId},
+      {account: account},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]}).populate('user','name');

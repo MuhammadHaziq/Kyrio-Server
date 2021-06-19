@@ -13,7 +13,7 @@ module.exports = {
       exec_mode: "cluster",
       env: {
         PORT: 3000,
-        NODE_ENV: "production",
+        NODE_ENV: "development",
         VERSION: "v1"
       },
     },

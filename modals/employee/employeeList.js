@@ -6,12 +6,12 @@ const employeeListSchema = new mongoose.Schema({
     min: 3,
     max: 255,
   },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
-  },
+  // account: {
+  //   type: String,
+  //   min: 6,
+  //   max: 255,
+  //   required: true
+  // },
   email: {
     type: String,
     min: 3,
@@ -22,34 +22,34 @@ const employeeListSchema = new mongoose.Schema({
     min: 3,
     max: 255,
   },
-  role: {
-    _id: false,
-    id: {
-      type: String,
-      min: 3,
-      max: 255,
-    },
-    name: {
-      type: String,
-      min: 3,
-      max: 255,
-    },
-  },
-  stores: [
-    {
-      _id: false,
-      id: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-      name: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-    },
-  ],
+  // role: {
+  //   _id: false,
+  //   id: {
+  //     type: String,
+  //     min: 3,
+  //     max: 255,
+  //   },
+  //   name: {
+  //     type: String,
+  //     min: 3,
+  //     max: 255,
+  //   },
+  // },
+  // stores: [
+  //   {
+  //     _id: false,
+  //     id: {
+  //       type: String,
+  //       min: 1,
+  //       max: 255,
+  //     },
+  //     name: {
+  //       type: String,
+  //       min: 1,
+  //       max: 255,
+  //     },
+  //   },
+  // ],
   posPin: {
     type: String,
     min: 3,
@@ -59,19 +59,29 @@ const employeeListSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  created_by: {
-    type: String,
-    min: 3,
-    max: 255,
+  role: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "role",
   },
-  created_at: {
-    type: Date,
-    default: Date.now(),
+  stores: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+  }],   
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
-  updated_at: {
-    type: Date,
-    default: Date.now(),
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
+  // created_by: {
+  //   type: String,
+  //   min: 3,
+  //   max: 255,
+  // },
+},{
+  timestamps: true
 });
 
 employeeListSchema.index(
@@ -80,6 +90,7 @@ employeeListSchema.index(
   },
   {
     unique: true,
+    sparse: true
   }
 );
 

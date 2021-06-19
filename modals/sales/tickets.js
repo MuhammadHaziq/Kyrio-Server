@@ -5,50 +5,25 @@ const ticketsSchema = new mongoose.Schema({
     type: Array,
     required: true,
   },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
-  },
   comments: {
     type: String,
     min: 6,
     max: 255,
   },
   store: {
-      id: {
-        type: String,
-        min: 6,
-        max: 255,
-        required: true,
-      },
-    name: {
-        type: String,
-        min: 6,
-        max: 255,
-        required: true,
-      }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
   },
-  created_by: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true,
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
-  created_at: {
-    type: Date,
-    default: Date.now(),
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
-  updated_by: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
-  updated_at: {
-    type: Date,
-    default: Date.now(),
-  },
+},{
+  timestamps: true
 });
 
 // ticketsSchema.index(

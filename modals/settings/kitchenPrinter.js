@@ -1,61 +1,41 @@
 import mongoose, { mongo, models } from "mongoose";
 
 const kitchenPrinterSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
     min: 3,
     max: 255,
     required: true,
   },
-  accountId: {
+  account: {
     type: String,
     min: 6,
     max: 255,
     required: true
   },
-  categories: {
-    type: [
-      {
-        categoryId: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
-        },
-        categoryName: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
-        },
-      },
-    ],
-  },
-  storeId: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-
-  createdAt: {
-    type: Date,
-    default: Date.now(),
+  categories: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "categries",
+  }],
+  store: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
   },
   createdBy: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
+},{
+  timestamps: true
 });
 
 kitchenPrinterSchema.index(
   {
-    name: 1,
+    title: 1,
   },
   {
     unique: true,
+    sparse: true
   }
 );
 

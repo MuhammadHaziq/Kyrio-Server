@@ -115,7 +115,7 @@ const ShiftsSchema = new mongoose.Schema({
         min: 0
       },
     }],
-  accountId: {
+  account: {
     type: String,
     min: 6,
     max: 255,

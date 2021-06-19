@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, address, phone, description } = req.body;
-  const { _id, accountId } = req.authData;
+  const { _id, account } = req.authData;
 
   const newStore = new Store({
     title: title,
@@ -15,11 +15,11 @@ router.post("/", async (req, res) => {
     phone: phone,
     description: description,
     createdBy: _id,
-    accountId: accountId,
+    account: account,
   });
   try {
     const result = await newStore.save();
-    const store = await Store.find({ accountId: accountId })
+    const store = await Store.find({ account: account })
       .select(["title"])
       .sort({ _id: "desc" });
     let storeData = [];
@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
           ],
         },
         createdBy: _id,
-        accountId: accountId,
+        account: account,
       },
       {
         $set: {
@@ -58,10 +58,10 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
 
     // display only login user stores
-    const stores = await Store.find({ accountId: accountId }).sort({
+    const stores = await Store.find({ account: account }).sort({
       _id: "desc",
     });
     let allStores = [];
@@ -87,10 +87,10 @@ router.get("/", async (req, res) => {
 });
 router.get("/row/:id", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const { id } = req.params;
     // display only login user stores
-    const stores = await Store.find({ accountId: accountId, _id: id }).sort({
+    const stores = await Store.find({ account: account, _id: id }).sort({
       _id: "desc",
     });
     let allStores = [];
@@ -121,7 +121,7 @@ router.get("/row/:id", async (req, res) => {
 });
 router.delete("/:ids", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     var { ids } = req.params;
     let message = [];
     ids = JSON.parse(ids);
@@ -150,7 +150,7 @@ router.delete("/:ids", async (req, res) => {
         }
       }
     }
-    const store = await Store.find({ accountId: accountId })
+    const store = await Store.find({ account: account })
       .select(["title"])
       .sort({ _id: "desc" });
     let storeData = [];
@@ -170,7 +170,7 @@ router.delete("/:ids", async (req, res) => {
           ],
         },
         createdBy: _id,
-        accountId: accountId,
+        account: account,
       },
       {
         $set: {

@@ -1,29 +1,17 @@
 import express from "express";
-import Users from "../../../modals/users";
-import Role from "../../../modals/role";
+import Accounts from "../../../modals/accounts";
+import { FEATURES_TOGGLE } from "../../../sockets/events";
+
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { role_id } = req.query;
-    if (!role_id || typeof role_id === "undefined" || role_id == "") {
-      res.status(400).json({ message: "Role Not Assigned", errors: [] });
-    }
-    const result = await Role.findOne({ _id: role_id });
-    let data = {};
-    if (result !== null) {
-      data = {
-        status: true,
-        data: result,
-      };
-    } else {
-      data = {
-        status: false,
-        data: [],
-      };
-    }
+    const { account } = req.authData;
+    let accountFeature  = await Accounts.findOne({ _id: account }).populate('features.feature',["_id","name","description","icon"]).populate('settings.module',["_id","name","icon","heading","span"]).populate('settings.feature',["_id","name","description","icon"]);
 
-    res.status(200).json(data);
+    res
+      .status(200)
+      .json({ message: "Features updated", features: accountFeature });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -31,36 +19,37 @@ router.get("/", async (req, res) => {
 
 router.patch("/", async (req, res) => {
   try {
-    const { role_id } = req.authData;
-    const { features } = req.body;
+    const { account, _id } = req.authData;
+    const { features, settings } = req.body;
 
     if (typeof features === "undefined" || features.length <= 0) {
       res.status(400).json({ message: "Feature Id Not Empty", errors: [] });
     }
-
-    let featuresArray = JSON.parse(features);
-    for (const feature of featuresArray) {
-      await Role.updateOne(
-        { "features.featureId": feature.featureId },
-        {
-          $set: {
-            "features.$.enable": feature.enable,
-          },
-        }
-      );
-      await Role.updateOne(
-        { "settings.settingModules.featureId": feature.featureId },
-        {
-          $set: {
-            "settings.settingModules.$.enable": feature.enable,
-          },
-        }
-      );
-    }
-    let role = await Role.findOne({ _id: role_id });
+    let filterFeatures = features.map(feature => {
+      return {
+        _id: feature._id,
+        feature: feature.featureId,
+        enable: feature.enable
+      }
+    })
+    let accountFeature  = await Accounts.findOneAndUpdate(
+      { _id: account },
+      { $set: {
+        features: filterFeatures,
+        settings: settings
+        } 
+      },
+      {
+        new: true,
+        upsert: true
+      }
+    ).populate('features.feature',["_id","name","description","icon"]).populate('settings.module',["_id","name","icon","heading","span"]).populate('settings.feature',["_id","name","description","icon"]);
+      if(accountFeature){
+        req.io.to(account).emit(FEATURES_TOGGLE, { appData: filterFeatures, backoffice: accountFeature, settings: settings, user: _id, account: account });
+      }
     res
       .status(200)
-      .json({ message: "Features updated", features: role.features });
+      .json({ message: "Features updated", features: accountFeature });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

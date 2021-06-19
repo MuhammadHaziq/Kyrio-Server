@@ -29,7 +29,7 @@ const salesSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
-  accountId: {
+  account: {
     type: String,
     min: 6,
     max: 255,

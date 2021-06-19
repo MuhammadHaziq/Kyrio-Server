@@ -7,7 +7,7 @@ const settingsFeaturesSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  accountId: {
+  account: {
     type: String,
     min: 6,
     max: 255,

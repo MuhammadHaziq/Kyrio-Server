@@ -21,29 +21,29 @@ router.post("/", async (req, res) => {
   ) {
     errors.push(`Invalid Payment Type!`);
   } else {
-    paymentTypes = JSON.parse(paymentTypes);
-    if (paymentTypes["paymentTypeId"] === 0) {
+    if (paymentTypes.paymentTypeId === 0) {
       errors.push(`Select Payment Type!`);
     }
   }
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const newPaymentsTypes = new paymentsType({
       name: name,
-      paymentType: paymentTypes,
-      storeId: storeId,
+      paymentType: paymentTypes.paymentTypeId,
+      store: storeId,
       createdBy: _id,
-      accountId: accountId,
+      account: account,
     });
     try {
-      const result = await newPaymentsTypes.save();
+      const insert = await newPaymentsTypes.save();
+      const result = await paymentsType.findOne({ _id: insert._id }).populate('store', ["_id","title"]).populate('paymentType', ["_id","title"]);
 
       res.status(201).json(result);
     } catch (error) {
       if (error.code === 11000) {
-        res.status(400).json({ message: "Payment type ALready Exist" });
+        res.status(400).json({ message: "Payment type Already Exist" });
       } else {
         res.status(400).json({ message: error.message });
       }
@@ -53,11 +53,11 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { storeId } = req.query;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const result = await paymentsType.find({
-      accountId: accountId,
-      storeId: storeId,
-    });
+      account: account,
+      store: storeId,
+    }).populate('store', ["_id","title"]).populate('paymentType', ["_id","title"]);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -66,11 +66,11 @@ router.get("/", async (req, res) => {
 router.get("/row/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const result = await paymentsType.findOne({
-      accountId: accountId,
+      account: account,
       _id: id,
-    });
+    }).populate('store', ["_id","title"]).populate('paymentType', ["_id","title"]);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -98,8 +98,7 @@ router.patch("/:id", async (req, res) => {
   ) {
     errors.push(`Invalid Payment Type!`);
   } else {
-    paymentTypes = JSON.parse(paymentTypes);
-    if (paymentTypes["paymentTypeId"] === 0) {
+    if (paymentTypes.paymentTypeId === 0) {
       errors.push(`Select Payment Type!`);
     }
   }
@@ -109,19 +108,19 @@ router.patch("/:id", async (req, res) => {
     if (req.body.cashPaymentRound !== undefined) {
       data = {
         name: name,
-        paymentType: paymentTypes,
+        paymentType: paymentTypes.paymentTypeId,
         cashPaymentRound: cashPaymentRound,
       };
     } else {
       data = {
         name: name,
-        paymentType: paymentTypes,
+        paymentType: paymentTypes.paymentTypeId,
       };
     }
     try {
       // { _id: id, storeId: storeId, createdBy: _id },
       const updatedRecord = await paymentsType.findOneAndUpdate(
-        { _id: id, storeId: storeId },
+        { _id: id, store: storeId },
         {
           $set: data,
         },
@@ -129,7 +128,7 @@ router.patch("/:id", async (req, res) => {
           new: true,
           upsert: true, // Make this update into an upsert
         }
-      );
+      ).populate('store', ["_id","title"]).populate('paymentType', ["_id","title"]);
       res
         .status(200)
         .json({ message: "Record Updated Successfully", data: updatedRecord });
