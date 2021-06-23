@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "Kyrio API Server Version 2",
+      name: "Kyrio POS API Server Version 2",
       script: "./bin/www",
       error_file: "../api_server_log/production/error.log",
       out_file: "../api_server_log/production/out.log",
