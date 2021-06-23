@@ -47,7 +47,7 @@ router.post("/testapi", async (req, res) => {
 })
 router.post("/signup", checkModules, async (req, res) => {
   try {
-    const { email, password, businessName, country, role_id, UDID, features, settings } = req.body;
+    const { email, password, businessName, country, role_id, UDID, features, settings, platform } = req.body;
     
     let userId = "";
     let roleData = await Role.findOne({ _id: role_id });
@@ -152,7 +152,7 @@ router.post("/signup", checkModules, async (req, res) => {
             }]
           })
         let user = {
-          platform: "backoffice",
+          platform: platform,
           _id: userResult._id,
           name: userResult.name,
           email: userResult.email,
