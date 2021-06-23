@@ -15,7 +15,6 @@ router.post("/testapi", async (req, res) => {
   const { param } = req.body;
 //  let accountResult = await Accounts.findOne({ _id: param }).populate('features.feature',["_id","name","description","icon"]).populate('settings.module',["_id","name","icon","heading","span"]).populate('settings.feature',["_id","name","description","icon"])
 //         res.status(200).send(accountResult);
-try{
         let userResult = await Users.findOne({ _id: param }).populate({ 
           path: 'role', 
           populate : [{
@@ -42,7 +41,7 @@ try{
               path: 'settings.feature',
               select: ["_id","name","description","icon"]
             }]
-          }).countDocuments();
+          });
         res.status(200).send(userResult);
 
 })
