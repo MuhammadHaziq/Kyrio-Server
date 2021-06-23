@@ -12,12 +12,12 @@ module.exports = {
       max_memory_restart: "1000M",
       exec_mode: "cluster",
       env: {
-        PORT: 3000,
+        PORT: 3002,
         NODE_ENV: "development",
         VERSION: "v1",
         MONGO_LIVE_URL: "mongodb+srv://kyrio-pos:kyrio@123@kyrio-pos-plir6.mongodb.net/test?retryWrites=true&w=majority",
-        MONGO_LIVE_URL_WINDOWS_SERVER: "mongodb://kyrio-pos:kyrio_pos786A%25@localhost:27017/KyrioPos?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false",
-        MONGO_LOCAL_URL: "mongodb://localhost:27017/kyrio_pos",
+        MONGO_LIVE_URL_WINDOWS_SERVER: "mongodb://kyrio-pos:kyrio_pos786A%25@localhost:27017/kyrio_pos_v2?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false",
+        MONGO_LOCAL_URL: "mongodb://localhost:27017/kyrio_pos_v2",
 
         DEFAULT_DINING_TITLE_1: "Dine in",
         DEFAULT_DINING_TITLE_2: "Delivery",
