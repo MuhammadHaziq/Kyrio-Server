@@ -151,7 +151,7 @@ router.post("/", async (req, res) => {
     sendMail = false;
   }
   if (posPin === undefined) {
-    posBin = "0000";
+    posPin = "0000";
   }
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
