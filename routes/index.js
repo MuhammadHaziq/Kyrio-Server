@@ -29,7 +29,7 @@ import { verifyToken } from "../libs/middlewares";
 var router = express.Router();
 
 router.get("/", (req, res, next) => {
-  res.render("index", { title: "Kyrio POS Server" });
+  res.render("index", { title: "Kyrio POS Server Version 2" });
 });
 router.use("/users", usersRouter);
 router.use("/tickets", verifyToken, ticketsRouter);
