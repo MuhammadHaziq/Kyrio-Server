@@ -15,7 +15,7 @@ const kitchenPrinterSchema = new mongoose.Schema({
   },
   categories: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "categries",
+    ref: "categories",
   }],
   store: {
     type: mongoose.Schema.Types.ObjectId,

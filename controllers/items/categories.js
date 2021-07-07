@@ -96,7 +96,7 @@ router.get("/categoryItem", async (req, res) => {
   // Old Quer Work in ModalSelectItemsTax(React)
   // let { categoryFilter, storeId } = req.query;
   // Old Quer Work in UpdateTax(React)
-  let { storeId } = req.query;
+  let { stores } = req.query;
 
   try {
     let filters;
@@ -116,15 +116,15 @@ router.get("/categoryItem", async (req, res) => {
 *
 *
     */
-    if (storeId === undefined) {
+    if (stores === undefined) {
       filters = {
         account: account,
         deleted: 0,
       };
     } else {
-      storeId = JSON.parse(storeId);
+      // storeId = JSON.parse(storeId);
       filters = {
-        stores: { $elemMatch: { id: { $in: storeId } } },
+        stores: { $elemMatch: { store: { $in: stores } } },
         account: account,
         deleted: 0,
       };
@@ -138,11 +138,10 @@ router.get("/categoryItem", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-router.patch("/:id", async (req, res) => {
+router.patch("/", async (req, res) => {
   try {
-    const { id } = req.params;
     const { _id, account } = req.authData;
-    const { title, color } = req.body;
+    const { id, title, color } = req.body;
     const result = await Category.findOneAndUpdate(
       { _id: id, account: account },
       {
@@ -157,7 +156,7 @@ router.patch("/:id", async (req, res) => {
       }
     );
     req.io.to(account).emit(CATEGORY_UPDATE, { data: result, user: _id });
-    res.status(200).json({ data: result, message: "updated" });
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

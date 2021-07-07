@@ -134,11 +134,10 @@ router.patch("/update_position", async (req, res) => {
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/", async (req, res) => {
   try {
-    const { title, options, stores } = req.body;
+    const { id, title, options, stores } = req.body;
     const { _id, account } = req.authData;
-    const { id } = req.params;
 
     const result = await Modifier.findOneAndUpdate(
       { _id: id, account: account },
@@ -157,7 +156,7 @@ router.patch("/:id", async (req, res) => {
 
     req.io.to(account).emit(MODIFIER_UPDATE, { data: result, user: _id });
 
-    res.status(200).json({ message: "Modifier Updated", data: result });
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -29,7 +29,7 @@ const itemTaxSchema = new mongoose.Schema({
   }],
   categories: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "categries",
+    ref: "categories",
   }],
   items: [{
     type: mongoose.Schema.Types.ObjectId,

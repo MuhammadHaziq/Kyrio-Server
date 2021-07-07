@@ -35,11 +35,11 @@ const CategorySchema = new mongoose.Schema({
 });
 CategorySchema.index(
     {
-        catTitle: 1,
+        title: 1,
     },
     {
         unique: true,
         sparse: true
     }
 );
-module.exports = mongoose.model("categries", CategorySchema);
+module.exports = mongoose.model("categories", CategorySchema);

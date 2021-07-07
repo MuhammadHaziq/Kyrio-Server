@@ -95,7 +95,7 @@ router.patch("/:id", async (req, res) => {
       }
     ).populate('stores', ["_id","title"]);
     req.io.to(account).emit(DISCOUNT_UPDATE, {data: result, user: _id})
-    res.status(200).json({ data: result, message: "updated" });
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -36,7 +36,7 @@ router.get("/serverSide", async (req, res) => {
     // search = req.query.search.trim();
     let storeFilter = {};
     if (storeId !== "0") {
-      storeFilter.stores = { $elemMatch: { id: storeId } };
+      storeFilter.stores = { $elemMatch: { store: storeId } };
     }
     if (categoryFilter !== "-1" && categoryFilter !== undefined) {
       storeFilter["category.id"] = categoryFilter;
@@ -47,7 +47,7 @@ router.get("/serverSide", async (req, res) => {
     if (search !== "" && search !== undefined) {
       storeFilter = {
         $or: [
-          { name: { $regex: ".*" + search + ".*", $options: "i" } },
+          { title: { $regex: ".*" + search + ".*", $options: "i" } },
           {
             "category.name": {
               $regex: ".*" + search + ".*",
@@ -61,10 +61,10 @@ router.get("/serverSide", async (req, res) => {
     let serverSideData = [];
 
     var result = await ItemList.find({
-      stores: { $elemMatch: { id: storeId } },
+      stores: { $elemMatch: { store: storeId } },
     })
       .skip(startIndex * endIndex)
-      .limit(endIndex).sort({name: 1})
+      .limit(endIndex).sort({title: 1})
       .exec(function (err, doc) {
         if (err) {
           res.status(500).json({ message: error.message });
@@ -87,7 +87,7 @@ router.get("/serverSide", async (req, res) => {
             }
             margin = Number(margin).toFixed(2) + " %";
             const array = [
-              item.name,
+              item.title,
               item["category"].name,
               price,
               cost,
@@ -117,7 +117,7 @@ router.get("/serverSide", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     var {
-      name,
+      title,
       compositeItem,
       availableForSale,
       soldByType,
@@ -164,7 +164,7 @@ router.post("/", async (req, res) => {
       deleted: 0,
     })
     if(!checkSKU){
-      name = name !== null || name !== undefined ? name.trim() : "";
+      title = title !== null || title !== undefined ? title.trim() : "";
 
       var itemImageName = "";
       // let owner = await getOwner(_id);
@@ -206,8 +206,9 @@ router.post("/", async (req, res) => {
           taxes: itm.taxes
         }
       })
+      
       const insert = await new ItemList({
-        name,
+        title,
         compositeItem,
         account,
         category,
@@ -274,7 +275,13 @@ router.post("/", async (req, res) => {
       res.status(400).json({ message: "Error creating item! Item with such SKU already exists." });
     }
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    if (error.code === 11000) {
+      res
+        .status(400)
+        .json({ message: "Item with this name already exists" });
+    } else {
+      res.status(400).json({ message: error.message });
+    }
   }
 });
 
@@ -282,7 +289,7 @@ router.patch("/", async (req, res) => {
   try {
       var {
         item_id,
-        name,
+        title,
         compositeItem,
         imageName,
         availableForSale,
@@ -377,7 +384,7 @@ router.patch("/", async (req, res) => {
             }
           }
         }
-        name = name !== null || name !== undefined ? name.trim() : "";
+        title = title !== null || title !== undefined ? title.trim() : "";
         stores = stores.map(itm => {
           return {
             store: itm.store._id,
@@ -390,7 +397,7 @@ router.patch("/", async (req, res) => {
           }
         })
         let data = {
-          name,
+          title,
           compositeItem,
           category,
           availableForSale,
@@ -475,7 +482,7 @@ router.get("/sku", async (req, res) => {
       res.status(200).json({sku: newSKU});
     } else { 
       const newSkuHistory = new SkuHistory({
-        sku: 10000,
+        sku: parseInt(10000),
         account: account,
         createdBy: _id,
         updatedBy: _id,
@@ -499,11 +506,29 @@ router.get("/", async (req, res) => {
     const endIndex = page * limit;
 
     var result = await ItemList.find({
-      // stores: { $elemMatch: { id: storeId } },
       account: account,
       deleted: 0,
-    }).sort({ name: 1 });
-    // .select('name -_id  category.categoryId');
+    }).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
+      path: 'modifiers', 
+      select: ["_id","title"],
+      populate : [
+        {
+          path: 'stores',
+          select: ["_id","title"]
+        }]
+    }).populate({ 
+      path: 'taxes', 
+      select: ["_id","title","tax_type","tax_rate"],
+      populate : [{
+          path: 'tax_type',
+          select: ["_id","title"]
+        },
+        {
+          path: 'stores',
+          select: ["_id","title"]
+        }]
+      }).sort({ title: 1 });
+    // .select('title -_id  category.categoryId');
     // result.exec(function (err, someValue) {
     //         if (err) return next(err);
     //         res.send(someValue);
@@ -521,12 +546,32 @@ router.get("/storeItems", async (req, res) => {
     const { storeId } = req.query;
 
     var items = await ItemList.find({
-      stores: { $elemMatch: { id: storeId } },
+      stores: { $elemMatch: { store: storeId } },
       account: account,
       deleted: 0,
-    })
+    }).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
+      path: 'modifiers', 
+      select: ["_id","title"],
+      populate : [
+        {
+          path: 'stores',
+          select: ["_id","title"]
+        }]
+    }).populate({ 
+      path: 'taxes', 
+      select: ["_id","title","tax_type","tax_rate"],
+      populate : [{
+          path: 'tax_type',
+          select: ["_id","title"]
+        },
+        {
+          path: 'stores',
+          select: ["_id","title"]
+        }]
+      })
       .select([
         "_id",
+        "title",
         "category",
         "availableForSale",
         "soldByType",
@@ -539,7 +584,7 @@ router.get("/storeItems", async (req, res) => {
         "stockQty",
         "varients",
         "stores.price",
-        "stores.id",
+        "stores.store",
         "stores.inStock",
         "stores.lowStock",
         "modifiers",
@@ -551,11 +596,12 @@ router.get("/storeItems", async (req, res) => {
         "createdAt",
         "createdBy",
       ])
-      .sort({ name: 1});
+      .sort({ title: 1});
     let itemsObjectFilter = [];
     for (const item of items) {
       itemsObjectFilter.push({
         _id: item._id,
+        title: item.title,
         category: item.category,
         availableForSale: item.availableForSale,
         soldByType: item.soldByType,
@@ -567,7 +613,8 @@ router.get("/storeItems", async (req, res) => {
         compositeItem: item.compositeItem,
         stockQty: item.stockQty,
         varients: item.varients,
-        storeID: item.stores[0].id,
+        storeId: item.stores[0].store._id,
+        storeName: item.stores[0].store.title,
         storePrice: item.stores[0].price,
         inStock: item.stores[0].inStock,
         lowStock: item.stores[0].lowStock,
@@ -590,16 +637,34 @@ router.get("/storeItems", async (req, res) => {
 
 router.get("/searchByName", async (req, res) => {
   try {
-    let { name, storeId } = req.body;
+    let { name, storeId } = req.query;
     const { account } = req.authData;
 
     let filters = {
       account: account,
-      stores: { $elemMatch: { id: storeId } },
-      name: { $regex: ".*" + name + ".*", $options: "i" },
+      stores: { $elemMatch: { store: storeId } },
+      title: { $regex: ".*" + name + ".*", $options: "i" },
     };
-
-    var result = await ItemList.find(filters).sort({ name: 1 });
+    var result = await ItemList.find(filters).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
+      path: 'modifiers', 
+      select: ["_id","title"],
+      populate : [
+        {
+          path: 'stores',
+          select: ["_id","title"]
+        }]
+    }).populate({ 
+      path: 'taxes', 
+      select: ["_id","title","tax_type","tax_rate"],
+      populate : [{
+          path: 'tax_type',
+          select: ["_id","title"]
+        },
+        {
+          path: 'stores',
+          select: ["_id","title"]
+        }]
+      }).sort({ title: 1 });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -610,7 +675,7 @@ router.get("/search", async (req, res) => {
   try {
     const { account } = req.authData;
     let { search, stockFilter, categoryFilter, storeId } = req.query;
-    search = req.query.search.trim();
+    search = typeof search !== "undefined" ? search.trim() : search;
     let storeFilter = {};
     if (storeId !== "0") {
       storeFilter.stores = { $elemMatch: { store: storeId } };
@@ -631,24 +696,24 @@ router.get("/search", async (req, res) => {
     ) {
       storeFilter.stockId = stockFilter;
     }
-    // if (search !== "" && search !== undefined) {
-    //   storeFilter = {
-    //     $or: [
-    //       { name: { $regex: ".*" + search + ".*", $options: "i" } },
-    //       {
-    //         "category.name": {
-    //           $regex: ".*" + search + ".*",
-    //           $options: "i",
-    //         },
-    //       },
-    //     ],
-    //   };
-    //   // storeFilter.name = { $regex: ".*" + search + ".*", $options: "i" };
-    //   // storeFilter["category.name"] = {
-    //   //   $regex: ".*" + search + ".*",
-    //   //   $options: "i",
-    //   // };
-    // }
+    if (search !== "" && search !== undefined) {
+      storeFilter = {
+        $or: [
+          { name: { $regex: ".*" + search + ".*", $options: "i" } },
+          {
+            "category.name": {
+              $regex: ".*" + search + ".*",
+              $options: "i",
+            },
+          },
+        ],
+      };
+      // storeFilter.name = { $regex: ".*" + search + ".*", $options: "i" };
+      // storeFilter["category.name"] = {
+      //   $regex: ".*" + search + ".*",
+      //   $options: "i",
+      // };
+    }
     storeFilter.account = account;
     storeFilter.deleted = 0;
 
@@ -671,7 +736,7 @@ router.get("/search", async (req, res) => {
           path: 'stores',
           select: ["_id","title"]
         }]
-      }).sort({ name: 1 });
+      }).sort({ title: 1 });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -1117,7 +1182,7 @@ router.post("/save_csv", async (req, res) => {
               row !== undefined
             ) {
               const handleExist = await ItemList.findOne({
-                name: row.Name,
+                title: row.Name,
                 sku: Number(row.SKU).toPrecision(),
                 account: account,
                 deleted: 0,
@@ -1266,7 +1331,7 @@ router.post("/save_csv", async (req, res) => {
                       return {
                         ...item,
                         item_id: handleExist._id,
-                        name: row.Name.trim(),
+                        title: row.Name.trim(),
                         account: account,
                         category: [],
                         soldByType:
@@ -1322,7 +1387,7 @@ router.post("/save_csv", async (req, res) => {
                 } else {
                   await updatedFile.push({
                     item_id: handleExist._id,
-                    name: row.Name.trim(),
+                    title: row.Name.trim(),
                     account: account,
                     category: [],
                     soldByType:
@@ -1389,7 +1454,7 @@ router.post("/save_csv", async (req, res) => {
                       ) {
                         return {
                           ...item,
-                          name: row.Name.trim(),
+                          title: row.Name.trim(),
                           account: account,
                           category: [],
                           soldByType:
@@ -1444,7 +1509,7 @@ router.post("/save_csv", async (req, res) => {
                     });
                   } else {
                     await insertFile.push({
-                      name: row.Name.trim(),
+                      title: row.Name.trim(),
                       account: account,
                       category: [],
                       soldByType:

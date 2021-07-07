@@ -1,7 +1,7 @@
 import mongoose, { mongo, models } from "mongoose";
 
 const itemListSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
     min: 3,
     max: 255,
@@ -53,6 +53,9 @@ const itemListSchema = new mongoose.Schema({
         min: 1,
         max: 255,
       },
+      variantNames: [{
+        type: Array
+      }],
       optionValue: [
         {
           variantName: [{
@@ -132,7 +135,7 @@ const itemListSchema = new mongoose.Schema({
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "categries"
+    ref: "categories"
   },
   modifiers: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -162,5 +165,14 @@ const itemListSchema = new mongoose.Schema({
 },{
   timestamps: true
 });
+itemListSchema.index(
+  {
+      title: 1,
+  },
+  {
+      unique: true,
+      sparse: true
+  }
+);
 
-module.exports = mongoose.model("itemList", itemListSchema);
+module.exports = mongoose.model("items", itemListSchema);

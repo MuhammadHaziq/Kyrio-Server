@@ -1,4 +1,4 @@
-import mongoose, { mongo, models } from "mongoose";
+import mongoose from "mongoose";
 
 const modifierSchema = new mongoose.Schema({
   title: {
@@ -59,6 +59,15 @@ const modifierSchema = new mongoose.Schema({
 },{
   timestamps: true
 });
+modifierSchema.index(
+  {
+      title: 1,
+  },
+  {
+      unique: true,
+      sparse: true
+  }
+);
 modifierSchema.pre("save", function (next) {
   var doc = this;
   var modifierSchema = mongoose.model("modifier", modifierSchema);
