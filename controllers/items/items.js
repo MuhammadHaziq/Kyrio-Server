@@ -134,8 +134,8 @@ router.post("/", async (req, res) => {
       stores,
       modifiers,
       taxes,
-      itemColor,
-      itemShape
+      color,
+      shape
     } = req.body;
    
     var image = req.files ? req.files.image : [];
@@ -226,8 +226,8 @@ router.post("/", async (req, res) => {
         taxes,
         repoOnPos,
         image: itemImageName,
-        color: itemColor,
-        shape: itemShape,
+        color,
+        shape,
         createdBy: _id
       }).save();
 
@@ -308,8 +308,8 @@ router.patch("/", async (req, res) => {
         stores,
         modifiers,
         taxes,
-        itemColor,
-        itemShape,
+        color,
+        shape,
       } = req.body;
       var image = req.files ? req.files.image : [];
       if (cost == "" || typeof cost === "undefined" || cost == null) {
@@ -416,8 +416,8 @@ router.patch("/", async (req, res) => {
           taxes,
           repoOnPos,
           image: itemImageName,
-          color: itemColor,
-          shape: itemShape,
+          color,
+          shape,
           createdBy: _id
         };
       
