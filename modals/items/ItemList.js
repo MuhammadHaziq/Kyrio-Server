@@ -30,6 +30,11 @@ const itemListSchema = new mongoose.Schema({
     type: String,
     max: 100,
   },
+  autoSKU: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
   trackStock: {
     type: Boolean,
     default: false,
@@ -92,25 +97,13 @@ const itemListSchema = new mongoose.Schema({
         max: 255,
       },
       inStock: {
-        type: String,
-        max: 255,
+        type: Number,
+        max: 100000000000,
       },
       lowStock: {
-        type: String,
-        max: 255,
-      },
-      variantName: {
-        type: String,
-        max: 255,
-      },
-      modifiers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "modifier",
-      }],
-      taxes: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "itemTax",
-      }],
+        type: Number,
+        max: 100000000000,
+      }
     },
   ],
   repoOnPos: {
@@ -158,21 +151,18 @@ const itemListSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
-  },
 },{
   timestamps: true
 });
-itemListSchema.index(
-  {
-      title: 1,
-  },
-  {
-      unique: true,
-      sparse: true
-  }
-);
+// Item with same name can be exist please comment this - Tahir
+// itemListSchema.index(
+//   {
+//       title: 1,
+//   },
+//   {
+//       unique: true,
+//       sparse: true
+//   }
+// );
 
 module.exports = mongoose.model("items", itemListSchema);

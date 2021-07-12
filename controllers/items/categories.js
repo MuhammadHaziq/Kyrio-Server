@@ -44,14 +44,17 @@ router.get("/", async (req, res) => {
     let allCategories = [];
     for (const cate of allCat) {
       let itemCount = await ItemList.find({
-        "category.id": cate._id,
+        "category": cate._id,
         deleted: 0,
       }).countDocuments();
       allCategories.push({
         _id: cate._id,
+        account: cate.account,
         title: cate.title,
         color: cate.color,
-        createdBy: cate.created_by,
+        createdBy: cate.createdBy,
+        createdAt: cate.createdAt,
+        updatedAt: cate.updatedAt,
         total_items: itemCount,
       });
     }

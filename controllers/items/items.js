@@ -155,7 +155,7 @@ router.post("/", async (req, res) => {
     if (taxes !== undefined && taxes !== null) {
       taxes = JSON.parse(taxes);
     }
-    if (category == undefined || category == "null" || category == null) {
+    if (typeof category == "undefined" || category == "" || category == "null" || category == null) {
       category = null
     }
     let checkSKU = await ItemList.findOne({
@@ -197,13 +197,10 @@ router.post("/", async (req, res) => {
       }
       stores = stores.map(itm => {
         return {
-          store: itm.store._id,
+          store: typeof itm.store._id == "undefined" ? itm.store : itm.store._id,
           price: itm.price,
           inStock: itm.inStock,
-          lowStock: itm.lowStock,
-          variantName: itm.variantName,
-          modifiers: itm.modifiers,
-          taxes: itm.taxes
+          lowStock: itm.lowStock
         }
       })
       
@@ -217,6 +214,7 @@ router.post("/", async (req, res) => {
         price,
         cost,
         sku,
+        autoSKU,
         barcode,
         trackStock,
         stockQty,
@@ -328,7 +326,7 @@ router.patch("/", async (req, res) => {
       if (taxes !== undefined && taxes !== null) {
         taxes = JSON.parse(taxes);
       }
-      if (category == undefined || category == "null" || category == null) {
+      if (typeof category == "undefined" || category == "" || category == "null" || category == null) {
         category = null
       }
       if (dsd !== undefined) {
@@ -347,7 +345,7 @@ router.patch("/", async (req, res) => {
           deleted: 0,
           _id: {$ne : item_id}
         })
-      if(checkSKU.length <= 0){
+      if(checkSKU.length <= 0 ){
         var itemImageName = imageName;
 
         var rootDir = process.cwd();
@@ -387,13 +385,10 @@ router.patch("/", async (req, res) => {
         title = title !== null || title !== undefined ? title.trim() : "";
         stores = stores.map(itm => {
           return {
-            store: itm.store._id,
+            store: typeof itm.store._id == "undefined" ? itm.store : itm.store._id,
             price: itm.price,
             inStock: itm.inStock,
-            lowStock: itm.lowStock,
-            variantName: itm.variantName,
-            modifiers: itm.modifiers,
-            taxes: itm.taxes
+            lowStock: itm.lowStock
           }
         })
         let data = {
@@ -468,7 +463,7 @@ router.get("/sku", async (req, res) => {
     if(skuFound){
       let newSKU = "";
       // let sku = typeof skuFound.sku !== "undefined" || skuFound.sku !== null ? skuFound.sku : 
-      for(var i = 0; i <= 99999; i++){
+      for(var i = 1; i <= 99999; i++){
         newSKU = parseInt(skuFound.sku) + i
         var itemFound = await ItemList.findOne({
           sku: newSKU,
@@ -747,7 +742,6 @@ router.post("/delete", async (req, res) => {
   try {
     var { ids } = req.body;
     const { _id, account } = req.authData;
-    ids = JSON.parse(ids);
     // ids.forEach(async (id) => {
     let del = await ItemList.updateMany(
       { _id: { $in: ids }, account: account },
@@ -765,23 +759,26 @@ router.post("/delete", async (req, res) => {
     var SKUs = await ItemList.find({
       _id: {$in: ids},
       account: account
-    }).select("sku")
-    let finalSKUs = SKUs.filter(itm => parseInt(itm.sku) >= 10000).map(function(obj) {
+    }).select(["sku","autoSKU"])
+    
+    let finalSKUs = SKUs.filter(itm => itm.autoSKU == true).map(function(obj) {
       return obj.sku;
     })
-    let minSKU = min(finalSKUs) - 1
-    if(minSKU !== "" && minSKU !== null){
-      await SkuHistory.findOneAndUpdate(
-        { account: account },
-        { $set: {
-          sku: minSKU,
-          updatedBy: _id,
-        } },
-        {
-          new: true,
-          upsert: true, // Make this update into an upsert
-        }
-      );
+    if(finalSKUs.length > 0){
+      let minSKU = min(finalSKUs) - 1
+      if(minSKU !== "" && minSKU !== null && typeof minSKU != NaN && minSKU != -1){
+        await SkuHistory.findOneAndUpdate(
+          { account: account },
+          { $set: {
+            sku: minSKU,
+            updatedBy: _id,
+          } },
+          {
+            new: true,
+            upsert: true, // Make this update into an upsert
+          }
+        );
+      }
     }
     
     res.status(200).json({ message: "deleted" });

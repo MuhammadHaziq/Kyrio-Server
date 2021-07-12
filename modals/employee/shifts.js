@@ -2,17 +2,8 @@ import mongoose from "mongoose";
 
 const ShiftsSchema = new mongoose.Schema({
   store: {
-    _id: false,
-    _id: {
-      type: String,
-      min: 1,
-      max: 255,
-    },
-    name: {
-      type: String,
-      min: 1,
-      max: 255,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
   },
   pos_device_id: {
     type: String,

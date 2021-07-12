@@ -4,7 +4,7 @@ module.exports = function (io) {
         socket.on('create', function (room) {
             socket.join(room);
           });
-        // console.log("connected")
+        console.log("connected")
         // socket.emit('announcements', { message: 'A new user has joined!' });
         // socket.on('itemUpdates', function(data,sock) {
         //     console.log(data)
