@@ -190,8 +190,6 @@ router.post("/", async (req, res) => {
               res.status(404).json({ message: uploadResult.message });
             }
             itemImageName = uploadResult.images[0];
-            itemColor = "";
-            itemShape = "";
           }
         }
       }
@@ -377,8 +375,6 @@ router.patch("/", async (req, res) => {
                 res.status(404).json({ message: uploadResult.message });
               }
               itemImageName = uploadResult.images[0];
-              itemColor = "";
-              itemShape = "";
             }
           }
         }
