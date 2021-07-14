@@ -71,10 +71,10 @@ router.delete("/:ids", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-router.patch("/:id", async (req, res) => {
+router.patch("/:", async (req, res) => {
   try {
-    const { title, type, value, restricted } = req.body;
-    const { id } = req.params;
+    const { id, title, type, value, restricted } = req.body;
+    
     const { _id, account } = req.authData;
     let { stores } = req.body;
 
