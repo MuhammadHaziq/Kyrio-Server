@@ -7,7 +7,7 @@ import diningRoute from "../controllers/settings/diningOption";
 import diningRoute2 from "../controllers/settings/diningOption2";
 import taxesType from "../controllers/settings/taxes/taxesType";
 import taxesOption from "../controllers/settings/taxes/taxesOption";
-import paymentTypes from "../controllers/settings/paymentTypes/paymentTypes.js";
+import paymentMethods from "../controllers/settings/paymentTypes/paymentMethods.js";
 import paymentsType from "../controllers/settings/paymentTypes/paymentsType.js";
 
 import itemTax from "../controllers/settings/taxes/itemTax";
@@ -51,7 +51,7 @@ router.use("/tax/taxesType", verifyToken, taxesType);
 router.use("/tax/taxesOption", verifyToken, taxesOption);
 router.use("/tax", verifyToken, itemTax);
 router.use("/kitchenPrinter", verifyToken, kitchenPrinter);
-router.use("/paymentTypes", verifyToken, paymentTypes);
+router.use("/paymentTypes", verifyToken, paymentMethods);
 router.use("/paymentsType", verifyToken, paymentsType);
 router.use("/settingsLoyalty", verifyToken, settingsLoyalty);
 router.use("/features", verifyToken, features);

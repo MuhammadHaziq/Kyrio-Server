@@ -66,7 +66,7 @@ router.get("/search", async (req, res) => {
           { phone: { $regex: ".*" + search + ".*", $options: "i" } },
           {
             role: {
-              "role.name": { $regex: ".*" + search + ".*", $options: "i" },
+              "role.title": { $regex: ".*" + search + ".*", $options: "i" },
             },
           },
         ],
@@ -74,12 +74,12 @@ router.get("/search", async (req, res) => {
     } else {
       filter = {
         $or: [
-          { name: { $regex: ".*" + search + ".*", $options: "i" } },
+          { title: { $regex: ".*" + search + ".*", $options: "i" } },
           { email: { $regex: ".*" + search + ".*", $options: "i" } },
           { phone: { $regex: ".*" + search + ".*", $options: "i" } },
           {
             role: {
-              "role.name": { $regex: ".*" + search + ".*", $options: "i" },
+              "role.title": { $regex: ".*" + search + ".*", $options: "i" },
             },
           },
         ],
@@ -95,7 +95,7 @@ router.get("/search", async (req, res) => {
         ],
       };
     }
-    var result = await Users.find(filter).sort({name: 1});
+    var result = await Users.find(filter).sort({title: 1});
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

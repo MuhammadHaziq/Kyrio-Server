@@ -1,5 +1,4 @@
 import Users from "../modals/users";
-import Modules from "../modals/modules/modules";
 import Features from "../modals/modules/features";
 import Backoffice from "../modals/modules/backoffice";
 import PosModule from "../modals/modules/posModule";
@@ -9,89 +8,96 @@ import POS_Device from "../modals/POS_Device";
 import diningOption from "../modals/settings/diningOption";
 import taxesOption from "../modals/settings/taxes/taxesOption";
 import taxesType from "../modals/settings/taxes/taxesType";
-import paymentTypes from "../modals/settings/paymentTypes/paymentTypes";
+import paymentMethods from "../modals/settings/paymentTypes/paymentMethods";
 import paymentsType from "../modals/settings/paymentTypes/paymentsType";
 import { modulesData } from "../data/data";
 import jwt from "jsonwebtoken";
 import validator from "email-validator";
 
 export const checkModules = (req, res, next) => {
-  const { email } = req.body;
+  const { email, platform } = req.body;
   try{
-  Users.find({
-    email: email,
-  }).then(async (result) => {
-    if (result.length > 0) {
-      res.status(422).send({
-        type: "email",
-        message: "An account with this email address already exists",
-      });
-    } else {
-      if (validator.validate(email)) {
-
-        let features = await Features.find()
-        if(features.length <= 0){
-          features = await Features.insertMany(modulesData.features);
-        }
-        let backoffice = await Backoffice.find()
-        if(backoffice.length <= 0){
-          backoffice = await Backoffice.insertMany(modulesData.backofficeModules);
-        }
-        let posModule = await PosModule.find()
-        if(posModule.length <= 0){
-          posModule = await PosModule.insertMany(modulesData.posModules);
-        }
-        let settings = await Settings.find()
-        if(settings.length <= 0){
-          settings = await Settings.insertMany(modulesData.settings);
-        }
-
-        let roleData = {
-          title: "Owner",
-          allowBackoffice: {
-            enable: true,
-            modules: backoffice.map((itm) => {
-              return {
-                backoffice: itm._id,
-                enable: true
-              };
-            }),
-          },
-          allowPOS: {
-            enable: true,
-            modules: posModule.map((itm) => {
-              return {
-                posModule: itm._id,
-                enable: true
-              };
-            }),
-          },
-        };
-        let role = new Role(roleData);
-        role
-          .save()
-          .then((RoleInserted) => {
-            req.body.role_id = RoleInserted._id;
-            req.body.title = RoleInserted.title;
-            req.body.features = features;
-            req.body.settings = settings;
-
-            next();
-          })
-          .catch((err) => {
-            res.status(403).send({
-              type: "server",
-              message: `Unable to Save Role ${err.message}`,
-            });
-          });
-      } else {
+  if(platform == "backoffice" || platform === "pos"){
+    Users.find({
+      email: email,
+    }).then(async (result) => {
+      if (result.length > 0) {
         res.status(422).send({
           type: "email",
-          message: "Invalid Email Address",
+          message: "An account with this email address already exists",
         });
+      } else {
+        if (validator.validate(email)) {
+
+          let features = await Features.find()
+          if(features.length <= 0){
+            features = await Features.insertMany(modulesData.features);
+          }
+          let backoffice = await Backoffice.find()
+          if(backoffice.length <= 0){
+            backoffice = await Backoffice.insertMany(modulesData.backofficeModules);
+          }
+          let posModule = await PosModule.find()
+          if(posModule.length <= 0){
+            posModule = await PosModule.insertMany(modulesData.posModules);
+          }
+          let settings = await Settings.find()
+          if(settings.length <= 0){
+            settings = await Settings.insertMany(modulesData.settings);
+          }
+
+          let roleData = {
+            title: "Owner",
+            allowBackoffice: {
+              enable: true,
+              modules: backoffice.map((itm) => {
+                return {
+                  backoffice: itm._id,
+                  enable: true
+                };
+              }),
+            },
+            allowPOS: {
+              enable: true,
+              modules: posModule.map((itm) => {
+                return {
+                  posModule: itm._id,
+                  enable: true
+                };
+              }),
+            },
+          };
+          let role = new Role(roleData);
+          role
+            .save()
+            .then((RoleInserted) => {
+              req.body.role_id = RoleInserted._id;
+              req.body.title = RoleInserted.title;
+              req.body.features = features;
+              req.body.settings = settings;
+
+              next();
+            })
+            .catch((err) => {
+              res.status(403).send({
+                type: "server",
+                message: `Unable to Save Role ${err.message}`,
+              });
+            });
+        } else {
+          res.status(422).send({
+            type: "email",
+            message: "Invalid Email Address",
+          });
+        }
       }
-    }
-  });
+    });
+  } else {
+    res.status(500).send({
+      type: "client",
+      message: `Unauthorized Access!`,
+    });        
+  }
   } catch (e) {
     res.status(422).send({
         type: "server",
@@ -275,10 +281,10 @@ export const addModuleWhenSignUp = async (userId, account, store, UDID) => {
       console.log("Default Tax Option Catch Error", error.message);
     }
   }
-  const paymentTypesCheck = await paymentTypes.find({});
+  const paymentTypesCheck = await paymentMethods.find({});
   if (paymentTypesCheck.length === 0) {
     try {
-      await paymentTypes
+      await paymentMethods
         .create([
           {
             title: process.env.DEFAULT_PAYMENT_TYPES_1,
@@ -309,38 +315,34 @@ export const addModuleWhenSignUp = async (userId, account, store, UDID) => {
             (item) => item.title.toUpperCase() === "Card".toUpperCase()
           )[0];
           // console.log("Default Payment Type Create", response);
-          console.log("Default Payment Type Create");
+          console.log("Default Payment Method Create");
         })
         .catch((err) => {
-          console.log("Default Payment Type Insert Error", err.message);
+          console.log("Default Payment Method Insert Error", err.message);
         });
     } catch (error) {
-      console.log("Default Payment Type Catch Error", error.message);
+      console.log("Default Payment Method Catch Error", error.message);
     }
   }
 
-  // const cash = paymentTypesCheck.filter(
-  //   (item) => item.title.toUpperCase() === "Cash".toUpperCase()
-  // )[0];
-  // const card = paymentTypesCheck.filter(
-  //   (item) => item.title.toUpperCase() === "Card".toUpperCase()
-  // )[0];
   try {
     await paymentsType
       .create([
         {
-          name: process.env.DEFAULT_PAYMENT_TYPE_1,
-          paymentType: cash._id,
+          title: process.env.DEFAULT_PAYMENT_TYPE_1,
+          paymentMethod: cash._id,
           store: paymentTypeStoreId,
           createdBy: userId,
-          account: account
+          account: account,
+          cashPaymentRound: 0.00
         },
         {
-          name: process.env.DEFAULT_PAYMENT_TYPE_2,
-          paymentType: cash._id,
+          title: process.env.DEFAULT_PAYMENT_TYPE_2,
+          paymentMethod: cash._id,
           store: paymentTypeStoreId,
           createdBy: userId,
-          account: account
+          account: account,
+          cashPaymentRound: 0.00
         },
       ])
       .then((response) => {

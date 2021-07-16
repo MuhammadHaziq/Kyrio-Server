@@ -1,7 +1,13 @@
 import mongoose from "mongoose";
 
 const backofficeSchema = new mongoose.Schema({
-    name: {
+    title: {
+      type: String,
+      min: 3,
+      max: 255,
+      required: true,
+    },
+    handle: {
       type: String,
       min: 3,
       max: 255,

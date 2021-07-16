@@ -7,11 +7,32 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const { account } = req.authData;
-    let accountFeature  = await Accounts.findOne({ _id: account }).populate('features.feature',["_id","name","description","icon"]).populate('settings.module',["_id","name","icon","heading","span"]).populate('settings.feature',["_id","name","description","icon"]);
+    let accountFeature  = await Accounts.findOne({ _id: account }).populate('features.feature',["_id","title","handle","description","icon"]).populate('settings.module',["_id","title","handle","icon","heading","span"]).populate('settings.feature',["_id","title","handle","description","icon"]);
 
     res
       .status(200)
-      .json({ message: "Features updated", features: accountFeature });
+      .json(accountFeature);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+router.get("/app", async (req, res) => {
+  try {
+    const { account } = req.authData;
+    let accountFeature  = await Accounts.findOne({ _id: account }).populate('features.feature',["_id","title","handle","description","icon"]);
+    let features = []
+    for(const ft of accountFeature.features){
+      features.push({
+        _id: ft.feature._id,
+        title: ft.feature.title,
+        handle: ft.feature.handle,
+        enable: ft.enable
+      })
+    }
+    res
+      .status(200)
+      .json(features);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -43,13 +64,22 @@ router.patch("/", async (req, res) => {
         new: true,
         upsert: true
       }
-    ).populate('features.feature',["_id","name","description","icon"]).populate('settings.module',["_id","name","icon","heading","span"]).populate('settings.feature',["_id","name","description","icon"]);
+    ).populate('features.feature',["_id","title","handle","description","icon"]).populate('settings.module',["_id","title","handle","icon","heading","span"]).populate('settings.feature',["_id","title","handle","description","icon"]);
       if(accountFeature){
-        req.io.to(account).emit(FEATURES_TOGGLE, { appData: filterFeatures, backoffice: accountFeature, settings: settings, user: _id, account: account });
+        let featuresArr = []
+        for(const ft of accountFeature.features){
+          featuresArr.push({
+            _id: ft.feature._id,
+            title: ft.feature.title,
+            handle: ft.feature.handle,
+            enable: ft.enable
+          })
+        }
+        req.io.to(account).emit(FEATURES_TOGGLE, { app: featuresArr, backoffice: accountFeature, settings: settings, user: _id, account: account });
       }
     res
       .status(200)
-      .json({ message: "Features updated", features: accountFeature });
+      .json(accountFeature );
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

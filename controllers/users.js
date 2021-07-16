@@ -19,11 +19,11 @@ router.post("/testapi", async (req, res) => {
           path: 'role', 
           populate : [{
               path: 'allowBackoffice.modules.backoffice',
-              select: ["_id","name","isMenu","isChild"]
+              select: ["_id","title","handle","isMenu","isChild"]
             },
             {
               path: 'allowPOS.modules.posModule',
-              select: ["_id","name","description"]
+              select: ["_id","title","handle","description"]
             }]
           })
           .populate('stores',['_id','title'])
@@ -31,15 +31,15 @@ router.post("/testapi", async (req, res) => {
           path : 'account',
           populate : [{
               path: 'features.feature',
-              select: ["_id","name","description","icon"]
+              select: ["_id","title","handle","description","icon"]
             },
             {
               path: 'settings.module',
-              select: ["_id","name","icon","heading","span"]
+              select: ["_id","title","handle","icon","heading","span"]
             },
             {
               path: 'settings.feature',
-              select: ["_id","name","description","icon"]
+              select: ["_id","title","handle","description","icon"]
             }]
           });
         res.status(200).send(userResult);
@@ -78,14 +78,14 @@ router.post("/signup", checkModules, async (req, res) => {
                     feature:
                       features.filter(
                         (item) =>
-                          item.name.toUpperCase() ===
-                          itm.name.toUpperCase()
+                          item.title.toUpperCase() ===
+                          itm.title.toUpperCase()
                       ).length > 0
                         ? features
                             .filter(
                               (item) =>
-                                item.name.toUpperCase() ===
-                                itm.name.toUpperCase()
+                                item.title.toUpperCase() ===
+                                itm.title.toUpperCase()
                             )
                             .map((item) => {
                               return item._id;
@@ -106,7 +106,7 @@ router.post("/signup", checkModules, async (req, res) => {
             createdBy: userId,
           }).save();
 
-        let accountResult = await Accounts.findOne({ _id: account._id }).populate('features.feature',["_id","name","description","icon"]).populate('settings.module',["_id","name","icon","heading","span"]).populate('settings.feature',["_id","name","description","icon"])
+        let accountResult = await Accounts.findOne({ _id: account._id }).populate('features.feature',["_id","title","handle","description","icon"]).populate('settings.module',["_id","title","handle","icon","heading","span"]).populate('settings.feature',["_id","title","handle","description","icon"])
         
         let store = new Stores({
           title: accountResult.businessName,
@@ -128,11 +128,11 @@ router.post("/signup", checkModules, async (req, res) => {
           path: 'role', 
           populate : [{
               path: 'allowBackoffice.modules.backoffice',
-              select: ["_id","name","isMenu","isChild"]
+              select: ["_id","title","handle","isMenu","isChild"]
             },
             {
               path: 'allowPOS.modules.posModule',
-              select: ["_id","name","description"]
+              select: ["_id","title","handle","description"]
             }]
           })
           .populate('stores',['_id','title'])
@@ -140,17 +140,24 @@ router.post("/signup", checkModules, async (req, res) => {
           path : 'account',
           populate : [{
               path: 'features.feature',
-              select: ["_id","name","description","icon"]
+              select: ["_id","title","handle","description","icon"]
             },
             {
               path: 'settings.module',
-              select: ["_id","name","icon","heading","span"]
+              select: ["_id","title","handle","icon","heading","span"]
             },
             {
               path: 'settings.feature',
-              select: ["_id","name","description","icon"]
+              select: ["_id","title","handle","description","icon"]
             }]
           })
+          // let emailMessage = {
+        //   businessName: userResult.account.businessName,
+        //   email: userResult.email,
+        //   _id: userResult._id,
+        //   from: "info@kyrio.com",
+        // };
+        // sendEmail(emailMessage);
         let user = {
           platform: platform,
           _id: userResult._id,
@@ -168,32 +175,60 @@ router.post("/signup", checkModules, async (req, res) => {
           posPin: typeof userResult.posPin !== "undefined" ? userResult.posPin : null,
           enablePin: typeof userResult.enablePin !== "undefined" ? userResult.enablePin : null
         };
-        
+        if(platform == "backoffice"){
+          
+          jwt.sign(user, "kyrio_bfghigheu", async (err, token) => {
+            if (err) {
+              res.status(500).send({
+                type: "server",
+                message: `Unable To Generate Token: ${err.message}`,
+              });
+            } else {
+              await addModuleWhenSignUp(userId, accountResult._id, storeObject, UDID);
 
-        // let emailMessage = {
-        //   businessName: result.businessName,
-        //   email: result.email,
-        //   _id: result._id,
-        //   from: "info@kyrio.com",
-        // };
-        // sendEmail(emailMessage);
-        jwt.sign(user, "kyrio_bfghigheu", async (err, token) => {
-          if (err) {
-            res.status(500).send({
-              type: "server",
-              message: `Unable To Generate Token: ${err.message}`,
-            });
-          } else {
-            await addModuleWhenSignUp(userId, accountResult._id, storeObject, UDID);
-            let storesArray = [];
-            storesArray.push(store);
-            user.roleData = userResult.role
-            user.features = userResult.account.features
-            user.settings = userResult.account.settings
-            user.UserToken = token;
-            res.status(200).send(user);
-          }
-        });
+              user.roleData = userResult.role
+              user.features = userResult.account.features
+              user.settings = userResult.account.settings
+              user.UserToken = token;
+              res.status(200).send(user);
+            }
+          });
+        } else if(platform == "pos"){
+          jwt.sign(user, "kyrio_bfghigheu", async (err, token) => {
+            if (err) {
+              res.status(500).send({
+                type: "server",
+                message: `Unable To Generate Token: ${err.message}`,
+              });
+            } else {
+              await addModuleWhenSignUp(userId, accountResult._id, storeObject, UDID);
+
+              let features = []
+                for(const ft of result.account.features){
+                  features.push({
+                    _id: ft.feature._id,
+                    title: ft.feature.title,
+                    handle: ft.feature.handle,
+                    enable: ft.enable
+                  })
+                }
+                let modules = []
+                for(const md of result.role.allowPOS.modules){
+                  modules.push({
+                    _id: md.posModule._id,
+                    title: md.posModule.title,
+                    handle: md.posModule.handle,
+                    enable: md.enable
+                  })
+                }
+                user.role_title = result.role.title,
+                user.features = features
+                user.modules = modules
+                user.UserToken = token
+              res.status(200).send(user);
+            }
+          });
+        }
       })
       .catch((err) => {
         res.status(422).send({ type: "server", message: err.message });
@@ -205,17 +240,17 @@ router.post("/signup", checkModules, async (req, res) => {
 router.post("/signin", async (req, res) => {
   try {
     const { email, password, platform } = req.body;
-
-    // let result = await Users.findOne({ email: email, password: md5(password) }).populate('role').populate('stores',['_id','title']).populate('account')
+    if(platform == "backoffice" || platform === "pos"){
+      
       let result = await Users.findOne({ email: email, password: md5(password) }).populate({ 
         path: 'role', 
         populate : [{
             path: 'allowBackoffice.modules.backoffice',
-            select: ["_id","name","isMenu","isChild"]
+            select: ["_id","title","handle","isMenu","isChild"]
           },
           {
             path: 'allowPOS.modules.posModule',
-            select: ["_id","name","description"]
+            select: ["_id","title","handle","description"]
           }]
         })
         .populate('stores',['_id','title'])
@@ -223,15 +258,15 @@ router.post("/signin", async (req, res) => {
         path : 'account',
         populate : [{
             path: 'features.feature',
-            select: ["_id","name","description","icon"]
+            select: ["_id","title","handle","description","icon"]
           },
           {
             path: 'settings.module',
-            select: ["_id","name","icon","heading","span"]
+            select: ["_id","title","handle","icon","heading","span"]
           },
           {
             path: 'settings.feature',
-            select: ["_id","name","description","icon"]
+            select: ["_id","title","handle","description","icon"]
           }]
         })
        
@@ -249,52 +284,91 @@ router.post("/signin", async (req, res) => {
             });
           }
         } else {
-          let access = true;
+          let user = {
+            platform: platform,
+            _id: result._id,
+            name: result.name,
+            email: result.email,
+            emailVerified: result.emailVerified,
+            businessName: result.account.businessName,
+            country: result.country,
+            role_id: result.role._id,
+            stores: result.stores,
+            owner_id: typeof result.owner_id !== "undefined" ? result.owner_id : null,
+            account: result.account._id,
+            is_owner: typeof result.owner_id !== "undefined" ? true : false,
+            posPin: typeof result.posPin !== "undefined" ? result.posPin : null,
+            enablePin: typeof result.enablePin !== "undefined" ? result.enablePin : null
+          };
           if(platform == "backoffice"){
             if(!result.role.allowBackoffice.enable){
-              access = false
+              res.status(422).send({
+                type: "server",
+                message: `You do not have access to backoffice!`,
+              });
+            } else {
+              jwt.sign(user, "kyrio_bfghigheu", (err, token) => {
+                if (err) {
+                  res.status(500).send({
+                    type: "server",
+                    message: `Invalid User Token: ${err.message}`,
+                  });
+                }
+                user.roleData = result.role
+                user.features = result.account.features
+                user.settings = result.account.settings
+                user.UserToken = token;
+                res.status(200).send(user);
+              });
             }
-          }
-          if(access){
-            let user = {
-              platform: platform,
-              _id: result._id,
-              name: result.name,
-              email: result.email,
-              emailVerified: result.emailVerified,
-              businessName: result.account.businessName,
-              country: result.country,
-              role_id: result.role._id,
-              stores: result.stores,
-              owner_id: typeof result.owner_id !== "undefined" ? result.owner_id : null,
-              account: result.account._id,
-              is_owner: typeof result.owner_id !== "undefined" ? true : false,
-              posPin: typeof result.posPin !== "undefined" ? result.posPin : null,
-              enablePin: typeof result.enablePin !== "undefined" ? result.enablePin : null
-            };
-
-            jwt.sign(user, "kyrio_bfghigheu", (err, token) => {
-              if (err) {
-                res.status(500).send({
-                  type: "server",
-                  message: `Invalid User Token: ${err.message}`,
-                });
-              }
-              user.roleData = result.role
-              user.features = result.account.features
-              user.settings = result.account.settings
-              user.UserToken = token;
-              res.status(200).send(user);
-            });
-          } else {
-            res.status(422).send({
-              type: "server",
-              message: "You do not have access to backoffice!",
-            });
-          }
+          } else if(platform == "pos") {
+            if(!result.role.allowPOS.enable){
+              res.status(422).send({
+                type: "server",
+                message: `You do not have access to pos!`,
+              });
+            } else {
+              jwt.sign(user, "kyrio_bfghigheu", (err, token) => {
+                if (err) {
+                  res.status(500).send({
+                    type: "server",
+                    message: `Invalid User Token: ${err.message}`,
+                  });
+                }
+                let features = []
+                for(const ft of result.account.features){
+                  features.push({
+                    _id: ft.feature._id,
+                    title: ft.feature.title,
+                    handle: ft.feature.handle,
+                    enable: ft.enable
+                  })
+                }
+                let modules = []
+                for(const md of result.role.allowPOS.modules){
+                  modules.push({
+                    _id: md.posModule._id,
+                    title: md.posModule.title,
+                    handle: md.posModule.handle,
+                    enable: md.enable
+                  })
+                }
+                user.role_title = result.role.title,
+                user.features = features
+                user.modules = modules
+                user.UserToken = token;
+                res.status(200).send(user);
+              });
+            }
+          } 
         }
+      } else {
+        res.status(500).send({
+          type: "client",
+          message: `Unauthorized Access!`,
+        });        
+      }
   } catch (err) {
-    console.log(err.message)
     res.status(500).send({
       type: "server",
       message: `Internal server error: ${err.message}`,

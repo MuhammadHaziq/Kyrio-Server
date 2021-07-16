@@ -36,30 +36,6 @@ const accountsSchema = new mongoose.Schema({
         ref: "features",
       },
       enable: Boolean,
-      // featureId: {
-      //   type: String,
-      //   min: 3,
-      //   max: 255,
-      //   required: true,
-      // },
-      // featureName: {
-      //   type: String,
-      //   min: 3,
-      //   max: 255,
-      //   required: true,
-      // },
-      // description: {
-      //   type: String,
-      //   min: 3,
-      //   max: 255,
-      //   required: true,
-      // },
-      // icon: {
-      //   type: String,
-      //   min: 3,
-      //   max: 255,
-      //   required: true,
-      // },
     },
   ],
   settings: [{
@@ -72,38 +48,6 @@ const accountsSchema = new mongoose.Schema({
           type: mongoose.Schema.Types.ObjectId,
           ref: "features",
         },
-        // moduleId: {
-        //   type: String,
-        //   min: 3,
-        //   max: 255,
-        //   required: true,
-        // },
-        // moduleName: {
-        //   type: String,
-        //   min: 3,
-        //   max: 255,
-        //   required: true,
-        // },
-        // icon: {
-        //   type: String,
-        //   min: 3,
-        //   max: 255,
-        // },
-        // heading: {
-        //   type: String,
-        //   min: 3,
-        //   max: 255,
-        // },
-        // span: {
-        //   type: String,
-        //   min: 3,
-        //   max: 255,
-        // },
-        // featureId: {
-        //   type: String,
-        //   min: 3,
-        //   max: 255,
-        // },
       }],
       createdBy: {
         type: mongoose.Schema.Types.ObjectId,

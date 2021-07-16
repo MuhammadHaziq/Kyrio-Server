@@ -3,13 +3,12 @@ import paymentsType from "../../../modals/settings/paymentTypes/paymentsType";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const { name, storeId } = req.body;
+  const { title, storeId } = req.body;
   let { paymentTypes } = req.body;
 
   var errors = [];
-  if (!name || typeof name == "undefined" || name == "") {
-    errors.push(`Invalid Name!`);
-    // errors.push({ name: `Invalid Name!` });
+  if (!title || typeof title == "undefined" || title == "") {
+    errors.push(`Invalid Title!`);
   }
   if (!storeId || typeof storeId == "undefined" || storeId == "") {
     errors.push(`Invalid Store Id!`);
@@ -30,20 +29,21 @@ router.post("/", async (req, res) => {
   } else {
     const { _id, account } = req.authData;
     const newPaymentsTypes = new paymentsType({
-      name: name,
-      paymentType: paymentTypes.paymentTypeId,
+      title: title,
+      paymentMethod: paymentTypes.paymentTypeId,
       store: storeId,
       createdBy: _id,
       account: account,
+      cashPaymentRound: 0.00
     });
     try {
       const insert = await newPaymentsTypes.save();
-      const result = await paymentsType.findOne({ _id: insert._id }).populate('store', ["_id","title"]).populate('paymentType', ["_id","title"]);
+      const result = await paymentsType.findOne({ _id: insert._id }).populate('store', ["_id","title"]).populate('paymentMethod', ["_id","title"]);
 
       res.status(201).json(result);
     } catch (error) {
       if (error.code === 11000) {
-        res.status(400).json({ message: "Payment type Already Exist" });
+        res.status(400).json({ message: "Payment type already exist" });
       } else {
         res.status(400).json({ message: error.message });
       }
@@ -57,7 +57,7 @@ router.get("/", async (req, res) => {
     const result = await paymentsType.find({
       account: account,
       store: storeId,
-    }).populate('store', ["_id","title"]).populate('paymentType', ["_id","title"]);
+    }).populate('store', ["_id","title"]).populate('paymentMethod', ["_id","title"]);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -70,23 +70,21 @@ router.get("/row/:id", async (req, res) => {
     const result = await paymentsType.findOne({
       account: account,
       _id: id,
-    }).populate('store', ["_id","title"]).populate('paymentType', ["_id","title"]);
+    }).populate('store', ["_id","title"]).populate('paymentMethod', ["_id","title"]);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-router.patch("/:id", async (req, res) => {
-  const { name, storeId, cashPaymentRound } = req.body;
+router.patch("/", async (req, res) => {
+  const { id, title, storeId, cashPaymentRound } = req.body;
   let { paymentTypes } = req.body;
-  const { id } = req.params;
   let data = {};
 
   var errors = [];
-  if (!name || typeof name == "undefined" || name == "") {
-    errors.push(`Invalid Name!`);
-    // errors.push({ name: `Invalid Name!` });
+  if (!title || typeof title == "undefined" || title == "") {
+    errors.push(`Invalid Title!`);
   }
   if (!storeId || typeof storeId == "undefined" || storeId == "") {
     errors.push(`Invalid Store Id!`);
@@ -105,18 +103,11 @@ router.patch("/:id", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    if (req.body.cashPaymentRound !== undefined) {
       data = {
-        name: name,
-        paymentType: paymentTypes.paymentTypeId,
-        cashPaymentRound: cashPaymentRound,
+        title: title,
+        paymentMethod: paymentTypes.paymentTypeId,
+        cashPaymentRound: req.body.cashPaymentRound !== undefined ? cashPaymentRound : 0.00,
       };
-    } else {
-      data = {
-        name: name,
-        paymentType: paymentTypes.paymentTypeId,
-      };
-    }
     try {
       // { _id: id, storeId: storeId, createdBy: _id },
       const updatedRecord = await paymentsType.findOneAndUpdate(
@@ -128,7 +119,7 @@ router.patch("/:id", async (req, res) => {
           new: true,
           upsert: true, // Make this update into an upsert
         }
-      ).populate('store', ["_id","title"]).populate('paymentType', ["_id","title"]);
+      ).populate('store', ["_id","title"]).populate('paymentMethod', ["_id","title"]);
       res
         .status(200)
         .json({ message: "Record Updated Successfully", data: updatedRecord });

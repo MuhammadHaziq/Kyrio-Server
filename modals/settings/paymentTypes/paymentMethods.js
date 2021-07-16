@@ -1,6 +1,6 @@
-import mongoose, { mongo, models } from "mongoose";
+import mongoose from "mongoose";
 
-const paymentTypeSchema = new mongoose.Schema({
+const paymentMethodsSchema = new mongoose.Schema({
   title: {
     type: String,
     min: 3,
@@ -19,7 +19,7 @@ const paymentTypeSchema = new mongoose.Schema({
   timestamps: true
 });
 
-paymentTypeSchema.index(
+paymentMethodsSchema.index(
   {
     title: 1,
   },
@@ -29,4 +29,4 @@ paymentTypeSchema.index(
   }
 );
 
-module.exports = mongoose.model("paymentTypes", paymentTypeSchema);
+module.exports = mongoose.model("paymentmethods", paymentMethodsSchema);

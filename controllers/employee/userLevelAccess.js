@@ -9,40 +9,6 @@ import {
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
 
-router.get("/get_roles_modules", async (req, res) => {
-  try {
-    var result = await Modules.find();
-    var specificResult = [];
-    var backOffice = [];
-    var posModules = [];
-    (result || []).map((item) => {
-      item.backofficeModules.map((back) => {
-        backOffice.push({
-          moduleId: back._id,
-          moduleName: back.moduleName,
-          description:
-            typeof back.description !== "undefined" ? back.description : "",
-        });
-      });
-      item.posModules.map((pos) => {
-        posModules.push({
-          moduleId: pos._id,
-          moduleName: pos.moduleName,
-          description:
-            typeof pos.description !== "undefined" ? pos.description : "",
-        });
-      });
-    });
-    specificResult.push({
-      backofficeModules: { enable: false, modules: backOffice },
-      posModules: { enable: false, modules: posModules },
-    });
-    res.status(200).send(specificResult);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 router.get("/", async (req, res) => {
   try {
     const { account, _id } = req.authData;
@@ -51,7 +17,7 @@ router.get("/", async (req, res) => {
     // });
     let accessRights = [];
 
-    var roles = await Role.find({ account: account }).sort({
+    var roles = await Role.find({ account: account }).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]).sort({
       _id: "desc",
     });
     for (const role of roles) {
@@ -133,7 +99,10 @@ router.post("/", async (req, res) => {
         allowPOS: JSON.parse(allowPOS),
         settings: JSON.parse(settings),
       }).save();
-      res.status(200).json(newRole);
+      var role = await Role.find({ account: account, _id: newRole._id }).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]).sort({
+        _id: "desc",
+      });
+      res.status(200).json(role);
     } catch (error) {
       if (error.code === 11000) {
         res.status(400).json({ message: "Role Name Already Exist" });
@@ -182,7 +151,7 @@ router.patch("/", async (req, res) => {
           new: true,
           upsert: true, // Make this update into an upsert
         }
-      );
+      ).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]);
       res.status(200).json(result);
     } catch (error) {
       res.status(400).json({ message: error.message });

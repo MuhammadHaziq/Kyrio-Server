@@ -1,12 +1,12 @@
 import express from "express";
-import paymentTypes from "../../../modals/settings/paymentTypes/paymentTypes";
+import paymentMethods from "../../../modals/settings/paymentTypes/paymentMethods";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title } = req.body;
   const { _id, account } = req.authData;
 
-  const newPaymentTypes = new paymentTypes({
+  const newPaymentTypes = new paymentMethods({
     title: title,
     createdBy: _id,
     account: account,
@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { account } = req.authData;
-    const result = await paymentTypes.find({
+    const result = await paymentMethods.find({
       account: account,
       title: { $ne: "Cash" },
     });
@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    await paymentTypes.deleteOne({ _id: id });
+    await paymentMethods.deleteOne({ _id: id });
     res.status(200).json({ message: "deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });

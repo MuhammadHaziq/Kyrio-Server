@@ -1,7 +1,7 @@
-import mongoose, { mongo, models } from "mongoose";
+import mongoose from "mongoose";
 
 const paymentsTypeSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
     min: 3,
     max: 255,
@@ -11,9 +11,9 @@ const paymentsTypeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "accounts",
   },
-  paymentType: {
+  paymentMethod: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "paymentTypes",
+    ref: "paymentmethods",
   },
   store: {
     type: mongoose.Schema.Types.ObjectId,
@@ -33,7 +33,7 @@ const paymentsTypeSchema = new mongoose.Schema({
 
 paymentsTypeSchema.index(
   {
-    name: 1,
+    title: 1,
     store: 1,
   },
   {

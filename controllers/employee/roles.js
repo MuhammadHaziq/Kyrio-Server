@@ -17,28 +17,7 @@ const router = express.Router();
 */
 router.get("/get_roles_modules", async (req, res) => {
   try {
-    // var result = await Modules.find();
     var specificResult = [];
-    // var backOffice = [];
-    // var posModules = [];
-    // (result || []).map((item) => {
-    //   item.backofficeModules.map((back) => {
-    //     backOffice.push({
-    //       moduleId: back._id,
-    //       moduleName: back.moduleName,
-    //       description:
-    //         typeof back.description !== "undefined" ? back.description : "",
-    //     });
-    //   });
-    //   item.posModules.map((pos) => {
-    //     posModules.push({
-    //       moduleId: pos._id,
-    //       moduleName: pos.moduleName,
-    //       description:
-    //         typeof pos.description !== "undefined" ? pos.description : "",
-    //     });
-    //   });
-    // });
     specificResult.push({
       backofficeModules: { enable: false, modules: await Backoffice.find() },
       posModules: { enable: false, modules: await PosModule.find() },
@@ -53,7 +32,7 @@ router.get("/:roleId", async (req, res) => {
   try {
     const { roleId } = req.params;
     const { account } = req.authData;
-    var role = await Role.findOne({ account: account, _id: roleId }).populate('allowBackoffice.modules.backoffice', ["_id","name","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","name","description"]);
+    var role = await Role.findOne({ account: account, _id: roleId }).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]);
     res.status(200).json(role);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -178,30 +157,25 @@ const get_role_summary = async (roleId, account) => {
     // res.status(500).json({ message: error.message });
   }
 };
-router.get("/modules", async (req, res) => {
+router.get("/modules/app", async (req, res) => {
   try {
-    const { account } = req.authData;
-    let modules = await Modules.findOne();
-    let data = {
-      backoffice: modules.backofficeModules.map((itm) => {
-        return {
-          moduleId: itm._id,
-          moduleName: itm.moduleName,
-          description:
-            typeof itm.description !== "undefined" ? itm.description : "",
-        };
-      }),
-      pos: modules.posModules.map((itm) => {
-        return {
-          moduleId: itm._id,
-          moduleName: itm.moduleName,
-          description:
-            typeof itm.description !== "undefined" ? itm.description : "",
-        };
-      }),
-    };
+    const { _id, account } = req.authData;
+    var role = await Role.findOne({ account: account, user_id: _id }).populate('allowPOS.modules.posModule', ["_id","title","handle"]).select(["allowPOS"]);
+    if(role.allowPOS.enable){
+      let modules = []
+      for(const md of role.allowPOS.modules){
+        modules.push({
+          _id: md.posModule._id,
+          title: md.posModule.title,
+          handle: md.posModule.handle,
+          enable: md.enable
+        })
+      }
 
-    res.status(200).json(data);
+      res.status(200).json(modules);
+    } else {
+      res.status(400).json({ message: "Sorry you do not have access to POS!" });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -357,9 +331,9 @@ router.patch("/update", async (req, res) => {
           let updatedRole = await Role.findOneAndUpdate({ _id: roleId }, data, {
             new: true,
             upsert: true, // Make this update into an upsert
-          }).populate('allowBackoffice.modules.backoffice', ["_id","name","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","name","description"]);;
+          }).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]);
           if(updatedRole){
-            req.io.to(account).emit(ROLES_ACCESS_TOGGLE, { appData: updatedRole, backoffice: updatedRole, user: _id, account: account });
+            req.io.to(account).emit(ROLES_ACCESS_TOGGLE, { app: updatedRole, backoffice: updatedRole, user: _id, account: account });
           }
           const response = await get_role_summary(roleId, account);
           if (response.status == true) {
