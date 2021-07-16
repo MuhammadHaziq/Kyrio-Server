@@ -171,7 +171,7 @@ router.get("/modules/app", async (req, res) => {
           enable: md.enable
         })
       }
-
+      
       res.status(200).json(modules);
     } else {
       res.status(400).json({ message: "Sorry you do not have access to POS!" });
@@ -333,7 +333,16 @@ router.patch("/update", async (req, res) => {
             upsert: true, // Make this update into an upsert
           }).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]);
           if(updatedRole){
-            req.io.to(account).emit(ROLES_ACCESS_TOGGLE, { app: updatedRole, backoffice: updatedRole, user: _id, account: account });
+            let modules = []
+            for(const md of updatedRole.allowPOS.modules){
+              modules.push({
+                _id: md.posModule._id,
+                title: md.posModule.title,
+                handle: md.posModule.handle,
+                enable: md.enable
+              })
+            }
+            req.io.to(account).emit(ROLES_ACCESS_TOGGLE, { app: modules, backoffice: updatedRole, user: _id, account: account });
           }
           const response = await get_role_summary(roleId, account);
           if (response.status == true) {
