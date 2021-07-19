@@ -204,7 +204,7 @@ router.post("/signup", checkModules, async (req, res) => {
               await addModuleWhenSignUp(userId, accountResult._id, storeObject, UDID);
 
               let features = []
-                for(const ft of result.account.features){
+                for(const ft of userResult.account.features){
                   features.push({
                     _id: ft.feature._id,
                     title: ft.feature.title,
@@ -213,7 +213,7 @@ router.post("/signup", checkModules, async (req, res) => {
                   })
                 }
                 let modules = []
-                for(const md of result.role.allowPOS.modules){
+                for(const md of userResult.role.allowPOS.modules){
                   modules.push({
                     _id: md.posModule._id,
                     title: md.posModule.title,
@@ -221,7 +221,7 @@ router.post("/signup", checkModules, async (req, res) => {
                     enable: md.enable
                   })
                 }
-                user.role_title = result.role.title,
+                user.role_title = userResult.role.title,
                 user.features = features
                 user.modules = modules
                 user.UserToken = token
