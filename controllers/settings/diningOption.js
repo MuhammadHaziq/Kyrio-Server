@@ -116,7 +116,7 @@ router.post("/app", async (req, res) => {
 
       for (const dine of dinings) {
         for (const dineStore of dine.stores) {
-          if (dineStore.store._id == store._id && dineStore.isActive) {
+          if (dineStore.store._id == storeId && dineStore.isActive) {
             result.push({
               diningId: dine._id,
               title: dine.title,
