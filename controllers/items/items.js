@@ -18,6 +18,102 @@ const csv = require("@fast-csv/parse");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 var router = express.Router();
+
+
+const itemsForApp = async (req,ItemId) => {
+  try {
+    const { account } = req.authData;
+
+    var items = await ItemList.find({
+      _id: ItemId,
+      account: account,
+      deleted: 0,
+    }).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
+      path: 'modifiers', 
+      select: ["_id","title"],
+      populate : [
+        {
+          path: 'stores',
+          select: ["_id","title"]
+        }]
+    }).populate({ 
+      path: 'taxes', 
+      select: ["_id","title","tax_type","tax_rate"],
+      populate : [{
+          path: 'tax_type',
+          select: ["_id","title"]
+        },
+        {
+          path: 'stores',
+          select: ["_id","title"]
+        }]
+      })
+      .select([
+        "_id",
+        "title",
+        "category",
+        "availableForSale",
+        "soldByType",
+        "price",
+        "cost",
+        "sku",
+        "barcode",
+        "trackStock",
+        "compositeItem",
+        "stockQty",
+        "varients",
+        "stores.price",
+        "stores.store",
+        "stores.inStock",
+        "stores.lowStock",
+        "modifiers",
+        "taxes",
+        "repoOnPos",
+        "image",
+        "color",
+        "shape",
+        "createdAt",
+        "createdBy",
+      ])
+      .sort({ title: 1});
+    let itemsObjectFilter = [];
+    for (const item of items) {
+      itemsObjectFilter.push({
+        _id: item._id,
+        title: item.title,
+        category: item.category,
+        availableForSale: item.availableForSale,
+        soldByType: item.soldByType,
+        price: item.price,
+        cost: item.cost,
+        sku: item.sku,
+        barcode: item.barcode,
+        trackStock: item.trackStock,
+        compositeItem: item.compositeItem,
+        stockQty: item.stockQty,
+        varients: item.varients,
+        storeId: item.stores[0].store._id,
+        storeName: item.stores[0].store.title,
+        storePrice: item.stores[0].price,
+        inStock: item.stores[0].inStock,
+        lowStock: item.stores[0].lowStock,
+        modifiers: item.modifiers,
+        taxes: item.taxes,
+        repoOnPos: item.repoOnPos,
+        image: item.image,
+        color: item.color,
+        shape: item.shape,
+        createdAt: item.createdAt,
+        createdBy: item.createdBy,
+      });
+    }
+    return itemsObjectFilter
+    // res.status(200).json(itemsObjectFilter);
+  } catch (error) {
+    return { message: error.message }
+    // res.status(500).json({ message: error.message });
+  }
+}
 /* Server Side Record*/
 router.get("/serverSide", async (req, res) => {
   try {
@@ -142,7 +238,7 @@ router.post("/", async (req, res) => {
     if (cost == "" || typeof cost === "undefined" || cost == null) {
       cost = 0;
     }
-    const { _id, account } = req.authData;
+    const { _id, account, platform } = req.authData;
     if (varients !== undefined && varients !== null) {
       varients = JSON.parse(varients);
     }
@@ -262,10 +358,13 @@ router.post("/", async (req, res) => {
             select: ["_id","title"]
           }]
         });
-
-      req.io.to(account).emit(ITEM_INSERT, { data: result, user: _id });
-
-      res.status(200).json(result);
+      const response = await itemsForApp(req,insert._id)
+      req.io.to(account).emit(ITEM_INSERT, { app: response, backoffice: result, user: _id, account: account });
+      if(platform === "pos"){
+        res.status(200).json(response);
+      } else if(platform === "backoffice"){
+        res.status(200).json(result);
+      }
    
     } else {
       res.status(400).json({ message: "Error creating item! Item with such SKU already exists." });
@@ -311,7 +410,7 @@ router.patch("/", async (req, res) => {
       if (cost == "" || typeof cost === "undefined" || cost == null) {
         cost = 0;
       }
-      const { _id, account } = req.authData;
+      const { _id, account, platform } = req.authData;
       if (varients !== undefined && varients !== null) {
         varients = JSON.parse(varients);
       }
@@ -389,7 +488,6 @@ router.patch("/", async (req, res) => {
         })
         let data = {
           title,
-          compositeItem,
           category,
           availableForSale,
           soldByType,
@@ -439,8 +537,14 @@ router.patch("/", async (req, res) => {
                 select: ["_id","title"]
               }]
             });
-          req.io.to(account).emit(ITEM_UPDATE, { data: result, user: _id });
-          res.status(201).json(result);
+      
+            const response = await itemsForApp(req,item_id)
+            req.io.to(account).emit(ITEM_UPDATE, { app: response, backoffice: result, user: _id, account: account });
+            if(platform === "pos"){
+              res.status(200).json(response);
+            } else if(platform === "backoffice"){
+              res.status(200).json(result);
+            }
       } else {
         res.status(400).json({ message: "Error editing item! Item with such SKU already exists." });
       }

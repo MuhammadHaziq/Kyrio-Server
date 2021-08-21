@@ -1,7 +1,7 @@
 import express from "express";
 import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
-import { REFUND_RECEIPT } from "../../sockets/events";
+import { REFUND_RECEIPT, ITEM_STOCK_UPDATE } from "../../sockets/events";
 var mongoose = require('mongoose');
 const router = express.Router();
 
@@ -92,12 +92,15 @@ router.post("/", async (req, res) => {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     const { _id, account } = req.authData;
-
+    let stockNotification = {
+      store,
+      itemsList: []
+    }
     for (const item of items) {
-      if (item.trackStock) {
+      if (item.track_stock) {
         var storeItem = await ItemList.findOne({
           _id: item.id,
-          stores: { $elemMatch: { id: store._id } },
+          stores: { $elemMatch: { store: store._id } },
           account: account,
         }).select([
           "stockQty",
@@ -109,17 +112,22 @@ router.post("/", async (req, res) => {
           let storeQty = typeof storeItem.stores !== "undefined" ? parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity) : parseInt(item.quantity)
           let itemQty = parseInt(storeItem.stockQty) - parseInt(item.quantity)
           await ItemList.updateOne(
-            { $and: [{ _id: item.id }, { "stores.id": store._id }] },
+            { $and: [{ _id: item.id }, { "stores.store": store._id }] },
             {
               $set: {
                 "stockQty": itemQty,
                 "stores.$.inStock": storeQty
               }
             });
+          stockNotification.itemsList.push({
+            _id: item.id,
+            name: item.name,
+            storeQty: storeQty,
+            itemQty: itemQty
+          })
         }
       }
     }
-
     try {
       const newSales = await new Sales({
         receipt_number,
@@ -152,6 +160,9 @@ router.post("/", async (req, res) => {
         created_at: sale_timestamp !== null ? sale_timestamp : created_at,
         updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
       }).save();
+
+      req.io.to(account).emit(ITEM_STOCK_UPDATE, { app: stockNotification, backoffice: stockNotification, user: _id, account: account });
+      
       res.status(200).json(newSales);
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -214,7 +225,10 @@ router.post("/refund", async (req, res) => {
 
     let getSale = await Sales.findOne({ $and: [{ receipt_number: refund_for }, { account: account }] });
     if (getSale) {
-
+      let stockNotification = {
+        store,
+        itemsList: []
+      }
       for (const item of items) {
         await Sales.updateOne(
           { $and: [{ _id: getSale._id }, { "items.id": item.id }] },
@@ -225,10 +239,11 @@ router.post("/refund", async (req, res) => {
             },
           }
         )
-        if (item.trackStock) {
+        if (item.track_stock) {
           var storeItem = await ItemList.findOne({
             _id: item.id,
-            stores: { $elemMatch: { id: store.id } },
+            // stores: { $elemMatch: { id: store.id } },
+            stores: { $elemMatch: { store: store._id } },
             account: account,
           }).select([
             "stockQty",
@@ -240,13 +255,19 @@ router.post("/refund", async (req, res) => {
             let storeQty = parseInt(storeItem.stores[0].inStock) + parseInt(item.quantity)
             let itemQty = parseInt(storeItem.stockQty) + parseInt(item.quantity)
             await ItemList.updateOne(
-              { $and: [{ _id: item.id }, { "stores.id": store.id }] },
+              { $and: [{ _id: item.id }, { "stores.store": store._id }] },
               {
                 $set: {
                   "stockQty": itemQty,
                   "stores.$.inStock": storeQty
                 }
               });
+              stockNotification.itemsList.push({
+                _id: item.id,
+                name: item.name,
+                storeQty: storeQty,
+                itemQty: itemQty
+              })
           }
         }
       }
@@ -284,7 +305,8 @@ router.post("/refund", async (req, res) => {
           updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
         }).save();
         let refundedSale = await Sales.findOne({ $and: [{ _id: getSale._id }, { account: account }] });
-        req.io.to(account).emit(REFUND_RECEIPT, { data: { refundReceipt: newRefund, saleReceipt: refundedSale }, user: _id });
+        req.io.to(account).emit(ITEM_STOCK_UPDATE, { app: stockNotification, backoffice: stockNotification, user: _id, account: account });
+        req.io.to(account).emit(REFUND_RECEIPT, { app: { refundReceipt: newRefund, saleReceipt: refundedSale }, backoffice: {}, user: _id, account: account });
         res.status(200).json(newRefund);
 
       } catch (error) {
