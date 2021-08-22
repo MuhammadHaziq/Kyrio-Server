@@ -107,7 +107,7 @@ const itemsForApp = async (req,ItemId) => {
         createdBy: item.createdBy,
       });
     }
-    return itemsObjectFilter
+    return itemsObjectFilter[0]
     // res.status(200).json(itemsObjectFilter);
   } catch (error) {
     return { message: error.message }
