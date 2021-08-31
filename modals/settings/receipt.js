@@ -15,13 +15,11 @@ const receiptSchema = new mongoose.Schema({
     type: String,
     min: 3,
     max: 255,
-    required: true,
   },
   printedReceiptImage: {
     type: String,
     min: 3,
     max: 255,
-    required: true,
   },
   show_customer_info: {
     type: Boolean,

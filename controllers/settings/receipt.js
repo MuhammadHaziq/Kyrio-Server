@@ -1,6 +1,8 @@
 import express from "express";
 import Receipts from "../../modals/settings/receipt";
 import { uploadImages } from "../fileHandler/uploadFiles";
+
+const fs = require("fs-extra");
 const router = express.Router();
 
 router.get("/:storeId", async (req, res) => {
@@ -10,16 +12,32 @@ router.get("/:storeId", async (req, res) => {
     const result = await Receipts
       .findOne({ account: account, store: storeId })
       .sort({ _id: "desc" })
-      .limit(1); // Find Lasted One Record
+      .limit(1);
     if (result !== null) {
+      if (
+        result.receiptImage &&
+        typeof result.receiptImage !== "undefined" &&
+        result.receiptImage !== ""
+      ) {
       result.receiptImage =
         result.receiptImage === "null"
           ? ""
           : `media/receipt/${account}/${result.receiptImage}`;
+      } else {
+        result.receiptImage = ""
+      }
+      if (
+        result.printedReceiptImage &&
+        typeof result.printedReceiptImage !== "undefined" &&
+        result.printedReceiptImage !== ""
+      ) {
       result.printedReceiptImage =
         result.printedReceiptImage === "null"
           ? ""
           : `media/receipt/${account}/${result.printedReceiptImage}`;
+      } else {
+        result.printedReceiptImage = ""
+      }
     }
     res.status(200).json(result);
   } catch (error) {
@@ -50,48 +68,61 @@ router.post("/", async (req, res) => {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     try {
-      let files = [];
-      let fileExist = [];
-      let newReceipt;
-      if (
-        receiptImage &&
-        typeof receiptImage !== "undefined" &&
-        receiptImage !== ""
-      ) {
-        files.push(receiptImage);
-        fileExist.push(true);
-      } else {
-        fileExist.push(false);
+      var receiptImageName = "";
+      var printedReceiptImageName = "";
+      if (receiptImage) {
+       let response = await uploadImages(receiptImage, `receipt/${account}`);
+       receiptImageName = response.images.length > 0 ? response.images[0] : ""
+      } 
+      if(printedReceiptImage) {
+        let response = await uploadImages(printedReceiptImage, `receipt/${account}`);
+        printedReceiptImageName = response.images.length > 0 ? response.images[0] : ""
       }
-      if (
-        printedReceiptImage &&
-        typeof printedReceiptImage !== "undefined" &&
-        printedReceiptImage !== ""
-      ) {
-        files.push(printedReceiptImage);
-        fileExist.push(true);
+
+      const exist = await Receipts
+      .findOne({ account: account, store: storeId })
+      if(exist){
+
+        var rootDir = process.cwd();
+        if (typeof exist.receiptImage !== "undefined" && exist.receiptImage !== null && exist.receiptImage !== '' && receiptImage) {
+          let fileUrl = `${rootDir}/uploads/receipt/${account}/` + exist.receiptImage;
+          if (fs.existsSync(fileUrl)) {
+            fs.unlinkSync(fileUrl);
+          }
+        }
+        if (typeof exist.printedReceiptImage !== "undefined" && exist.printedReceiptImage !== null && exist.printedReceiptImage !== '' && printedReceiptImage) {
+          let fileUrl = `${rootDir}/uploads/receipt/${account}/` + exist.printedReceiptImage;
+          if (fs.existsSync(fileUrl)) {
+            fs.unlinkSync(fileUrl);
+          }
+        }
+
+        const updatedReceipt = await Receipts.findOneAndUpdate(
+          { account: account, store: storeId },
+          {
+            $set: {
+              receiptImage: receiptImageName == "" ? exist.receiptImage : receiptImageName,
+              printedReceiptImage: printedReceiptImageName == "" ? exist.printedReceiptImage : printedReceiptImageName,
+              header: header,
+              footer: footer,
+              show_customer_info: show_customer_info,
+              show_comments: show_comments,
+              language: language,
+              store: storeId,
+              createdBy: _id,
+              account: account
+            },
+          },
+          {
+            new: true,
+            upsert: true, // Make this update into an upsert
+          }
+        )
+        res.status(200).json(updatedReceipt);
       } else {
-        fileExist.push(false);
-      }
-      if (files.length !== 0) {
-        const Image1 = await uploadImages(files[0], `receipt/${account}`);
-        const Image2 = files.length > 1 ? await uploadImages(files[1], `receipt/${account}`) : "";
-        const receiptImageName = Image1.images[0]
-        const printedReceiptImageName = Image2.images[0]
-          newReceipt = await new Receipts({
-            receiptImage: receiptImageName,
-            printedReceiptImage: printedReceiptImageName,
-            header: header,
-            footer: footer,
-            show_customer_info: show_customer_info,
-            show_comments: show_comments,
-            language: language,
-            store: storeId,
-            createdBy: _id,
-            account: account
-          });
-      } else {
-        newReceipt = await new Receipts({
+        const newReceipt = await new Receipts({
+          receiptImage: receiptImageName,
+          printedReceiptImage: printedReceiptImageName,
           header: header,
           footer: footer,
           show_customer_info: show_customer_info,
@@ -100,10 +131,9 @@ router.post("/", async (req, res) => {
           store: storeId,
           createdBy: _id,
           account: account
-        });
+        }).save();
+        res.status(200).json(newReceipt);
       }
-      const result = await newReceipt.save();
-      res.status(201).json(result);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

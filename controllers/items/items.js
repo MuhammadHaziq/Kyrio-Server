@@ -451,16 +451,16 @@ router.patch("/", async (req, res) => {
         */
         if (
           repoOnPos == "image" ||
-          (typeof req.files != "undefined" && typeof req.files != "null")
+          (typeof req.files != "undefined" && typeof req.files != null)
         ) {
           if (
-            req.files != null &&
-            req.files != "null" &&
-            typeof req.files != "undefined"
+            req.files !== null &&
+            req.files !== "null" &&
+            typeof req.files !== "undefined"
           ) {
             if (typeof req.files.image != "undefined") {
               // Comment By Haziq Add Image Name Validation For Null
-              if (typeof imageName !== "undefined" && typeof imageName !== "null") {
+              if (typeof imageName !== "undefined" && imageName !== "") {
                 let fileUrl = `${rootDir}/uploads/items/${account}/` + imageName;
                 if (fs.existsSync(fileUrl)) {
                   fs.unlinkSync(fileUrl);
@@ -509,7 +509,7 @@ router.patch("/", async (req, res) => {
           shape,
           createdBy: _id
         };
-      
+     
           let result = await ItemList.findOneAndUpdate(
             { _id: item_id },
             { $set: data },
@@ -537,7 +537,6 @@ router.patch("/", async (req, res) => {
                 select: ["_id","title"]
               }]
             });
-      
             const response = await itemsForApp(req,item_id)
             req.io.to(account).emit(ITEM_UPDATE, { app: response, backoffice: result, user: _id, account: account });
             if(platform === "pos"){
@@ -549,6 +548,7 @@ router.patch("/", async (req, res) => {
         res.status(400).json({ message: "Error editing item! Item with such SKU already exists." });
       }
   } catch (error) {
+    console.log(error)
     res.status(400).json({ message: error.message });
   }
 });
