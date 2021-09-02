@@ -34,8 +34,8 @@ router.post("/", async (req, res) => {
 });
 router.get("/:storeId", async (req, res) => {
   try {
-    const { account } = req.authData;
-    const { storeId } = req.params;
+    const { account, platform } = req.authData;
+    const { storeId, update_at } = req.params;
 
     let storeFilter = {};
     if (storeId !== "0") {
@@ -43,6 +43,9 @@ router.get("/:storeId", async (req, res) => {
     }
     storeFilter.account = account;
     storeFilter.deleted = 0;
+    if(platform === "pos"){
+      storeFilter.updateAt = update_at
+    }
     const result = await Discount.find(storeFilter).sort({
       title: 1,
     }).populate('stores', ["_id","title"]);

@@ -46,15 +46,17 @@ router.post("/", async (req, res) => {
 
 router.get("/:storeId", async (req, res) => {
   try {
-    const { account } = req.authData;
-    const { storeId } = req.params;
+    const { account, platform } = req.authData;
+    const { storeId, update_at } = req.params;
     let storeFilter = {};
     if (storeId !== "0") {
       storeFilter.stores = { $in: storeId };
     }
     storeFilter.account = account;
     storeFilter.deleted = 0;
-
+    if(platform === "pos"){
+      storeFilter.updatedAt = update_at
+    }
     const result = await Modifier.find(storeFilter).populate('stores', ["_id","title"]).sort({ position: 1 });
 
     res.status(200).json(result);

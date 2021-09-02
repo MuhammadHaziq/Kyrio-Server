@@ -7,8 +7,13 @@ const router = express.Router();
 
 router.get("/all", async (req, res) => {
   try {
-    const { account } = req.authData;
-    var allSales = await Sales.find({ account: account }).sort({ _id: "desc" });
+    const { account, platform } = req.authData;
+    const { update_at } = req.query;
+    let filter = { account: account }
+    if(platform === "pos"){
+      filter.updateAt = update_at
+    }
+    var allSales = await Sales.find(filter).sort({ _id: "desc" });
     res.status(200).json(allSales);
   } catch (error) {
     res.status(500).json({ message: error.message });

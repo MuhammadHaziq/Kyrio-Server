@@ -62,8 +62,8 @@ router.get("/row/:id", async (req, res) => {
 
 router.post("/getStoreTaxes", async (req, res) => {
   try {
-    const { account } = req.authData;
-    const { storeId } = req.body;
+    const { account, platform } = req.authData;
+    const { storeId, update_at } = req.body;
     let filter = {};
     if (storeId == 0) {
       filter = {
@@ -74,6 +74,9 @@ router.post("/getStoreTaxes", async (req, res) => {
         stores: { $in: storeId },
         account: account,
       };
+    }
+    if(platform === "pos"){
+      filter.updatedAt = update_at
     }
     const result = await itemTax.find(filter).populate('stores', ["_id","title"]).sort({ _id: "desc" });
     res.status(200).json(result);

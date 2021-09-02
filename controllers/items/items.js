@@ -637,14 +637,19 @@ router.get("/", async (req, res) => {
 
 router.get("/storeItems", async (req, res) => {
   try {
-    const { account } = req.authData;
-    const { storeId } = req.query;
+    const { account, platform } = req.authData;
+    const { storeId, update_at } = req.query;
 
-    var items = await ItemList.find({
+    let storeFilter = {
       stores: { $elemMatch: { store: storeId } },
       account: account,
       deleted: 0,
-    }).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
+    }
+    if(platform === "pos"){
+      storeFilter.updateAt = update_at
+    }
+
+    var items = await ItemList.find(storeFilter).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
       path: 'modifiers', 
       select: ["_id","title"],
       populate : [

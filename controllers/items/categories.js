@@ -34,11 +34,16 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { account } = req.authData;
-    const allCat = await Category.find({
+    const { account, platform } = req.authData;
+    const { update_at } = req.params;
+    const filter = {
       account: account,
       deleted: 0,
-    }).sort({
+    }
+    if(platform === "pos"){
+      filter.updateAt = update_at
+    }
+    const allCat = await Category.find(filter).sort({
       title: 1,
     });
     let allCategories = [];
