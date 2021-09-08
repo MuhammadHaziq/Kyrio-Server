@@ -20,7 +20,10 @@ import shiftsRouter from "../controllers/employee/shifts";
 import userLevelAccessRoutes from "../controllers/employee/userLevelAccess";
 import timeCardRoutes from "../controllers/employee/timeCard";
 import rolesRoutes from "../controllers/employee/roles";
+// #START# Printer Routes
 import kitchenPrinter from "../controllers/settings/kitchenPrinter";
+import printerModal from "../controllers/printers";
+// #END#
 import settingsLoyalty from "../controllers/settings/loyalty";
 import features from "../controllers/settings/features/features";
 import receipts from "../controllers/settings/receipt";
@@ -50,7 +53,10 @@ router.use("/dining2", verifyToken, diningRoute2);
 router.use("/tax/taxesType", verifyToken, taxesType);
 router.use("/tax/taxesOption", verifyToken, taxesOption);
 router.use("/tax", verifyToken, itemTax);
+// #START# Printer Routes
 router.use("/kitchenPrinter", verifyToken, kitchenPrinter);
+router.use("/printer", verifyToken, printerModal);
+// #END#
 router.use("/paymentTypes", verifyToken, paymentMethods);
 router.use("/paymentsType", verifyToken, paymentsType);
 router.use("/settingsLoyalty", verifyToken, settingsLoyalty);

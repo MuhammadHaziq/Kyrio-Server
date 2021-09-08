@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
     const result = await kitchenPrinter
     .findOne({ account: account, _id: insert._id }).populate('categories', ["_id","title"]).populate('store', ["_id","title"])
     .sort({ _id: "desc" });
-    res.status(201).json(result);
+    res.status(200).json(result);
   } catch (error) {
     if (error.code === 11000) {
       res.status(400).json({ message: "Kitchen Printer Already Reister" });
@@ -66,7 +66,9 @@ router.delete("/:id", async (req, res) => {
 });
 router.patch("/", async (req, res) => {
   try {
-    const { id, title, categories, storeId } = req.body;
+    const { id, title, categories 
+      // storeId 
+    } = req.body;
     const updatedRecord = await kitchenPrinter.findOneAndUpdate(
       { _id: id },
       // { _id: id, storeId: storeId },

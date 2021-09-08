@@ -1,25 +1,30 @@
-import mongoose, { mongo, models } from "mongoose";
+import mongoose from "mongoose";
 
-const kitchenPrinterSchema = new mongoose.Schema({
+const printerModalSchema = new mongoose.Schema({
   title: {
     type: String,
     min: 3,
     max: 255,
     required: true,
   },
+  Interfaces: {
+    type: String,
+  },
+  page_width: {
+    type: String,
+  },
+  is_enabled: {
+    type: Boolean,
+  },
   account: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "accounts",
   },
-  categories: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "categories",
-  }],
-  store: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Store",
-  },
   createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  },
+  updatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },
@@ -27,7 +32,7 @@ const kitchenPrinterSchema = new mongoose.Schema({
   timestamps: true
 });
 
-kitchenPrinterSchema.index(
+printerModalSchema.index(
   {
     title: 1,
   },
@@ -37,4 +42,4 @@ kitchenPrinterSchema.index(
   }
 );
 
-module.exports = mongoose.model("kitchenPrinter", kitchenPrinterSchema);
+module.exports = mongoose.model("printerModal", printerModalSchema);
