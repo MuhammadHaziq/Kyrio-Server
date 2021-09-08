@@ -98,9 +98,11 @@ router.patch("/", async (req, res) => {
 // Delete Modal
 router.delete("/", async (req, res) => {
     try {
-        var { id } = req.body;
+        const { ids } = req.body;
         const { account } = req.authData;
-        await PrinterModal.deleteOne({ _id: id, account: account });
+        for (const _id of ids) {
+            await PrinterModal.deleteOne({ _id: _id, account: account });
+        }
         res.status(200).json({ message: "deleted" });
       } catch (error) {
         res.status(500).json({ message: error.message });
