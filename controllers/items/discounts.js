@@ -43,8 +43,10 @@ router.get("/:storeId", async (req, res) => {
     }
     storeFilter.account = account;
     storeFilter.deleted = 0;
+ 
+    let isoDate = new Date(update_at);
     if(platform === "pos"){
-      storeFilter.updateAt = update_at
+      storeFilter.updatedAt = {$gte: isoDate}
     }
     const result = await Discount.find(storeFilter).sort({
       title: 1,

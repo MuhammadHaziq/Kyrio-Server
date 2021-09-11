@@ -15,6 +15,7 @@ import { min } from 'lodash';
 // const csv = require("fast-csv");
 const fs = require("fs-extra");
 const csv = require("@fast-csv/parse");
+const moment = require('moment');
 const ObjectId = require("mongoose").Types.ObjectId;
 
 var router = express.Router();
@@ -645,8 +646,10 @@ router.get("/storeItems", async (req, res) => {
       account: account,
       deleted: 0,
     }
+    
+    let isoDate = new Date(update_at);
     if(platform === "pos"){
-      storeFilter.updateAt = update_at
+      storeFilter.updatedAt = {$gte: isoDate}
     }
 
     var items = await ItemList.find(storeFilter).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({

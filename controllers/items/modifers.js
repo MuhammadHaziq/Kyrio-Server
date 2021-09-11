@@ -54,8 +54,10 @@ router.get("/:storeId", async (req, res) => {
     }
     storeFilter.account = account;
     storeFilter.deleted = 0;
+
+    let isoDate = new Date(update_at);
     if(platform === "pos"){
-      storeFilter.updatedAt = update_at
+      storeFilter.updatedAt = {$gte: isoDate}
     }
     const result = await Modifier.find(storeFilter).populate('stores', ["_id","title"]).sort({ position: 1 });
 

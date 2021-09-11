@@ -40,8 +40,9 @@ router.get("/", async (req, res) => {
       account: account,
       deleted: 0,
     }
+    let isoDate = new Date(update_at);
     if(platform === "pos"){
-      filter.updateAt = update_at
+      filter.updatedAt = {$gte: isoDate}
     }
     const allCat = await Category.find(filter).sort({
       title: 1,

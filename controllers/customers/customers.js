@@ -12,8 +12,10 @@ router.get("/all", async (req, res) => {
     const { account, platform } = req.authData;
     const { update_at } = req.query;
     let filter = { account: account }
+    
+    let isoDate = new Date(update_at);
     if(platform === "pos"){
-      filter.updateAt = update_at
+      filter.updatedAt = {$gte: isoDate}
     }
     var result = await Customers.find(filter).sort({ name: 1 });
     res.status(200).json(result);

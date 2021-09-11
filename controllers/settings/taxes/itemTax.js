@@ -75,8 +75,10 @@ router.post("/getStoreTaxes", async (req, res) => {
         account: account,
       };
     }
+    
+    let isoDate = new Date(update_at);
     if(platform === "pos"){
-      filter.updatedAt = update_at
+      filter.updatedAt = {$gte: isoDate}
     }
     const result = await itemTax.find(filter).populate('stores', ["_id","title"]).sort({ _id: "desc" });
     res.status(200).json(result);
