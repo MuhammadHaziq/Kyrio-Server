@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { account, platform } = req.authData;
-    const { update_at } = req.params;
+    const { update_at } = req.query;
     const filter = {
       account: account,
       deleted: 0,

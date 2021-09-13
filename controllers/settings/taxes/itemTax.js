@@ -63,7 +63,8 @@ router.get("/row/:id", async (req, res) => {
 router.post("/getStoreTaxes", async (req, res) => {
   try {
     const { account, platform } = req.authData;
-    const { storeId, update_at } = req.body;
+    const { storeId } = req.body;
+    const { update_at } = req.query;
     let filter = {};
     if (storeId == 0) {
       filter = {

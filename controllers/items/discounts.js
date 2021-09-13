@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
 router.get("/:storeId", async (req, res) => {
   try {
     const { account, platform } = req.authData;
-    const { storeId, update_at } = req.params;
+    const { storeId, update_at } = req.query;
 
     let storeFilter = {};
     if (storeId !== "0") {
