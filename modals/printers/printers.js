@@ -10,7 +10,6 @@ const printerSchema = new mongoose.Schema({
   connect_interface: {
     type: String,
     min: 1,
-    required: true,
   },
   paper_width: {
     type: String,
