@@ -92,12 +92,6 @@ router.post("/", async (req, res) => {
     if (!title || typeof title == "undefined" || title == "") {
         errors.push(`Invalid Title!`);
     }
-    if (!connect_interface || typeof connect_interface == "undefined" || connect_interface == "") {
-        errors.push(`Invalid Connect Interface!`);
-    }
-    if (!modal || typeof modal == "undefined" || modal == "") {
-        errors.push(`Invalid Modal!`);
-    }
     if (errors.length > 0) {
         res.status(400).send({ message: `Invalid Parameters!`, errors });
     } else {
@@ -154,12 +148,6 @@ router.patch("/", async (req, res) => {
     var errors = [];
     if (!title || typeof title == "undefined" || title == "") {
         errors.push(`Invalid Title!`);
-    }
-    if (!connect_interface || typeof connect_interface == "undefined" || connect_interface == "") {
-        errors.push(`Invalid Connect Interface!`);
-    }
-    if (!modal || typeof modal == "undefined" || modal == "") {
-        errors.push(`Invalid Modal!`);
     }
     if (errors.length > 0) {
         res.status(400).send({ message: `Invalid Parameters!`, errors });
