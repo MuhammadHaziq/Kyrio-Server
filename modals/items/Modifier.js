@@ -9,7 +9,7 @@ const modifierSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    min: 3,
+    min: 0,
     max: 255,
   },
   options: [

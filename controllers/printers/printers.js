@@ -76,6 +76,7 @@ router.get("/modal/:modalId", async (req, res) => {
 })
 // Create Printer
 router.post("/", async (req, res) => {
+    try {
     const { 
         title,
         connect_interface,
@@ -103,7 +104,7 @@ router.post("/", async (req, res) => {
             createdBy: _id,
             account: account,
         });
-        try {
+       
         const insertedRecord = await newPrinter.save();
         const result = await Printers.findOne({account: account, _id: insertedRecord._id}).populate('modal', ["_id","title"]).populate({ 
         path: 'groups', 

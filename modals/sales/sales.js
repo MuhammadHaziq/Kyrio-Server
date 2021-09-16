@@ -255,7 +255,7 @@ const salesSchema = new mongoose.Schema({
         },
         price: {
           type: String,
-          min: 6,
+          min: 0,
           max: 255,
         },
       },
@@ -277,7 +277,7 @@ const salesSchema = new mongoose.Schema({
             },
             title: {
               type: String,
-              min: 6,
+              min: 0,
               max: 255,
             },
           },
@@ -299,7 +299,7 @@ const salesSchema = new mongoose.Schema({
               },
               price: {
                 type: Number,
-                min: 1,
+                min: 0,
                 max: 255,
               },
             },
