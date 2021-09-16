@@ -28,13 +28,7 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
     const { title, Interfaces, page_width, is_enabled } = req.body;
     const { _id, account } = req.authData;
-    var errors = [];
-    if (!title || typeof title == "undefined" || title == "") {
-        errors.push(`Invalid Title!`);
-    }
-    if (errors.length > 0) {
-        res.status(400).send({ message: `Invalid Parameters!`, errors });
-    } else {
+
         try {
             const newPrinterModal = new PrinterModal({
                 title: title,
@@ -54,20 +48,13 @@ router.post("/", async (req, res) => {
                 res.status(400).json({ message: error.message });
             }
         }
-    }
 
 })
 // Update Printer Modal
 router.patch("/", async (req, res) => {
     const { id, title, Interfaces, page_width, is_enabled } = req.body;
     const { _id } = req.authData;
-    var errors = [];
-    if (!title || typeof title == "undefined" || title == "") {
-        errors.push(`Invalid Title!`);
-    }
-    if (errors.length > 0) {
-        res.status(400).send({ message: `Invalid Parameters!`, errors });
-    } else {
+ 
         try {
             const updatedRecord = await PrinterModal.findOneAndUpdate(
                     { _id: id },
@@ -93,7 +80,6 @@ router.patch("/", async (req, res) => {
                 res.status(400).json({ message: error.message });
             }
         }
-    }
 })
 // Delete Modal
 router.delete("/", async (req, res) => {

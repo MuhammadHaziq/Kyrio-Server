@@ -3,9 +3,8 @@ import mongoose from "mongoose";
 const printerSchema = new mongoose.Schema({
   title: {
     type: String,
-    min: 3,
+    min: 0,
     max: 255,
-    required: true,
   },
   connect_interface: {
     type: String,
@@ -54,14 +53,14 @@ const printerSchema = new mongoose.Schema({
   timestamps: true
 });
 
-printerSchema.index(
-  {
-    title: 1,
-  },
-  {
-    unique: true,
-    sparse: true
-  }
-);
+// printerSchema.index(
+//   {
+//     title: 1,
+//   },
+//   {
+//     unique: true,
+//     sparse: true
+//   }
+// );
 
 module.exports = mongoose.model("printers", printerSchema);

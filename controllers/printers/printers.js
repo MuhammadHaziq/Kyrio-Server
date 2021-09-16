@@ -88,13 +88,7 @@ router.post("/", async (req, res) => {
         groups,
         store } = req.body;
     const { _id, account } = req.authData;
-    var errors = [];
-    if (!title || typeof title == "undefined" || title == "") {
-        errors.push(`Invalid Title!`);
-    }
-    if (errors.length > 0) {
-        res.status(400).send({ message: `Invalid Parameters!`, errors });
-    } else {
+    
         const newPrinter = new Printers({
             title: title,
             connect_interface: connect_interface,
@@ -127,7 +121,6 @@ router.post("/", async (req, res) => {
                 res.status(400).json({ message: error.message });
             }
         }
-    }
 
 })
 // Update Printer
@@ -145,13 +138,7 @@ router.patch("/", async (req, res) => {
         groups,
         store } = req.body;
     const { _id, account } = req.authData;
-    var errors = [];
-    if (!title || typeof title == "undefined" || title == "") {
-        errors.push(`Invalid Title!`);
-    }
-    if (errors.length > 0) {
-        res.status(400).send({ message: `Invalid Parameters!`, errors });
-    } else {
+    
         try {
         const updatedRecord = await Printers.findOneAndUpdate(
             { _id: id },
@@ -188,7 +175,6 @@ router.patch("/", async (req, res) => {
                 res.status(400).json({ message: error.message });
             }
         }
-    }
 
 })
 // Delete Printer
