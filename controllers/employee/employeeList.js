@@ -156,7 +156,7 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, account } = req.authData;
+    const { _id, account, owner_id } = req.authData;
 
     try {
       if (role.title !== "Owner") {
@@ -180,6 +180,7 @@ router.post("/", async (req, res) => {
               role: role._id,
               stores: stores,
               createdBy: _id,
+              owner_id: owner_id
             });
             users
               .save()
