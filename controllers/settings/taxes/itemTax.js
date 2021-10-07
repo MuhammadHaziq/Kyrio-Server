@@ -99,7 +99,7 @@ router.post("/getStoreTaxes", async (req, res) => {
     if(platform === "pos"){
       filter.updatedAt = {$gte: isoDate}
     }
-    const result = await itemTax.find(filter).populate('stores', ["_id","title"]).populate("tax_option", ["_id","title"]).populate("tax_type", ["_id","title"]).sort({ _id: "desc" });
+    const result = await itemTax.find(filter).populate('stores', ["_id","title"]).populate("items", ["_id","title"]).populate("categories", ["_id","title"]).populate("dinings", ["_id","title"]).populate("tax_option", ["_id","title"]).populate("tax_type", ["_id","title"]).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

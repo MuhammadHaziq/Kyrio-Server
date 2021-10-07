@@ -33,7 +33,7 @@ const itemTaxSchema = new mongoose.Schema({
   }],
   items: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "itemList",
+    ref: "items",
   }],
   account: {
     type: mongoose.Schema.Types.ObjectId,
