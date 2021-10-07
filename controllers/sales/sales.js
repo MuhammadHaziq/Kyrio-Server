@@ -1,6 +1,7 @@
 import express from "express";
 import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
+import Store from "../../modals/Store";
 import { REFUND_RECEIPT, ITEM_STOCK_UPDATE, RECEIPT_CANCELED } from "../../sockets/events";
 import validator from "email-validator";
 import { sendReceiptEmail } from "../../libs/sendEmail";
@@ -386,7 +387,11 @@ router.patch("/cancel", async (req, res) => {
 
     let getSale = await Sales.findOne({ $and: [{ receipt_number: receipt_number }, { account: account }, { "store._id": storeId }] });
     if (getSale) {
-
+      const store = await Store.findOne({ account: account, _id: storeId })
+      let stockNotification = {
+        store: store,
+        itemsList: []
+      }
       for (const item of getSale.items) {
 
         if (item.trackStock) {
@@ -421,6 +426,12 @@ router.patch("/cancel", async (req, res) => {
                   "stores.$.inStock": storeQty
                 }
               });
+            stockNotification.itemsList.push({
+              _id: item.id,
+              name: item.name,
+              storeQty: storeQty,
+              itemQty: itemQty
+            })
           }
         }
       }
@@ -429,6 +440,7 @@ router.patch("/cancel", async (req, res) => {
           new: true,
           upsert: true, // Make this update into an upsert
         });
+        req.io.to(account).emit(ITEM_STOCK_UPDATE, { app: stockNotification, backoffice: stockNotification, user: _id, account: account });
         req.io.to(account).emit(RECEIPT_CANCELED, { app: cancelledSale, backoffice: cancelledSale, user: _id, account: account });
         
         res.status(200).json(cancelledSale);
