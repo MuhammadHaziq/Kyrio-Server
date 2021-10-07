@@ -1,5 +1,6 @@
 import express from "express";
 import Modifier from "../../modals/items/Modifier";
+import ItemList from "../../modals/items/ItemList";
 import {
   MODIFIER_INSERT,
   MODIFIER_UPDATE,
@@ -97,7 +98,10 @@ router.delete("/:ids", async (req, res) => {
         upsert: true,
       }
     );
-
+    await ItemList.updateMany(
+      { account: account },
+      { $pull: { modifiers: { $in: [ ids ] } } }
+    )
     if (del.n > 0 && del.nModified > 0) {
       req.io.to(account).emit(MODIFIER_DELETE, { data: ids, user: _id });
     }

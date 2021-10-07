@@ -1,15 +1,41 @@
 import express from "express";
 import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
-import { REFUND_RECEIPT, ITEM_STOCK_UPDATE } from "../../sockets/events";
+import { REFUND_RECEIPT, ITEM_STOCK_UPDATE, RECEIPT_CANCELED } from "../../sockets/events";
+import validator from "email-validator";
+import { sendReceiptEmail } from "../../libs/sendEmail";
 var mongoose = require('mongoose');
 const router = express.Router();
 
+router.get("/send", async (req, res) => {
+  try {
+    const { account, platform } = req.authData;
+    const { receipt_id, email } = req.query;
+    if (validator.validate(email)) {
+      Sales.findOne({ _id: receipt_id})
+      // let emailMessage = {
+        //   businessName: userResult.account.businessName,
+        //   email: userResult.email,
+        //   _id: userResult._id,
+        //   from: "info@kyrio.com",
+        // };
+        // sendReceiptEmail(emailMessage);
+        res.send("true")
+    } else {
+      res.status(422).send({
+        type: "email",
+        message: "Invalid Email Address",
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 router.get("/all", async (req, res) => {
   try {
     const { account, platform } = req.authData;
     const { update_at } = req.query;
-    let filter = { account: account }
+    let filter = { account: account, cancelled_at: null }
 
     let isoDate = new Date(update_at);
     if(platform === "pos"){
@@ -325,6 +351,17 @@ router.post("/refund", async (req, res) => {
   }
 });
 
+router.get("/check/:receipt_number", async (req, res) => {
+  const { receipt_number } = req.params;
+  const { account } = req.authData;
+  let getSale = await Sales.findOne({ $and: [{ refund_for: receipt_number }, { account: account }] });
+  if(getSale){
+    res.status(200).send({ refund: true})
+  } else {
+    res.status(200).send({ refund: false})
+  }
+})
+
 router.patch("/cancel", async (req, res) => {
   const {
     receipt_number,
@@ -345,9 +382,9 @@ router.patch("/cancel", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, account } = req.authData;
+    const { _id, account, platform } = req.authData;
 
-    let getSale = await Sales.findOne({ $and: [{ receipt_number: receipt_number }, { account: account }, { "store.id": storeId }] });
+    let getSale = await Sales.findOne({ $and: [{ receipt_number: receipt_number }, { account: account }, { "store._id": storeId }] });
     if (getSale) {
 
       for (const item of getSale.items) {
@@ -356,7 +393,7 @@ router.patch("/cancel", async (req, res) => {
 
           var storeItem = await ItemList.findOne({
             _id: item.id,
-            stores: { $elemMatch: { id: storeId } },
+            stores: { $elemMatch: { store: storeId } },
             account: account,
           }).select([
             "stockQty",
@@ -377,7 +414,7 @@ router.patch("/cancel", async (req, res) => {
             }
 
             await ItemList.updateOne(
-              { $and: [{ _id: item.id }, { "stores.id": storeId }] },
+              { $and: [{ _id: item.id }, { "stores.store": storeId }] },
               {
                 $set: {
                   "stockQty": itemQty,
@@ -392,6 +429,8 @@ router.patch("/cancel", async (req, res) => {
           new: true,
           upsert: true, // Make this update into an upsert
         });
+        req.io.to(account).emit(RECEIPT_CANCELED, { app: cancelledSale, backoffice: cancelledSale, user: _id, account: account });
+        
         res.status(200).json(cancelledSale);
 
       } catch (error) {

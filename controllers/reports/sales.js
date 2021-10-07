@@ -7,7 +7,6 @@ import { filterSales, filterItemSales } from "../../function/globals"
 const moment = require('moment');
 const router = express.Router();
 
-
 router.post("/summary", async (req, res) => {
   try {
     const {
@@ -30,6 +29,7 @@ router.post("/summary", async (req, res) => {
     var sales = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
+      {cancelled_at: null },
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]})
@@ -58,6 +58,7 @@ router.post("/item", async (req, res) => {
     var sales = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
+      {cancelled_at: null },
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]});
@@ -70,7 +71,7 @@ router.post("/item", async (req, res) => {
     let itemsFound = await ItemList.find({$and: [
       { account: account},
       { _id: { "$in" : itemKeys} },
-      ]})
+      ]}).populate('category', ["_id","title"])
     
       for (var item of itemsFound) {
         
@@ -117,12 +118,13 @@ router.post("/item", async (req, res) => {
             ItemsSold: TotalItemsSold,
             ItemsRefunded: TotalItemsRefunded,
             Margin: TotalMargin,
+            taxes: 0,
             id: item._id,
-            name: item.name,
+            name: item.title,
             sku: item.sku,
             color: item.color,
             image: item.image,
-            category: typeof item.category.name !== "undefined" && item.category !== null && !isEmpty(item.category) ? item.category.name : "No category"
+            category: typeof item.category.title !== "undefined" && item.category !== null && !isEmpty(item.category) ? item.category.title : "No category"
           }
           reportData.push(SalesTotal)
       }
@@ -133,7 +135,7 @@ router.post("/item", async (req, res) => {
     
     let graphRecord = await filterItemSales(sales, topFiveItems, divider, matches);
 
-    res.status(500).json({ itemsReport, topFiveItems, graphRecord });
+    res.status(200).json({ itemsReport, topFiveItems, graphRecord });
 
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -156,6 +158,7 @@ router.post("/category", async (req, res) => {
     var sales = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
+      {cancelled_at: null },
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]});
@@ -168,9 +171,9 @@ router.post("/category", async (req, res) => {
       let itemsFound = await ItemList.find({$and: [
         { account: account},
         { _id: { "$in" : itemKeys} },
-        ]})
+        ]}).populate('category', ["_id","title"])
       
-      let categories = await groupBy(itemsFound.map(itm =>{return typeof itm.category.name !== "undefined" ? itm.category.name : "No category" }));
+      let categories = await groupBy(itemsFound.map(itm =>{return typeof itm.category.title !== "undefined" ? itm.category.title : "No category" }));
       let catKeys = Object.keys(categories)
 
       for (var cat of catKeys) {
@@ -190,7 +193,7 @@ router.post("/category", async (req, res) => {
           TotalItemsRefunded = 0;
 
           for (var item of itemsFound) {
-          let category = typeof item.category.name !== "undefined" ? item.category.name : "No category";
+          let category = typeof item.category.title !== "undefined" ? item.category.title : "No category";
           if(cat == category){
            
             
@@ -253,7 +256,7 @@ router.post("/employee", async (req, res) => {
     var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
     
     let sales = await Sales.aggregate([
-      { $match: { created_at: {$gte: new Date(start), $lte: new Date(end)}, account: account, "store._id": { "$in" : stores}, created_by: { "$in" : employees} } },
+      { $match: { created_at: {$gte: new Date(start), $lte: new Date(end)}, account: account, cancelled_at: null, "store._id": { "$in" : stores}, created_by: { "$in" : employees} } },
       { $group: {_id: "$created_by", sales: {$push: "$$ROOT"} } },
     ]);
     

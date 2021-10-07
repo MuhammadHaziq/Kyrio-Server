@@ -2,7 +2,6 @@ import express from "express";
 import categoriesRouter from "./categories";
 import discountRouter from "./discounts";
 import modifierRouter from "./modifers";
-import stockRouter from "./stock";
 import ItemList from "../../modals/items/ItemList";
 import uploadFiles from "../fileHandler/uploadFiles";
 import { ITEM_INSERT, ITEM_UPDATE, ITEM_DELETE } from "../../sockets/events";
@@ -31,7 +30,7 @@ const itemsForApp = async (req,ItemId) => {
       deleted: 0,
     }).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
       path: 'modifiers', 
-      select: ["_id","title"],
+      select: ["_id","title", "type", "options", "position"],
       populate : [
         {
           path: 'stores',
@@ -341,7 +340,7 @@ router.post("/", async (req, res) => {
 
       var result = await ItemList.findOne({ _id: insert._id }).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
         path: 'modifiers', 
-        select: ["_id","title"],
+        select: ["_id","title", "type", "options", "position"],
         populate : [
           {
             path: 'stores',
@@ -383,6 +382,7 @@ router.post("/", async (req, res) => {
 
 router.patch("/", async (req, res) => {
   try {
+    const { _id, account, platform } = req.authData;
       var {
         item_id,
         title,
@@ -411,7 +411,6 @@ router.patch("/", async (req, res) => {
       if (cost == "" || typeof cost === "undefined" || cost == null) {
         cost = 0;
       }
-      const { _id, account, platform } = req.authData;
       if (varients !== undefined && varients !== null) {
         varients = JSON.parse(varients);
       }
@@ -444,7 +443,13 @@ router.patch("/", async (req, res) => {
           _id: {$ne : item_id}
         })
       if(checkSKU.length <= 0 ){
-        var itemImageName = imageName;
+        var itemImageName = "";
+        if(platform === "pos"){
+          itemImageName = req.body.image
+        } else {
+          var itemImageName = imageName;
+        }
+         
 
         var rootDir = process.cwd();
         /*typeof req.files.image != "undefined" Update By Haziq
@@ -452,6 +457,7 @@ router.patch("/", async (req, res) => {
         */
         if (
           repoOnPos == "image" ||
+          repoOnPos == "IMAGE" ||
           (typeof req.files != "undefined" && typeof req.files != null)
         ) {
           if (
@@ -476,6 +482,12 @@ router.patch("/", async (req, res) => {
               }
               itemImageName = uploadResult.images[0];
             }
+          } else {
+
+          }
+        } else {
+          if(platform === "pos"){
+            itemImageName = req.body.image
           }
         }
         title = title !== null || title !== undefined ? title.trim() : "";
@@ -520,7 +532,7 @@ router.patch("/", async (req, res) => {
             }
           ).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
             path: 'modifiers', 
-            select: ["_id","title"],
+            select: ["_id","title", "type", "options", "position"],
             populate : [
               {
                 path: 'stores',
@@ -549,7 +561,7 @@ router.patch("/", async (req, res) => {
         res.status(400).json({ message: "Error editing item! Item with such SKU already exists." });
       }
   } catch (error) {
-    console.log(error)
+    
     res.status(400).json({ message: error.message });
   }
 });
@@ -606,7 +618,7 @@ router.get("/", async (req, res) => {
       deleted: 0,
     }).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
       path: 'modifiers', 
-      select: ["_id","title"],
+      select: ["_id","title", "type", "options", "position"],
       populate : [
         {
           path: 'stores',
@@ -654,7 +666,7 @@ router.get("/storeItems", async (req, res) => {
 
     var items = await ItemList.find(storeFilter).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
       path: 'modifiers', 
-      select: ["_id","title"],
+      select: ["_id","title", "type", "options", "position"],
       populate : [
         {
           path: 'stores',
@@ -750,7 +762,7 @@ router.get("/searchByName", async (req, res) => {
     };
     var result = await ItemList.find(filters).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
       path: 'modifiers', 
-      select: ["_id","title"],
+      select: ["_id","title", "type", "options", "position"],
       populate : [
         {
           path: 'stores',
@@ -822,7 +834,7 @@ router.get("/search", async (req, res) => {
 
     var result = await ItemList.find(storeFilter).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
       path: 'modifiers', 
-      select: ["_id","title"],
+      select: ["_id","title", "type", "options", "position"],
       populate : [
         {
           path: 'stores',
@@ -1036,7 +1048,7 @@ router.get("/row/:id", async (req, res) => {
       deleted: 0,
     }).populate('stores.store', ["_id","title"]).populate('category', ["_id","title"]).populate({
       path: 'modifiers', 
-      select: ["_id","title"],
+      select: ["_id","title", "type", "options", "position"],
       populate : [
         {
           path: 'stores',
@@ -1868,5 +1880,4 @@ router.use("/categories", categoriesRouter);
 router.use("/discount", discountRouter);
 router.use("/modifier", modifierRouter);
 router.use("/items", ItemList);
-router.use("/stock", stockRouter);
 module.exports = router;

@@ -102,36 +102,16 @@ router.delete("/:ids", async (req, res) => {
 
 router.get("/categoryItem", async (req, res) => {
   const { _id, account } = req.authData;
-  // Old Quer Work in ModalSelectItemsTax(React)
-  // let { categoryFilter, storeId } = req.query;
-  // Old Quer Work in UpdateTax(React)
   let { stores } = req.query;
 
   try {
     let filters;
-    /*
-*    if (categoryFilter == undefined && categoryFilter == null && categoryFilter == '') {
-    *  filters = {
-    *    stores: { $elemMatch: { id: storeId } },
-    *    created_by: _id,
-    *  };
-    *} else {
-    *  filters = {
-    *    stores: { $elemMatch: { id: storeId } },
-          "category.id": categoryFilter,
-        created_by: _id,
-      };
-    }
-*
-*
-    */
     if (stores === undefined) {
       filters = {
         account: account,
         deleted: 0,
       };
     } else {
-      // storeId = JSON.parse(storeId);
       filters = {
         stores: { $elemMatch: { store: { $in: stores } } },
         account: account,
@@ -141,7 +121,7 @@ router.get("/categoryItem", async (req, res) => {
 
     var result = await ItemList.find(filters).sort({
       title: 1,
-    });
+    }).populate('category', ["_id","title"]);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

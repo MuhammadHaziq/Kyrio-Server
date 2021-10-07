@@ -2,12 +2,11 @@ import Users from "../modals/users";
 import Role from "../modals/role";
 import Stores from "../modals/Store";
 import Accounts from "../modals/accounts";
-import Modules from "../modals/modules/modules";
 import { checkModules, addModuleWhenSignUp } from "../libs/middlewares";
 import md5 from "md5";
 import express from "express";
 import jwt from "jsonwebtoken";
-// import sendEmail from "../libs/sendEmail";
+// import { sendEmail } from "../libs/sendEmail";
 
 var router = express.Router();
 
@@ -63,7 +62,6 @@ router.post("/signup", checkModules, async (req, res) => {
       .save()
       .then(async (result) => {
         userId = result._id;
-        let moduleResult = await Modules.findOne();
 
         let featuresArr = features.map((itm) => {
                             return {
