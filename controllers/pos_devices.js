@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
         });
         const result = await newPOSDevice.save();
         const newRecord = await POS_Device.findOne({ account: account, _id: result._id }).populate('store', ["_id","title"]);
-        res.status(201).json(newRecord);
+        res.status(200).json(newRecord);
     
     } catch (error) {
       if (error.code === 11000) {
