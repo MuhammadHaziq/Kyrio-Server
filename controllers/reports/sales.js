@@ -124,7 +124,7 @@ router.post("/item", async (req, res) => {
             sku: item.sku,
             color: item.color,
             image: item.image,
-            category: typeof item.category.title !== "undefined" && item.category !== null && !isEmpty(item.category) ? item.category.title : "No category"
+            category: typeof item.category !== "undefined" && item.category !== null && !isEmpty(item.category) ? item.category.title : "No category"
           }
           reportData.push(SalesTotal)
       }
@@ -173,7 +173,7 @@ router.post("/category", async (req, res) => {
         { _id: { "$in" : itemKeys} },
         ]}).populate('category', ["_id","title"])
       
-      let categories = await groupBy(itemsFound.map(itm =>{return typeof itm.category.title !== "undefined" ? itm.category.title : "No category" }));
+      let categories = await groupBy(itemsFound.map(itm =>{return typeof itm.category !== "undefined" && itm.category !== null ? itm.category.title : "No category" }));
       let catKeys = Object.keys(categories)
 
       for (var cat of catKeys) {
@@ -193,7 +193,7 @@ router.post("/category", async (req, res) => {
           TotalItemsRefunded = 0;
 
           for (var item of itemsFound) {
-          let category = typeof item.category.title !== "undefined" ? item.category.title : "No category";
+          let category = typeof item.category !== "undefined" && typeof item.category.title !== "undefined" && itm.category !== null ? item.category.title : "No category";
           if(cat == category){
            
             

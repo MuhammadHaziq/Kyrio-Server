@@ -26,8 +26,9 @@ router.post("/", async (req, res) => {
   });
   try {
     const result = await newItemTax.save();
-    const checkType = await itemTax.findOne({ account: account, _id: result._id }).populate("tax_option", ["_id","title"]);
-    const title = checkType.tax_option.title
+    
+    const taxResult = await itemTax.findOne({ account: account, _id: result._id }).populate("tax_option", ["_id","title"]).populate("tax_type", ["_id","title"]);
+    const title = taxResult.tax_option.title
     if(title === "Apply the tax to all new and existing items" || title === "Apply the tax to existing items"){
       let filter = {
         account: account
@@ -44,7 +45,7 @@ router.post("/", async (req, res) => {
       );
     }
 
-    res.status(200).json(result);
+    res.status(200).json(taxResult);
   } catch (error) {
     if (error.code === 11000) {
       res.status(400).json({ message: "Tax Name Already In Record" });
@@ -184,7 +185,7 @@ router.patch("/", async (req, res) => {
         new: true,
         upsert: true, // Make this update into an upsert
       }
-    ).populate("tax_option", ["_id","title"]);
+    ).populate("tax_option", ["_id","title"]).populate("tax_type", ["_id","title"]);
     const optionTitle = updatedRecord.tax_option.title
     if(optionTitle === "Apply the tax to all new and existing items" || optionTitle === "Apply the tax to existing items"){
       let filter = {
