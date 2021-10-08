@@ -101,7 +101,7 @@ router.post("/item", async (req, res) => {
                 CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
                 TotalItemsRefunded++
               }
-              TotalItemsSold++
+              TotalItemsSold = TotalItemsSold + found.quantity
             }
           }
           TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
