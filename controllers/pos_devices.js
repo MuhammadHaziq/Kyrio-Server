@@ -7,29 +7,36 @@ router.post("/", async (req, res) => {
   const { title, store } = req.body;
   // let jsonStore = JSON.parse(store);
   const { _id, account } = req.authData;
-
+  
+  if(store == "0"){
+    res.status(400).json({ message: "Please select store" });
+  } else {
   let result = await POS_Device.find({ store: store })
     .sort({ deviceNo: -1 })
     .limit(1);
   let deviceNo =
     typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo) + 1 : 1;
 
-  const newPOSDevice = new POS_Device({
-    title: title,
-    deviceNo: deviceNo,
-    noOfSales: 0,
-    store: store,
-    createdBy: _id,
-    account: account,
-  });
-  try {
-    const result = await newPOSDevice.save();
-    res.status(201).json(result);
-  } catch (error) {
-    if (error.code === 11000) {
-      res.status(400).json({ message: "POS Device Already Register In Store" });
-    } else {
-      res.status(400).json({ message: error.message });
+    try {
+      
+        const newPOSDevice = new POS_Device({
+          title: title,
+          deviceNo: deviceNo,
+          noOfSales: 0,
+          store: store,
+          createdBy: _id,
+          account: account,
+        });
+        const result = await newPOSDevice.save();
+        const newRecord = await POS_Device.findOne({ account: account, _id: result._id }).populate('store', ["_id","title"]);
+        res.status(201).json(newRecord);
+    
+    } catch (error) {
+      if (error.code === 11000) {
+        res.status(400).json({ message: "POS Device Already Register In Store" });
+      } else {
+        res.status(400).json({ message: error.message });
+      }
     }
   }
 });
