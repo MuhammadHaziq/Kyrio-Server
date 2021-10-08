@@ -2,7 +2,7 @@ import express from "express";
 import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
 import Users from "../../modals/users";
-import { groupBy, orderBy, slice, isEmpty } from 'lodash';
+import { groupBy, orderBy, slice, isEmpty, sumBy } from 'lodash';
 import { filterSales, filterItemSales } from "../../function/globals"
 const moment = require('moment');
 const router = express.Router();
@@ -101,7 +101,7 @@ router.post("/item", async (req, res) => {
                 CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
                 TotalItemsRefunded++
               }
-              TotalItemsSold = TotalItemsSold + found.quantity
+              TotalItemsSold = TotalItemsSold + _.sumBy(found, 'quantity');
             }
           }
           TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
@@ -212,7 +212,8 @@ router.post("/category", async (req, res) => {
                   CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
                   TotalItemsRefunded++
                 }
-                TotalItemsSold++
+                // TotalItemsSold++
+                TotalItemsSold = TotalItemsSold + _.sumBy(found, 'quantity');
               }
             }
             TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
