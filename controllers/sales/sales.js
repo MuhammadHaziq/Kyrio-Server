@@ -40,7 +40,7 @@ router.get("/all", async (req, res) => {
 
     let isoDate = new Date(update_at);
     if(platform === "pos"){
-      filter.updatedAt = {$gte: isoDate}
+      filter.updated_at = {$gte: isoDate}
     }
     var allSales = await Sales.find(filter).sort({ _id: "desc" });
     res.status(200).json(allSales);
