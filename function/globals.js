@@ -60,13 +60,16 @@ export const filterSales = async (sales, divider, matches) => {
 
       let sale_total = sumBy(allSales, 'total_price');
       let refund_total = sumBy(allRefunds, 'total_price');
+      
+      let sale_discount_total = sumBy(allSales, 'total_discount');
+      let refund_discount_total = sumBy(allRefunds, 'total_discount');
 
       let sale_cost_total = sumBy(allSales, 'cost_of_goods');
       let refund_cost_total = sumBy(allRefunds, 'cost_of_goods');
 
       let TotalGrossSales = sale_total;
       let TotalRefunds = refund_total;
-      let TotalDiscounts = sale_total - refund_total;
+      let TotalDiscounts = sale_discount_total - refund_discount_total;
       let TotalNetSale = sale_total;
       let CostOfGoods = sale_cost_total - refund_cost_total;
       let TotalGrossProfit = 0;
