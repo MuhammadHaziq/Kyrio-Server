@@ -99,7 +99,7 @@ router.post("/item", async (req, res) => {
                 // TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
                 TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sumBy(found, 'total_price'))
                 TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sumBy(found, 'total_discount'))
-                CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost_of_goods'))
+                CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost'))
                 TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sumBy(found, 'total_price'))
                 TotalItemsSold = TotalItemsSold + sumBy(found, 'quantity');
               } else if(sale.receipt_type == "REFUND"){
@@ -108,7 +108,7 @@ router.post("/item", async (req, res) => {
                 // CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
                 TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sumBy(found, 'total_price'))
                 TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sumBy(found, 'total_discount'))
-                CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sumBy(found, 'cost_of_goods'))
+                CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sumBy(found, 'cost'))
                 TotalItemsRefunded = TotalItemsRefunded + sumBy(found, 'quantity')
               }
             }
@@ -220,7 +220,7 @@ router.post("/category", async (req, res) => {
                   // TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
                   TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sumBy(found, 'total_price'))
                   TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sumBy(found, 'total_discount'))
-                  CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost_of_goods'))
+                  CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost'))
                   TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sumBy(found, 'total_price'))
                   TotalItemsSold = TotalItemsSold + sumBy(found, 'quantity');
                 } else if(sale.receipt_type == "REFUND"){
@@ -229,7 +229,7 @@ router.post("/category", async (req, res) => {
                   // CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
                   TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sumBy(found, 'total_price'))
                   TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sumBy(found, 'total_discount'))
-                  CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sumBy(found, 'cost_of_goods'))
+                  CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sumBy(found, 'cost'))
                   TotalItemsRefunded = TotalItemsRefunded + sumBy(found, 'quantity');
                 }
               }
