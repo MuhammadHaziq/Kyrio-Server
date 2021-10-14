@@ -226,14 +226,16 @@ export const filterItemSales = async (sales, topFiveItems, divider, matches) => 
                 if(found.length > 0){
                     if(await checkDivider(divider, sale.created_at, matches, i)){
                       if(sale.receipt_type == "SALE"){
-                        TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
-                        TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
-                        CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
-                        TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
+                        TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sumBy(found, 'total_price'))
+                        TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sumBy(found, 'total_discount'))
+                        CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost'))
+                        TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sumBy(found, 'total_price'))
+                        TotalItemsSold = TotalItemsSold + parseInt(sumBy(found, 'quantity') - sumBy(found, 'refund_quantity'));
                       } else if(sale.receipt_type == "REFUND"){
-                        TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
-                        TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
-                        CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
+                        TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sumBy(found, 'total_price'))
+                        TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sumBy(found, 'total_discount'))
+                        CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sumBy(found, 'cost'))
+                        TotalItemsRefunded = TotalItemsRefunded + sumBy(found, 'quantity')
                       }
                     } 
                   }
