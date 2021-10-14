@@ -62,12 +62,14 @@ router.post("/item", async (req, res) => {
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]});
-
-    let items = await groupBy(sales.map(itm => itm.items.map(item => { return item.id})[0]))
-
+      
+    let items = []
+    await sales.map(itm => itm.items.map(item => { items.push(item.id)}))
+    items = await groupBy(items)
+    
     let reportData = [];
     let itemKeys = Object.keys(items)
-
+      
     let itemsFound = await ItemList.find({$and: [
       { account: account},
       { _id: { "$in" : itemKeys} },
@@ -163,7 +165,10 @@ router.post("/category", async (req, res) => {
       { created_by: { "$in" : employees} },
       ]});
 
-      let items = await groupBy(sales.map(itm => itm.items.map(item => { return item.id})[0]))
+      // let items = await groupBy(sales.map(itm => itm.items.map(item => { return item.id})[0]))
+      let items = []
+      await sales.map(itm => itm.items.map(item => { items.push(item.id)}))
+      items = await groupBy(items)
    
       let reportData = [];
       let itemKeys = Object.keys(items)
