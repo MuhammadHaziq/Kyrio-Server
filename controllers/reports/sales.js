@@ -62,7 +62,7 @@ router.post("/item", async (req, res) => {
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]});
-      
+      console.log(sumBy(sales, 'total_price'))
     let items = []
     await sales.map(itm => itm.items.map(item => { items.push(item.id)}))
     items = await groupBy(items)
@@ -101,7 +101,7 @@ router.post("/item", async (req, res) => {
                 TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sumBy(found, 'total_discount'))
                 CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost'))
                 TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sumBy(found, 'total_price'))
-                TotalItemsSold = TotalItemsSold + sumBy(found, 'quantity');
+                TotalItemsSold = TotalItemsSold + parseInt(sumBy(found, 'quantity') - sumBy(found, 'refund_quantity'));
               } else if(sale.receipt_type == "REFUND"){
                 // TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
                 // TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
