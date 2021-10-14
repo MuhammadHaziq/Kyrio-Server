@@ -193,7 +193,7 @@ router.post("/category", async (req, res) => {
           TotalItemsRefunded = 0;
 
           for (var item of itemsFound) {
-          let category = typeof item.category !== "undefined" && typeof item.category.title !== "undefined" && itm.category !== null ? item.category.title : "No category";
+          let category = typeof item.category !== "undefined" && typeof item.category.title !== "undefined" && item.category !== null ? item.category.title : "No category";
           if(cat == category){
            
             
