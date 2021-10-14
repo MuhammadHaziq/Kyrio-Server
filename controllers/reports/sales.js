@@ -62,7 +62,7 @@ router.post("/item", async (req, res) => {
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]});
-      console.log(sumBy(sales, 'total_price'))
+      // console.log(sumBy(sales, 'total_price'))
     let items = []
     await sales.map(itm => itm.items.map(item => { items.push(item.id)}))
     items = await groupBy(items)
@@ -93,19 +93,12 @@ router.post("/item", async (req, res) => {
             let found = sale.items.filter(itm => itm.id == item._id)
             if(found.length > 0){
               if(sale.receipt_type == "SALE"){
-                // TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
-                // TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
-                // CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
-                // TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
                 TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sumBy(found, 'total_price'))
                 TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sumBy(found, 'total_discount'))
                 CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost'))
                 TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sumBy(found, 'total_price'))
                 TotalItemsSold = TotalItemsSold + parseInt(sumBy(found, 'quantity') - sumBy(found, 'refund_quantity'));
               } else if(sale.receipt_type == "REFUND"){
-                // TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
-                // TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
-                // CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
                 TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sumBy(found, 'total_price'))
                 TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sumBy(found, 'total_discount'))
                 CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sumBy(found, 'cost'))
@@ -214,19 +207,12 @@ router.post("/category", async (req, res) => {
               if(found.length > 0){
                 
                 if(sale.receipt_type == "SALE"){
-                  // TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
-                  // TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
-                  // CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
-                  // TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
                   TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sumBy(found, 'total_price'))
                   TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sumBy(found, 'total_discount'))
                   CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost'))
                   TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sumBy(found, 'total_price'))
                   TotalItemsSold = TotalItemsSold + sumBy(found, 'quantity');
                 } else if(sale.receipt_type == "REFUND"){
-                  // TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
-                  // TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
-                  // CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
                   TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sumBy(found, 'total_price'))
                   TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sumBy(found, 'total_discount'))
                   CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sumBy(found, 'cost'))
