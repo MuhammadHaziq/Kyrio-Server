@@ -36,7 +36,7 @@ const salesSchema = new mongoose.Schema({
     required: true,
   },
   sub_total: {
-    type: String,
+    type: Number,
     min: 0,
     max: 1000000000000,
   },

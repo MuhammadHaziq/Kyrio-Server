@@ -62,7 +62,7 @@ router.post("/item", async (req, res) => {
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]});
-      // console.log(sumBy(sales, 'total_price'))
+      console.log(sumBy(sales, 'total_price'))
     let items = []
     await sales.map(itm => itm.items.map(item => { items.push(item.id)}))
     items = await groupBy(items)
@@ -92,6 +92,7 @@ router.post("/item", async (req, res) => {
           for(const sale of sales){
             let found = sale.items.filter(itm => itm.id == item._id)
             if(found.length > 0){
+              
               if(sale.receipt_type == "SALE"){
                 TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sumBy(found, 'total_price'))
                 TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sumBy(found, 'total_discount'))
@@ -106,6 +107,7 @@ router.post("/item", async (req, res) => {
               }
             }
           }
+          
           TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
           TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods)
           TotalMargin = (( ( parseFloat(TotalNetSale) - (CostOfGoods) ) / parseFloat(TotalNetSale) ) * 100).toFixed(2);
@@ -292,7 +294,7 @@ router.post("/employee", async (req, res) => {
                 TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
                 TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
                 CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
-                TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
+                TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.sub_total)
               } else if(sale.receipt_type == "REFUND"){
                 TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
                 TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
