@@ -55,10 +55,13 @@ export const checkDivider = async (divider, saleCreatedAt, matches, index) => {
   }
 export const filterSales = async (sales, divider, matches) => {
   try{
-      let allSales = sales.filter(sale => sale.receipt_type === 'SALE')
+      let allSales = sales.filter(sale => sale.receipt_type === 'SALE').map(sale => { 
+        sale.sub_total = parseFloat(sale.sub_total) 
+        return sale;
+      })
       let allRefunds = sales.filter(sale => sale.receipt_type === 'REFUND')
 
-      let sale_total = sumBy(allSales, 'total_price');
+      let sale_total = sumBy(allSales, 'sub_total');
       let refund_total = sumBy(allRefunds, 'total_price');
       
       let sale_discount_total = sumBy(allSales, 'total_discount');
@@ -66,7 +69,7 @@ export const filterSales = async (sales, divider, matches) => {
 
       let sale_cost_total = sumBy(allSales, 'cost_of_goods');
       let refund_cost_total = sumBy(allRefunds, 'cost_of_goods');
-
+// console.log(sale_total)
       let TotalGrossSales = sale_total;
       let TotalRefunds = refund_total;
       let TotalDiscounts = sale_discount_total - refund_discount_total;
@@ -129,7 +132,7 @@ export const filterSales = async (sales, divider, matches) => {
                     TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
                     TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
                     CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
-                    TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.total_price)
+                    TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.sub_total)
                   } else if(sale.receipt_type == "REFUND"){
                     TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
                     TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
