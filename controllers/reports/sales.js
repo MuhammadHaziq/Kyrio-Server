@@ -62,7 +62,7 @@ router.post("/item", async (req, res) => {
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]});
-      console.log(sumBy(sales, 'total_price'))
+      
     let items = []
     await sales.map(itm => itm.items.map(item => { items.push(item.id)}))
     items = await groupBy(items)
@@ -436,6 +436,87 @@ router.post("/paymentstypes", async (req, res) => {
           reportData.push(SalesTotal)
       }
       res.status(200).json(reportData)
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+})
+
+router.post("/modifiers", async (req, res) => {
+  try {
+    const {
+      startDate,
+      endDate,
+      stores,
+      employees,
+    } = req.body;
+    const { account } = req.authData;
+    
+    var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
+    var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
+    
+    var receipts = await Sales.find({$and: [
+      {"created_at": {$gte: start, $lte: end}},
+      {account: account},
+      { "store._id": { "$in" : stores} },
+      { created_by: { "$in" : employees} },
+      ]}).populate('user','name');
+
+      // const paymentMethods = await groupBy(receipts.map(sale => sale.payment_method))
+      // console.log(sumBy(sales, 'total_price'))
+
+      const modifiers = receipts.map(sale => sale.items.map(item => item.modifiers))
+
+      // let paymentKeys = Object.keys(paymentMethods)
+      // let reportData = [];
+    
+      // for (var payment of paymentKeys) {
+    
+      //   let TotalGrossSales = 0;
+      //   let TotalRefunds = 0;
+      //   let TotalDiscounts = 0;
+      //   let TotalNetSale = 0;
+      //   let CostOfGoods = 0;
+      //   let TotalGrossProfit = 0;
+      //   let TotalItemsSold = 0;
+      //   let TotalItemsRefunded = 0;
+      //   let TotalMargin = 0;
+
+      //     TotalItemsSold = 0;
+      //     TotalItemsRefunded = 0;
+      //     let sales = receipts.filter(sale => sale.payment_method == payment)
+      //     for(const sale of sales){
+      //         if(sale.receipt_type == "SALE"){
+      //           TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
+      //           TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
+      //           CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
+      //           TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.sub_total)
+      //           TotalItemsSold++
+      //         } else if(sale.receipt_type == "REFUND"){
+      //           TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
+      //           TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
+      //           CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
+      //           TotalItemsRefunded++
+      //         }
+      //     }
+      //     TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
+      //     TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods)
+      //     TotalMargin = (( ( parseFloat(TotalNetSale) - (CostOfGoods) ) / parseFloat(TotalNetSale) ) * 100).toFixed(2);
+
+      //     let SalesTotal = {
+      //       GrossSales: parseFloat(TotalGrossSales).toFixed(2),
+      //       Refunds: parseFloat(TotalRefunds).toFixed(2),
+      //       discounts: parseFloat(TotalDiscounts).toFixed(2),
+      //       NetSales: parseFloat(TotalNetSale).toFixed(2),
+      //       CostOfGoods: parseFloat(CostOfGoods).toFixed(2),
+      //       GrossProfit: parseFloat(TotalGrossProfit).toFixed(2),
+      //       ItemsSold: TotalItemsSold,
+      //       ItemsRefunded: TotalItemsRefunded,
+      //       Margin: TotalMargin,
+      //       PaymentType: payment
+      //     }
+      //     reportData.push(SalesTotal)
+      // }
+      res.status(200).json(modifiers)
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
