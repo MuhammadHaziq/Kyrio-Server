@@ -468,11 +468,69 @@ router.post("/modifiers", async (req, res) => {
       modifiers = await groupBy(modifiers,"modifier._id")
       let modifierKeys = Object.keys(modifiers)
 
-      for(const mod of modifierKeys){
-        
+      let reportData = [];
+    
+      for (var modifier of modifierKeys) {
+    
+        let TotalGrossSales = 0;
+        let TotalRefunds = 0;
+        let TotalDiscounts = 0;
+        let TotalNetSale = 0;
+        let CostOfGoods = 0;
+        let TotalGrossProfit = 0;
+        let TotalItemsSold = 0;
+        let TotalItemsRefunded = 0;
+        let TotalMargin = 0;
+
+          TotalItemsSold = 0;
+          TotalItemsRefunded = 0;
+          let reportData = []
+          // let sales = receipts.filter(sale => sale.payment_method == payment)
+         await receipts.map(sale => sale.items.map(item => item.modifiers.map(mod => {
+           if(mod._id == modifier){
+            reportData.push(item)
+           }
+         })))
+          // sales.map(sale => {
+          //   sale.items.map(item => {
+          // // for(const sale of sales){
+          // //   for(const items of sale.items){
+          //     if(sale.receipt_type == "SALE"){
+          //       TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
+          //       TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
+          //       CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
+          //       TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.sub_total)
+          //       TotalItemsSold++
+          //     } else if(sale.receipt_type == "REFUND"){
+          //       TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
+          //       TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
+          //       CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
+          //       TotalItemsRefunded++
+          //     }
+          // //   }
+          // // }
+          //   })
+          // })
+          // TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
+          // TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods)
+          // TotalMargin = (( ( parseFloat(TotalNetSale) - (CostOfGoods) ) / parseFloat(TotalNetSale) ) * 100).toFixed(2);
+
+          // let SalesTotal = {
+          //   GrossSales: parseFloat(TotalGrossSales).toFixed(2),
+          //   Refunds: parseFloat(TotalRefunds).toFixed(2),
+          //   discounts: parseFloat(TotalDiscounts).toFixed(2),
+          //   NetSales: parseFloat(TotalNetSale).toFixed(2),
+          //   CostOfGoods: parseFloat(CostOfGoods).toFixed(2),
+          //   GrossProfit: parseFloat(TotalGrossProfit).toFixed(2),
+          //   ItemsSold: TotalItemsSold,
+          //   ItemsRefunded: TotalItemsRefunded,
+          //   Margin: TotalMargin,
+          //   PaymentType: payment
+          // }
+          // reportData.push(SalesTotal)
       }
       
-      res.status(200).json({ modifierKeys, modifiers })
+      res.status(200).json({ modifierKeys, reportData, modifiers })
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
