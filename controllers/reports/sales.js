@@ -360,6 +360,41 @@ router.post("/receipts", async (req, res) => {
       res.status(500).json({ message: error.message });
     }
 })
-// 2021-03-11T12:09:26.936+00:00 Local DB Created_At
-// 1970-01-19T16:46:23.719+00:00 Live DB SaleTimestamp
+
+router.post("/paymentstypes", async (req, res) => {
+  try {
+    const {
+      startDate,
+      endDate,
+      stores,
+      employees,
+    } = req.body;
+    const { account } = req.authData;
+    
+    var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
+    var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
+    
+    var receipts = await Sales.find({$and: [
+      {"created_at": {$gte: start, $lte: end}},
+      {account: account},
+      { "store._id": { "$in" : stores} },
+      { created_by: { "$in" : employees} },
+      ]}).populate('user','name');
+
+      let totalSales = receipts.filter(itm => itm.receipt_type == "SALE").length
+      let totalRefunds = receipts.filter(itm => itm.receipt_type == "REFUND").length
+      let totalReceipts = parseInt(totalSales) + parseInt(totalRefunds);
+
+      res.status(200).json({
+        totalSales,
+        totalRefunds,
+        totalReceipts,
+        receipts
+      })
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+})
+
+
 module.exports = router;

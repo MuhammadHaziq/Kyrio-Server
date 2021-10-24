@@ -129,7 +129,6 @@ router.patch("/update_position", async (req, res) => {
           upsert: true, // Make this update into an upsert
         }
       );
-      console.log(result)
     });
 
     let modifiersUpdated = await Modifier.find({ account: account }).populate('stores', ["_id","title"]).sort({
