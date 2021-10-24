@@ -383,16 +383,19 @@ router.post("/paymentstypes", async (req, res) => {
       { created_by: { "$in" : employees} },
       ]}).populate('user','name');
 
-      let totalSales = receipts.filter(itm => itm.receipt_type == "SALE").length
-      let totalRefunds = receipts.filter(itm => itm.receipt_type == "REFUND").length
-      let totalReceipts = parseInt(totalSales) + parseInt(totalRefunds);
+      const paymentMethods = receipts.map(sale => sale.payment_method)
+      console.log(paymentMethods)
+      res.status(200).json(groupBy(paymentMethods))
+      // let totalSales = receipts.filter(itm => itm.receipt_type == "SALE").length
+      // let totalRefunds = receipts.filter(itm => itm.receipt_type == "REFUND").length
+      // let totalReceipts = parseInt(totalSales) + parseInt(totalRefunds);
 
-      res.status(200).json({
-        totalSales,
-        totalRefunds,
-        totalReceipts,
-        receipts
-      })
+      // res.status(200).json({
+      //   totalSales,
+      //   totalRefunds,
+      //   totalReceipts,
+      //   receipts
+      // })
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
