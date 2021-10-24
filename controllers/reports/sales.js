@@ -383,9 +383,59 @@ router.post("/paymentstypes", async (req, res) => {
       { created_by: { "$in" : employees} },
       ]}).populate('user','name');
 
-      const paymentMethods = receipts.map(sale => sale.payment_method)
-      console.log(paymentMethods)
-      res.status(200).json(groupBy(paymentMethods))
+      const paymentMethods = await groupBy(receipts.map(sale => sale.payment_method))
+
+      let paymentKeys = Object.keys(paymentMethods)
+      let reportData = [];
+    
+      for (var payment of paymentKeys) {
+    
+        let TotalGrossSales = 0;
+        let TotalRefunds = 0;
+        let TotalDiscounts = 0;
+        let TotalNetSale = 0;
+        let CostOfGoods = 0;
+        let TotalGrossProfit = 0;
+        let TotalItemsSold = 0;
+        let TotalItemsRefunded = 0;
+        let TotalMargin = 0;
+
+          TotalItemsSold = 0;
+          TotalItemsRefunded = 0;
+          let sales = receipts.filter(sale => sale.payment_method == payment)
+          for(const sale of sales){
+              if(sale.receipt_type == "SALE"){
+                TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
+                TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
+                CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
+                TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.sub_total)
+                TotalItemsSold++
+              } else if(sale.receipt_type == "REFUND"){
+                TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
+                TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
+                CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
+                TotalItemsRefunded++
+              }
+          }
+          TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
+          TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods)
+          TotalMargin = (( ( parseFloat(TotalNetSale) - (CostOfGoods) ) / parseFloat(TotalNetSale) ) * 100).toFixed(2);
+
+          let SalesTotal = {
+            GrossSales: TotalGrossSales,
+            Refunds: TotalRefunds,
+            discounts: TotalDiscounts,
+            NetSales: TotalNetSale,
+            CostOfGoods: CostOfGoods,
+            GrossProfit: TotalGrossProfit,
+            ItemsSold: TotalItemsSold,
+            ItemsRefunded: TotalItemsRefunded,
+            Margin: TotalMargin,
+            PaymentType: payment
+          }
+          reportData.push(SalesTotal)
+      }
+      res.status(200).json(reportData)
       // let totalSales = receipts.filter(itm => itm.receipt_type == "SALE").length
       // let totalRefunds = receipts.filter(itm => itm.receipt_type == "REFUND").length
       // let totalReceipts = parseInt(totalSales) + parseInt(totalRefunds);
