@@ -113,7 +113,7 @@ router.post("/item", async (req, res) => {
           TotalMargin = (( ( parseFloat(TotalNetSale) - (CostOfGoods) ) / parseFloat(TotalNetSale) ) * 100).toFixed(2);
 
           let SalesTotal = {
-            GrossSales: TotalGrossSales,
+            GrossSales: parseFloat(TotalGrossSales,2),
             Refunds: TotalRefunds,
             discounts: TotalDiscounts,
             NetSales: TotalNetSale,
