@@ -422,12 +422,12 @@ router.post("/paymentstypes", async (req, res) => {
           TotalMargin = (( ( parseFloat(TotalNetSale) - (CostOfGoods) ) / parseFloat(TotalNetSale) ) * 100).toFixed(2);
 
           let SalesTotal = {
-            GrossSales: parseFloat(TotalGrossSales).toFixed(2),
-            Refunds: parseFloat(TotalRefunds).toFixed(2),
-            discounts: parseFloat(TotalDiscounts).toFixed(2),
-            NetSales: parseFloat(TotalNetSale).toFixed(2),
-            CostOfGoods: parseFloat(CostOfGoods).toFixed(2),
-            GrossProfit: parseFloat(TotalGrossProfit).toFixed(2),
+            GrossSales: TotalGrossSales,
+            Refunds: TotalRefunds,
+            discounts: TotalDiscounts,
+            NetSales: TotalNetSale,
+            CostOfGoods: CostOfGoods,
+            GrossProfit: TotalGrossProfit,
             ItemsSold: TotalItemsSold,
             ItemsRefunded: TotalItemsRefunded,
             Margin: TotalMargin,
@@ -436,6 +436,16 @@ router.post("/paymentstypes", async (req, res) => {
           reportData.push(SalesTotal)
       }
       res.status(200).json(reportData)
+      // let totalSales = receipts.filter(itm => itm.receipt_type == "SALE").length
+      // let totalRefunds = receipts.filter(itm => itm.receipt_type == "REFUND").length
+      // let totalReceipts = parseInt(totalSales) + parseInt(totalRefunds);
+
+      // res.status(200).json({
+      //   totalSales,
+      //   totalRefunds,
+      //   totalReceipts,
+      //   receipts
+      // })
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
