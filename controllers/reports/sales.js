@@ -425,7 +425,7 @@ router.post("/paymentstypes", async (req, res) => {
             GrossSales: TotalGrossSales,
             Refunds: TotalRefunds,
             discounts: TotalDiscounts,
-            NetSales: TotalNetSale,
+            NetSales: parseFloat(TotalNetSale,2),
             CostOfGoods: CostOfGoods,
             GrossProfit: TotalGrossProfit,
             ItemsSold: TotalItemsSold,
