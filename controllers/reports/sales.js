@@ -179,8 +179,8 @@ router.post("/category", async (req, res) => {
         { account: account},
         { _id: { "$in" : itemKeys} },
         ]}).populate('category', ["_id","title"])
-      
-      let categories = await groupBy(itemsFound.map(itm =>{return typeof itm.category !== "undefined" && itm.category !== null ? itm.category.title : "No category" }));
+        itemsFound.map(itm =>{console.log(itm.category)})
+      let categories = await groupBy(itemsFound.map(itm =>{return itm.category !== null ? typeof itm.category !== "undefined" && typeof itm.category.title !== "undefined" ? itm.category.title : "No category" : "No category" }));
       let catKeys = Object.keys(categories)
 
       for (var cat of catKeys) {
@@ -200,7 +200,7 @@ router.post("/category", async (req, res) => {
           TotalItemsRefunded = 0;
 
           for (var item of itemsFound) {
-          let category = typeof item.category !== "undefined" && typeof item.category.title !== "undefined" && item.category !== null ? item.category.title : "No category";
+          let category = item.category !== null ? typeof item.category !== "undefined" && typeof item.category.title !== "undefined" ? item.category.title : "No category" : "No category";
           if(cat == category){
            
             
