@@ -471,63 +471,86 @@ router.post("/modifiers", async (req, res) => {
       let reportData = [];
     
       for (var modifier of modifierKeys) {
-    
-        let TotalGrossSales = 0;
-        let TotalRefunds = 0;
-        let TotalDiscounts = 0;
-        let TotalNetSale = 0;
-        let CostOfGoods = 0;
-        let TotalGrossProfit = 0;
-        let TotalItemsSold = 0;
-        let TotalItemsRefunded = 0;
-        let TotalMargin = 0;
+        
+        let sales = await receipts.filter(sale => sale.items.filter(item => item.modifiers.filter(mod => mod._id == modifier)));
+        let mod = modifiers[modifier];
+        
+        let quantitySold = 0;
+        let grossSales = 0;
+        let refundQuantitySold = 0;
+        let refundGrossSales = 0;
+        
+        let optQuantitySold = 0;
+        let optGrossSales = 0;
+        let optRefundQuantitySold = 0;
+        let optRefundGrossSales = 0;
+        
+        
+        const optionsDetails = []
 
-          TotalItemsSold = 0;
-          TotalItemsRefunded = 0;
-          let reportData = []
-          // let sales = receipts.filter(sale => sale.payment_method == payment)
-         await receipts.map(sale => sale.items.map(item => item.modifiers.map(mod => {
-           if(mod._id == modifier){
-            reportData.push(item)
-           }
-         })))
-          // sales.map(sale => {
-          //   sale.items.map(item => {
-          // // for(const sale of sales){
-          // //   for(const items of sale.items){
-          //     if(sale.receipt_type == "SALE"){
-          //       TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sale.total_price)
-          //       TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sale.total_discount)
-          //       CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sale.cost_of_goods)
-          //       TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sale.sub_total)
-          //       TotalItemsSold++
-          //     } else if(sale.receipt_type == "REFUND"){
-          //       TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sale.total_price)
-          //       TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sale.total_discount)
-          //       CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sale.cost_of_goods)
-          //       TotalItemsRefunded++
-          //     }
-          // //   }
-          // // }
-          //   })
-          // })
-          // TotalNetSale = parseFloat(TotalGrossSales) - parseFloat(TotalDiscounts) - parseFloat(TotalRefunds)
-          // TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods)
-          // TotalMargin = (( ( parseFloat(TotalNetSale) - (CostOfGoods) ) / parseFloat(TotalNetSale) ) * 100).toFixed(2);
+       
+        // console.log(optionKeys)
+        
+        
+        
 
-          // let SalesTotal = {
-          //   GrossSales: parseFloat(TotalGrossSales).toFixed(2),
-          //   Refunds: parseFloat(TotalRefunds).toFixed(2),
-          //   discounts: parseFloat(TotalDiscounts).toFixed(2),
-          //   NetSales: parseFloat(TotalNetSale).toFixed(2),
-          //   CostOfGoods: parseFloat(CostOfGoods).toFixed(2),
-          //   GrossProfit: parseFloat(TotalGrossProfit).toFixed(2),
-          //   ItemsSold: TotalItemsSold,
-          //   ItemsRefunded: TotalItemsRefunded,
-          //   Margin: TotalMargin,
-          //   PaymentType: payment
-          // }
-          // reportData.push(SalesTotal)
+        await sales.map(async sale => { 
+          await sale.items.map(async item => {
+            const options = []
+            await item.modifiers.map(m => m.options.map(op => options.push(op)))
+            let optionsGroup = await groupBy(options,"option_name")
+            let optionKeys = Object.keys(optionsGroup)
+            console.log(optionsGroup)
+            console.log("-----------------------------------------")
+            for(const opt of optionKeys){
+              console.log(opt)
+              // let check = []
+              // tem.modifiersi.map(md => md.options.map(o => { 
+              //   if(o.option_name == opt){
+              //     check.push(opt)
+              //   }
+              // }))
+              // console.log(check)
+              // console.log("--------")
+              // if(check > 0){
+                if(sale.receipt_type == "SALE"){
+                  optQuantitySold = optionKeys.length
+                  optGrossSales = optGrossSales + sumBy(options, 'price')
+                } else if(sale.receipt_type == "REFUND"){
+                  optRefundQuantitySold = optionKeys.length
+                  optRefundGrossSales = optRefundGrossSales + sumBy(options, 'price')
+                }
+                optionsDetails.push({
+                  Option: opt,
+                  quantitySold: optQuantitySold,
+                  grossSales: parseFloat(optGrossSales).toFixed(2),
+                  refundQuantitySold: optRefundQuantitySold,
+                  refundGrossSales: parseFloat(optRefundGrossSales).toFixed(2)
+                })
+              // }
+            }
+
+
+            if(sale.receipt_type == "SALE"){
+              quantitySold = quantitySold + parseInt(item.quantity)
+              grossSales = grossSales + parseInt(item.total_modifiers)
+            } else if(sale.receipt_type == "REFUND"){
+              refundQuantitySold = refundQuantitySold + parseInt(item.quantity)
+              refundGrossSales = refundGrossSales + parseInt(item.total_modifiers)
+            }
+          })
+        })
+        
+        
+        let salesTotal = {
+          Modifier: mod[0].modifier.title,
+          quantitySold: quantitySold,
+          grossSales: grossSales,
+          refundQuantitySold: refundQuantitySold,
+          refundGrossSales: refundGrossSales,
+          options: optionsDetails
+        }
+        reportData.push(salesTotal)
       }
       
       res.status(200).json({ modifierKeys, reportData, modifiers })
