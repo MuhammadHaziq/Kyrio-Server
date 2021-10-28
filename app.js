@@ -93,8 +93,10 @@ mongoose.connect(
     process.env.NODE_ENV == "production"
       ? console.log("Connected to Mongodb Cloud Server")
       : console.log("Connected to Mongodb Local Server");
+      
   }
 );
+
 mongoose.connection.on("error", (err) => {
   console.log(err.message);
 });

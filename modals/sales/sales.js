@@ -198,7 +198,7 @@ const salesSchema = new mongoose.Schema({
             min: 4,
             max: 255,
           },
-          taxType: {
+          tax_type: {
             type: String,
             min: 4,
             max: 255,
