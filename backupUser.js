@@ -52,7 +52,6 @@ router.post("/signup", checkModules, (req, res) => {
         store
           .save()
           .then(async (response) => {
-            // console.log(response);
             paymentTypeStoreId: response._id;
             const newPOSDevice = new POS_Device({
               title: "POS Device",
