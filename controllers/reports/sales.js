@@ -346,7 +346,7 @@ router.post("/receipts", async (req, res) => {
       {account: account},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
-      ]}).populate('user','name');
+      ]}).populate('user','name').sort({ receipt_number: "desc" });
 
       let totalSales = receipts.filter(itm => itm.receipt_type == "SALE").length
       let totalRefunds = receipts.filter(itm => itm.receipt_type == "REFUND").length

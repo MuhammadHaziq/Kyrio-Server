@@ -101,6 +101,7 @@ router.post("/", async (req, res) => {
     store,
     created_at
   } = req.body;
+  
   if (sale_timestamp !== "" && sale_timestamp !== null) {
     sale_timestamp = sale_timestamp
   } else {

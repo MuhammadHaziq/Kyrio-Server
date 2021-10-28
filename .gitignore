@@ -8,6 +8,7 @@
 /coverage
 /uploads/items
 /uploads/receipt
+/uploads
 
 # production
 /build
