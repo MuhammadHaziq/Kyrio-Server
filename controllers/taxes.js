@@ -5,7 +5,7 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const { title, taxRate, taxType, taxOption, depOnDining, stores } = req.body;
   const { _id, account } = req.authData;
-console.log(taxOption)
+
   const newTax = new Tax({
     title: title,
     taxRate: taxRate,

@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
 
     req.io.to(account).emit(MODIFIER_INSERT, { data: result, user: _id });
 
-    res.status(201).json(result);
+    res.status(200).json(result);
   } catch (error) {
     if (error.code === 11000) {
       res.status(400).json({ message: "Modifier Already Register" });
@@ -146,21 +146,26 @@ router.patch("/", async (req, res) => {
   try {
     const { id, title, options, stores } = req.body;
     const { _id, account } = req.authData;
-
-    const result = await Modifier.findOneAndUpdate(
-      { _id: id, account: account },
-      {
-        $set: {
-          title: title,
-          options: options,
-          stores: stores,
+    // const mod = await Modifier.findOne({ account: account, _id: id })
+    // let result = {}
+    // if(mod.options.length === options.length) {
+      const result = await Modifier.findOneAndUpdate(
+        { _id: id, account: account },
+        {
+          $set: {
+            title: title,
+            options: options,
+            stores: stores,
+          },
         },
-      },
-      {
-        new: true,
-        upsert: true, // Make this update into an upsert
-      }
-    ).populate('stores', ["_id","title"]).sort({ position: 1 });
+        {
+          new: true,
+          upsert: true, // Make this update into an upsert
+        }
+      ).populate('stores', ["_id","title"]).sort({ position: 1 });
+    // } else {
+
+    // }
 
     req.io.to(account).emit(MODIFIER_UPDATE, { data: result, user: _id });
 
