@@ -462,22 +462,7 @@ router.post("/modifiers", async (req, res) => {
       { created_by: { "$in" : employees} },
       ]}).populate('user','name');
     const modifiers = await Modifier.find({ account: account })
-      // const paymentMethods = await groupBy(receipts.map(sale => sale.payment_method))
-      // console.log(sumBy(sales, 'total_price'))
-      // let modifiers = []
-      // await receipts.map(sale => sale.items.map(item => item.modifiers.map(mod => modifiers.push(mod))))
-      // const groupModifiers = await groupBy(modifiers,"modifier._id")
-      // let modifierKeys = Object.keys(groupModifiers)
-
-      // const options = []
-      // await modifiers.map(m => m.options.map(op => options.push(op)))
-      // let optionsGroup = await groupBy(options,"option_name")
-      // let optionKeys = Object.keys(optionsGroup)
-      
-      // let filterOptionKeys = await groupBy(optionKeys)
-      // filterOptionKeys = Object.keys(filterOptionKeys)
-      
-      // console.log(filterOptionKeys)
+     
       let reportData = [];
       for(const modifier of modifiers){
         
@@ -557,7 +542,7 @@ router.post("/modifiers", async (req, res) => {
         }
       }
       
-      res.status(200).json({ reportData })
+      res.status(200).json(reportData)
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
