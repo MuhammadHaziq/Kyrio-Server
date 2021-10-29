@@ -3,6 +3,7 @@ import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
 import Users from "../../modals/users";
 import _, { groupBy, orderBy, slice, isEmpty, sumBy } from 'lodash';
+import Modifier from "../../modals/items/Modifier";
 import { filterSales, filterItemSales } from "../../function/globals"
 const moment = require('moment');
 const router = express.Router();
@@ -454,106 +455,108 @@ router.post("/modifiers", async (req, res) => {
     var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
     var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
     
-    var receipts = await Sales.find({$and: [
+    const receipts = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]}).populate('user','name');
-
+    const modifiers = await Modifier.find({ account: account })
       // const paymentMethods = await groupBy(receipts.map(sale => sale.payment_method))
       // console.log(sumBy(sales, 'total_price'))
-      let modifiers = []
-      await receipts.map(sale => sale.items.map(item => item.modifiers.map(mod => modifiers.push(mod))))
-      modifiers = await groupBy(modifiers,"modifier._id")
-      let modifierKeys = Object.keys(modifiers)
+      // let modifiers = []
+      // await receipts.map(sale => sale.items.map(item => item.modifiers.map(mod => modifiers.push(mod))))
+      // const groupModifiers = await groupBy(modifiers,"modifier._id")
+      // let modifierKeys = Object.keys(groupModifiers)
 
+      // const options = []
+      // await modifiers.map(m => m.options.map(op => options.push(op)))
+      // let optionsGroup = await groupBy(options,"option_name")
+      // let optionKeys = Object.keys(optionsGroup)
+      
+      // let filterOptionKeys = await groupBy(optionKeys)
+      // filterOptionKeys = Object.keys(filterOptionKeys)
+      
+      // console.log(filterOptionKeys)
       let reportData = [];
-    
-      for (var modifier of modifierKeys) {
+      for(const modifier of modifiers){
         
-        let sales = await receipts.filter(sale => sale.items.filter(item => item.modifiers.filter(mod => mod._id == modifier)));
-        let mod = modifiers[modifier];
         
+        const optionsDetails = []
+        let sales = await receipts.filter(sale => sale.items.filter(item => item.modifiers.filter(mod =>  mod.modifier._id == modifier._id)))
+
         let quantitySold = 0;
         let grossSales = 0;
         let refundQuantitySold = 0;
         let refundGrossSales = 0;
         
-        let optQuantitySold = 0;
-        let optGrossSales = 0;
-        let optRefundQuantitySold = 0;
-        let optRefundGrossSales = 0;
-        
-        
-        const optionsDetails = []
-
-       
-        // console.log(optionKeys)
-        
-        
-        
-
-        await sales.map(async sale => { 
-          await sale.items.map(async item => {
-            const options = []
-            await item.modifiers.map(m => m.options.map(op => options.push(op)))
-            let optionsGroup = await groupBy(options,"option_name")
-            let optionKeys = Object.keys(optionsGroup)
-            console.log(optionsGroup)
-            console.log("-----------------------------------------")
-            for(const opt of optionKeys){
-              console.log(opt)
-              // let check = []
-              // tem.modifiersi.map(md => md.options.map(o => { 
-              //   if(o.option_name == opt){
-              //     check.push(opt)
-              //   }
-              // }))
-              // console.log(check)
-              // console.log("--------")
-              // if(check > 0){
-                if(sale.receipt_type == "SALE"){
-                  optQuantitySold = optionKeys.length
-                  optGrossSales = optGrossSales + sumBy(options, 'price')
-                } else if(sale.receipt_type == "REFUND"){
-                  optRefundQuantitySold = optionKeys.length
-                  optRefundGrossSales = optRefundGrossSales + sumBy(options, 'price')
+        if(sales.length > 0) {
+          await sales.map(async sale => { 
+            await sale.items.map(async item => {
+              await item.modifiers.map(async mod => {
+                if(mod.modifier._id == modifier._id){
+                  if(sale.receipt_type == "SALE"){
+                    quantitySold = quantitySold + parseInt(item.quantity) * mod.options.length
+                    grossSales = grossSales + parseInt(item.total_modifiers)
+                  } else if(sale.receipt_type == "REFUND"){
+                    refundQuantitySold = refundQuantitySold + parseInt(item.quantity) * mod.options.length
+                    refundGrossSales = refundGrossSales + parseInt(item.total_modifiers)
+                  }
                 }
-                optionsDetails.push({
-                  Option: opt,
-                  quantitySold: optQuantitySold,
-                  grossSales: parseFloat(optGrossSales).toFixed(2),
-                  refundQuantitySold: optRefundQuantitySold,
-                  refundGrossSales: parseFloat(optRefundGrossSales).toFixed(2)
-                })
-              // }
-            }
-
-
-            if(sale.receipt_type == "SALE"){
-              quantitySold = quantitySold + parseInt(item.quantity)
-              grossSales = grossSales + parseInt(item.total_modifiers)
-            } else if(sale.receipt_type == "REFUND"){
-              refundQuantitySold = refundQuantitySold + parseInt(item.quantity)
-              refundGrossSales = refundGrossSales + parseInt(item.total_modifiers)
-            }
+              })
+            })
           })
-        })
-        
-        
-        let salesTotal = {
-          Modifier: mod[0].modifier.title,
-          quantitySold: quantitySold,
-          grossSales: grossSales,
-          refundQuantitySold: refundQuantitySold,
-          refundGrossSales: refundGrossSales,
-          options: optionsDetails
+
+          for(const option of modifier.options){
+            let optQuantitySold = 0;
+            let optGrossSales = 0;
+            let optRefundQuantitySold = 0;
+            let optRefundGrossSales = 0;
+            let check = false
+            await sales.map(async sale => { 
+              await sale.items.map(async item => {
+                await item.modifiers.map(async mod => {
+                  await mod.options.map(opt => {
+                    
+                    if(option.name == opt.option_name && opt.isChecked){
+                      check = true
+                      if(sale.receipt_type == "SALE"){
+                        optQuantitySold = optQuantitySold + parseInt(item.quantity)
+                        optGrossSales = optGrossSales + parseInt(opt.price)
+                      } else if(sale.receipt_type == "REFUND"){
+                        optRefundQuantitySold = optRefundQuantitySold + parseInt(item.quantity)
+                        optRefundGrossSales = optRefundGrossSales + parseInt(opt.price)
+                      }
+                    }
+                  })
+                })
+              })
+            })
+            if(check){
+              optionsDetails.push({
+                Option: option.name,
+                quantitySold: optQuantitySold,
+                grossSales: parseFloat(optGrossSales).toFixed(2),
+                refundQuantitySold: optRefundQuantitySold,
+                refundGrossSales: parseFloat(optRefundGrossSales).toFixed(2)
+              })
+            }
+          }
+          if(optionsDetails.length > 0){
+            let salesTotal = {
+              Modifier: modifier.title,
+              quantitySold: quantitySold,
+              grossSales: grossSales,
+              refundQuantitySold: refundQuantitySold,
+              refundGrossSales: refundGrossSales,
+              options: optionsDetails
+            }
+            reportData.push(salesTotal)
+          }
         }
-        reportData.push(salesTotal)
       }
       
-      res.status(200).json({ modifierKeys, reportData, modifiers })
+      res.status(200).json({ reportData, modifiers })
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
