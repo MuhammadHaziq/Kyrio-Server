@@ -494,13 +494,14 @@ router.post("/modifiers", async (req, res) => {
           await sales.map(async sale => { 
             await sale.items.map(async item => {
               await item.modifiers.map(async mod => {
+                
                 if(mod.modifier._id == modifier._id){
                   if(sale.receipt_type == "SALE"){
                     quantitySold = quantitySold + parseInt(item.quantity) * mod.options.length
-                    grossSales = grossSales + parseInt(item.total_modifiers)
+                    grossSales = grossSales + parseFloat(item.total_modifiers).toFixed(2)
                   } else if(sale.receipt_type == "REFUND"){
                     refundQuantitySold = refundQuantitySold + parseInt(item.quantity) * mod.options.length
-                    refundGrossSales = refundGrossSales + parseInt(item.total_modifiers)
+                    refundGrossSales = refundGrossSales + parseFloat(item.total_modifiers).toFixed(2)
                   }
                 }
               })
@@ -522,10 +523,10 @@ router.post("/modifiers", async (req, res) => {
                       check = true
                       if(sale.receipt_type == "SALE"){
                         optQuantitySold = optQuantitySold + parseInt(item.quantity)
-                        optGrossSales = optGrossSales + parseInt(opt.price)
+                        optGrossSales = optGrossSales + parseFloat(opt.price).toFixed(2)
                       } else if(sale.receipt_type == "REFUND"){
                         optRefundQuantitySold = optRefundQuantitySold + parseInt(item.quantity)
-                        optRefundGrossSales = optRefundGrossSales + parseInt(opt.price)
+                        optRefundGrossSales = optRefundGrossSales + parseFloat(opt.price).toFixed(2)
                       }
                     }
                   })
@@ -556,7 +557,7 @@ router.post("/modifiers", async (req, res) => {
         }
       }
       
-      res.status(200).json({ reportData, modifiers })
+      res.status(200).json({ reportData })
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
