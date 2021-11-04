@@ -2,6 +2,7 @@ import express from "express";
 import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
 import Users from "../../modals/users";
+import Discount from "../../modals/items/Discount";
 import _, { groupBy, orderBy, slice, isEmpty, sumBy } from 'lodash';
 import Modifier from "../../modals/items/Modifier";
 import { filterSales, filterItemSales } from "../../function/globals"
@@ -483,10 +484,10 @@ router.post("/modifiers", async (req, res) => {
                 if(mod.modifier._id == modifier._id){
                   if(sale.receipt_type == "SALE"){
                     quantitySold = quantitySold + parseInt(item.quantity) * mod.options.length
-                    grossSales = grossSales + parseFloat(item.total_modifiers).toFixed(2)
+                    grossSales = grossSales + item.total_modifiers
                   } else if(sale.receipt_type == "REFUND"){
                     refundQuantitySold = refundQuantitySold + parseInt(item.quantity) * mod.options.length
-                    refundGrossSales = refundGrossSales + parseFloat(item.total_modifiers).toFixed(2)
+                    refundGrossSales = refundGrossSales + item.total_modifiers
                   }
                 }
               })
@@ -503,7 +504,6 @@ router.post("/modifiers", async (req, res) => {
               await sale.items.map(async item => {
                 await item.modifiers.map(async mod => {
                   await mod.options.map(opt => {
-                    
                     if(option.name == opt.option_name && opt.isChecked){
                       check = true
                       if(sale.receipt_type == "SALE"){
@@ -543,6 +543,240 @@ router.post("/modifiers", async (req, res) => {
       }
       
       res.status(200).json(reportData)
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+})
+
+router.post("/discounts", async (req, res) => {
+  try {
+    const {
+      startDate,
+      endDate,
+      stores,
+      employees,
+    } = req.body;
+    const { account } = req.authData;
+    
+    var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
+    var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
+    
+    const receipts = await Sales.find({$and: [
+      {"created_at": {$gte: start, $lte: end}},
+      {account: account},
+      {receipt_type: "SALE"},
+      { "store._id": { "$in" : stores} },
+      { created_by: { "$in" : employees} },
+      ]}).populate('user','name');
+    
+     const itemDiscounts = [];
+     const receiptDiscounts = [];
+     
+     await receipts.map(sale => { 
+        if(sale.discounts.length > 0){
+          sale.discounts.map(dis => {
+            receiptDiscounts.push(dis)
+          })
+        }
+        return sale.items.map(item => { 
+          if(item.discounts.length > 0){
+            item.discounts.map(dis => itemDiscounts.push(dis))
+          }
+        })
+      })
+
+      let itemGroupDiscounts = groupBy(itemDiscounts,'_id')
+      let itemDiscountKeys = Object.keys(itemGroupDiscounts)
+    
+      let receiptGroupDiscounts = groupBy(receiptDiscounts,'_id')
+      let receiptDiscountKeys = Object.keys(receiptGroupDiscounts)
+      
+      
+
+      let reportData = [];
+      for(const key of itemDiscountKeys){
+        reportData.push({
+          _id: key,
+          title: itemGroupDiscounts[key][0].title,
+          applied: itemGroupDiscounts[key].length,
+          type: itemGroupDiscounts[key][0].type,
+          value: itemGroupDiscounts[key][0].value,
+          total: parseFloat(sumBy(itemGroupDiscounts[key], 'discount_total')).toFixed(2)
+        })
+      }
+      for(const key of receiptDiscountKeys){
+        reportData.push({
+          _id: key,
+          title: receiptGroupDiscounts[key][0].title,
+          applied: receiptGroupDiscounts[key].length,
+          type: receiptGroupDiscounts[key][0].type,
+          value: receiptGroupDiscounts[key][0].value,
+          total: parseFloat(sumBy(receiptGroupDiscounts[key], 'value')).toFixed(2)
+        })
+      }
+      
+      
+      res.status(200).json(reportData)
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+})
+
+router.post("/taxes", async (req, res) => {
+  try {
+    const {
+      startDate,
+      endDate,
+      stores,
+      employees,
+    } = req.body;
+    const { account } = req.authData;
+    
+    var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
+    var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
+    
+    const receipts = await Sales.find({$and: [
+      {"created_at": {$gte: start, $lte: end}},
+      {account: account},
+      {receipt_type: "SALE"},
+      { "store._id": { "$in" : stores} },
+      { created_by: { "$in" : employees} },
+      ]}).populate('user','name');
+    
+     const reportData = [];
+     const itemTaxes = [];
+     let taxableSales = 0;
+     let NonTaxableSales = 0;
+     let NetSales = 0;
+
+     
+     await receipts.map(sale => {
+       if(sale.total_tax != 0 && sale.total_tax != null ){
+        taxableSales = taxableSales + sale.total_price;
+       } else {
+        NonTaxableSales = NonTaxableSales + sale.total_price;
+       }
+       NetSales = NetSales + sale.total_price;
+
+       return sale.items.map(item => { 
+          if(item.taxes.length > 0){
+            item.taxes.map(tax => {
+              let data = {
+                _id: tax._id,
+                isChecked: tax.isChecked,
+                isEnabled: tax.isEnabled,
+                tax_rate: tax.tax_rate,
+                tax_total: tax.tax_total,
+                tax_type: tax.tax_type,
+                title: tax.title,
+                taxableSale: sale.total_price
+              }
+              itemTaxes.push(data)
+              return data;
+            })
+          }
+        })
+     })
+     let itemGroupTaxes = groupBy(itemTaxes,'_id')
+     let itemTaxesKeys = Object.keys(itemGroupTaxes)
+     
+     for(const key of itemTaxesKeys){
+      reportData.push({
+        _id: itemGroupTaxes[key][0]._id,
+        title: itemGroupTaxes[key][0].title,
+        title: itemGroupTaxes[key][0].title,
+        tax_rate: itemGroupTaxes[key][0].tax_rate+"%",
+        taxableSale: parseFloat(itemGroupTaxes[key][0].taxableSale).toFixed(2),
+        taxAmount: parseFloat(sumBy(itemGroupTaxes[key], 'tax_total')).toFixed(2)
+      })
+     }
+     taxableSales = taxableSales.toFixed(2)
+     NonTaxableSales = NonTaxableSales.toFixed(2)
+     NetSales = NetSales.toFixed(2)
+      
+      res.status(200).json({taxes: reportData, taxableSales,
+        NonTaxableSales,
+        NetSales})
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+})
+
+router.post("/shifts", async (req, res) => {
+  try {
+    const {
+      startDate,
+      endDate,
+      stores,
+      employees,
+    } = req.body;
+    const { account } = req.authData;
+    
+    var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
+    var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
+    
+    const receipts = await Sales.find({$and: [
+      {"created_at": {$gte: start, $lte: end}},
+      {account: account},
+      {receipt_type: "SALE"},
+      { "store._id": { "$in" : stores} },
+      { created_by: { "$in" : employees} },
+      ]}).populate('user','name');
+    
+     const reportData = [];
+     const itemTaxes = [];
+     let taxableSales = 0;
+     let NonTaxableSales = 0;
+     let NetSales = 0;
+
+     
+     await receipts.map(sale => {
+       if(sale.total_tax != 0 && sale.total_tax != null ){
+        taxableSales = taxableSales + sale.total_price;
+       } else {
+        NonTaxableSales = NonTaxableSales + sale.total_price;
+       }
+       NetSales = NetSales + sale.total_price;
+
+       return sale.items.map(item => { 
+          if(item.taxes.length > 0){
+            item.taxes.map(tax => {
+              let data = {
+                _id: tax._id,
+                isChecked: tax.isChecked,
+                isEnabled: tax.isEnabled,
+                tax_rate: tax.tax_rate,
+                tax_total: tax.tax_total,
+                tax_type: tax.tax_type,
+                title: tax.title,
+                taxableSale: sale.total_price
+              }
+              itemTaxes.push(data)
+              return data;
+            })
+          }
+        })
+     })
+     let itemGroupTaxes = groupBy(itemTaxes,'_id')
+     let itemTaxesKeys = Object.keys(itemGroupTaxes)
+     
+     for(const key of itemTaxesKeys){
+      reportData.push({
+        _id: itemGroupTaxes[key][0]._id,
+        title: itemGroupTaxes[key][0].title,
+        title: itemGroupTaxes[key][0].title,
+        tax_rate: itemGroupTaxes[key][0].tax_rate+"%",
+        taxableSale: parseFloat(itemGroupTaxes[key][0].taxableSale).toFixed(2),
+        taxAmount: parseFloat(sumBy(itemGroupTaxes[key], 'tax_total')).toFixed(2)
+      })
+     }
+     taxableSales = taxableSales.toFixed(2)
+     NonTaxableSales = NonTaxableSales.toFixed(2)
+     NetSales = NetSales.toFixed(2)
+      
+      res.status(200).json({reportData, taxableSales,
+        NonTaxableSales,
+        NetSales})
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

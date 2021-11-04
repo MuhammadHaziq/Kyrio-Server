@@ -208,6 +208,11 @@ const salesSchema = new mongoose.Schema({
             min: 0,
             max: 1000000,
           },
+          tax_total: {
+            type: Number,
+            min: 0,
+            max: 1000000,
+          }
         },
       ],
       discounts: [
@@ -239,6 +244,11 @@ const salesSchema = new mongoose.Schema({
             min: 0,
             max: 1000000,
           },
+          discount_total: {
+            type: Number,
+            min: 0,
+            max: 1000000,
+          }
         },
       ],
       variant: {
