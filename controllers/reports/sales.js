@@ -180,8 +180,8 @@ router.post("/category", async (req, res) => {
       let itemsFound = await ItemList.find({$and: [
         { account: account},
         { _id: { "$in" : itemKeys} },
-        ]}).populate('category', ["_id","title"])
-        itemsFound.map(itm =>{console.log(itm.category)})
+        ]}).populate('category', ["_id","title"]);
+        
       let categories = await groupBy(itemsFound.map(itm =>{return itm.category !== null ? typeof itm.category !== "undefined" && typeof itm.category.title !== "undefined" ? itm.category.title : "No category" : "No category" }));
       let catKeys = Object.keys(categories)
 
