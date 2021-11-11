@@ -96,9 +96,10 @@ router.post("/signup", checkModules, async (req, res) => {
          let account = await new Accounts({
             businessName: businessName,
             email: email,
-            password: password,
+            password: md5(password),
             timezone: null,
             language: "English",
+            decimal:  0,
             features: featuresArr,
             settings: settingsArr,
             createdBy: userId,

@@ -29,6 +29,11 @@ const accountsSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  decimal: {
+    type: Number,
+    min: 1,
+    max: 1,
+  },
   features: [
     {
       feature: {

@@ -1,3 +1,4 @@
+import accountRouter from "../controllers/account";
 import usersRouter from "../controllers/users";
 import itemsRouter from "../controllers/items/items";
 import storesRouter from "../controllers/stores";
@@ -35,6 +36,7 @@ router.get("/", (req, res, next) => {
   res.render("index", { title: "Kyrio POS Server Version 2" });
 });
 router.use("/users", usersRouter);
+router.use("/ownercab", verifyToken, accountRouter);
 router.use("/tickets", verifyToken, ticketsRouter);
 router.use("/sales", verifyToken, salesRouter);
 router.use("/reports", verifyToken, reportsRouter);
