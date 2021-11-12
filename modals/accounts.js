@@ -31,8 +31,8 @@ const accountsSchema = new mongoose.Schema({
   },
   decimal: {
     type: Number,
-    min: 1,
-    max: 1,
+    min: 0,
+    max: 2,
   },
   features: [
     {
