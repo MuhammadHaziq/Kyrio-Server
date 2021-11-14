@@ -4,12 +4,9 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title } = req.body;
-  const { _id, account } = req.authData;
 
   const newTaxesOption = new taxesOption({
-    title: title,
-    createdBy: _id,
-    account: account
+    title: title
   });
   try {
     const result = await newTaxesOption.save();
@@ -21,8 +18,7 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _id, account } = req.authData;
-    const result = await taxesOption.find({ account: account });
+    const result = await taxesOption.find();
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

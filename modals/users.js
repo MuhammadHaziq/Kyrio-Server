@@ -42,6 +42,16 @@ const usersSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  timezone: {
+    type: String,
+    min: 3,
+    max: 255,
+  },
+  language: {
+    type: String,
+    min: 6,
+    max: 255,
+  },
   stores: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Store",

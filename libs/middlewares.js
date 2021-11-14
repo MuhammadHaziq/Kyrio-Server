@@ -223,20 +223,16 @@ export const addModuleWhenSignUp = async (userId, account, store, UDID) => {
   } catch (error) {
     console.log("Default Dining Catch Error", error.message);
   }
-  const taxesTypeCheck = await taxesType.find({});
+  const taxesTypeCheck = await taxesType.find();
   if (taxesTypeCheck.length === 0) {
     try {
       await taxesType
         .create([
           {
-            title: "Included in the price",
-            createdBy: userId,
-            account: account
+            title: "Included in the price"
           },
           {
-            title: "Added to the price",
-            createdBy: userId,
-            account: account
+            title: "Added to the price"
           },
         ])
         .then((response) => {
@@ -249,27 +245,21 @@ export const addModuleWhenSignUp = async (userId, account, store, UDID) => {
       console.log("Default Tax Type Catch Error", error.message);
     }
   }
-  const taxesOptionCheck = await taxesOption.find({});
+  const taxesOptionCheck = await taxesOption.find();
 
   if (taxesOptionCheck.length === 0) {
     try {
       await taxesOption
         .create([
           {
-            title: "Apply the tax to the new items",
-            createdBy: userId,
-            account: account
+            title: "Apply the tax to the new items"
           },
           {
-            title: "Apply the tax to existing items",
-            createdBy: userId,
-            account: account
+            title: "Apply the tax to existing items"
           },
           {
-            title: "Apply the tax to all new and existing items",
-            createdBy: userId,
-            account: account
-          },
+            title: "Apply the tax to all new and existing items"
+          }
         ])
         .then((response) => {
           console.log("Default Tax Option Create");
@@ -281,7 +271,7 @@ export const addModuleWhenSignUp = async (userId, account, store, UDID) => {
       console.log("Default Tax Option Catch Error", error.message);
     }
   }
-  const paymentTypesCheck = await paymentMethods.find({});
+  const paymentTypesCheck = await paymentMethods.find();
   if (paymentTypesCheck.length === 0) {
     try {
       await paymentMethods

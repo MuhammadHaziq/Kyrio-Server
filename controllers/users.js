@@ -53,6 +53,8 @@ router.post("/signup", checkModules, async (req, res) => {
     let users = new Users({
       name: roleData.title,
       email: email,
+      timezone: null,
+      language: "en",
       emailVerified: false,
       password: md5(password),
       country: country,
@@ -95,10 +97,6 @@ router.post("/signup", checkModules, async (req, res) => {
               );
          let account = await new Accounts({
             businessName: businessName,
-            email: email,
-            password: md5(password),
-            timezone: null,
-            language: "English",
             decimal:  0,
             features: featuresArr,
             settings: settingsArr,
@@ -122,7 +120,6 @@ router.post("/signup", checkModules, async (req, res) => {
           { _id: role_id },
           { user_id: result._id, account: accountResult._id }
         );
-        // let userResult = await Users.findOne({ email: email, password: md5(password) }).populate('role').populate('stores',['_id','title']).populate('account')
         let userResult = await Users.findOne({ _id: result._id }).populate({ 
           path: 'role', 
           populate : [{
@@ -295,7 +292,7 @@ router.post("/signin", async (req, res) => {
             stores: result.stores,
             owner_id: typeof result.owner_id !== "undefined" ? result.owner_id : null,
             account: result.account._id,
-            is_owner: typeof result.owner_id !== "undefined" ? true : false,
+            is_owner: String(result._id) === String(result.owner_id),
             posPin: typeof result.posPin !== "undefined" ? result.posPin : null,
             enablePin: typeof result.enablePin !== "undefined" ? result.enablePin : null
           };

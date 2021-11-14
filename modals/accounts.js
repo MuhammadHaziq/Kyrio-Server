@@ -7,28 +7,6 @@ const accountsSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  email: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  password: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  timezone: {
-    type: String,
-    min: 3,
-    max: 255,
-  },
-  language: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
   decimal: {
     type: Number,
     min: 0,
