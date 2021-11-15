@@ -176,9 +176,9 @@ router.post("/deleteAccount", async (req, res) => {
         await Customers.deleteMany({ account: account });
         await SkuHistory.deleteMany({ account: account });
         await Store.deleteMany({ account: account });
-        rimraf(path.join(__dirname, "../uploads/items/"+account));
-        rimraf(path.join(__dirname, "../uploads/receipt/"+account));
-        rimraf(path.join(__dirname, "../uploads/csv/"+account));
+        rimraf(path.join(__dirname, "../uploads/items/"+account), () => { console.log("Items Images Deleted") });
+        rimraf(path.join(__dirname, "../uploads/receipt/"+account), () => { console.log("Receipt Images Deleted") });
+        rimraf(path.join(__dirname, "../uploads/csv/"+account), () => { console.log("CSV Files Deleted") });
         res.status(200).json({ status: true });
       }
     } else {
