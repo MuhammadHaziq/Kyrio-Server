@@ -38,7 +38,7 @@ const salesSchema = new mongoose.Schema({
   sub_total: {
     type: Number,
     min: 0,
-    max: 1000000000000,
+    max: 10000000,
   },
   sale_timestamp: {
     type: Date,
@@ -57,22 +57,22 @@ const salesSchema = new mongoose.Schema({
   total_price: {
     type: Number,
     min: 0,
-    max: 100000000000,
+    max: 1000000,
   },
   cost_of_goods: {
     type: Number,
     min: 0,
-    max: 100000000000,
+    max: 1000000,
   },
   cash_received: {
     type: Number,
     min: 0,
-    max: 100000000000,
+    max: 1000000,
   },
   cash_return: {
     type: Number,
     min: 0,
-    max: 100000000000,
+    max: 1000000,
   },
   total_discount: {
     type: Number,
@@ -80,6 +80,11 @@ const salesSchema = new mongoose.Schema({
     max: 1000000,
   },
   total_tax: {
+    type: Number,
+    min: 0,
+    max: 1000000,
+  },
+  total_tax_included: {
     type: Number,
     min: 0,
     max: 1000000,
@@ -134,12 +139,12 @@ const salesSchema = new mongoose.Schema({
       price: {
         type: Number,
         min: 1,
-        max: 100000000000,
+        max: 1000000,
       },
       cost: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
       },
       track_stock: {
         type: Boolean,
@@ -157,22 +162,27 @@ const salesSchema = new mongoose.Schema({
       total_discount: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
       },
       total_tax: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
+      },
+      total_tax_included: {
+        type: Number,
+        min: 0,
+        max: 1000000,
       },
       total_price: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
       },
       total_modifiers: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
       },
       taxes: [
         {

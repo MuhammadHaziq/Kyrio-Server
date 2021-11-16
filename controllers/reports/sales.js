@@ -26,7 +26,21 @@ router.post("/summary", async (req, res) => {
     // 2021-02-08T19:42:55.586+00:00
     var start = moment(startDate,"YYYY-MM-DD")
     var end = moment(endDate,"YYYY-MM-DD").add(1, 'days')
+    // var compareStartDate = "";
+    // var compareEndDate = "";
+    // if(divider == "Hours"){
 
+    // } else if(divider == "Days"){
+
+    // } else if(divider == "Weeks"){
+      
+    // } else if(divider == "Months"){
+      
+    // } else if(divider == "Quaters"){
+      
+    // } else if(divider == "Years"){
+      
+    // }
     
     var sales = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
@@ -88,6 +102,7 @@ router.post("/item", async (req, res) => {
         let TotalItemsSold = 0;
         let TotalItemsRefunded = 0;
         let TotalMargin = 0;
+        let TotalTax = 0;
 
           TotalItemsSold = 0;
           TotalItemsRefunded = 0;
@@ -96,16 +111,20 @@ router.post("/item", async (req, res) => {
             if(found.length > 0){
               
               if(sale.receipt_type == "SALE"){
-                TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sumBy(found, 'total_price'))
-                TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sumBy(found, 'total_discount'))
-                CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost'))
-                TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sumBy(found, 'total_price'))
+                TotalNetSale = parseFloat(TotalNetSale)+parseFloat(sumBy(found, 'total_price'));
+                TotalDiscounts = parseFloat(TotalDiscounts)+parseFloat(sumBy(found, 'total_discount'));
+                CostOfGoods = parseFloat(CostOfGoods)+parseFloat(sumBy(found, 'cost'));
+                TotalGrossSales = parseFloat(TotalGrossSales)+parseFloat(sumBy(found, 'total_price'));
                 TotalItemsSold = TotalItemsSold + parseInt(sumBy(found, 'quantity') - sumBy(found, 'refund_quantity'));
+                TotalTax =
+                parseFloat(TotalTax) + parseFloat(sumBy(found,'total_tax')) + parseFloat(sumBy(found,'total_tax_included'));
               } else if(sale.receipt_type == "REFUND"){
-                TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sumBy(found, 'total_price'))
-                TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sumBy(found, 'total_discount'))
-                CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sumBy(found, 'cost'))
-                TotalItemsRefunded = TotalItemsRefunded + sumBy(found, 'quantity')
+                TotalRefunds = parseFloat(TotalRefunds)+parseFloat(sumBy(found, 'total_price'));
+                TotalDiscounts = parseFloat(TotalDiscounts)-parseFloat(sumBy(found, 'total_discount'));
+                CostOfGoods = parseFloat(CostOfGoods)-parseFloat(sumBy(found, 'cost'));
+                TotalItemsRefunded = TotalItemsRefunded + sumBy(found, 'quantity');
+                TotalTax =
+                parseFloat(TotalTax) + parseFloat(sumBy(found,'total_tax')) + parseFloat(sumBy(found,'total_tax_included'));
               }
             }
           }
@@ -124,7 +143,7 @@ router.post("/item", async (req, res) => {
             ItemsSold: TotalItemsSold,
             ItemsRefunded: TotalItemsRefunded,
             Margin: TotalMargin,
-            taxes: 0,
+            Tax: TotalTax,
             id: item._id,
             name: item.title,
             sku: item.sku,

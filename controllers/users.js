@@ -46,14 +46,14 @@ router.post("/testapi", async (req, res) => {
 })
 router.post("/signup", checkModules, async (req, res) => {
   try {
-    const { email, password, businessName, country, role_id, UDID, features, settings, platform } = req.body;
+    const { email, password, timezone, businessName, country, role_id, UDID, features, settings, platform } = req.body;
     
     let userId = "";
     let roleData = await Role.findOne({ _id: role_id });
     let users = new Users({
       name: roleData.title,
       email: email,
-      timezone: null,
+      timezone: timezone,
       language: "en",
       emailVerified: false,
       password: md5(password),
@@ -167,6 +167,9 @@ router.post("/signup", checkModules, async (req, res) => {
           createdBy: userResult._id,
           account: userResult.account._id,
           owner_id: userResult.owner_id,
+          timezone: userResult.timezone,
+          language: userResult.language,
+          decimal: userResult.account.decimal,
           is_owner: typeof userResult.owner_id !== "undefined" ? true : false,
           posPin: typeof userResult.posPin !== "undefined" ? userResult.posPin : null,
           enablePin: typeof userResult.enablePin !== "undefined" ? userResult.enablePin : null
@@ -290,6 +293,9 @@ router.post("/signin", async (req, res) => {
             country: result.country,
             role_id: result.role._id,
             stores: result.stores,
+            timezone: result.timezone,
+            language: result.language,
+            decimal: result.account.decimal,
             owner_id: typeof result.owner_id !== "undefined" ? result.owner_id : null,
             account: result.account._id,
             is_owner: String(result._id) === String(result.owner_id),
