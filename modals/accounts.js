@@ -12,6 +12,16 @@ const accountsSchema = new mongoose.Schema({
     min: 0,
     max: 2,
   },
+  timeFormat: {
+    type: String,
+    min: 2,
+    max: 2,
+  },
+  dateFormat: {
+    type: String,
+    min: 0,
+    max: 10,
+  },
   features: [
     {
       feature: {

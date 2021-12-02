@@ -2,6 +2,16 @@ const moment = require("moment");
 import { sumBy } from "lodash";
 // #START# Sale Summary Functions
 
+export let truncateDecimals = (decimals, num) => {
+  var numS = num.toString(),
+      decPos = numS.indexOf('.'),
+      substrLength = decPos == -1 ? numS.length : 1 + decPos + decimals,
+      trimmedResult = numS.substr(0, substrLength),
+      finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
+
+  return parseFloat(finalResult);
+}
+
 export const checkDivider = async (divider, saleCreatedAt, matches, index) => {
   if (divider == "Hours") {
     let format = "HH";
@@ -47,7 +57,7 @@ export const checkDivider = async (divider, saleCreatedAt, matches, index) => {
     return saleYear.isSame(match, "year");
   }
 };
-export const filterSales = async (sales, divider, matches) => {
+export const filterSales = async (sales, divider, matches, decimal) => {
   try {
     let allSales = sales
       .filter((sale) => sale.receipt_type === "SALE")
@@ -65,19 +75,21 @@ export const filterSales = async (sales, divider, matches) => {
 
     let sale_cost_total = sumBy(allSales, "cost_of_goods");
     let refund_cost_total = sumBy(allRefunds, "cost_of_goods");
+    
+    let sale_tax_total = sumBy(allSales, "total_tax");
 
-    let TotalGrossSales = sale_total;
-    let TotalRefunds = refund_total;
-    let TotalDiscounts = sale_discount_total - refund_discount_total;
-    let TotalNetSale = sale_total;
-    let CostOfGoods = sale_cost_total - refund_cost_total;
-    let TotalGrossProfit = 0;
+    let TotalGrossSales = truncateDecimals(decimal, sale_total);
+    let TotalRefunds = truncateDecimals(decimal, refund_total);
+    let TotalDiscounts = truncateDecimals(decimal, sale_discount_total - refund_discount_total);
+    let TotalNetSale = truncateDecimals(decimal, sale_total);
+    let CostOfGoods = truncateDecimals(decimal, sale_cost_total - refund_cost_total);
+    let TotalGrossProfit = 0
 
     TotalNetSale =
-      parseFloat(TotalGrossSales) -
-      parseFloat(TotalDiscounts) -
-      parseFloat(TotalRefunds);
-    TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods);
+      truncateDecimals(decimal, TotalGrossSales) -
+      truncateDecimals(decimal, TotalDiscounts) -
+      truncateDecimals(decimal, TotalRefunds)
+    TotalGrossProfit = truncateDecimals(decimal, TotalNetSale) - truncateDecimals(decimal, CostOfGoods);
 
     let SalesTotal = {
       GrossSales: TotalGrossSales,
@@ -109,44 +121,48 @@ export const filterSales = async (sales, divider, matches) => {
         let TotalGrossProfit = 0;
         let TotalMargin = 0;
         let TotalTax = 0;
+        let SaleTotalTax = 0;
         let totals = 0;
 
         for (const sale of sales) {
           if (await checkDivider(divider, sale.created_at, matches, i)) {
             if (sale.receipt_type == "SALE") {
               TotalNetSale =
-                parseFloat(TotalNetSale) + parseFloat(sale.total_price);
+                truncateDecimals(decimal, TotalNetSale) + truncateDecimals(decimal, sale.total_price);
               TotalDiscounts =
-                parseFloat(TotalDiscounts) + parseFloat(sale.total_discount);
+                truncateDecimals(decimal, TotalDiscounts) + truncateDecimals(decimal, sale.total_discount);
               CostOfGoods =
-                parseFloat(CostOfGoods) + parseFloat(sale.cost_of_goods);
+                truncateDecimals(decimal, CostOfGoods) + truncateDecimals(decimal, sale.cost_of_goods);
               TotalGrossSales =
-                parseFloat(TotalGrossSales) + parseFloat(sale.sub_total);
+                truncateDecimals(decimal, TotalGrossSales) + truncateDecimals(decimal, sale.sub_total);
               TotalTax =
-                parseFloat(TotalTax) + parseFloat(sale.total_tax) + parseFloat(sale.total_tax_included);
+                truncateDecimals(decimal, TotalTax) + truncateDecimals(decimal, sale.total_tax) + truncateDecimals(decimal, sale.total_tax_included);
+              SaleTotalTax =
+                truncateDecimals(decimal, SaleTotalTax) + truncateDecimals(decimal, sale.total_tax);
             } else if (sale.receipt_type == "REFUND") {
               TotalRefunds =
-                parseFloat(TotalRefunds) + parseFloat(sale.total_price);
+                truncateDecimals(decimal, TotalRefunds) + truncateDecimals(decimal, sale.total_price);
               TotalDiscounts =
-                parseFloat(TotalDiscounts) - parseFloat(sale.total_discount);
+                truncateDecimals(decimal, TotalDiscounts) - truncateDecimals(decimal, sale.total_discount);
               CostOfGoods =
-                parseFloat(CostOfGoods) - parseFloat(sale.cost_of_goods);
+                truncateDecimals(decimal, CostOfGoods) - truncateDecimals(decimal, sale.cost_of_goods);
               TotalTax =
-                parseFloat(TotalTax) + parseFloat(sale.total_tax) + parseFloat(sale.total_tax_included);
+                truncateDecimals(decimal, TotalTax) - truncateDecimals(decimal, sale.total_tax) + truncateDecimals(decimal, sale.total_tax_included);
+              SaleTotalTax =
+                truncateDecimals(decimal, SaleTotalTax) - truncateDecimals(decimal, sale.total_tax);
             }
           }
         }
         TotalNetSale =
-          parseFloat(TotalGrossSales) -
-          parseFloat(TotalDiscounts) -
-          parseFloat(TotalRefunds);
-        TotalGrossProfit = parseFloat(TotalNetSale) - parseFloat(CostOfGoods);
+          truncateDecimals(decimal, TotalGrossSales) -
+          truncateDecimals(decimal, TotalDiscounts) -
+          truncateDecimals(decimal, TotalRefunds);
+        TotalGrossProfit = truncateDecimals(decimal, TotalNetSale) - truncateDecimals(decimal, CostOfGoods);
 
         TotalMargin = (
-          (parseFloat(TotalGrossProfit) / parseFloat(TotalNetSale)) *
-          100
-        ).toFixed(2);
-        TotalMargin = isNaN(TotalMargin) ? "0%" : TotalMargin + "%";
+          (truncateDecimals(decimal, TotalGrossProfit) / truncateDecimals(decimal, TotalNetSale)) *
+          100).toFixed(2);
+        TotalMargin = isNaN(TotalMargin) ? 0 : TotalMargin ;
 
         let summaryDate = "";
         let format = "MMM DD, YYYY";
@@ -209,7 +225,8 @@ export const filterItemSales = async (
   sales,
   topFiveItems,
   divider,
-  matches
+  matches,
+  decimal
 ) => {
   try {
     let NetSales = [];
@@ -222,6 +239,7 @@ export const filterItemSales = async (
         let TotalDiscounts = 0;
         let TotalNetSale = 0;
         let CostOfGoods = 0;
+        let SaleTotalTax = 0;
 
         for (const sale of sales) {
           let found = sale.items.filter((itm) =>
@@ -231,30 +249,27 @@ export const filterItemSales = async (
             if (await checkDivider(divider, sale.created_at, matches, i)) {
               if (sale.receipt_type == "SALE") {
                 TotalNetSale =
-                  parseFloat(TotalNetSale) +
-                  parseFloat(sumBy(found, "total_price"));
+                  truncateDecimals(decimal, TotalNetSale) +
+                  truncateDecimals(decimal, sumBy(found, "total_price"));
                 TotalDiscounts =
-                  parseFloat(TotalDiscounts) +
-                  parseFloat(sumBy(found, "total_discount"));
+                  truncateDecimals(decimal, TotalDiscounts) +
+                  truncateDecimals(decimal, sumBy(found, "total_discount"));
                 CostOfGoods =
-                  parseFloat(CostOfGoods) + parseFloat(sumBy(found, "cost"));
+                  truncateDecimals(decimal, CostOfGoods) + truncateDecimals(decimal, sumBy(found, "cost"));
                 TotalGrossSales =
-                  parseFloat(TotalGrossSales) +
-                  parseFloat(sumBy(found, "total_price"));
-                TotalItemsSold =
-                  TotalItemsSold +
-                  parseInt(
-                    sumBy(found, "quantity") - sumBy(found, "refund_quantity")
-                  );
+                  truncateDecimals(decimal, TotalGrossSales) +
+                  truncateDecimals(decimal, sumBy(found, "total_price"));
+                SaleTotalTax = SaleTotalTax +truncateDecimals(decimal, sumBy(found, "total_tax"));
+
               } else if (sale.receipt_type == "REFUND") {
                 TotalRefunds =
-                  parseFloat(TotalRefunds) +
-                  parseFloat(sumBy(found, "total_price"));
+                  truncateDecimals(decimal, TotalRefunds) +
+                  truncateDecimals(decimal, sumBy(found, "total_price"));
                 TotalDiscounts =
-                  parseFloat(TotalDiscounts) -
-                  parseFloat(sumBy(found, "total_discount"));
+                  truncateDecimals(decimal, TotalDiscounts) -
+                  truncateDecimals(decimal, sumBy(found, "total_discount"));
                 CostOfGoods =
-                  parseFloat(CostOfGoods) - parseFloat(sumBy(found, "cost"));
+                  truncateDecimals(decimal, CostOfGoods) - truncateDecimals(decimal, sumBy(found, "cost"));
                 TotalItemsRefunded =
                   TotalItemsRefunded + sumBy(found, "quantity");
               }
@@ -262,9 +277,9 @@ export const filterItemSales = async (
           }
         }
         TotalNetSale =
-          parseFloat(TotalGrossSales) -
-          parseFloat(TotalDiscounts) -
-          parseFloat(TotalRefunds);
+          truncateDecimals(decimal, TotalGrossSales) -
+          truncateDecimals(decimal, TotalDiscounts) -
+          truncateDecimals(decimal, TotalRefunds)
 
         NetSales.push(TotalNetSale);
       }
