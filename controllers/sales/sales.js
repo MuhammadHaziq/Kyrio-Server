@@ -102,7 +102,7 @@ router.post("/", async (req, res) => {
     store,
     created_at
   } = req.body;
-  
+  console.log(device);
   if (sale_timestamp !== "" && sale_timestamp !== null) {
     sale_timestamp = sale_timestamp
   } else {
