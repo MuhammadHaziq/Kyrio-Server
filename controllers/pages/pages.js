@@ -9,7 +9,6 @@ router.post("/", async (req, res) => {
   const { _id, account } = req.authData;
   console.log(req.authData);
   if(pageData){
-    // res.status(400).json({ message: "Please select store" });
     try {
       
         const newPage = new Pages({
