@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
   try {
     // display only login user pos Devices
     const { _id, account } = req.authData;
-    const result = await Pages.find({ createdBy: _id }).populate('store', ["_id","title"]).sort({
+    const result = await Pages.findOne({ account: account, createdBy: _id }).populate('store', ["_id","title"]).sort({
       _id: "desc",
     });
     res.status(200).json(result);
