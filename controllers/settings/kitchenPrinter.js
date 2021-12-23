@@ -58,26 +58,26 @@ router.get("/row/:id", async (req, res) => {
 });
 router.delete("/:id", async (req, res) => {
   try {
-    var { ids } = req.params;
+    var { id } = req.params;
     const { _id, account } = req.authData;
-    ids = JSON.parse(ids);
-    // for (const kitId of id) {
-    //   await kitchenPrinter.deleteOne({ _id: kitId, account: account });
-    // }
+    id = JSON.parse(id);
+    for (const kitId of id) {
+      await kitchenPrinter.deleteOne({ _id: kitId, account: account });
+    }
     // new
 
-    let del = await kitchenPrinter.updateMany(
-      { _id: { $in: ids }, account: account },
-      { $set: { deleted: 1, deletedAt: Date.now() } },
-      {
-        new: true,
-        upsert: true,
-      }
-    );
+    // let del = await kitchenPrinter.updateMany(
+    //   { _id: { $in: ids }, account: account },
+    //   { $set: { deleted: 1, deletedAt: Date.now() } },
+    //   {
+    //     new: true,
+    //     upsert: true,
+    //   }
+    // );
 
-    if (del.n > 0 && del.nModified > 0) {
-      req.io.to(account).emit(KITCHENP_DELETE, { data: ids, user: _id });
-    }
+    // if (del.n > 0 && del.nModified > 0) {
+      req.io.to(account).emit(KITCHENP_DELETE, { data: id, user: _id });
+    // }
 
     //new end
     res.status(200).json({ message: "deleted" });
