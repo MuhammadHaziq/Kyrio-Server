@@ -13,7 +13,8 @@ router.get("/send", async (req, res) => {
     const { account, platform } = req.authData;
     const { receipt_id, email } = req.query;
     if (validator.validate(email)) {
-      Sales.findOne({ _id: receipt_id})
+     let result = await Sales.findOne({ _id: receipt_id})
+
       // let emailMessage = {
         //   businessName: userResult.account.businessName,
         //   email: userResult.email,
@@ -21,7 +22,7 @@ router.get("/send", async (req, res) => {
         //   from: "info@kyrio.com",
         // };
         // sendReceiptEmail(emailMessage);
-        res.send("true")
+        res.send(result)
     } else {
       res.status(422).send({
         type: "email",
