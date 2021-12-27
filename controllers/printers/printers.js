@@ -5,15 +5,16 @@ const router = express.Router();
 
 // Get list
 router.get("/", async (req, res) => {
+    console.log("dsfasdf")
     try {
         const { account } = req.authData;
         const result = await Printers.find({ account: account }).populate('modal', ["_id","title"]).populate({ 
         path: 'groups', 
-        select: ["_id","title"],
-        populate : [{
-            path: 'categories',
-            select: ["_id","title","color"]
-        }]
+        select: ["_id" ],
+        // populate : [{
+        //     path: 'categories',
+        //     select: ["_id","title","color"]
+        // }]
     }).populate('store', ["_id","title"]).sort({ title: "asc" });
         res.status(200).json(result);
       } catch (error) {
