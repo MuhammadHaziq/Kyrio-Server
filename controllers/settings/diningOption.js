@@ -113,9 +113,9 @@ router.post("/app", async (req, res) => {
     if (store !== null) {
       let result = [];
       var dinings = await diningOption.find({ account: account }).populate('stores.store', ["_id","title"]);
-
       for (const dine of dinings) {
         for (const dineStore of dine.stores) {
+          if(dineStore.store){
           if (dineStore.store._id == storeId && dineStore.isActive) {
             result.push({
               _id: dine._id,
@@ -124,6 +124,7 @@ router.post("/app", async (req, res) => {
               isActive: dineStore.isActive,
             });
           }
+        }
         }
       }
       result.sort(
