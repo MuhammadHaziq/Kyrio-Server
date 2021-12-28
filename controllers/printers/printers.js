@@ -9,18 +9,14 @@ router.get("/", async (req, res) => {
         const { account } = req.authData;
         const result = await Printers.find({ account: account }).populate('modal', ["_id","title"]).populate({ 
         path: 'groups', 
-        select: ["_id" ],
-        // populate : [{
-        //     path: 'categories',
-        //     select: ["_id","title","color"]
-        // }]
+        select: ["_id" ]
     }).populate('store', ["_id","title"]).sort({ title: "asc" });
     
     await result.map(itm => {
         let groups = [];
         if(itm.groups){
             itm.groups.map(gr => {
-                groups.push(gr);
+                groups.push(gr._id);
             })
         }
         itm.groups = groups;
