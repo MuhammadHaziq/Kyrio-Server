@@ -110,6 +110,11 @@ export const userTemplate = (id) => {
 const receiptItems =  (items) =>{
     
     let itemsData =   items.map(item =>{
+        // console.log(item.modifiers);
+        item.modifiers.map(md =>{
+            // console.log(md.modifier);
+            // console.log(md.options);
+        })
         let name = ""
         let proTotal = 0;
         proTotal =  item.quantity * item.price;
@@ -135,10 +140,13 @@ const receiptItems =  (items) =>{
                                             <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:5px">
                                                 `+ item.quantity + ` × `+ item.price+`
                                             </p>
-                                                `+ item.modifiers.map(mod =>{
-                                                    `<p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
-                                                    + `+ mod.title+` (10)
-                                                </p>`
+                                                `+ item.modifiers.map(md =>{
+                                                    return md.options.map(op => {
+                                                        return  `<p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
+                                                        + `+ op.option_name + `(` + op.price*item.quantity+`) 
+                                                        </p>`
+                                                    })
+                                                   
                                                 }) +`
                                                 
                                         </td>
