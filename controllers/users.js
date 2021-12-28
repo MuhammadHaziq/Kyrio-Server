@@ -391,7 +391,7 @@ router.get("/confirm", async (req, res) => {
       .status(200)
       .send({ type: "email", message: "Email Verfied Successfully!" });
   } catch (e) {
-    console.log(e.message);
+    // console.log(e.message);
     res.status(200).send({
       type: "server",
       message: "Unable to verify email please contact info@kyrio.com",

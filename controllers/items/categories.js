@@ -47,8 +47,7 @@ router.get("/", async (req, res) => {
     const allCat = await Category.find(filter).sort({
       title: 1,
     });
-    console.log(filter)
-    console.log(allCat)
+    
     let allCategories = [];
     for (const cate of allCat) {
       let itemCount = await ItemList.find({

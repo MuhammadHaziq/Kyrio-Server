@@ -110,6 +110,10 @@ export const userTemplate = (id) => {
 const receiptItems =  (items) =>{
     
     let itemsData =   items.map(item =>{
+        // console.log(item.modifiers);
+        // item.modifiers.map(md =>{
+        //     console.log(md.modifier.title);
+        // })
         let name = ""
         let proTotal = 0;
         proTotal =  item.quantity * item.price;
@@ -135,16 +139,16 @@ const receiptItems =  (items) =>{
                                             <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:5px">
                                                 `+ item.quantity + ` × `+ item.price+`
                                             </p>
-                                                `+ item.modifiers.map(mod =>{
+                                                `+ item.modifiers.map(md =>{
                                                     `<p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
-                                                    + `+ mod.title+` (10)
+                                                     `+ md.modifier.title + ` 
                                                 </p>`
                                                 }) +`
                                                 
                                         </td>
                                     </tr>` ;
     });
-    console.log(itemsData);
+    // console.log(itemsData);
     return itemsData;
 }
 export const receiptTemplate =  (receipt) => {
