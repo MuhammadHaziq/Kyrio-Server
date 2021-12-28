@@ -21,6 +21,11 @@ const salesSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  order_number: {
+    type: Number,
+    min: 0,
+    max: 10000000000,
+  },
   cancelled_at: {
     type: Date,
   },

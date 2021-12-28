@@ -517,7 +517,7 @@ router.post("/modifiers", async (req, res) => {
           await sales.map(async sale => { 
             await sale.items.map(async item => {
               await item.modifiers.map(async mod => {
-                
+                console.log(mod.modifier._id == modifier._id)
                 if(mod.modifier._id == modifier._id){
                   if(sale.receipt_type == "SALE"){
                     quantitySold = quantitySold + parseInt(item.quantity) * mod.options.length
@@ -527,6 +527,7 @@ router.post("/modifiers", async (req, res) => {
                     refundGrossSales = refundGrossSales + item.total_modifiers
                   }
                 }
+
               })
             })
           })

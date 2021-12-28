@@ -11,18 +11,16 @@ router.get("/", async (req, res) => {
         path: 'groups', 
         select: ["_id" ]
     }).populate('store', ["_id","title"]).sort({ title: "asc" });
-    
-    await result.map(itm => {
-        let groups = [];
-        if(itm.groups){
-            itm.groups.map(gr => {
-                groups.push(gr._id);
-            })
+    let newResult = []
+    for(const printer of result){
+        let grps = [];
+        for(const gr of printer.groups){
+            grps.push(gr._id)
         }
-        itm.groups = groups;
-        return itm;
-    });
-        res.status(200).json(result);
+        printer.groups = grps
+        newResult.push(printer)
+    }
+        res.status(200).json(newResult);
       } catch (error) {
         res.status(500).json({ message: error.message });
       }
