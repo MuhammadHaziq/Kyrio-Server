@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
   try {
     const newCatResult = await newCat.save();
     req.io.to(account).emit(CATEGORY_INSERT, { data: newCatResult, user: _id });
-    res.status(201).json(newCatResult);
+    res.status(200).json(newCatResult);
   } catch (error) {
     if (error.code === 11000) {
       res
@@ -47,6 +47,8 @@ router.get("/", async (req, res) => {
     const allCat = await Category.find(filter).sort({
       title: 1,
     });
+    console.log(filter)
+    console.log(allCat)
     let allCategories = [];
     for (const cate of allCat) {
       let itemCount = await ItemList.find({

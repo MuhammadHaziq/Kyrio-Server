@@ -113,6 +113,7 @@ router.post("/app", async (req, res) => {
     if (store !== null) {
       let result = [];
       var dinings = await diningOption.find({ account: account }).populate('stores.store', ["_id","title"]);
+
       for (const dine of dinings) {
         for (const dineStore of dine.stores) {
           if(dineStore.store){
