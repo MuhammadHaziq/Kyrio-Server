@@ -1,3 +1,5 @@
+import { model } from "mongoose";
+
 export const adminTemplate = (name, email) => {
     return `<table bgcolor="#E5E5E5" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0;padding:0;border-collapse:collapse">
     <tbody><tr>
@@ -105,8 +107,64 @@ export const userTemplate = (id) => {
     </tr>
 </tbody></table>`;
 }
-
-export const receiptTemplate = (receipt) => {
+const receiptItems =  (items) =>{
+    
+    let itemsData =   items.map(item =>{
+        let name = ""
+        let proTotal = 0;
+        proTotal =  item.quantity * item.price;
+        if(item.name){
+            name= item.name;
+        }
+        return  `<tr><td valign="top" style="max-width:75%;padding:11px 0 0 16px">
+        <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;line-height:16px;word-break:break-word"> `+ name +`
+                                               
+                                            </p>
+                                        </td>
+                                        <td valign="top" style="padding:11px 0 0 0">
+                                                <img alt="Item with discount" width="15" height="15" src="https://ci6.googleusercontent.com/proxy/0WAsgc9lEOUfNeDFVitRDUvFQd8rh8V0C1lWXouDjvmeNVQWxrCf6J2rMgVSSYg4vELrYc5elAYgVA=s0-d-e1-ft#https://r.loyverse.com/img/discount.png" style="float:right;margin:1px 7px 0 0" class="CToWUd">
+                                        </td>
+                                        <td valign="top" style="padding:11px 16px 0 0;width:1%;white-space:nowrap">
+                                            <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;line-height:16px">
+                                                `+ proTotal +`
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" style="padding:0 16px">
+                                            <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:5px">
+                                                `+ item.quantity + ` × `+ item.price+`
+                                            </p>
+                                                `+ item.modifiers.map(mod =>{
+                                                    `<p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
+                                                    + `+ mod.title+` (10)
+                                                </p>`
+                                                }) +`
+                                                
+                                        </td>
+                                    </tr>` ;
+    });
+    console.log(itemsData);
+    return itemsData;
+}
+export const receiptTemplate =  (receipt) => {
+    let device_name, customer_name , store_name, dining_option, cashier_name = "";
+    if(receipt.store){
+        store_name = receipt.store.name
+    }
+    if(receipt.device){
+        device_name = receipt.device.name
+    }
+    if(receipt.customer){
+        customer_name = receipt.customer.name
+    }
+    if(receipt.dining_option){
+        dining_option = receipt.dining_option.name
+    }
+    if(receipt.cashier){
+        cashier_name = receipt.cashier.name
+    }
+    
     return `<div bgcolor="#F5F5F5" marginwidth="0" marginheight="0">
 
     <table bgcolor="#F5F5F5" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0;padding:0;border-collapse:collapse">
@@ -121,7 +179,7 @@ export const receiptTemplate = (receipt) => {
                         <tr>
                             <td valign="top" align="center">
                                 <h1 style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:bold;font-size:14px;text-align:center;margin:0;padding:0 16px 0;line-height:16px;word-break:break-word">
-                                    Tahir POS
+                                    `+ store_name +`
                                 </h1>
                                 <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 0"></p>
                             </td>
@@ -132,7 +190,7 @@ export const receiptTemplate = (receipt) => {
                         <tr>
                             <td>
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:34px;line-height:40px;text-align:center;margin:8px 0 0">
-                                    246
+                                    `+ receipt.total_price +`
                                 </p>
                                 <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:center;line-height:16px;margin:3px 0 0;word-break:break-word">
                                     Total
@@ -149,10 +207,10 @@ export const receiptTemplate = (receipt) => {
                         <tr>
                             <td>
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding:4px 16px 0;line-height:16px;word-break:break-word">
-                                    Cashier: Owner
+                                    Cashier: `+ cashier_name +`
                                 </p>
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding:4px 16px 0;line-height:16px;word-break:break-word">
-                                    POS: POS 1
+                                    POS: `+ store_name +`
                                 </p>
                             </td>
                         </tr>
@@ -167,7 +225,7 @@ export const receiptTemplate = (receipt) => {
                             <tr>
                                 <td>
                                     <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:bold;font-size:14px;text-align:left;padding:12px 16px 11px;margin:0;line-height:16px;word-break:break-word">
-                                        Dine in
+                                        `+ dining_option +`
                                     </p>
                                     <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:0 16px"></p>
                                 </td>
@@ -178,34 +236,10 @@ export const receiptTemplate = (receipt) => {
                         <tr>
                             <td>
                                 <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
-                                        <tbody><tr>
-                                            <td valign="top" style="max-width:75%;padding:11px 0 0 16px">
-                                                <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;line-height:16px;word-break:break-word">
-                                                    Zinger Burger
-                                                </p>
-                                            </td>
-                                            <td valign="top" style="padding:11px 0 0 0">
-                                                    <img alt="Item with discount" width="15" height="15" src="https://ci6.googleusercontent.com/proxy/0WAsgc9lEOUfNeDFVitRDUvFQd8rh8V0C1lWXouDjvmeNVQWxrCf6J2rMgVSSYg4vELrYc5elAYgVA=s0-d-e1-ft#https://r.loyverse.com/img/discount.png" style="float:right;margin:1px 7px 0 0" class="CToWUd">
-                                            </td>
-                                            <td valign="top" style="padding:11px 16px 0 0;width:1%;white-space:nowrap">
-                                                <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;line-height:16px">
-                                                    250
-                                                </p>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3" style="padding:0 16px">
-                                                <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:5px">
-                                                    2 × 110
-                                                </p>
-                                                    <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
-                                                        +Spice (10)
-                                                    </p>
-                                                    <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
-                                                        +Cheese (20)
-                                                    </p>
-                                            </td>
-                                        </tr>
+                                        <tbody>
+                                                    `+ receiptItems(receipt.items) +`
+                                        
+                                        
                                 </tbody></table>
                                 <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 11px"></p>
                             </td>

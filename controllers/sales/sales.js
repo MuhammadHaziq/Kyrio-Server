@@ -22,7 +22,7 @@ router.get("/send", async (req, res) => {
       //   _id: userResult._id,
       //   from: "info@kyrio.com",
       // };
-      // sendReceiptEmail(emailMessage);
+      sendReceiptEmail(email, result);
       res.send(result);
     } else {
       res.status(422).send({
