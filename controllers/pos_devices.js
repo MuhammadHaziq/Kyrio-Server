@@ -7,33 +7,36 @@ router.post("/", async (req, res) => {
   const { title, store } = req.body;
   // let jsonStore = JSON.parse(store);
   const { _id, account } = req.authData;
-  
-  if(store == "0"){
+
+  if (store == "0") {
     res.status(400).json({ message: "Please select store" });
   } else {
-  let result = await POS_Device.find({ store: store })
-    .sort({ deviceNo: -1 })
-    .limit(1);
-  let deviceNo =
-    typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo) + 1 : 1;
+    let result = await POS_Device.find({ store: store })
+      .sort({ deviceNo: -1 })
+      .limit(1);
+    let deviceNo =
+      typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo) + 1 : 1;
 
     try {
-      
-        const newPOSDevice = new POS_Device({
-          title: title,
-          deviceNo: deviceNo,
-          noOfSales: 0,
-          store: store,
-          createdBy: _id,
-          account: account,
-        });
-        const result = await newPOSDevice.save();
-        const newRecord = await POS_Device.findOne({ account: account, _id: result._id }).populate('store', ["_id","title"]);
-        res.status(200).json(newRecord);
-    
+      const newPOSDevice = new POS_Device({
+        title: title,
+        deviceNo: deviceNo,
+        noOfSales: 0,
+        store: store,
+        createdBy: _id,
+        account: account,
+      });
+      const result = await newPOSDevice.save();
+      const newRecord = await POS_Device.findOne({
+        account: account,
+        _id: result._id,
+      }).populate("store", ["_id", "title"]);
+      res.status(200).json(newRecord);
     } catch (error) {
       if (error.code === 11000) {
-        res.status(400).json({ message: "POS Device Already Register In Store" });
+        res
+          .status(400)
+          .json({ message: "POS Device Already Register In Store" });
       } else {
         res.status(400).json({ message: error.message });
       }
@@ -44,72 +47,90 @@ router.get("/", async (req, res) => {
   try {
     // display only login user pos Devices
     const { _id, account } = req.authData;
-    const result = await POS_Device.find({ account: account }).populate('store', ["_id","title"]).sort({
-      _id: "desc",
-    });
+    const result = await POS_Device.find({ account: account })
+      .populate("store", ["_id", "title"])
+      .sort({
+        _id: "desc",
+      });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
+router.post("/getStoreDeviceByFilter", async (req, res) => {
+  try {
+    const { account } = req.authData;
+    const { storeId } = req.body;
+    let devices = await POS_Device.findOne({
+      account: account,
+      store: storeId,
+    }).populate("store", ["_id", "title"]);
+    res.status(200).json({ devices });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.post("/getStoreDevice", async (req, res) => {
   try {
     const { _id, account } = req.authData;
     const { storeId, UDID } = req.body;
-    if(UDID != ""){
-    let result = {};
-    let condition = {};
-    if (storeId === "0") {
-      result = await POS_Device.findOne({ account: account, udid: UDID }).populate('store', ["_id","title"]);
-      if (result == null) {
+    if (UDID != "") {
+      let result = {};
+      let condition = {};
+      if (storeId === "0") {
         result = await POS_Device.findOne({
           account: account,
-          isActive: false,
-        }).populate('store', ["_id","title"]);
-      }
-    } else {
-      result = await POS_Device.findOne({
-        "store": storeId,
-        udid: UDID,
-      }).populate('store', ["_id","title"]);
-      if (result == null) {
-        result = await POS_Device.findOne({
-          "store": storeId,
-          isActive: false,
-        }).populate('store', ["_id","title"]);
-      }
-    }
-
-    if (result !== null) {
-      result = await POS_Device.findByIdAndUpdate(
-        { _id: result._id },
-        {
-          $set: {
-            isActive: true,
-            udid: UDID,
-          },
+          udid: UDID,
+        }).populate("store", ["_id", "title"]);
+        if (result == null) {
+          result = await POS_Device.findOne({
+            account: account,
+            isActive: false,
+          }).populate("store", ["_id", "title"]);
         }
-      ).populate('store', ["_id","title"]);
-      var shift = await Shifts.findOne({
-        pos_device_id: result._id,
-        closed_at: null,
-        account: account,
-      });
-      if (shift) {
-        res.status(200).json({ device: result, openShift: shift });
       } else {
-        res.status(200).json({ device: result, openShift: null });
+        result = await POS_Device.findOne({
+          store: storeId,
+          udid: UDID,
+        }).populate("store", ["_id", "title"]);
+        if (result == null) {
+          result = await POS_Device.findOne({
+            store: storeId,
+            isActive: false,
+          }).populate("store", ["_id", "title"]);
+        }
+      }
+
+      if (result !== null) {
+        result = await POS_Device.findByIdAndUpdate(
+          { _id: result._id },
+          {
+            $set: {
+              isActive: true,
+              udid: UDID,
+            },
+          }
+        ).populate("store", ["_id", "title"]);
+        var shift = await Shifts.findOne({
+          pos_device_id: result._id,
+          closed_at: null,
+          account: account,
+        });
+        if (shift) {
+          res.status(200).json({ device: result, openShift: shift });
+        } else {
+          res.status(200).json({ device: result, openShift: null });
+        }
+      } else {
+        res
+          .status(200)
+          .json({ message: "Please create POS device for this store!" });
       }
     } else {
-      res
-        .status(200)
-        .json({ message: "Please create POS device for this store!" });
+      res.status(200).json({ message: "Invalid UDID!" });
     }
-  }else{
-    res
-        .status(200)
-        .json({ message: "Invalid UDID!" });
-  }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -176,9 +197,11 @@ router.get("/row/:id", async (req, res) => {
     const result = await POS_Device.findOne({
       account: account,
       _id: id,
-    }).populate('store', ["_id","title"]).sort({
-      _id: "desc",
-    });
+    })
+      .populate("store", ["_id", "title"])
+      .sort({
+        _id: "desc",
+      });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
