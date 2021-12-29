@@ -62,7 +62,7 @@ router.post("/getStoreDeviceByFilter", async (req, res) => {
   try {
     const { account } = req.authData;
     const { storeId } = req.body;
-    let devices = await POS_Device.findOne({
+    let devices = await POS_Device.find({
       account: account,
       store: storeId,
     }).populate("store", ["_id", "title"]);
