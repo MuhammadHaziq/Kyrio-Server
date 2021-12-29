@@ -56,7 +56,7 @@ router.post("/getStoreDevice", async (req, res) => {
   try {
     const { _id, account } = req.authData;
     const { storeId, UDID } = req.body;
-
+    if(UDID != ""){
     let result = {};
     let condition = {};
     if (storeId === "0") {
@@ -105,6 +105,11 @@ router.post("/getStoreDevice", async (req, res) => {
         .status(200)
         .json({ message: "Please create POS device for this store!" });
     }
+  }else{
+    res
+        .status(200)
+        .json({ message: "Please select UDID!" });
+  }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
