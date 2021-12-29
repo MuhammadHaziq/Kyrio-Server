@@ -473,7 +473,7 @@ router.patch("/cancel", async (req, res) => {
         let cancelledSale = await Sales.findOneAndUpdate({ _id: getSale._id }, { cancelled_at: cancelled_at, cancelled_by: _id }, {
           new: true,
           upsert: true, // Make this update into an upsert
-        });
+        }).populate('user','name').sort({ receipt_number: "desc" });
         req.io.to(account).emit(ITEM_STOCK_UPDATE, { app: stockNotification, backoffice: stockNotification, user: _id, account: account });
         req.io.to(account).emit(RECEIPT_CANCELED, { app: cancelledSale, backoffice: cancelledSale, user: _id, account: account });
 
