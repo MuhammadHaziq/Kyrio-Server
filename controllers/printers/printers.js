@@ -9,13 +9,18 @@ router.get("/", async (req, res) => {
         const { account } = req.authData;
         const result = await Printers.find({ account: account }).populate('modal', ["_id","title"]).populate({ 
         path: 'groups', 
-        select: ["_id","title"],
-        populate : [{
-            path: 'categories',
-            select: ["_id","title","color"]
-        }]
+        select: ["_id" ]
     }).populate('store', ["_id","title"]).sort({ title: "asc" });
-        res.status(200).json(result);
+    let newResult = []
+    for(const printer of result){
+        let grps = [];
+        for(const gr of printer.groups){
+            grps.push(gr._id)
+        }
+        printer.groups = grps
+        newResult.push(printer)
+    }
+        res.status(200).json(newResult);
       } catch (error) {
         res.status(500).json({ message: error.message });
       }

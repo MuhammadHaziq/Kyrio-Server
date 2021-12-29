@@ -18,6 +18,11 @@ const posDeviceSchema = new mongoose.Schema({
     min: 0,
     max: 10000000000,
   },
+  order_number: {
+    type: Number,
+    min: 0,
+    max: 10000000000,
+  },
   account: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "accounts",

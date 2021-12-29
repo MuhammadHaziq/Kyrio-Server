@@ -11,6 +11,13 @@ export  const CATEGORY_UPDATE = "CATEGORY_UPDATE"
 export  const CATEGORY_DELETE = "CATEGORY_DELETE"
 // #END#
 
+
+// KitchenPrinter Events
+export  const KITCHENP_INSERT = "KITCHENP_INSERT"
+export  const KITCHENP_UPDATE = "KITCHENP_UPDATE"
+export  const KITCHENP_DELETE = "KITCHENP_DELETE"
+// #END#
+
 // DISCOUNT Events
 export  const DISCOUNT_INSERT = "DISCOUNT_INSERT"
 export  const DISCOUNT_UPDATE = "DISCOUNT_UPDATE"

@@ -1,5 +1,10 @@
 import express from "express";
 import kitchenPrinter from "../../modals/settings/kitchenPrinter";
+import {
+  KITCHENP_INSERT,
+  KITCHENP_UPDATE,
+  KITCHENP_DELETE,
+} from "../../sockets/events";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -18,6 +23,7 @@ router.post("/", async (req, res) => {
     const result = await kitchenPrinter
     .findOne({ account: account, _id: insert._id }).populate('categories', ["_id","title"]).populate('store', ["_id","title"])
     .sort({ _id: "desc" });
+    req.io.to(account).emit(KITCHENP_INSERT, { data: result, user: _id });
     res.status(200).json(result);
   } catch (error) {
     if (error.code === 11000) {
@@ -58,7 +64,22 @@ router.delete("/:id", async (req, res) => {
     for (const kitId of id) {
       await kitchenPrinter.deleteOne({ _id: kitId, account: account });
     }
+    // new
 
+    // let del = await kitchenPrinter.updateMany(
+    //   { _id: { $in: ids }, account: account },
+    //   { $set: { deleted: 1, deletedAt: Date.now() } },
+    //   {
+    //     new: true,
+    //     upsert: true,
+    //   }
+    // );
+
+    // if (del.n > 0 && del.nModified > 0) {
+      req.io.to(account).emit(KITCHENP_DELETE, { data: id, user: _id });
+    // }
+
+    //new end
     res.status(200).json({ message: "deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -83,7 +104,7 @@ router.patch("/", async (req, res) => {
         upsert: true, // Make this update into an upsert
       }
     ).populate('categories', ["_id","title"]).populate('store', ["_id","title"]);
-
+    req.io.to(account).emit(KITCHENP_UPDATE, { data: updatedRecord, user: _id });  
     res
       .status(200)
       .json({ message: "Kitchen Printer Is Updated", data: updatedRecord });

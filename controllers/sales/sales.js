@@ -5,6 +5,7 @@ import Store from "../../modals/Store";
 import { REFUND_RECEIPT, ITEM_STOCK_UPDATE, RECEIPT_CANCELED } from "../../sockets/events";
 import validator from "email-validator";
 import { sendReceiptEmail } from "../../libs/sendEmail";
+import POS_Device from "../../modals/POS_Device";
 var mongoose = require('mongoose');
 const router = express.Router();
 
@@ -13,15 +14,16 @@ router.get("/send", async (req, res) => {
     const { account, platform } = req.authData;
     const { receipt_id, email } = req.query;
     if (validator.validate(email)) {
-      Sales.findOne({ _id: receipt_id})
+      let result = await Sales.findOne({ _id: receipt_id })
+
       // let emailMessage = {
-        //   businessName: userResult.account.businessName,
-        //   email: userResult.email,
-        //   _id: userResult._id,
-        //   from: "info@kyrio.com",
-        // };
-        // sendReceiptEmail(emailMessage);
-        res.send("true")
+      //   businessName: userResult.account.businessName,
+      //   email: userResult.email,
+      //   _id: userResult._id,
+      //   from: "info@kyrio.com",
+      // };
+      sendReceiptEmail(email, result);
+      res.send(result);
     } else {
       res.status(422).send({
         type: "email",
@@ -39,8 +41,8 @@ router.get("/all", async (req, res) => {
     let filter = { account: account, cancelled_at: null }
 
     let isoDate = new Date(update_at);
-    if(platform === "pos"){
-      filter.updated_at = {$gte: isoDate}
+    if (platform === "pos") {
+      filter.updated_at = { $gte: isoDate }
     }
     var allSales = await Sales.find(filter).sort({ _id: "desc" });
     res.status(200).json(allSales);
@@ -82,6 +84,7 @@ router.post("/", async (req, res) => {
     comments,
     open,
     receipt_number,
+    order_number,
     sub_total,
     sale_timestamp,
     completed,
@@ -102,7 +105,7 @@ router.post("/", async (req, res) => {
     store,
     created_at
   } = req.body;
-  
+
   if (sale_timestamp !== "" && sale_timestamp !== null) {
     sale_timestamp = sale_timestamp
   } else {
@@ -165,8 +168,11 @@ router.post("/", async (req, res) => {
       }
     }
     try {
+      let orderNo = parseInt(order_number.split("-")[2]);
+
       const newSales = await new Sales({
         receipt_number,
+        order_number: orderNo,
         ticket_name,
         receipt_type,
         account,
@@ -197,9 +203,20 @@ router.post("/", async (req, res) => {
         created_at: sale_timestamp !== null ? sale_timestamp : created_at,
         updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
       }).save();
+      let noOfSales = parseInt(receipt_number.split("-")[1]);
+
+      await POS_Device.updateOne(
+        { _id: device._id },
+        {
+          $set: {
+            noOfSales: noOfSales,
+            order_number: orderNo
+          },
+        }
+      );
 
       req.io.to(account).emit(ITEM_STOCK_UPDATE, { app: stockNotification, backoffice: stockNotification, user: _id, account: account });
-      
+
       res.status(200).json(newSales);
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -300,12 +317,12 @@ router.post("/refund", async (req, res) => {
                   "stores.$.inStock": storeQty
                 }
               });
-              stockNotification.itemsList.push({
-                _id: item.id,
-                name: item.name,
-                storeQty: storeQty,
-                itemQty: itemQty
-              })
+            stockNotification.itemsList.push({
+              _id: item.id,
+              name: item.name,
+              storeQty: storeQty,
+              itemQty: itemQty
+            })
           }
         }
       }
@@ -343,6 +360,18 @@ router.post("/refund", async (req, res) => {
           created_at: sale_timestamp !== null ? sale_timestamp : created_at,
           updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
         }).save();
+
+        let noOfSales = receipt_number.split("_")[1];
+
+        await POS_Device.updateOne(
+          { _id: device._id },
+          {
+            $set: {
+              noOfSales: noOfSales
+            },
+          }
+        );
+
         let refundedSale = await Sales.findOne({ $and: [{ _id: getSale._id }, { account: account }] });
         req.io.to(account).emit(ITEM_STOCK_UPDATE, { app: stockNotification, backoffice: stockNotification, user: _id, account: account });
         req.io.to(account).emit(REFUND_RECEIPT, { app: { refundReceipt: newRefund, saleReceipt: refundedSale }, backoffice: {}, user: _id, account: account });
@@ -352,7 +381,7 @@ router.post("/refund", async (req, res) => {
         res.status(400).json({ message: error.message });
       }
     } else {
-      res.status(400).json({message: "No Sale Data Found! Invalid Refund"});
+      res.status(400).json({ message: "No Sale Data Found! Invalid Refund" });
     }
   }
 });
@@ -361,10 +390,10 @@ router.get("/check/:receipt_number", async (req, res) => {
   const { receipt_number } = req.params;
   const { account } = req.authData;
   let getSale = await Sales.findOne({ $and: [{ refund_for: receipt_number }, { account: account }] });
-  if(getSale){
-    res.status(200).send({ refund: true})
+  if (getSale) {
+    res.status(200).send({ refund: true })
   } else {
-    res.status(200).send({ refund: false})
+    res.status(200).send({ refund: false })
   }
 })
 
@@ -447,7 +476,7 @@ router.patch("/cancel", async (req, res) => {
         });
         req.io.to(account).emit(ITEM_STOCK_UPDATE, { app: stockNotification, backoffice: stockNotification, user: _id, account: account });
         req.io.to(account).emit(RECEIPT_CANCELED, { app: cancelledSale, backoffice: cancelledSale, user: _id, account: account });
-        
+
         res.status(200).json(cancelledSale);
 
       } catch (error) {
