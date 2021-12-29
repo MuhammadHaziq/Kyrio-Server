@@ -152,7 +152,7 @@ const receiptItems =  (items) =>{
                                         </td>
                                     </tr>` ;
     });
-    console.log(itemsData);
+    // console.log(itemsData);
     return itemsData;
 }
 export const receiptTemplate =  (receipt) => {

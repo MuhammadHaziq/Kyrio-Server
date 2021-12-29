@@ -508,71 +508,70 @@ router.post("/modifiers", async (req, res) => {
         const optionsDetails = []
         let sales = await receipts.filter(sale => sale.items.filter(item => item.modifiers.filter(mod =>  mod.modifier._id == modifier._id)))
 
-        let quantitySold = 0;
+        // let quantitySold = 0;
         let grossSales = 0;
-        let refundQuantitySold = 0;
+        // let refundQuantitySold = 0;
         let refundGrossSales = 0;
-        
+        let modifierCheck = false
         if(sales.length > 0) {
-          await sales.map(async sale => { 
-            await sale.items.map(async item => {
-              await item.modifiers.map(async mod => {
-                console.log(mod.modifier._id == modifier._id)
+          // await sales.map(async sale => { 
+          for(const sale of sales){ 
+            // await sale.items.map(async item => {
+              for(const item of sale.items){ 
+              // await item.modifiers.map(async mod => {
+                for(const mod of item.modifiers){ 
+                
                 if(mod.modifier._id == modifier._id){
-                  if(sale.receipt_type == "SALE"){
-                    quantitySold = quantitySold + parseInt(item.quantity) * mod.options.length
-                    grossSales = grossSales + item.total_modifiers
-                  } else if(sale.receipt_type == "REFUND"){
-                    refundQuantitySold = refundQuantitySold + parseInt(item.quantity) * mod.options.length
-                    refundGrossSales = refundGrossSales + item.total_modifiers
+                  modifierCheck = true
+                  
+                  for(const option of modifier.options){
+                    let optQuantitySold = 0;
+                    let optGrossSales = 0;
+                    let optRefundQuantitySold = 0;
+                    let optRefundGrossSales = 0;
+                    let check = false;
+
+                    // await mod.options.map(opt => {
+                      for(const opt of mod.options){
+                      if(option.name == opt.option_name && opt.isChecked){
+                        check = true
+                        if(sale.receipt_type == "SALE"){
+                          optQuantitySold = optQuantitySold + parseInt(item.quantity)
+                          optGrossSales = optGrossSales + truncateDecimals(decimal, opt.price)
+                        } else if(sale.receipt_type == "REFUND"){
+                          optRefundQuantitySold = optRefundQuantitySold + parseInt(item.quantity)
+                          optRefundGrossSales = optRefundGrossSales + truncateDecimals(decimal, opt.price)
+                        }
+                      }
+                    }
+                    
+                    if(check){
+                      grossSales = grossSales + optGrossSales
+                      refundGrossSales = refundGrossSales + optRefundGrossSales
+                      optionsDetails.push({
+                        Option: option.name,
+                        quantitySold: optQuantitySold,
+                        grossSales: truncateDecimals(decimal, optGrossSales),
+                        refundQuantitySold: optRefundQuantitySold,
+                        refundGrossSales: truncateDecimals(decimal, optRefundGrossSales)
+                      })
+                    }
                   }
                 }
 
-              })
-            })
-          })
-
-          for(const option of modifier.options){
-            let optQuantitySold = 0;
-            let optGrossSales = 0;
-            let optRefundQuantitySold = 0;
-            let optRefundGrossSales = 0;
-            let check = false
-            await sales.map(async sale => { 
-              await sale.items.map(async item => {
-                await item.modifiers.map(async mod => {
-                  await mod.options.map(opt => {
-                    if(option.name == opt.option_name && opt.isChecked){
-                      check = true
-                      if(sale.receipt_type == "SALE"){
-                        optQuantitySold = optQuantitySold + parseInt(item.quantity)
-                        optGrossSales = optGrossSales + truncateDecimals(decimal, opt.price)
-                      } else if(sale.receipt_type == "REFUND"){
-                        optRefundQuantitySold = optRefundQuantitySold + parseInt(item.quantity)
-                        optRefundGrossSales = optRefundGrossSales + truncateDecimals(decimal, opt.price)
-                      }
-                    }
-                  })
-                })
-              })
-            })
-            if(check){
-              optionsDetails.push({
-                Option: option.name,
-                quantitySold: optQuantitySold,
-                grossSales: truncateDecimals(decimal, optGrossSales),
-                refundQuantitySold: optRefundQuantitySold,
-                refundGrossSales: truncateDecimals(decimal, optRefundGrossSales)
-              })
+              }
             }
           }
-          if(optionsDetails.length > 0){
+
+          
+          if(modifierCheck && optionsDetails.length > 0){
+            
             let salesTotal = {
               Modifier: modifier.title,
-              quantitySold: quantitySold,
-              grossSales: grossSales,
-              refundQuantitySold: refundQuantitySold,
-              refundGrossSales: refundGrossSales,
+              quantitySold: sumBy(optionsDetails,'quantitySold'),
+              grossSales: sumBy(optionsDetails,'grossSales'),
+              refundQuantitySold: sumBy(optionsDetails,'refundQuantitySold'),
+              refundGrossSales: sumBy(optionsDetails,'refundGrossSales'),
               options: optionsDetails
             }
             reportData.push(salesTotal)
