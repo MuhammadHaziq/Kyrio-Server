@@ -593,7 +593,7 @@ router.post("/discounts", async (req, res) => {
       stores,
       employees,
     } = req.body;
-    const { account } = req.authData;
+    const { account, decimal } = req.authData;
     
     var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
     var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
@@ -667,7 +667,7 @@ router.post("/taxes", async (req, res) => {
       stores,
       employees,
     } = req.body;
-    const { account } = req.authData;
+    const { account, decimal } = req.authData;
     
     var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
     var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
@@ -747,7 +747,7 @@ router.post("/shifts", async (req, res) => {
       stores,
       employees,
     } = req.body;
-    const { account } = req.authData;
+    const { account, decimal } = req.authData;
     
     var start = moment(startDate,"YYYY-MM-DD  HH:mm:ss")
     var end = moment(endDate,"YYYY-MM-DD  HH:mm:ss").add(1, 'days')
