@@ -108,7 +108,7 @@ router.post("/getStoreDevice", async (req, res) => {
   }else{
     res
         .status(200)
-        .json({ message: "Please select UDID!" });
+        .json({ message: "Invalid UDID!" });
   }
   } catch (error) {
     res.status(500).json({ message: error.message });

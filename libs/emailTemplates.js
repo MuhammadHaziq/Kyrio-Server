@@ -107,6 +107,33 @@ export const userTemplate = (id) => {
     </tr>
 </tbody></table>`;
 }
+const discountFun = (receipt) => {
+    if(receipt.total_discount > 0){
+        return `<tbody>
+        <tr>
+            <td>
+                <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
+                        <tbody><tr>
+                            <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
+                                <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;word-break:break-word">
+                                    Percentage Discount
+                                </p>
+                            </td>
+                            <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
+                                <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;direction:ltr">
+                                    -25
+                                </p>
+                            </td>
+                        </tr>
+                </tbody></table>
+                <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 11px;word-break:break-word"></p>
+            </td>
+        </tr>
+    </tbody>`
+    }else{
+        return ``;
+    }
+}
 const receiptItems =  (items) =>{
     
     let itemsData =   items.map(item =>{
@@ -152,7 +179,7 @@ const receiptItems =  (items) =>{
                                         </td>
                                     </tr>` ;
     });
-    // console.log(itemsData);
+    console.log(itemsData);
     return itemsData;
 }
 export const receiptTemplate =  (receipt) => {
@@ -252,29 +279,7 @@ export const receiptTemplate =  (receipt) => {
                                 <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 11px"></p>
                             </td>
                         </tr>
-                    </tbody>
-                        
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
-                                            <tbody><tr>
-                                                <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
-                                                    <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;word-break:break-word">
-                                                        Percentage Discount
-                                                    </p>
-                                                </td>
-                                                <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
-                                                    <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;direction:ltr">
-                                                        -25
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                    </tbody></table>
-                                    <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 11px;word-break:break-word"></p>
-                                </td>
-                            </tr>
-                        </tbody>
+                    </tbody> `+ discountFun(receipt)+`
                     
                         <tbody>
                             <tr>
@@ -378,7 +383,7 @@ export const receiptTemplate =  (receipt) => {
                                     <tbody><tr>
                                         <td valign="top" style="max-width:75%;padding:0 0 12px 16px;line-height:16px">
                                             <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0">
-                                                30/09/2021 19:37
+                                                `+ receipt.sale_timestamp +`
                                             </p>
                                         </td>
                                         <td valign="top" style="max-width:75%;padding:0 16px 12px 0;line-height:16px">
@@ -398,7 +403,7 @@ export const receiptTemplate =  (receipt) => {
             <td valign="top">
                 <p style="font-family:Roboto,Arial,Helvetica,sans-serif;color:rgba(0,0,0,0.54);font-size:13px;text-align:center;margin:20px 0 70px;line-height:15px;word-break:break-word">
                     © 2021
-                    <a style="text-decoration:none;color:#2d9cdb" href="https://loyverse.com/?utm_source=email&amp;utm_medium=Receipt" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://loyverse.com/?utm_source%3Demail%26utm_medium%3DReceipt&amp;source=gmail&amp;ust=1633099032775000&amp;usg=AFQjCNGThhtKaKViYMKd8QqPt-PC_I-NXQ">Loyverse</a>.
+                    <a style="text-decoration:none;color:#2d9cdb" href="" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://loyverse.com/?utm_source%3Demail%26utm_medium%3DReceipt&amp;source=gmail&amp;ust=1633099032775000&amp;usg=AFQjCNGThhtKaKViYMKd8QqPt-PC_I-NXQ">Kyrio POS</a>.
                     All rights reserved.
                 </p>
             </td>
