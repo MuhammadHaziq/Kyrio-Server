@@ -688,10 +688,10 @@ router.post("/taxes", async (req, res) => {
 
      
      await receipts.map(sale => {
-       if(sale.total_tax != 0 && sale.total_tax != null ){
-        taxableSales = taxableSales + sale.total_price;
+       if((sale.total_tax != 0 && sale.total_tax != null) || (sale.total_tax_included != 0 && sale.total_tax_included != null)){
+        taxableSales = taxableSales + parseFloat(sale.total_price) + parseFloat(sale.total_tax_included);
        } else {
-        NonTaxableSales = NonTaxableSales + sale.total_price;
+        NonTaxableSales = NonTaxableSales + parseFloat(sale.total_price);
        }
        NetSales = NetSales + sale.total_price;
 
