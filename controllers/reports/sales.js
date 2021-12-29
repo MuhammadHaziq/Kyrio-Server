@@ -499,6 +499,7 @@ router.post("/modifiers", async (req, res) => {
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]}).populate('user','name');
+
     const modifiers = await Modifier.find({ account: account })
      
       let reportData = [];
@@ -565,7 +566,6 @@ router.post("/modifiers", async (req, res) => {
 
           
           if(modifierCheck && optionsDetails.length > 0){
-            
             let salesTotal = {
               Modifier: modifier.title,
               quantitySold: sumBy(optionsDetails,'quantitySold'),
