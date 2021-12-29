@@ -496,7 +496,7 @@ router.post("/modifiers", async (req, res) => {
     const receipts = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
-      { "store._id": { "$in" : stores} },
+      { "store._id": { "$in" : stores} }, 
       { created_by: { "$in" : employees} },
       ]}).populate('user','name');
 
@@ -566,13 +566,25 @@ router.post("/modifiers", async (req, res) => {
 
           
           if(modifierCheck && optionsDetails.length > 0){
+            let ops = groupBy(optionsDetails,'Option')
+            let details = [];
+            for(const op of Object.keys(ops)){
+              details.push({
+                Option: op,
+                quantitySold: sumBy(ops[op],'quantitySold'),
+                grossSales: truncateDecimals(decimal, sumBy(ops[op],'grossSales')),
+                refundQuantitySold: sumBy(ops[op],'refundQuantitySold'),
+                refundGrossSales: truncateDecimals(decimal, sumBy(ops[op],'refundGrossSales'))
+              })
+            }
             let salesTotal = {
               Modifier: modifier.title,
+              group: details,
               quantitySold: sumBy(optionsDetails,'quantitySold'),
               grossSales: sumBy(optionsDetails,'grossSales'),
               refundQuantitySold: sumBy(optionsDetails,'refundQuantitySold'),
               refundGrossSales: sumBy(optionsDetails,'refundGrossSales'),
-              options: optionsDetails
+              options: details
             }
             reportData.push(salesTotal)
           }
