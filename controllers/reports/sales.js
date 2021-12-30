@@ -417,6 +417,7 @@ router.post("/paymentstypes", async (req, res) => {
     var receipts = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
+      {cancelled_at: null},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
       ]}).populate('user','name');
@@ -496,6 +497,7 @@ router.post("/modifiers", async (req, res) => {
     const receipts = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
+      {cancelled_at: null},
       { "store._id": { "$in" : stores} }, 
       { created_by: { "$in" : employees} },
       ]}).populate('user','name');
@@ -628,6 +630,7 @@ router.post("/discounts", async (req, res) => {
     const receipts = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
+      {cancelled_at: null},
       {receipt_type: "SALE"},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
@@ -702,6 +705,7 @@ router.post("/taxes", async (req, res) => {
     const receipts = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
+      {cancelled_at: null},
       {receipt_type: "SALE"},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
@@ -782,6 +786,7 @@ router.post("/shifts", async (req, res) => {
     const receipts = await Sales.find({$and: [
       {"created_at": {$gte: start, $lte: end}},
       {account: account},
+      {cancelled_at: null},
       {receipt_type: "SALE"},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
