@@ -30,9 +30,8 @@ const salesSchema = new mongoose.Schema({
     type: Date,
   },
   cancelled_by: {
-    type: String,
-    min: 6,
-    max: 255,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
   account: {
     type: String,
@@ -429,10 +428,9 @@ const salesSchema = new mongoose.Schema({
     },
   },
   created_by: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  }, 
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
@@ -445,6 +443,8 @@ const salesSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+},{
+  timestamps: true
 });
 
 // salesSchema.index(

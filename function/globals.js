@@ -3,13 +3,14 @@ import { sumBy } from "lodash";
 // #START# Sale Summary Functions
 
 export let truncateDecimals = (decimals, num) => {
-  // var numS = num.toString(),
-  //     decPos = numS.indexOf('.'),
-  //     substrLength = decPos == -1 ? numS.length : 1 + decPos + decimals,
-  //     trimmedResult = numS.substr(0, substrLength),
-  //     finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
+  
+  var numS = num.toString(),
+      decPos = numS.indexOf('.'),
+      substrLength = decPos == -1 ? numS.length : 1 + decPos + decimals,
+      trimmedResult = numS.substr(0, substrLength),
+      finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
 
-  return parseFloat(finalResult).toFixed(decimals);
+  return parseFloat(finalResult);
 }
 
 export const checkDivider = async (divider, saleCreatedAt, matches, index) => {

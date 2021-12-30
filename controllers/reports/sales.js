@@ -384,8 +384,8 @@ router.post("/receipts", async (req, res) => {
       {account: account},
       { "store._id": { "$in" : stores} },
       { created_by: { "$in" : employees} },
-      ]}).populate('user','name').sort({ receipt_number: "desc" });
-
+      ]}).populate('user','name').populate("cancelled_by", ["_id", "name"]).sort({ receipt_number: "desc" });
+      
       let totalSales = receipts.filter(itm => itm.receipt_type == "SALE").length
       let totalRefunds = receipts.filter(itm => itm.receipt_type == "REFUND").length
       let totalReceipts = truncateDecimals(decimal, totalSales) + truncateDecimals(decimal, totalRefunds);
@@ -547,8 +547,7 @@ router.post("/modifiers", async (req, res) => {
                     }
                     
                     if(check){
-                      grossSales = grossSales + optGrossSales
-                      refundGrossSales = refundGrossSales + optRefundGrossSales
+                      
                       optionsDetails.push({
                         Option: option.name,
                         quantitySold: optQuantitySold,
@@ -562,28 +561,44 @@ router.post("/modifiers", async (req, res) => {
 
               }
             }
-          }
+          } // Sale loop end
 
           
           if(modifierCheck && optionsDetails.length > 0){
             let ops = groupBy(optionsDetails,'Option')
             let details = [];
             for(const op of Object.keys(ops)){
+              let qs = 0;
+              let gs = 0;
+              let rqs = 0;
+              let rgs = 0;
+              for(const det of ops[op]){
+                qs = qs + det.quantitySold;
+                gs = gs + (det.quantitySold*det.grossSales)
+                rqs = rqs + det.refundQuantitySold;
+                rgs = rgs + (det.refundQuantitySold*det.refundGrossSales)
+
+                grossSales = grossSales + parseFloat(det.quantitySold*det.grossSales)
+                refundGrossSales = refundGrossSales + parseFloat(det.refundQuantitySold*det.refundGrossSales)
+              }
               details.push({
                 Option: op,
-                quantitySold: sumBy(ops[op],'quantitySold'),
-                grossSales: truncateDecimals(decimal, sumBy(ops[op],'grossSales')),
-                refundQuantitySold: sumBy(ops[op],'refundQuantitySold'),
-                refundGrossSales: truncateDecimals(decimal, sumBy(ops[op],'refundGrossSales'))
+                quantitySold: qs,
+                grossSales: parseFloat(gs).toFixed(decimal),//truncateDecimals(decimal, gs),
+                refundQuantitySold: rqs,
+                refundGrossSales: truncateDecimals(decimal, rgs)
               })
             }
+            // for(const det of details){
+              
+            // }
             let salesTotal = {
               Modifier: modifier.title,
-              group: details,
-              quantitySold: sumBy(optionsDetails,'quantitySold'),
-              grossSales: sumBy(optionsDetails,'grossSales'),
-              refundQuantitySold: sumBy(optionsDetails,'refundQuantitySold'),
-              refundGrossSales: sumBy(optionsDetails,'refundGrossSales'),
+              group: ops,
+              quantitySold: sumBy(details,'quantitySold'),
+              grossSales: grossSales, // sumBy(details,'grossSales'),
+              refundQuantitySold: sumBy(details,'refundQuantitySold'),
+              refundGrossSales: refundGrossSales, //sumBy(details,'refundGrossSales'),
               options: details
             }
             reportData.push(salesTotal)
