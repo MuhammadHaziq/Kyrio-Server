@@ -5,23 +5,24 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, type, value, restricted } = req.body;
-  const { _id, accountId } = req.authData;
+  const { _id, account } = req.authData;
   let { stores } = req.body;
-  if (stores !== undefined && stores !== null) {
-    stores = JSON.parse(stores);
-  }
   const newDiscount = new Discount({
     title: title,
-    accountId: accountId,
+    account: account,
     type: type,
     value: value,
     restricted: restricted,
     stores: stores,
-    created_by: _id,
+    createdBy: _id,
   });
   try {
-    const result = await newDiscount.save();
-    req.io.emit(DISCOUNT_INSERT, {data: result, user: _id})
+    const insert = await newDiscount.save();
+    
+    const result = await Discount.findOne({account: account, _id: insert._id}).populate('stores', ["_id","title"]).sort({
+      title: 1,
+    });
+    req.io.to(account).emit(DISCOUNT_INSERT, {data: result, user: _id})
     res.status(201).json(result);
   } catch (error) {
     if (error.code === 11000) {
@@ -33,18 +34,24 @@ router.post("/", async (req, res) => {
 });
 router.get("/:storeId", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account, platform } = req.authData;
     const { storeId } = req.params;
+    const { update_at } = req.query;
 
     let storeFilter = {};
-    if (storeId !== "0") {
-      storeFilter.stores = { $elemMatch: { id: storeId } };
+    if (storeId != "0") {
+      storeFilter.stores = { $elemMatch: { $in: storeId } };
     }
-    storeFilter.accountId = accountId;
+    storeFilter.account = account;
     storeFilter.deleted = 0;
+ 
+    if(platform === "pos"){
+      let isoDate = new Date(update_at);
+      storeFilter.updatedAt = {$gte: isoDate}
+    }
     const result = await Discount.find(storeFilter).sort({
       title: 1,
-    });
+    }).populate('stores', ["_id","title"]);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -53,16 +60,16 @@ router.get("/:storeId", async (req, res) => {
 router.delete("/:ids", async (req, res) => {
   try {
     var { ids } = req.params;
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     ids = JSON.parse(ids);
 
-    let del = await Discount.updateMany({ _id: {$in: ids}, accountId: accountId }, { $set: {deleted: 1, deleted_at: Date.now() }}, {
+    let del = await Discount.updateMany({ _id: {$in: ids}, account: account }, { $set: {deleted: 1, deletedAt: Date.now() }}, {
       new: true,
       upsert: true,
     })
 
     if(del.n > 0 && del.nModified > 0){
-      req.io.emit(DISCOUNT_DELETE, {data: ids, user: _id})
+      req.io.to(account).emit(DISCOUNT_DELETE, {data: ids, user: _id})
     }
 
     res.status(200).json({ message: "deleted" });
@@ -70,17 +77,15 @@ router.delete("/:ids", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-router.patch("/:id", async (req, res) => {
+router.patch("/", async (req, res) => {
   try {
-    const { title, type, value, restricted } = req.body;
-    const { id } = req.params;
-    const { _id, accountId } = req.authData;
+    const { id, title, type, value, restricted } = req.body;
+    
+    const { _id, account } = req.authData;
     let { stores } = req.body;
-    if (stores !== undefined && stores !== null) {
-      stores = JSON.parse(stores);
-    }
+
     const result = await Discount.findOneAndUpdate(
-      { _id: id, accountId: accountId },
+      { _id: id, account: account },
       {
         $set: {
           title: title,
@@ -94,23 +99,23 @@ router.patch("/:id", async (req, res) => {
         new: true,
         upsert: true, // Make this update into an upsert
       }
-    );
-    req.io.emit(DISCOUNT_UPDATE, {data: result, user: _id})
-    res.status(200).json({ data: result, message: "updated" });
+    ).populate('stores', ["_id","title"]);
+    req.io.to(account).emit(DISCOUNT_UPDATE, {data: result, user: _id})
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 router.get("/row/:id", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const { id } = req.params;
 
     let storeFilter = {};
-    storeFilter.accountId = accountId;
+    storeFilter.account = account;
     storeFilter._id = id;
     storeFilter.deleted = 0;
-    const result = await Discount.findOne(storeFilter).sort({
+    const result = await Discount.findOne(storeFilter).populate('stores', ["_id","title"]).sort({
       title: 1,
     });
     res.status(200).json(result);

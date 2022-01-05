@@ -4,8 +4,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, taxRate, taxType, taxOption, depOnDining, stores } = req.body;
-  const { _id, accountId } = req.authData;
-  let jsonStores = JSON.parse(stores);
+  const { _id, account } = req.authData;
 
   const newTax = new Tax({
     title: title,
@@ -13,9 +12,9 @@ router.post("/", async (req, res) => {
     taxType: taxType,
     taxOption: taxOption,
     depOnDining: depOnDining,
-    stores: jsonStores,
+    stores: stores,
     createdBy: _id,
-    accountId: accountId
+    account: account
   });
   try {
     const result = await newTax.save();
@@ -30,11 +29,11 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const { storeId } = req.body;
     const result = await Tax.find({
-      stores: { $elemMatch: { storeId: storeId } },
-      accountId: accountId,
+      stores: { $in: storeId },
+      account: account,
     });
     res.status(200).json(result);
   } catch (error) {
@@ -43,11 +42,11 @@ router.get("/", async (req, res) => {
 });
 router.post("/getStoreTaxes", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     const { storeId } = req.body;
     const result = await Tax.find({
       stores: { $elemMatch: { storeId: storeId } },
-      accountId: accountId,
+      account: account,
     });
     res.status(200).json(result);
   } catch (error) {

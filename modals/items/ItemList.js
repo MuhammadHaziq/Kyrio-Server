@@ -1,28 +1,10 @@
 import mongoose, { mongo, models } from "mongoose";
 
 const itemListSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
     min: 3,
     max: 255,
-  },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true,
-  },
-  category: {
-    id: {
-      type: String,
-      min: 3,
-      max: 255,
-    },
-    name: {
-      type: String,
-      min: 3,
-      max: 255,
-    },
   },
   availableForSale: {
     type: Boolean,
@@ -48,6 +30,11 @@ const itemListSchema = new mongoose.Schema({
     type: String,
     max: 100,
   },
+  autoSKU: {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
   trackStock: {
     type: Boolean,
     default: false,
@@ -71,13 +58,14 @@ const itemListSchema = new mongoose.Schema({
         min: 1,
         max: 255,
       },
+      variantNames: [{
+        type: Array
+      }],
       optionValue: [
         {
-          variantName: {
-            type: String,
-            min: 1,
-            max: 255,
-          },
+          variantName: [{
+            type: Array
+          }],
           price: {
             type: Number,
             max: 100000000000,
@@ -100,109 +88,22 @@ const itemListSchema = new mongoose.Schema({
   ],
   stores: [
     {
-      id: {
-        type: String,
-        min: 1,
-        max: 255,
+      store: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Store",
       },
-      title: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-
       price: {
         type: String,
         max: 255,
       },
       inStock: {
-        type: String,
-        max: 255,
+        type: Number,
+        max: 100000000000,
       },
       lowStock: {
-        type: String,
-        max: 255,
-      },
-      variantName: {
-        type: String,
-        max: 255,
-      },
-      modifiers: [
-        {
-          id: {
-            type: String,
-            min: 1,
-            max: 255,
-          },
-          title: {
-            type: String,
-            min: 1,
-            max: 255,
-          },
-        },
-      ],
-      taxes: [
-        {
-          id: {
-            type: String,
-            min: 1,
-            max: 255,
-          },
-          title: {
-            type: String,
-            min: 1,
-            max: 255,
-          },
-          type: {
-            type: String,
-            min: 1,
-            max: 255,
-          },
-          value: {
-            type: Number,
-            min: 1,
-            max: 1000000,
-          },
-        },
-      ],
-    },
-  ],
-  modifiers: [
-    {
-      id: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-      title: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-    },
-  ],
-  taxes: [
-    {
-      id: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-      title: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-      type: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-      value: {
         type: Number,
-        min: 1,
-        max: 1000000,
-      },
+        max: 100000000000,
+      }
     },
   ],
   repoOnPos: {
@@ -221,29 +122,47 @@ const itemListSchema = new mongoose.Schema({
     type: String,
     max: 20,
   },
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts"
+  },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "categories"
+  },
+  modifiers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "modifier"
+  }],
+  taxes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "itemTax"
+  }],
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users"
+  },
   deleted: {
     type: Number,
     max: 1,
     default: 0
   },
-  deleted_at: {
+  deletedAt: {
     type: Date,
     default: Date.now(),
   },
-  created_at: {
-    type: Date,
-    default: Date.now(),
-  },
-  created_by: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  updated_at: {
-    type: Date,
-    default: Date.now(),
-  },
+},{
+  timestamps: true
 });
+// Item with same name can be exist please comment this - Tahir
+// itemListSchema.index(
+//   {
+//       title: 1,
+//   },
+//   {
+//       unique: true,
+//       sparse: true
+//   }
+// );
 
-module.exports = mongoose.model("itemList", itemListSchema);
+module.exports = mongoose.model("items", itemListSchema);

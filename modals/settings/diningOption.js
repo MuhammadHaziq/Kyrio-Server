@@ -7,26 +7,15 @@ const diningOptionSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
-  stores: {
-    type: [
+  stores: [
       {
-        storeId: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
-        },
-        storeName: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
+        store: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Store",
         },
         isActive: {
           type: Boolean,
@@ -38,17 +27,12 @@ const diningOptionSchema = new mongoose.Schema({
         },
       },
     ],
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
   createdBy: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
+},{
+  timestamps: true
 });
 
 diningOptionSchema.index(
@@ -58,6 +42,7 @@ diningOptionSchema.index(
   },
   {
     unique: true,
+    sparse: true
   }
 );
 // diningOptionSchema.pre("save", function (next) {

@@ -6,23 +6,9 @@ const taxesOptionSchema = new mongoose.Schema({
     min: 3,
     max: 255,
     required: true,
-  },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  createdBy: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
+  }
+},{
+  timestamps: true
 });
 
 taxesOptionSchema.index(

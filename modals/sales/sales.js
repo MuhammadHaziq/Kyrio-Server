@@ -21,24 +21,28 @@ const salesSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
+  order_number: {
+    type: Number,
+    min: 0,
+    max: 10000000000,
+  },
   cancelled_at: {
     type: Date,
   },
   cancelled_by: {
-    type: String,
-    min: 6,
-    max: 255,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
-  accountId: {
+  account: {
     type: String,
     min: 6,
     max: 255,
     required: true,
   },
   sub_total: {
-    type: String,
+    type: Number,
     min: 0,
-    max: 1000000000000,
+    max: 10000000,
   },
   sale_timestamp: {
     type: Date,
@@ -57,22 +61,22 @@ const salesSchema = new mongoose.Schema({
   total_price: {
     type: Number,
     min: 0,
-    max: 100000000000,
+    max: 1000000,
   },
   cost_of_goods: {
     type: Number,
     min: 0,
-    max: 100000000000,
+    max: 1000000,
   },
   cash_received: {
     type: Number,
     min: 0,
-    max: 100000000000,
+    max: 1000000,
   },
   cash_return: {
     type: Number,
     min: 0,
-    max: 100000000000,
+    max: 1000000,
   },
   total_discount: {
     type: Number,
@@ -80,6 +84,11 @@ const salesSchema = new mongoose.Schema({
     max: 1000000,
   },
   total_tax: {
+    type: Number,
+    min: 0,
+    max: 1000000,
+  },
+  total_tax_included: {
     type: Number,
     min: 0,
     max: 1000000,
@@ -134,12 +143,12 @@ const salesSchema = new mongoose.Schema({
       price: {
         type: Number,
         min: 1,
-        max: 100000000000,
+        max: 1000000,
       },
       cost: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
       },
       track_stock: {
         type: Boolean,
@@ -157,22 +166,27 @@ const salesSchema = new mongoose.Schema({
       total_discount: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
       },
       total_tax: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
+      },
+      total_tax_included: {
+        type: Number,
+        min: 0,
+        max: 1000000,
       },
       total_price: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
       },
       total_modifiers: {
         type: Number,
         min: 0,
-        max: 100000000000,
+        max: 1000000,
       },
       taxes: [
         {
@@ -198,7 +212,7 @@ const salesSchema = new mongoose.Schema({
             min: 4,
             max: 255,
           },
-          taxType: {
+          tax_type: {
             type: String,
             min: 4,
             max: 255,
@@ -208,6 +222,11 @@ const salesSchema = new mongoose.Schema({
             min: 0,
             max: 1000000,
           },
+          tax_total: {
+            type: Number,
+            min: 0,
+            max: 1000000,
+          }
         },
       ],
       discounts: [
@@ -239,6 +258,11 @@ const salesSchema = new mongoose.Schema({
             min: 0,
             max: 1000000,
           },
+          discount_total: {
+            type: Number,
+            min: 0,
+            max: 1000000,
+          }
         },
       ],
       variant: {
@@ -255,7 +279,7 @@ const salesSchema = new mongoose.Schema({
         },
         price: {
           type: String,
-          min: 6,
+          min: 0,
           max: 255,
         },
       },
@@ -277,7 +301,7 @@ const salesSchema = new mongoose.Schema({
             },
             title: {
               type: String,
-              min: 6,
+              min: 0,
               max: 255,
             },
           },
@@ -299,7 +323,7 @@ const salesSchema = new mongoose.Schema({
               },
               price: {
                 type: Number,
-                min: 1,
+                min: 0,
                 max: 255,
               },
             },
@@ -404,10 +428,9 @@ const salesSchema = new mongoose.Schema({
     },
   },
   created_by: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  }, 
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
@@ -420,6 +443,8 @@ const salesSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+},{
+  timestamps: true
 });
 
 // salesSchema.index(

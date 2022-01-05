@@ -4,26 +4,18 @@ import diningOption from "../../../modals/settings/diningOption";
 // import diningOption2 from "../../../modals/settings/diningOption2";
 import Category from "../../../modals/items/category";
 import ItemList from "../../../modals/items/ItemList";
+
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title, tax_rate, tex } = req.body;
-  const { accountId, _id } = req.authData;
+  const { account, _id } = req.authData;
   let { tax_type, tax_option, stores, dinings, categories, items } = req.body;
-  stores = JSON.parse(stores);
-  dinings = JSON.parse(dinings);
-  categories = JSON.parse(categories);
-  items = JSON.parse(items);
-  tax_option = JSON.parse(tax_option);
-  tax_type = JSON.parse(tax_type);
-  const taxType = tax_type.title;
-  const taxOption = tax_option.title;
+
   const newItemTax = new itemTax({
     title: title,
     tax_rate: tax_rate,
-    accountId: accountId,
-    taxType,
-    taxOption,
+    account: account,
     tax_type: tax_type,
     tax_option: tax_option,
     stores: stores,
@@ -34,8 +26,26 @@ router.post("/", async (req, res) => {
   });
   try {
     const result = await newItemTax.save();
+    
+    const taxResult = await itemTax.findOne({ account: account, _id: result._id }).populate("tax_option", ["_id","title"]).populate("tax_type", ["_id","title"]);
+    const title = taxResult.tax_option.title
+    if(title === "Apply the tax to all new and existing items" || title === "Apply the tax to existing items"){
+      let filter = {
+        account: account
+      }
+      // if(categories.length > 0){
+      //   filter.category = { $nin: categories }
+      // }
+      if(items.length > 0){
+        filter._id = { $nin: items }
+      }
+      await ItemList.updateMany(
+        filter,
+        { $push: { taxes: result._id } }
+      );
+    }
 
-    res.status(201).json(result);
+    res.status(200).json(taxResult);
   } catch (error) {
     if (error.code === 11000) {
       res.status(400).json({ message: "Tax Name Already In Record" });
@@ -47,9 +57,9 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     const result = await itemTax
-      .find({ accountId: accountId })
+      .find({ account: account }).populate("tax_option", ["_id","title"]).populate("tax_type", ["_id","title"])
       .sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -58,10 +68,10 @@ router.get("/", async (req, res) => {
 });
 router.get("/row/:id", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
+    const { account } = req.authData;
     const { id } = req.params;
     const result = await itemTax
-      .findOne({ accountId: accountId, _id: id })
+      .findOne({ account: account, _id: id })
       .sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
@@ -71,20 +81,26 @@ router.get("/row/:id", async (req, res) => {
 
 router.post("/getStoreTaxes", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account, platform } = req.authData;
     const { storeId } = req.body;
+    const { update_at } = req.query;
     let filter = {};
     if (storeId == 0) {
       filter = {
-        accountId: accountId,
+        account: account,
       };
     } else {
       filter = {
-        stores: { $elemMatch: { storeId: storeId } },
-        accountId: accountId,
+        stores: { $in: storeId },
+        account: account,
       };
     }
-    const result = await itemTax.find(filter).sort({ _id: "desc" });
+    
+    let isoDate = new Date(update_at);
+    if(platform === "pos"){
+      filter.updatedAt = {$gte: isoDate}
+    }
+    const result = await itemTax.find(filter).populate('stores', ["_id","title"]).populate("items", ["_id","title"]).populate("categories", ["_id","title"]).populate("dinings", ["_id","title"]).populate("tax_option", ["_id","title"]).populate("tax_type", ["_id","title"]).sort({ _id: "desc" });
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -93,23 +109,20 @@ router.post("/getStoreTaxes", async (req, res) => {
 
 router.get("/categories", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    const allCat = await Category.find({ accountId: accountId }).sort({
+    const { account } = req.authData;
+    const allCat = await Category.find({ account: account }).sort({
       _id: "desc",
     });
     let allCategories = [];
     for (const cate of allCat) {
-      let itemCount = await ItemList.find({
-        "category.id": cate._id,
-      }).countDocuments();
       allCategories.push({
         _id: cate._id,
-        catTitle: cate.catTitle,
+        title : cate.title,      
       });
     }
     allCategories.push({
       _id: "0",
-      catTitle: "Uncategorized items",
+      title: "Uncategorized items",
     });
     res.status(200).json(allCategories);
   } catch (error) {
@@ -117,82 +130,27 @@ router.get("/categories", async (req, res) => {
   }
 });
 
-// router.post("/getTaxDining", async (req, res) => {
-//   try {
-//     const { _id, accountId } = req.authData;
-//     let { storeId } = req.body;
-//     storeId = JSON.parse(storeId);
-//     let filter = {};
-//     if (storeId == 0) {
-//       filter = {
-//         createdBy: _id,
-//       };
-//     } else {
-//       filter = {
-//         storeId: { $in: storeId },
-//         createdBy: _id,
-//       };
-//     }
-//     // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
-//     const result = await diningOption2.find(filter);
-//     if (result !== null && result !== undefined) {
-//       // Get Only Unique names
-//       // var unique = [...new Set(result.map((item) => item.title.toUpperCase()))];
-//
-//       //  Get Unique Objects
-//       let titles = [];
-//       result.map((item) => {
-//         item.diningOptions.map((ite) => {
-//           return titles.push({ title: ite.title });
-//         });
-//       });
-//       var unique = titles.filter(
-//         ((set) => (f) =>
-//           !set.has(f.title.toUpperCase()) && set.add(f.title.toUpperCase()))(
-//           new Set()
-//         )
-//       );
-//
-//       res.status(200).json(unique);
-//     } else {
-//       res.status(200).json([]);
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
 router.post("/getTaxDining", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    let { storeId } = req.body;
-    storeId = JSON.parse(storeId);
+    const { account } = req.authData;
+    let { stores } = req.body;
     let filter = {};
-    if (storeId == 0) {
+    if (stores == 0) {
       filter = {
-        accountId: accountId,
+        account: account,
       };
     } else {
       filter = {
-        stores: { $elemMatch: { storeId: { $in: storeId } } },
-        accountId: accountId,
+        stores: { $elemMatch: { store: { $in: stores } } },
+        account: account,
       };
     }
-    // const result = await POS_Device.findOne({ "store.storeId": storeId, createdBy: _id , isActive: false});
-    const result = await diningOption.find(filter);
+
+    const result = await diningOption.find(filter).populate('stores.store', ["_id","title"]);
+
     if (result !== null && result !== undefined) {
-      // Get Only Unique names
-      // var unique = [...new Set(result.map((item) => item.title.toUpperCase()))];
 
-      //  Get Unique Objects
-      var unique = result.filter(
-        ((set) => (f) =>
-          !set.has(f.title.toUpperCase()) && set.add(f.title.toUpperCase()))(
-          new Set()
-        )
-      );
-
-      res.status(200).json(unique);
+      res.status(200).json(result);
     } else {
       res.status(200).json([]);
     }
@@ -203,25 +161,17 @@ router.post("/getTaxDining", async (req, res) => {
 
 router.patch("/", async (req, res) => {
   const { title, tax_rate, tex, id } = req.body;
-  const { _id } = req.authData;
+  const { _id, account } = req.authData;
   let { tax_type, tax_option, stores, dinings, categories, items } = req.body;
-  stores = JSON.parse(stores);
-  dinings = JSON.parse(dinings);
-  categories = JSON.parse(categories);
-  items = JSON.parse(items);
-  tax_option = JSON.parse(tax_option);
-  tax_type = JSON.parse(tax_type);
-  const taxType = tax_type.title;
-  const taxOption = tax_option.title;
+
   try {
     const updatedRecord = await itemTax.findOneAndUpdate(
       { _id: id },
       {
         $set: {
           title: title,
-          taxType,
-          taxOption,
           tax_rate: tax_rate,
+          account: account,
           tax_type: tax_type,
           tax_option: tax_option,
           stores: stores,
@@ -235,8 +185,38 @@ router.patch("/", async (req, res) => {
         new: true,
         upsert: true, // Make this update into an upsert
       }
-    );
-
+    ).populate("tax_option", ["_id","title"]).populate("tax_type", ["_id","title"]);
+    const optionTitle = updatedRecord.tax_option.title
+    if(optionTitle === "Apply the tax to all new and existing items" || optionTitle === "Apply the tax to existing items"){
+      let filter = {
+        account: account
+      }
+      // if(categories.length > 0){
+      //   filter.category = { $nin: categories }
+      // }
+      if(items.length > 0){
+        filter._id = { $nin: items }
+      }
+      await ItemList.updateMany(
+        filter,
+        { $addToSet: { taxes: id } }
+      );
+      let filter2 = {
+        account: account
+      }
+      if(categories.length > 0 || items.length > 0){
+        if(categories.length > 0){
+          filter2.category = { $in: categories }
+        }
+        if(items.length > 0){
+          filter2._id = { $in: items }
+        }
+        await ItemList.updateMany(
+          filter2,
+          { $pull: { taxes: id } }
+        );
+      }
+    }
     res.status(200).json(updatedRecord);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -244,12 +224,18 @@ router.patch("/", async (req, res) => {
 });
 router.delete("/:id", async (req, res) => {
   try {
+    
     var { id } = req.params;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     id = JSON.parse(id);
     for (const taxId of id) {
-      await itemTax.deleteOne({ _id: taxId, accountId: accountId });
+      await itemTax.deleteOne({ _id: taxId, account: account });
+      await ItemList.updateMany(
+        { account: account },
+        { $pull: { taxes: taxId } }
+      )
     }
+   
     res.status(200).json({ message: "deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });

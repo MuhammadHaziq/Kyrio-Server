@@ -7,106 +7,47 @@ const accountsSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  email: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
+  decimal: {
+    type: Number,
+    min: 0,
+    max: 2,
   },
-  password: {
+  timeFormat: {
     type: String,
-    min: 3,
-    max: 255,
-    required: true,
+    min: 2,
+    max: 2,
   },
-  timezone: {
+  dateFormat: {
     type: String,
-    min: 3,
-    max: 255,
-  },
-  language: {
-    type: String,
-    min: 6,
-    max: 255,
+    min: 0,
+    max: 10,
   },
   features: [
     {
-      featureId: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      featureName: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      description: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      icon: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
+      feature: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "features",
       },
       enable: Boolean,
     },
   ],
-  settings: {
-    settingModules: [
-      {
-        moduleId: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
+  settings: [{
+        module: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "settings",
         },
-        moduleName: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
-        },
-        icon: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
-        heading: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
-        span: {
-          type: String,
-          min: 3,
-          max: 255,
-        },
-
         enable: Boolean,
-        featureId: {
-          type: String,
-          min: 3,
-          max: 255,
+        feature: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "features",
         },
-      },
-    ],
-  },
-  createdBy: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
+      }],
+      createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+      }
+},{
+  timestamps: true
 });
 
 accountsSchema.index(
@@ -115,6 +56,7 @@ accountsSchema.index(
   },
   {
     unique: true,
+    sparse: true
   }
 );
 

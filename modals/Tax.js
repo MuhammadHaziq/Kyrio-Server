@@ -29,39 +29,30 @@ const taxSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    stores: {
-        type: [{
-            storeId: {
-                type: String,
-                min: 1,
-                max: 255,
-                required: true
-            },
-            storeName: {
-                type: String,
-                min: 1,
-                max: 255,
-                required: true
-            },
-        }]
-    },
-    accountId: {
-        type: String,
-        min: 6,
-        max: 255,
-        required: true
-      },
-    createdAt: {
-        type: Date,
-        default: Date.now(),
+    stores: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Store",
+    }],
+    account: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "accounts",
     },
     createdBy: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
     }
-    
+},{
+    timestamps: true
 });
+
+taxSchema.index(
+    {
+        title: 1,
+    },
+    {
+        unique: true,
+        sparse: true
+    }
+);
 
 module.exports = mongoose.model("tax", taxSchema);

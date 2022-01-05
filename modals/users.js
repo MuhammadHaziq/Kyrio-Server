@@ -32,21 +32,6 @@ const usersSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
-  stores: [
-    {
-      _id: false,
-      id: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-      name: {
-        type: String,
-        min: 1,
-        max: 255,
-      },
-    },
-  ],
   password: {
     type: String,
     min: 0,
@@ -57,47 +42,38 @@ const usersSchema = new mongoose.Schema({
     min: 6,
     max: 255,
   },
-  role_id: {
+  timezone: {
+    type: String,
+    min: 3,
+    max: 255,
+  },
+  language: {
     type: String,
     min: 6,
     max: 255,
   },
+  stores: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+  }],
   role: {
-    _id: false,
-    id: {
-      type: String,
-      min: 3,
-      max: 255,
-    },
-    name: {
-      type: String,
-      min: 3,
-      max: 255,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "role",
   },
-  created_by: {
-    type: String,
-    min: 6,
-    max: 255,
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
   owner_id: {
-    type: String,
-    min: 6,
-    max: 255,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  updated_at: {
-    type: Date,
-    default: Date.now(),
-  },
+},{
+  timestamps: true
 });
 
 usersSchema.index(

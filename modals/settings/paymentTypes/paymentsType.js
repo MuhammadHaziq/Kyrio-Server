@@ -1,52 +1,44 @@
-import mongoose, { mongo, models } from "mongoose";
+import mongoose from "mongoose";
 
 const paymentsTypeSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
     min: 3,
     max: 255,
     required: true,
   },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
-  paymentType: {
-    paymentTypeId: {
-      type: String,
-    },
-    paymentTypeName: {
-      type: String,
-    },
+  paymentMethod: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "paymentmethods",
   },
-  storeId: {
-    type: String,
+  store: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
   },
   cashPaymentRound: {
     type: Number,
     default: null,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
   createdBy: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  }
+},{
+  timestamps: true
 });
 
 paymentsTypeSchema.index(
   {
-    name: 1,
-    storeId: 1,
+    title: 1,
+    store: 1,
   },
   {
     unique: true,
+    sparse: true
   }
 );
 

@@ -4,16 +4,12 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { title } = req.body;
-  const { _id, accountId } = req.authData;
 
   const newTaxesType = new taxesType({
-    title: title,
-    createdBy: _id,
-    accountId: accountId
+    title: title
   });
   try {
     const result = await newTaxesType.save();
-
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -21,8 +17,7 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _id, accountId } = req.authData;
-    const result = await taxesType.find({ accountId: accountId});
+    const result = await taxesType.find();
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -1,73 +1,24 @@
 import mongoose from "mongoose";
 
 const roleSchema = new mongoose.Schema({
-  roleName: {
+  title: {
     type: String,
     min: 3,
     max: 255,
     required: true,
   },
-  user_id: {
-    type: String,
-    min: 3,
-    max: 255,
-  },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-  },
   isDeleted: {
     type: Boolean,
     default: false,
   },
-  // features: [
-  //   {
-  //     featureId: {
-  //       type: String,
-  //       min: 3,
-  //       max: 255,
-  //       required: true,
-  //     },
-  //     featureName: {
-  //       type: String,
-  //       min: 3,
-  //       max: 255,
-  //       required: true,
-  //     },
-  //     description: {
-  //       type: String,
-  //       min: 3,
-  //       max: 255,
-  //       required: true,
-  //     },
-  //     icon: {
-  //       type: String,
-  //       min: 3,
-  //       max: 255,
-  //       required: true,
-  //     },
-  //     enable: Boolean,
-  //   },
-  // ],
   allowBackoffice: {
     enable: Boolean,
     modules: [
       {
-        moduleId: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
+        backoffice: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "backoffice",
         },
-        moduleName: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
-        },
-        isMenu: Boolean,
-        isChild: Boolean,
         enable: Boolean,
       },
     ],
@@ -76,75 +27,34 @@ const roleSchema = new mongoose.Schema({
     enable: Boolean,
     modules: [
       {
-        moduleId: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
-        },
-        moduleName: {
-          type: String,
-          min: 3,
-          max: 255,
-          required: true,
+        posModule: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "posModule",
         },
         enable: Boolean,
       },
     ],
   },
-  // settings: {
-  //   settingModules: [
-  //     {
-  //       moduleId: {
-  //         type: String,
-  //         min: 3,
-  //         max: 255,
-  //         required: true,
-  //       },
-  //       moduleName: {
-  //         type: String,
-  //         min: 3,
-  //         max: 255,
-  //         required: true,
-  //       },
-  //       icon: {
-  //         type: String,
-  //         min: 3,
-  //         max: 255,
-  //       },
-  //       heading: {
-  //         type: String,
-  //         min: 3,
-  //         max: 255,
-  //       },
-  //       span: {
-  //         type: String,
-  //         min: 3,
-  //         max: 255,
-  //       },
-
-  //       enable: Boolean,
-  //       featureId: {
-  //         type: String,
-  //         min: 3,
-  //         max: 255,
-  //       },
-  //     },
-  //   ],
-  // },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
+  }
+},{
+  timestamps: true
 });
 
 roleSchema.index(
   {
-    roleName: 1,
+    title: 1,
     user_id: 1,
   },
   {
     unique: true,
+    sparse: true
   }
 );
 

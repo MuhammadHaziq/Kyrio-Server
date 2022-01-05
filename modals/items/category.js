@@ -1,54 +1,45 @@
 import mongoose from "mongoose";
 
 const CategorySchema = new mongoose.Schema({
-    catTitle: {
+    title: {
         type: String,
         min: 3,
         max: 255,
         required: true,
     },
-    accountId: {
-        type: String,
-        min: 6,
-        max: 255,
-        required: true
-      },
-    catColor: {
+    color: {
         type: String,
         min: 3,
         max: 255,
         required: true,
     },
-    created_at: {
-        type: Date,
-        default: Date.now(),
+    account: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "accounts",
     },
-    created_by: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-    },
-    updated_at: {
-        type: Date,
-        default: Date.now(),
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
     },
     deleted: {
         type: Number,
         max: 1,
         default: 0
     },
-    deleted_at: {
+    deletedAt: {
         type: Date,
         default: Date.now(),
     },
+},{
+    timestamps: true
 });
 CategorySchema.index(
     {
-        catTitle: 1,
+        title: 1,
     },
     {
         unique: true,
+        sparse: true
     }
 );
-module.exports = mongoose.model("categries", CategorySchema);
+module.exports = mongoose.model("categories", CategorySchema);

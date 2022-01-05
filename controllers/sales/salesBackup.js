@@ -62,7 +62,7 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     let total_discount = 0;
     let total_tax = 0;
     let itemTotalPrices = 0;
@@ -100,7 +100,7 @@ router.post("/", async (req, res) => {
     try {
       const newSales = await new Sales({
         ticket_name,
-        accountId,
+        account,
         comments,
         open,
         total_price,
@@ -151,7 +151,7 @@ router.patch("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     try {
       let total_discount = 0;
       let total_tax = 0;
@@ -189,7 +189,7 @@ router.patch("/", async (req, res) => {
       let cash_return = parseFloat(cash_received) - parseFloat(total_after_discount);
       let data = {
         ticket_name,
-        accountId,
+        account,
         comments,
         open,
         total_price,

@@ -8,6 +8,12 @@ const moduleSchema = new mongoose.Schema({
         min: 3,
         max: 255,
       },
+      handle: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
       description: {
         type: String,
         min: 3,
@@ -23,6 +29,12 @@ const moduleSchema = new mongoose.Schema({
   backofficeModules: [
     {
       moduleName: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      handle: {
         type: String,
         min: 3,
         max: 255,
@@ -45,6 +57,12 @@ const moduleSchema = new mongoose.Schema({
         max: 255,
         required: true,
       },
+      handle: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
       description: {
         type: String,
         min: 3,
@@ -55,6 +73,12 @@ const moduleSchema = new mongoose.Schema({
   settings: [
     {
       moduleName: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      handle: {
         type: String,
         min: 3,
         max: 255,
@@ -78,10 +102,8 @@ const moduleSchema = new mongoose.Schema({
       enable: Boolean,
     },
   ],
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
+},{
+  timestamps: true
 });
 
 module.exports = mongoose.model("module", moduleSchema);

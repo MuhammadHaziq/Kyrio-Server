@@ -18,35 +18,22 @@ const posDeviceSchema = new mongoose.Schema({
     min: 0,
     max: 10000000000,
   },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
+  order_number: {
+    type: Number,
+    min: 0,
+    max: 10000000000,
+  },
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
   store: {
-    storeId: {
-      type: String,
-      min: 3,
-      max: 255,
-      required: true,
-    },
-    storeName: {
-      type: String,
-      min: 3,
-      max: 255,
-      required: true,
-    },
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
   },
   createdBy: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
   isActive: {
     type: Boolean,
@@ -57,14 +44,17 @@ const posDeviceSchema = new mongoose.Schema({
     min: 3,
     max: 255,
   }
+},{
+  timestamps: true
 });
 posDeviceSchema.index(
   {
     title: 1,
-    "store.storeId": 1,
+    store: 1,
   },
   {
     unique: true,
+    sparse: true
   }
 );
 module.exports = mongoose.model("pos_device", posDeviceSchema);

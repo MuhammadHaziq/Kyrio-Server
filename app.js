@@ -8,9 +8,18 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
+import { Server } from 'socket.io';
+import redisAdapter from 'socket.io-redis';
 
 var app = express();
-app.io = require("socket.io")();
+// app.io = require("socket.io")();
+
+
+
+const io = new Server();
+io.adapter(redisAdapter());
+
+app.io = io
 
 dotenv.config();
 app.use(cors());
@@ -30,7 +39,7 @@ app.use(async function (req, res, next) {
 //         message: "File size limit has been reached",
 //       });
 //     },
-//   })
+//   }) 
 // );
 app.use(fileUpload());
 app.use(express.json({ limit: "50mb", type: "application/json" }));
@@ -52,7 +61,7 @@ app.use(cookieParser());
 
 app.use("/media", express.static(path.join(__dirname, "./uploads")));
 app.use(
-  "/media/items/:accountId",
+  "/media/items/:account",
   express.static(path.join(__dirname, "./uploads/items"))
 );
 app.use(
@@ -84,8 +93,10 @@ mongoose.connect(
     process.env.NODE_ENV == "production"
       ? console.log("Connected to Mongodb Cloud Server")
       : console.log("Connected to Mongodb Local Server");
+      
   }
 );
+
 mongoose.connection.on("error", (err) => {
   console.log(err.message);
 });

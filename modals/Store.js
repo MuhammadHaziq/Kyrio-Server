@@ -22,22 +22,16 @@ const storeSchema = new mongoose.Schema({
         min: 0,
         max: 4000
     },
-    accountId: {
-        type: String,
-        min: 6,
-        max: 255,
-        required: true
-      },
-    createdAt: {
-        type: Date,
-        default: Date.now(),
+    account: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "accounts",
     },
     createdBy: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-    }
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
+},{
+  timestamps: true
 });
 
 storeSchema.index(
@@ -47,6 +41,7 @@ storeSchema.index(
   },
   {
     unique: true,
+    sparse: true
   }
 );
 

@@ -83,7 +83,7 @@
 //               taxes: itemTax
 //                 .find({
 //                   stores: { $elemMatch: { storeId: stor._id } },
-//                   accountId: accountId,
+//                   account: account,
 //                 })
 //                 .select("title tax_type tax_rate")
 //                 .sort({ _id: "desc" }),
@@ -95,7 +95,7 @@
 //               phone: "",
 //               description: "",
 //               createdBy: _id,
-//               accountId: accountId,
+//               account: account,
 //             });
 //             try {
 //               const result = await newStore.save();
@@ -142,7 +142,7 @@
 //                 taxes: itemTax
 //                   .find({
 //                     stores: { $elemMatch: { storeId: result._id } },
-//                     accountId: accountId,
+//                     account: account,
 //                   })
 //                   .select("title tax_type tax_rate")
 //                   .sort({ _id: "desc" }),
@@ -330,7 +330,7 @@
 //       try {
 //         const newItemList = {
 //           name: item.Name,
-//           accountId: accountId,
+//           account: account,
 //           category: category,
 //           soldByType:
 //             item["Sold by weight"] == "N"
@@ -381,7 +381,7 @@
 //     } else {
 //       data.push({
 //         name: item.Name,
-//         accountId: accountId,
+//         account: account,
 //         category: category,
 //         soldByType:
 //           item["Sold by weight"] == "N" ? "Each" : "Sold by weight",

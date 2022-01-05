@@ -1,4 +1,4 @@
-import mongoose, { mongo, models } from "mongoose";
+import mongoose from "mongoose";
 
 const modifierSchema = new mongoose.Schema({
   title: {
@@ -7,15 +7,9 @@ const modifierSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
-  },
   type: {
     type: String,
-    min: 3,
+    min: 0,
     max: 255,
   },
   options: [
@@ -37,50 +31,43 @@ const modifierSchema = new mongoose.Schema({
       },
     },
   ],
-  stores: [
-    {
-      id: {
-        type: String,
-        min: 1,
-        max: 255,
-        required: true,
-      },
-      name: {
-        type: String,
-        min: 1,
-        max: 255,
-        required: true,
-      },
-    },
-  ],
   position: {
     type: Number,
     default: 0,
   },
-  created_at: {
-    type: Date,
-    default: Date.now(),
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
-  created_by: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  updated_at: {
-    type: Date,
-    default: Date.now(),
+  stores: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
+  }],
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
   },
   deleted: {
     type: Number,
     max: 1,
     default: 0
   },
-  deleted_at: {
+  deletedAt: {
       type: Date,
       default: Date.now(),
   },
+},{
+  timestamps: true
 });
+modifierSchema.index(
+  {
+      title: 1,
+  },
+  {
+      unique: true,
+      sparse: true
+  }
+);
 modifierSchema.pre("save", function (next) {
   var doc = this;
   var modifierSchema = mongoose.model("modifier", modifierSchema);

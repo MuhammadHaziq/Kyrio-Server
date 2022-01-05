@@ -1,217 +1,109 @@
 import Users from "../modals/users";
-import Modules from "../modals/modules";
+import Features from "../modals/modules/features";
+import Backoffice from "../modals/modules/backoffice";
+import PosModule from "../modals/modules/posModule";
+import Settings from "../modals/modules/settings";
 import Role from "../modals/role";
 import POS_Device from "../modals/POS_Device";
 import diningOption from "../modals/settings/diningOption";
 import taxesOption from "../modals/settings/taxes/taxesOption";
 import taxesType from "../modals/settings/taxes/taxesType";
-import paymentTypes from "../modals/settings/paymentTypes/paymentTypes";
+import paymentMethods from "../modals/settings/paymentTypes/paymentMethods";
 import paymentsType from "../modals/settings/paymentTypes/paymentsType";
 import { modulesData } from "../data/data";
 import jwt from "jsonwebtoken";
 import validator from "email-validator";
 
 export const checkModules = (req, res, next) => {
-  const { email, businessName } = req.body;
-  Users.find({
-    email: email,
-  }).then(async (result) => {
-    if (result.length > 0) {
-      res.status(422).send({
-        type: "email",
-        message: "An account with this email address already exists",
-      });
-    } else {
-      if (validator.validate(email)) {
-
-        Modules.findOne()
-          .then((result) => {
-            if (result != null) {
-              //****************Commented because when this API will trigger only a new role with Owner status will be created
-
-              let roleData = {
-                roleName: "Owner",
-                // features: result.features.map((itm) => {
-                //   return {
-                //     featureId: itm._id,
-                //     featureName: itm.featureName,
-                //     description: itm.description,
-                //     icon: itm.icon,
-                //     enable: true,
-                //   };
-                // }),
-                allowBackoffice: {
-                  enable: true,
-                  modules: result.backofficeModules.map((itm) => {
-                    return {
-                      moduleId: itm._id,
-                      moduleName: itm.moduleName,
-                      isMenu: itm.isMenu,
-                      isChild: itm.isChild,
-                      enable: true,
-                    };
-                  }),
-                },
-                allowPOS: {
-                  enable: true,
-                  modules: result.posModules.map((itm) => {
-                    return {
-                      moduleId: itm._id,
-                      moduleName: itm.moduleName,
-                      enable: true,
-                    };
-                  }),
-                },
-                // settings: {
-                //   settingModules: result.settings.map((itm) => {
-                //     return {
-                //       moduleId: itm._id,
-                //       moduleName: itm.moduleName,
-                //       icon: itm.icon,
-                //       heading: itm.heading,
-                //       span: itm.span,
-                //       enable: true,
-                //       featureId:
-                //         result.features.filter(
-                //           (item) =>
-                //             item.featureName.toUpperCase() ===
-                //             itm.moduleName.toUpperCase()
-                //         ).length > 0
-                //           ? result.features
-                //               .filter(
-                //                 (item) =>
-                //                   item.featureName.toUpperCase() ===
-                //                   itm.moduleName.toUpperCase()
-                //               )
-                //               .map((item) => {
-                //                 return item._id;
-                //               })[0]
-                //           : "",
-                //     };
-                //   }),
-                // },
-              };
-              let role = new Role(roleData);
-              role
-                .save()
-                .then((RoleInserted) => {
-                  req.body.role_id = RoleInserted._id;
-                  req.body.roleName = "Owner";
-                  next();
-                })
-                .catch((err) => {
-                  res.status(403).send({
-                    type: "server",
-                    message: `Unable to Save Role ${err.message}`,
-                  });
-                });
-            } else {
-              let modules = new Modules(modulesData);
-              modules
-                .save()
-                .then((insertedRecord) => {
-                  //****************Commented because when this API will trigger only a new role with Owner status will be created
-                  let roleData = {
-                    roleName: "Owner",
-                    // features: insertedRecord.features.map((itm) => {
-                    //   return {
-                    //     featureId: itm._id,
-                    //     featureName: itm.featureName,
-                    //     description: itm.description,
-                    //     icon: itm.icon,
-                    //     enable: true,
-                    //   };
-                    // }),
-                    allowBackoffice: {
-                      enable: true,
-                      modules: insertedRecord.backofficeModules.map(
-                        (itm) => {
-                          return {
-                            moduleId: itm._id,
-                            moduleName: itm.moduleName,
-                            features: itm.features,
-                            isMenu: itm.isMenu,
-                            isChild: itm.isChild,
-                            enable: true,
-                          };
-                        }
-                      ),
-                    },
-                    allowPOS: {
-                      enable: true,
-                      modules: insertedRecord.posModules.map((itm) => {
-                        return {
-                          moduleId: itm._id,
-                          moduleName: itm.moduleName,
-                          enable: true,
-                        };
-                      }),
-                    },
-                    // settings: {
-                    //   settingModules: insertedRecord.settings.map(
-                    //     (itm) => {
-                    //       return {
-                    //         moduleId: itm._id,
-                    //         moduleName: itm.moduleName,
-                    //         icon: itm.icon ? itm.icon : "",
-                    //         heading: itm.heading ? itm.heading : "",
-                    //         span: itm.span ? itm.span : "",
-                    //         enable: true,
-                    //         featureId:
-                    //           insertedRecord.features.filter(
-                    //             (item) =>
-                    //               item.featureName.toUpperCase() ===
-                    //               itm.moduleName.toUpperCase()
-                    //           ).length > 0
-                    //             ? insertedRecord.features
-                    //                 .filter(
-                    //                   (item) =>
-                    //                     item.featureName.toUpperCase() ===
-                    //                     itm.moduleName.toUpperCase()
-                    //                 )
-                    //                 .map((item) => {
-                    //                   return item._id;
-                    //                 })[0]
-                    //             : "",
-                    //       };
-                    //     }
-                    //   ),
-                    // },
-                  };
-                  let role = new Role(roleData);
-                  role
-                    .save()
-                    .then((RoleInserted) => {
-                      req.body.role_id = RoleInserted._id;
-                      req.body.roleName = "Owner";
-                      next();
-                    })
-                    .catch((err) => {
-                      res.status(403).send({
-                        message: `Unable to Save Role ${err.message}`,
-                      });
-                    });
-                })
-                .catch((err) => {
-                  res.status(403).send({
-                    message: `Unable to Save Module ${err.message}`,
-                  });
-                });
-            }
-          })
-          .catch((err) => {
-            res.status(403).send({
-              message: `Unable to Find Module ${err.message}`,
-            });
-          });
-      } else {
+  const { email, platform } = req.body;
+  try{
+  if(platform == "backoffice" || platform === "pos"){
+    Users.find({
+      email: email,
+    }).then(async (result) => {
+      if (result.length > 0) {
         res.status(422).send({
           type: "email",
-          message: "Invalid Email Address",
+          message: "An account with this email address already exists",
         });
+      } else {
+        if (validator.validate(email)) {
+
+          let features = await Features.find()
+          if(features.length <= 0){
+            features = await Features.insertMany(modulesData.features);
+          }
+          let backoffice = await Backoffice.find()
+          if(backoffice.length <= 0){
+            backoffice = await Backoffice.insertMany(modulesData.backofficeModules);
+          }
+          let posModule = await PosModule.find()
+          if(posModule.length <= 0){
+            posModule = await PosModule.insertMany(modulesData.posModules);
+          }
+          let settings = await Settings.find()
+          if(settings.length <= 0){
+            settings = await Settings.insertMany(modulesData.settings);
+          }
+
+          let roleData = {
+            title: "Owner",
+            allowBackoffice: {
+              enable: true,
+              modules: backoffice.map((itm) => {
+                return {
+                  backoffice: itm._id,
+                  enable: true
+                };
+              }),
+            },
+            allowPOS: {
+              enable: true,
+              modules: posModule.map((itm) => {
+                return {
+                  posModule: itm._id,
+                  enable: true
+                };
+              }),
+            },
+          };
+          let role = new Role(roleData);
+          role
+            .save()
+            .then((RoleInserted) => {
+              req.body.role_id = RoleInserted._id;
+              req.body.title = RoleInserted.title;
+              req.body.features = features;
+              req.body.settings = settings;
+
+              next();
+            })
+            .catch((err) => {
+              res.status(403).send({
+                type: "server",
+                message: `Unable to Save Role ${err.message}`,
+              });
+            });
+        } else {
+          res.status(422).send({
+            type: "email",
+            message: "Invalid Email Address",
+          });
+        }
       }
-    }
-  });
+    });
+  } else {
+    res.status(500).send({
+      type: "client",
+      message: `Unauthorized Access!`,
+    });        
+  }
+  } catch (e) {
+    res.status(422).send({
+        type: "server",
+        message: e.message,
+      });
+  }
 };
 
 export const verifyToken = (req, res, next) => {
@@ -250,24 +142,21 @@ export const verifyToken = (req, res, next) => {
 
 ***/
 
-export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
+export const addModuleWhenSignUp = async (userId, account, store, UDID) => {
 
   let paymentTypeStoreId = "";
   let cash = "";
   let card = "";
   paymentTypeStoreId = store._id;
-  const posDeviceData = {
-    storeId: store._id,
-    storeName: store.title,
-  };
+
   try {
-    let result = await POS_Device.find({ accountId: accountId }).sort({ deviceNo: -1 }).limit(1);
+    let result = await POS_Device.find({ account: account }).sort({ deviceNo: -1 }).limit(1);
     let deviceNo = typeof result[0] !== "undefined" ? parseInt(result[0].deviceNo) + 1 : 1;
     const newPOSDevice = new POS_Device({
       title: "POS Device",
       deviceNo: deviceNo,
-      accountId: accountId,
-      store: posDeviceData,
+      account: account,
+      store: store._id,
       createdBy: userId,
       isActive: typeof UDID !== "undefined" ? true : false,
       udid: typeof UDID !== "undefined" ? UDID : null,
@@ -288,11 +177,10 @@ export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
         [
           {
             title: process.env.DEFAULT_DINING_TITLE_1,
-            accountId: accountId,
+            account: account,
             stores: [
               {
-                storeId: store._id,
-                storeName: store.title,
+                store: store._id,
                 isActive: true,
                 position: 0,
               },
@@ -301,11 +189,10 @@ export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
           },
           {
             title: process.env.DEFAULT_DINING_TITLE_2,
-            accountId: accountId,
+            account: account,
             stores: [
               {
-                storeId: store._id,
-                storeName: store.title,
+                store: store._id,
                 isActive: true,
                 position: 1,
               },
@@ -314,11 +201,10 @@ export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
           },
           {
             title: process.env.DEFAULT_DINING_TITLE_3,
-            accountId: accountId,
+            account: account,
             stores: [
               {
-                storeId: store._id,
-                storeName: store.title,
+                store: store._id,
                 isActive: true,
                 position: 2,
               },
@@ -337,20 +223,16 @@ export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
   } catch (error) {
     console.log("Default Dining Catch Error", error.message);
   }
-  const taxesTypeCheck = await taxesType.find({});
+  const taxesTypeCheck = await taxesType.find();
   if (taxesTypeCheck.length === 0) {
     try {
       await taxesType
         .create([
           {
-            title: "Included in the price",
-            createdBy: userId,
-            accountId: accountId
+            title: "Included in the price"
           },
           {
-            title: "Added to the price",
-            createdBy: userId,
-            accountId: accountId
+            title: "Added to the price"
           },
         ])
         .then((response) => {
@@ -363,27 +245,21 @@ export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
       console.log("Default Tax Type Catch Error", error.message);
     }
   }
-  const taxesOptionCheck = await taxesOption.find({});
+  const taxesOptionCheck = await taxesOption.find();
 
   if (taxesOptionCheck.length === 0) {
     try {
       await taxesOption
         .create([
           {
-            title: "Apply the tax to the new items",
-            createdBy: userId,
-            accountId: accountId
+            title: "Apply the tax to the new items"
           },
           {
-            title: "Apply the tax to existing items",
-            createdBy: userId,
-            accountId: accountId
+            title: "Apply the tax to existing items"
           },
           {
-            title: "Apply the tax to all new and existing items",
-            createdBy: userId,
-            accountId: accountId
-          },
+            title: "Apply the tax to all new and existing items"
+          }
         ])
         .then((response) => {
           console.log("Default Tax Option Create");
@@ -395,30 +271,30 @@ export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
       console.log("Default Tax Option Catch Error", error.message);
     }
   }
-  const paymentTypesCheck = await paymentTypes.find({});
+  const paymentTypesCheck = await paymentMethods.find();
   if (paymentTypesCheck.length === 0) {
     try {
-      await paymentTypes
+      await paymentMethods
         .create([
           {
             title: process.env.DEFAULT_PAYMENT_TYPES_1,
             createdBy: userId,
-            accountId: accountId
+            account: account
           },
           {
             title: process.env.DEFAULT_PAYMENT_TYPES_2,
             createdBy: userId,
-            accountId: accountId
+            account: account
           },
           {
             title: process.env.DEFAULT_PAYMENT_TYPES_3,
             createdBy: userId,
-            accountId: accountId
+            account: account
           },
           {
             title: process.env.DEFAULT_PAYMENT_TYPES_4,
             createdBy: userId,
-            accountId: accountId
+            account: account
           },
         ])
         .then((response) => {
@@ -429,44 +305,34 @@ export const addModuleWhenSignUp = async (userId, accountId, store, UDID) => {
             (item) => item.title.toUpperCase() === "Card".toUpperCase()
           )[0];
           // console.log("Default Payment Type Create", response);
-          console.log("Default Payment Type Create");
+          console.log("Default Payment Method Create");
         })
         .catch((err) => {
-          console.log("Default Payment Type Insert Error", err.message);
+          console.log("Default Payment Method Insert Error", err.message);
         });
     } catch (error) {
-      console.log("Default Payment Type Catch Error", error.message);
+      console.log("Default Payment Method Catch Error", error.message);
     }
   }
 
-  // const cash = paymentTypesCheck.filter(
-  //   (item) => item.title.toUpperCase() === "Cash".toUpperCase()
-  // )[0];
-  // const card = paymentTypesCheck.filter(
-  //   (item) => item.title.toUpperCase() === "Card".toUpperCase()
-  // )[0];
   try {
     await paymentsType
       .create([
         {
-          name: process.env.DEFAULT_PAYMENT_TYPE_1,
-          paymentType: {
-            paymentTypeId: cash._id,
-            paymentTypeName: cash.title,
-          },
-          storeId: paymentTypeStoreId,
+          title: process.env.DEFAULT_PAYMENT_TYPE_1,
+          paymentMethod: cash._id,
+          store: paymentTypeStoreId,
           createdBy: userId,
-          accountId: accountId
+          account: account,
+          cashPaymentRound: 0.00
         },
         {
-          name: process.env.DEFAULT_PAYMENT_TYPE_2,
-          paymentType: {
-            paymentTypeId: card._id,
-            paymentTypeName: card.title,
-          },
-          storeId: paymentTypeStoreId,
+          title: process.env.DEFAULT_PAYMENT_TYPE_2,
+          paymentMethod: cash._id,
+          store: paymentTypeStoreId,
           createdBy: userId,
-          accountId: accountId
+          account: account,
+          cashPaymentRound: 0.00
         },
       ])
       .then((response) => {

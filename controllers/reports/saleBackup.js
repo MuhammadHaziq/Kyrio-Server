@@ -9,7 +9,7 @@ router.post("/summary/backup", async (req, res) => {
         graph,
         matches
       } = req.body;
-      const { accountId } = req.authData;
+      const { account } = req.authData;
       // 2021-02-08T19:42:55.586+00:00
       var start = moment(startDate,"YYYY-MM-DD")
       var end = moment(endDate,"YYYY-MM-DD").add(1, 'days')
@@ -20,7 +20,7 @@ router.post("/summary/backup", async (req, res) => {
       var sales = await Sales.find({$and: [
         {"created_at": {$gte: start}},
         {"created_at": {$lte: end}},
-        {accountId: accountId},
+        {account: account},
         { "store._id": { "$in" : stores} },
         { created_by: { "$in" : employees} },
         ]});

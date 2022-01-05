@@ -1,30 +1,22 @@
 import mongoose, { mongo, models } from "mongoose";
 
 const receiptSchema = new mongoose.Schema({
+  header: {
+    type: String,
+    min: 0,
+    max: 255,
+  },
+  footer: {
+    type: String,
+    min: 0,
+    max: 255,
+  },
   receiptImage: {
     type: String,
     min: 3,
     max: 255,
-    required: true,
-  },
-  accountId: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
   },
   printedReceiptImage: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  header: {
-    type: String,
-    min: 3,
-    max: 255,
-  },
-  footer: {
     type: String,
     min: 3,
     max: 255,
@@ -45,22 +37,20 @@ const receiptSchema = new mongoose.Schema({
     max: 255,
     required: true,
   },
-  storeId: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
-  createdAt: {
-    type: Date,
-    default: Date.now(),
+  store: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Store",
   },
   createdBy: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  }
+},{
+  timestamps: true
 });
 
 module.exports = mongoose.model("receipts", receiptSchema);

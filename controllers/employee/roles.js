@@ -1,7 +1,10 @@
 import express from "express";
 import Role from "../../modals/role";
 import Users from "../../modals/users";
-import Modules from "../../modals/modules";
+import Modules from "../../modals/modules/modules";
+import Backoffice from "../../modals/modules/backoffice";
+import PosModule from "../../modals/modules/posModule";
+import { ROLES_ACCESS_TOGGLE } from "../../sockets/events";
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
 
@@ -14,31 +17,10 @@ const router = express.Router();
 */
 router.get("/get_roles_modules", async (req, res) => {
   try {
-    var result = await Modules.find();
     var specificResult = [];
-    var backOffice = [];
-    var posModules = [];
-    (result || []).map((item) => {
-      item.backofficeModules.map((back) => {
-        backOffice.push({
-          moduleId: back._id,
-          moduleName: back.moduleName,
-          description:
-            typeof back.description !== "undefined" ? back.description : "",
-        });
-      });
-      item.posModules.map((pos) => {
-        posModules.push({
-          moduleId: pos._id,
-          moduleName: pos.moduleName,
-          description:
-            typeof pos.description !== "undefined" ? pos.description : "",
-        });
-      });
-    });
     specificResult.push({
-      backofficeModules: { enable: false, modules: backOffice },
-      posModules: { enable: false, modules: posModules },
+      backofficeModules: { enable: false, modules: await Backoffice.find() },
+      posModules: { enable: false, modules: await PosModule.find() },
     });
     res.status(200).send(specificResult);
   } catch (err) {
@@ -49,8 +31,8 @@ router.get("/get_roles_modules", async (req, res) => {
 router.get("/:roleId", async (req, res) => {
   try {
     const { roleId } = req.params;
-    const { accountId } = req.authData;
-    var role = await Role.findOne({ accountId: accountId, _id: roleId });
+    const { account } = req.authData;
+    var role = await Role.findOne({ account: account, _id: roleId }).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]);
     res.status(200).json(role);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -58,10 +40,10 @@ router.get("/:roleId", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     let accessRights = [];
-    var roles = await Role.find({ accountId: accountId, isDeleted: false })
-      .select(["_id", "roleName", "allowBackoffice.enable", "allowPOS.enable"])
+    var roles = await Role.find({ account: account, isDeleted: false })
+      .select(["_id", "title", "allowBackoffice.enable", "allowPOS.enable"])
       .sort({
         _id: "desc",
       });
@@ -76,11 +58,11 @@ router.get("/", async (req, res) => {
           : "";
 
       let NoOfEmployees = await Users.find({
-        role_id: role._id,
+        role: role._id,
       }).countDocuments();
       accessRights.push({
         role_id: role._id,
-        roleName: role.roleName,
+        title: role.title,
         access: access,
         NoOfEmployees: NoOfEmployees,
         allowBackoffice: role.allowBackoffice.enable,
@@ -96,14 +78,14 @@ router.get("/", async (req, res) => {
 router.get("/get_role/:roleId", async (req, res) => {
   try {
     const { roleId } = req.params;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     let accessRights = [];
     var roles = await Role.find({
-      accountId: accountId,
+      account: account,
       _id: roleId,
       isDeleted: false,
     })
-      .select(["_id", "roleName", "allowBackoffice.enable", "allowPOS.enable"])
+      .select(["_id", "title", "allowBackoffice.enable", "allowPOS.enable"])
       .sort({
         _id: "desc",
       });
@@ -122,7 +104,7 @@ router.get("/get_role/:roleId", async (req, res) => {
       }).countDocuments();
       accessRights.push({
         role_id: role._id,
-        roleName: role.roleName,
+        title: role.title,
         access: access,
         NoOfEmployees: NoOfEmployees,
         allowBackoffice: role.allowBackoffice.enable,
@@ -134,15 +116,15 @@ router.get("/get_role/:roleId", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-const get_role_summary = async (roleId, accountId) => {
+const get_role_summary = async (roleId, account) => {
   try {
     let accessRights = [];
     var roles = await Role.find({
-      accountId: accountId,
+      account: account,
       _id: roleId,
       isDeleted: false,
     })
-      .select(["_id", "roleName", "allowBackoffice.enable", "allowPOS.enable"])
+      .select(["_id", "title", "allowBackoffice.enable", "allowPOS.enable"])
       .sort({
         _id: "desc",
       });
@@ -161,7 +143,7 @@ const get_role_summary = async (roleId, accountId) => {
       }).countDocuments();
       accessRights.push({
         role_id: role._id,
-        roleName: role.roleName,
+        title: role.title,
         access: access,
         NoOfEmployees: NoOfEmployees,
         allowBackoffice: role.allowBackoffice.enable,
@@ -175,30 +157,25 @@ const get_role_summary = async (roleId, accountId) => {
     // res.status(500).json({ message: error.message });
   }
 };
-router.get("/modules", async (req, res) => {
+router.get("/modules/app", async (req, res) => {
   try {
-    const { accountId } = req.authData;
-    let modules = await Modules.findOne();
-    let data = {
-      backoffice: modules.backofficeModules.map((itm) => {
-        return {
-          moduleId: itm._id,
-          moduleName: itm.moduleName,
-          description:
-            typeof itm.description !== "undefined" ? itm.description : "",
-        };
-      }),
-      pos: modules.posModules.map((itm) => {
-        return {
-          moduleId: itm._id,
-          moduleName: itm.moduleName,
-          description:
-            typeof itm.description !== "undefined" ? itm.description : "",
-        };
-      }),
-    };
-
-    res.status(200).json(data);
+    const { _id, account } = req.authData;
+    var role = await Role.findOne({ account: account, user_id: _id }).populate('allowPOS.modules.posModule', ["_id","title","handle"]).select(["allowPOS"]);
+    if(role.allowPOS.enable){
+      let modules = []
+      for(const md of role.allowPOS.modules){
+        modules.push({
+          _id: md.posModule._id,
+          title: md.posModule.title,
+          handle: md.posModule.handle,
+          enable: md.enable
+        })
+      }
+      
+      res.status(200).json(modules);
+    } else {
+      res.status(400).json({ message: "Sorry you do not have access to POS!" });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -207,33 +184,29 @@ router.get("/modules", async (req, res) => {
 router.post("/create", async (req, res) => {
   try {
     const { name, backoffice, pos } = req.body;
-    const { accountId, _id } = req.authData;
+    const { account, _id } = req.authData;
     if (name == null || name == "") {
       res.status(422).send({
         message: `Role Name cannot be empty`,
       });
     } else {
-      let role = await Role.find({ roleName: name });
+      let role = await Role.find({ title: name });
       if (role.length > 0) {
         res.status(403).send({
           message: `${name} role already exist`,
         });
       } else {
         let data = {
-          roleName: name,
+          title: name,
           user_id: _id,
-          accountId: accountId,
-          features: [],
+          account: account,
           isDeleted: false,
           allowBackoffice: {
             enable: backoffice.enable,
             modules: backoffice.modules.map((itm) => {
               return {
-                moduleId: itm.moduleId,
-                moduleName: itm.moduleName,
-                isMenu: itm.isMenu,
-                isChild: itm.isChild,
-                enable: itm.enable,
+                backoffice: itm._id,
+                enable: typeof itm.enable == "undefined" ? false : itm.enable,
               };
             }),
           },
@@ -241,9 +214,8 @@ router.post("/create", async (req, res) => {
             enable: pos.enable,
             modules: pos.modules.map((itm) => {
               return {
-                moduleId: itm.moduleId,
-                moduleName: itm.moduleName,
-                enable: itm.enable,
+                posModule: itm._id,
+                enable: typeof itm.enable == "undefined" ? false : itm.enable,
               };
             }),
           },
@@ -252,7 +224,7 @@ router.post("/create", async (req, res) => {
         role
           .save()
           .then(async (insert) => {
-            const response = await get_role_summary(insert._id, accountId);
+            const response = await get_role_summary(insert._id, account);
             if (response.status == true) {
               res.status(200).json(response.data[0]);
             } else {
@@ -273,32 +245,28 @@ router.post("/create", async (req, res) => {
 router.patch("/update", async (req, res) => {
   try {
     const { roleId, name, backoffice, pos } = req.body;
-    const { accountId, _id } = req.authData;
+    const { account, _id } = req.authData;
 
     var roles = await Role.find({ _id: roleId })
-      .select(["_id", "roleName", "allowBackoffice.enable", "allowPOS.enable"])
+      .select(["_id", "title", "allowBackoffice.enable", "allowPOS.enable"])
       .sort({
         _id: "desc",
       });
     if (roles !== undefined && roles !== null && roles.length > 0) {
       const id = roles !== undefined && roles !== null ? roles[0].roleId : "";
-      const roleName =
-        roles !== undefined && roles !== null ? roles[0].roleName : "";
-      if (name.toUpperCase() == "OWNER" && roleName.toUpperCase() == "OWNER") {
+      const title =
+        roles !== undefined && roles !== null ? roles[0].title : "";
+      if (name.toUpperCase() == "OWNER" && title.toUpperCase() == "OWNER") {
         try {
           let data = {
-            roleName: name,
+            title: name,
             user_id: _id,
-            accountId: accountId,
-            features: [],
+            account: account,
             allowBackoffice: {
               enable: backoffice.enable,
               modules: backoffice.modules.map((itm) => {
                 return {
-                  moduleId: itm.moduleId,
-                  moduleName: itm.moduleName,
-                  isMenu: itm.isMenu,
-                  isChild: itm.isChild,
+                  backoffice: itm.backoffice._id,
                   enable: itm.enable,
                 };
               }),
@@ -307,8 +275,7 @@ router.patch("/update", async (req, res) => {
               enable: pos.enable,
               modules: pos.modules.map((itm) => {
                 return {
-                  moduleId: itm.moduleId,
-                  moduleName: itm.moduleName,
+                  posModule: itm.posModule._id,
                   enable: itm.enable,
                 };
               }),
@@ -318,7 +285,7 @@ router.patch("/update", async (req, res) => {
             new: true,
             upsert: true, // Make this update into an upsert
           });
-          const response = await get_role_summary(roleId, accountId);
+          const response = await get_role_summary(roleId, account);
 
           if (response.status == true) {
             res.status(200).json(response.data[0]);
@@ -331,7 +298,7 @@ router.patch("/update", async (req, res) => {
         }
       } else if (
         name.toUpperCase() == "OWNER" &&
-        roleName.toUpperCase() !== "OWNER"
+        title.toUpperCase() !== "OWNER"
       ) {
         res.status(422).send({
           message: `Role Already Exist`,
@@ -339,18 +306,14 @@ router.patch("/update", async (req, res) => {
       } else {
         try {
           let data = {
-            roleName: name,
+            title: name,
             user_id: _id,
-            accountId: accountId,
-            features: [],
+            account: account,
             allowBackoffice: {
               enable: backoffice.enable,
               modules: backoffice.modules.map((itm) => {
                 return {
-                  moduleId: itm.moduleId,
-                  moduleName: itm.moduleName,
-                  isMenu: itm.isMenu,
-                  isChild: itm.isChild,
+                  backoffice: itm.backoffice._id,
                   enable: itm.enable,
                 };
               }),
@@ -359,19 +322,29 @@ router.patch("/update", async (req, res) => {
               enable: pos.enable,
               modules: pos.modules.map((itm) => {
                 return {
-                  moduleId: itm.moduleId,
-                  moduleName: itm.moduleName,
+                  posModule: itm.posModule._id,
                   enable: itm.enable,
                 };
               }),
             },
           };
-          let updated = await Role.findOneAndUpdate({ _id: roleId }, data, {
+          let updatedRole = await Role.findOneAndUpdate({ _id: roleId }, data, {
             new: true,
             upsert: true, // Make this update into an upsert
-          });
-          const response = await get_role_summary(roleId, accountId);
-          console.log("2", response.status);
+          }).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]);
+          if(updatedRole){
+            let modules = []
+            for(const md of updatedRole.allowPOS.modules){
+              modules.push({
+                _id: md.posModule._id,
+                title: md.posModule.title,
+                handle: md.posModule.handle,
+                enable: md.enable
+              })
+            }
+            req.io.to(account).emit(ROLES_ACCESS_TOGGLE, { app: modules, backoffice: updatedRole, user: _id, account: account });
+          }
+          const response = await get_role_summary(roleId, account);
           if (response.status == true) {
             res.status(200).json(response.data[0]);
           } else {
@@ -394,12 +367,12 @@ router.patch("/update", async (req, res) => {
 router.delete("/:ids", async (req, res) => {
   try {
     let { ids } = req.params;
-    const { accountId } = req.authData;
+    const { account } = req.authData;
     for (const id of JSON.parse(ids)) {
-      var roles = await Role.findOne({ accountId: accountId, _id: id })
+      var roles = await Role.findOne({ account: account, _id: id })
         .select([
           "_id",
-          "roleName",
+          "title",
           "allowBackoffice.enable",
           "allowPOS.enable",
         ])

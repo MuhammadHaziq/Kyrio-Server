@@ -113,11 +113,11 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, accountId } = req.authData;
+    const { _id, account } = req.authData;
     try {
       const newTimeCard = await new TimeCard({
         store: JSON.parse(store),
-        accountId: accountId,
+        account: account,
         employee: JSON.parse(employee),
         timeDetail: [
           {
