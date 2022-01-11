@@ -112,9 +112,9 @@ router.post("/", async (req, res) => {
     sale_timestamp = Date.now();
   }
   var errors = [];
-  if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
-    errors.push({ receipt_number: `Invalid Receipt No!` });
-  }
+  // if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
+  //   errors.push({ receipt_number: `Invalid Receipt No!` });
+  // }
   if (!receipt_type || typeof receipt_type == "undefined" || receipt_type == "") {
     errors.push({ receipt_type: `Invalid Receipt Type!` });
   }
@@ -473,7 +473,7 @@ router.patch("/cancel", async (req, res) => {
         let cancelledSale = await Sales.findOneAndUpdate({ _id: getSale._id }, { cancelled_at: cancelled_at, cancelled_by: _id }, {
           new: true,
           upsert: true, // Make this update into an upsert
-        }).populate('user','name').sort({ receipt_number: "desc" });
+        }).populate('user', 'name').sort({ receipt_number: "desc" });
         req.io.to(account).emit(ITEM_STOCK_UPDATE, { app: stockNotification, backoffice: stockNotification, user: _id, account: account });
         req.io.to(account).emit(RECEIPT_CANCELED, { app: cancelledSale, backoffice: cancelledSale, user: _id, account: account });
 
