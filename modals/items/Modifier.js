@@ -62,6 +62,7 @@ const modifierSchema = new mongoose.Schema({
 modifierSchema.index(
   {
       title: 1,
+      account: 1,
   },
   {
       unique: true,
