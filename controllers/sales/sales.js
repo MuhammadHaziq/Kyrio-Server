@@ -103,7 +103,8 @@ router.post("/", async (req, res) => {
     items,
     discounts,
     store,
-    created_at
+    created_at,
+    payments
   } = req.body;
 
   if (sale_timestamp !== "" && sale_timestamp !== null) {
@@ -115,6 +116,9 @@ router.post("/", async (req, res) => {
   // if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
   //   errors.push({ receipt_number: `Invalid Receipt No!` });
   // }
+  if (!payments || typeof payments == "undefined" || payments.length === 0) {
+    errors.push({ receipt_type: `Please Enter Payments!` });
+  }
   if (!receipt_type || typeof receipt_type == "undefined" || receipt_type == "") {
     errors.push({ receipt_type: `Invalid Receipt Type!` });
   }
@@ -202,6 +206,7 @@ router.post("/", async (req, res) => {
         user: _id,
         created_at: sale_timestamp !== null ? sale_timestamp : created_at,
         updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
+        payments: payments
       }).save();
       let noOfSales = parseInt(receipt_number.split("-")[1]);
 

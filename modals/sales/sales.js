@@ -113,6 +113,59 @@ const salesSchema = new mongoose.Schema({
     min: 3,
     max: 255,
   },
+  "payments": [
+    {
+      "payment_type_id": {
+        type: String,
+        min: 0,
+        max: 100000,
+      },
+      "name": {
+        type: String,
+        min: 0,
+        max: 255,
+      },
+      "type": {
+        type: String,
+        min: 0,
+        max: 255,
+      },
+      "money_amount": {
+        type: Number,
+        min: 0,
+        max: 100000,
+      },
+      "paid_at": {
+        type: Date,
+      },
+      "payment_details": [{
+        "authorization_code": {
+          type: String,
+          min: 0,
+          max: 255,
+        },
+        "reference_id": {
+          type: Number,
+          min: 0,
+          max: 10000,
+        },
+        "entry_method": {
+          type: String,
+          min: 0,
+          max: 255,
+        },
+        "card_company": {
+          type: String,
+          min: 0,
+          max: 255,
+        },
+        "card_number": {
+          type: String,
+          min: 0,
+          max: 255,
+        },
+      }],
+    }],
   items: [
     {
       id: {
@@ -288,7 +341,7 @@ const salesSchema = new mongoose.Schema({
           _id: false,
           modifier: {
             _id: false,
-              _id: {
+            _id: {
               type: String,
               min: 6,
               max: 255,
@@ -430,7 +483,7 @@ const salesSchema = new mongoose.Schema({
   created_by: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
-  }, 
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
@@ -443,7 +496,7 @@ const salesSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-},{
+}, {
   timestamps: true
 });
 
