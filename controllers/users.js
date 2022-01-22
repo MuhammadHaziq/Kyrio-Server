@@ -2,12 +2,14 @@ import Users from "../modals/users";
 import Role from "../modals/role";
 import Stores from "../modals/Store";
 import Accounts from "../modals/accounts";
+import PrinterModal from "../modals/printers/modal";
 import { checkModules, addModuleWhenSignUp } from "../libs/middlewares";
 import md5 from "md5";
 import express from "express";
 import jwt from "jsonwebtoken";
 import { countryCodes } from "../data/CountryCode";
 import { removeSpaces } from "../function/validateFunctions";
+import { printerModels } from "../data/Printers";
 // import { sendEmail } from "../libs/sendEmail";
 
 var router = express.Router();
@@ -99,7 +101,7 @@ router.post("/signup", checkModules, async (req, res) => {
         );
         let account = await new Accounts({
           businessName: businessName,
-          decimal: decimalValue || 1,
+          decimal: decimalValue || 2,
           timeFormat: "24",
           dateFormat: "",
           features: featuresArr,
@@ -180,6 +182,18 @@ router.post("/signup", checkModules, async (req, res) => {
           posPin: typeof userResult.posPin !== "undefined" ? userResult.posPin : null,
           enablePin: typeof userResult.enablePin !== "undefined" ? userResult.enablePin : null
         };
+        let printers = []
+        printerModels.map(item => {
+          printers.push({
+            title: item.title,
+            Interfaces: item.Interfaces,
+            page_width: item.page_width,
+            is_enabled: item.is_enabled,
+            createdBy: userResult._id,
+            account: accountResult._id,
+          });
+        })
+        await PrinterModal.insertMany(printers)
         if (platform == "backoffice") {
 
           jwt.sign(user, "kyrio_bfghigheu", async (err, token) => {
