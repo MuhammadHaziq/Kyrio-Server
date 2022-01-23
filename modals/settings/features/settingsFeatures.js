@@ -8,10 +8,8 @@ const settingsFeaturesSchema = new mongoose.Schema({
     required: true,
   },
   account: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
   feature_description: {
     type: String,
@@ -37,7 +35,7 @@ const settingsFeaturesSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  
+
   createdAt: {
     type: Date,
     default: Date.now(),
@@ -53,6 +51,7 @@ const settingsFeaturesSchema = new mongoose.Schema({
 settingsFeaturesSchema.index(
   {
     title: 1,
+    account: 1,
   },
   {
     unique: true,

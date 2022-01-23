@@ -1,29 +1,22 @@
 import mongoose from "mongoose";
 
-const pagesSchema = new mongoose.Schema({
-  pageData: {
-    type: String,
-    required: true,
-  },
-  account: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "accounts",
-  },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
-  },
-},{
-  timestamps: true
-});
-
-pagesSchema.index(
+const pagesSchema = new mongoose.Schema(
   {
-    email: 1,
+    pageData: {
+      type: String,
+      required: true,
+    },
+    account: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "accounts",
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
   },
   {
-    unique: true,
-    sparse: true
+    timestamps: true,
   }
 );
 

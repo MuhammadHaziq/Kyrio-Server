@@ -82,35 +82,37 @@ const ShiftsSchema = new mongoose.Schema({
     type: Number,
     min: 0,
   },
-  taxes: [{
-    _id: false,
-    _id: {
+  taxes: [
+    {
+      _id: false,
+      _id: {
         type: String,
         min: 1,
         max: 255,
       },
       money_amount: {
         type: Number,
-        min: 0
+        min: 0,
       },
-    }],
-   payments: [{
-    _id: false,
-    _id: {
+    },
+  ],
+  payments: [
+    {
+      _id: false,
+      _id: {
         type: String,
         min: 1,
         max: 255,
       },
       money_amount: {
         type: Number,
-        min: 0
+        min: 0,
       },
-    }],
+    },
+  ],
   account: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "accounts",
   },
   created_by: {
     type: String,
