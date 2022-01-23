@@ -179,10 +179,9 @@ const receiptItems =  (items) =>{
                                         </td>
                                     </tr>` ;
     });
-    console.log(itemsData);
     return itemsData;
 }
-export const receiptTemplate =  (receipt) => {
+export const rreceiptTemplate =  (receipt) => {
     let device_name, customer_name , store_name, dining_option, cashier_name = "";
     if(receipt.store){
         store_name = receipt.store.name
