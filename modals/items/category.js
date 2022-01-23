@@ -36,6 +36,7 @@ const CategorySchema = new mongoose.Schema({
 CategorySchema.index(
     {
         title: 1,
+        account: 1,
     },
     {
         unique: true,

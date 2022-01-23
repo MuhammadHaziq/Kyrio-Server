@@ -103,7 +103,8 @@ router.post("/", async (req, res) => {
     items,
     discounts,
     store,
-    created_at
+    created_at,
+    payments
   } = req.body;
 
   if (sale_timestamp !== "" && sale_timestamp !== null) {
@@ -112,8 +113,11 @@ router.post("/", async (req, res) => {
     sale_timestamp = Date.now();
   }
   var errors = [];
-  if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
-    errors.push({ receipt_number: `Invalid Receipt No!` });
+  // if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
+  //   errors.push({ receipt_number: `Invalid Receipt No!` });
+  // }
+  if (!payments || typeof payments == "undefined" || payments.length === 0) {
+    errors.push({ receipt_type: `Please Enter Payments!` });
   }
   if (!receipt_type || typeof receipt_type == "undefined" || receipt_type == "") {
     errors.push({ receipt_type: `Invalid Receipt Type!` });
@@ -202,6 +206,7 @@ router.post("/", async (req, res) => {
         user: _id,
         created_at: sale_timestamp !== null ? sale_timestamp : created_at,
         updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
+        payments: payments
       }).save();
       let noOfSales = parseInt(receipt_number.split("-")[1]);
 
@@ -473,7 +478,7 @@ router.patch("/cancel", async (req, res) => {
         let cancelledSale = await Sales.findOneAndUpdate({ _id: getSale._id }, { cancelled_at: cancelled_at, cancelled_by: _id }, {
           new: true,
           upsert: true, // Make this update into an upsert
-        }).populate('user','name').sort({ receipt_number: "desc" });
+        }).populate('user', 'name').sort({ receipt_number: "desc" });
         req.io.to(account).emit(ITEM_STOCK_UPDATE, { app: stockNotification, backoffice: stockNotification, user: _id, account: account });
         req.io.to(account).emit(RECEIPT_CANCELED, { app: cancelledSale, backoffice: cancelledSale, user: _id, account: account });
 
