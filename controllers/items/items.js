@@ -374,25 +374,21 @@ router.post("/", async (req, res) => {
           ],
         });
       const response = await itemsForApp(req, insert._id);
-      req.io
-        .to(account)
-        .emit(ITEM_INSERT, {
-          app: response,
-          backoffice: result,
-          user: _id,
-          account: account,
-        });
+      req.io.to(account).emit(ITEM_INSERT, {
+        app: response,
+        backoffice: result,
+        user: _id,
+        account: account,
+      });
       if (platform === "pos") {
         res.status(200).json(response);
       } else if (platform === "backoffice") {
         res.status(200).json(result);
       }
     } else {
-      res
-        .status(400)
-        .json({
-          message: "Error creating item! Item with such SKU already exists.",
-        });
+      res.status(400).json({
+        message: "Error creating item! Item with such SKU already exists.",
+      });
     }
   } catch (error) {
     if (error.code === 11000) {
@@ -585,25 +581,21 @@ router.patch("/", async (req, res) => {
           ],
         });
       const response = await itemsForApp(req, item_id);
-      req.io
-        .to(account)
-        .emit(ITEM_UPDATE, {
-          app: response,
-          backoffice: result,
-          user: _id,
-          account: account,
-        });
+      req.io.to(account).emit(ITEM_UPDATE, {
+        app: response,
+        backoffice: result,
+        user: _id,
+        account: account,
+      });
       if (platform === "pos") {
         res.status(200).json(response);
       } else if (platform === "backoffice") {
         res.status(200).json(result);
       }
     } else {
-      res
-        .status(400)
-        .json({
-          message: "Error editing item! Item with such SKU already exists.",
-        });
+      res.status(400).json({
+        message: "Error editing item! Item with such SKU already exists.",
+      });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -882,7 +874,6 @@ router.get("/itemsByPagination", async (req, res) => {
     if (platform === "pos") {
       storeFilter.updatedAt = { $gte: isoDate };
     }
-
     if (storeId !== "0") {
       storeFilter.stores = { $elemMatch: { store: storeId } };
     }
@@ -1059,12 +1050,10 @@ router.get("/itemsByPagination", async (req, res) => {
       });
     }
 
-    res
-      .status(200)
-      .json({
-        data: itemsObjectFilter,
-        pages: Math.ceil(totalRecord / +itemsPerPage),
-      });
+    res.status(200).json({
+      data: itemsObjectFilter,
+      pages: Math.ceil(totalRecord / +itemsPerPage),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
