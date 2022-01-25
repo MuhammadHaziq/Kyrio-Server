@@ -34,6 +34,7 @@ const diningOptionSchema = new mongoose.Schema(
     },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );

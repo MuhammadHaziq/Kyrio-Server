@@ -46,6 +46,7 @@ const taxSchema = new mongoose.Schema(
     },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );

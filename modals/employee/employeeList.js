@@ -85,6 +85,7 @@ const employeeListSchema = new mongoose.Schema(
     // },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );

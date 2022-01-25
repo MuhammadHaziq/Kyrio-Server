@@ -22,6 +22,7 @@ const skuHistorySchema = new mongoose.Schema(
     },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );

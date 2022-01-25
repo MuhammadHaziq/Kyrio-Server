@@ -16,6 +16,7 @@ const pagesSchema = new mongoose.Schema(
     },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );

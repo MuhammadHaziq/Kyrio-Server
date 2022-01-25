@@ -54,6 +54,7 @@ const itemTaxSchema = new mongoose.Schema(
     },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );

@@ -94,6 +94,7 @@ const customersSchema = new mongoose.Schema(
     // },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );

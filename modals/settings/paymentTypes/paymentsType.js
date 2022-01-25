@@ -30,6 +30,7 @@ const paymentsTypeSchema = new mongoose.Schema(
     },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );

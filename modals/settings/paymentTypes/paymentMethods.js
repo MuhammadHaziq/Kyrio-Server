@@ -18,6 +18,7 @@ const paymentMethodsSchema = new mongoose.Schema(
     },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );
