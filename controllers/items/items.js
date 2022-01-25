@@ -847,7 +847,7 @@ router.get("/searchByName", async (req, res) => {
 
 router.get("/itemsByPagination", async (req, res) => {
   try {
-    const { account } = req.authData;
+    const { account, platform } = req.authData;
     let {
       search,
       stockFilter,
