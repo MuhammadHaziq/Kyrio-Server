@@ -53,7 +53,13 @@ router.post("/signup", checkModules, async (req, res) => {
     const { email, password, timezone, businessName, country, role_id, UDID, features, settings, platform } = req.body;
     let userId = "";
     let roleData = await Role.findOne({ _id: role_id });
-    const { decimalValue } = countryCodes.find(item => removeSpaces(item.country).toLowerCase() === removeSpaces(country).toLowerCase())
+    const countryList = countryCodes.find(item => removeSpaces(item.country).toLowerCase() === removeSpaces(country).toLowerCase())
+    const decimalValue = "";
+    if(typeof countryList.decimalValue === "undefined"){
+      decimalValue = 2;
+    } else [
+      decimalValue = countryList.decimalValue
+    ]
     let users = new Users({
       name: roleData.title,
       email: email,
