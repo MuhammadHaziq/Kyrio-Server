@@ -53,13 +53,22 @@ router.post("/signup", checkModules, async (req, res) => {
     const { email, password, timezone, businessName, country, role_id, UDID, features, settings, platform } = req.body;
     let userId = "";
     let roleData = await Role.findOne({ _id: role_id });
-    const countryList = countryCodes.find(item => removeSpaces(item.country).toLowerCase() === removeSpaces(country).toLowerCase())
-    const decimalValue = "";
-    if(typeof countryList.decimalValue === "undefined"){
+    const countryList = countryCodes.find(item => {
+      let listCountry = item.country.split('(').join('')
+      listCountry = listCountry.split(')').join('')
+      listCountry = removeSpaces(listCountry)
+      let searchCountry = country.split('(').join('')
+      searchCountry = searchCountry.split(')').join('')
+      searchCountry = removeSpaces(searchCountry)
+      return listCountry.toLowerCase() === searchCountry.toLowerCase()
+    })
+    let decimalValue = "";
+    if (typeof countryList === "undefined" || typeof countryList.decimalValue === "undefined") {
       decimalValue = 2;
-    } else [
+    } else {
+
       decimalValue = countryList.decimalValue
-    ]
+    }
     let users = new Users({
       name: roleData.title,
       email: email,
