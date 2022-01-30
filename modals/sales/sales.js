@@ -501,6 +501,10 @@ const salesSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },
+    send_email_check: {
+      type: Boolean,
+      default: false
+    },
     created_at: {
       type: Date,
       default: Date.now(),
@@ -509,6 +513,7 @@ const salesSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
+
   },
   {
     strict: false,

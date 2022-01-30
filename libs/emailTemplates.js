@@ -108,7 +108,7 @@ export const userTemplate = (id) => {
 </tbody></table>`;
 }
 const discountFun = (receipt) => {
-    if(receipt.total_discount > 0){
+    if (receipt.total_discount > 0) {
         return `<tbody>
         <tr>
             <td>
@@ -130,26 +130,26 @@ const discountFun = (receipt) => {
             </td>
         </tr>
     </tbody>`
-    }else{
+    } else {
         return ``;
     }
 }
-const receiptItems =  (items) =>{
-    
-    let itemsData =   items.map(item =>{
+const receiptItems = (items) => {
+
+    let itemsData = items.map(item => {
         // console.log(item.modifiers);
-        item.modifiers.map(md =>{
+        item.modifiers.map(md => {
             // console.log(md.modifier);
             // console.log(md.options);
         })
         let name = ""
         let proTotal = 0;
-        proTotal =  item.quantity * item.price;
-        if(item.name){
-            name= item.name;
+        proTotal = item.quantity * item.price;
+        if (item.name) {
+            name = item.name;
         }
-        return  `<tr><td valign="top" style="max-width:75%;padding:11px 0 0 16px">
-        <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;line-height:16px;word-break:break-word"> `+ name +`
+        return `<tr><td valign="top" style="max-width:75%;padding:11px 0 0 16px">
+        <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;line-height:16px;word-break:break-word"> `+ name + `
                                                
                                             </p>
                                         </td>
@@ -158,47 +158,47 @@ const receiptItems =  (items) =>{
                                         </td>
                                         <td valign="top" style="padding:11px 16px 0 0;width:1%;white-space:nowrap">
                                             <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;line-height:16px">
-                                                `+ proTotal +`
+                                                `+ proTotal + `
                                             </p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" style="padding:0 16px">
                                             <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:5px">
-                                                `+ item.quantity + ` × `+ item.price+`
+                                                `+ item.quantity + ` × ` + item.price + `
                                             </p>
-                                                `+ item.modifiers.map(md =>{
-                                                    return md.options.map(op => {
-                                                        return  `<p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
-                                                        + `+ op.option_name + `(` + op.price*item.quantity+`) 
+                                                `+ item.modifiers.map(md => {
+            return md.options.map(op => {
+                return `<p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
+                                                        + `+ op.option_name + `(` + op.price * item.quantity + `) 
                                                         </p>`
-                                                    })
-                                                   
-                                                }) +`
+            })
+
+        }) + `
                                                 
                                         </td>
                                     </tr>` ;
     });
     return itemsData;
 }
-export const rreceiptTemplate =  (receipt) => {
-    let device_name, customer_name , store_name, dining_option, cashier_name = "";
-    if(receipt.store){
+export const receiptTemplate = (receipt) => {
+    let device_name, customer_name, store_name, dining_option, cashier_name = "";
+    if (receipt.store) {
         store_name = receipt.store.name
     }
-    if(receipt.device){
+    if (receipt.device) {
         device_name = receipt.device.name
     }
-    if(receipt.customer){
+    if (receipt.customer) {
         customer_name = receipt.customer.name
     }
-    if(receipt.dining_option){
+    if (receipt.dining_option) {
         dining_option = receipt.dining_option.name
     }
-    if(receipt.cashier){
+    if (receipt.cashier) {
         cashier_name = receipt.cashier.name
     }
-    
+
     return `<div bgcolor="#F5F5F5" marginwidth="0" marginheight="0">
 
     <table bgcolor="#F5F5F5" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0;padding:0;border-collapse:collapse">
@@ -213,7 +213,7 @@ export const rreceiptTemplate =  (receipt) => {
                         <tr>
                             <td valign="top" align="center">
                                 <h1 style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:bold;font-size:14px;text-align:center;margin:0;padding:0 16px 0;line-height:16px;word-break:break-word">
-                                    `+ store_name +`
+                                    `+ store_name + `
                                 </h1>
                                 <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 0"></p>
                             </td>
@@ -224,7 +224,7 @@ export const rreceiptTemplate =  (receipt) => {
                         <tr>
                             <td>
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:34px;line-height:40px;text-align:center;margin:8px 0 0">
-                                    `+ receipt.total_price +`
+                                    `+ receipt.total_price + `
                                 </p>
                                 <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:center;line-height:16px;margin:3px 0 0;word-break:break-word">
                                     Total
@@ -241,10 +241,10 @@ export const rreceiptTemplate =  (receipt) => {
                         <tr>
                             <td>
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding:4px 16px 0;line-height:16px;word-break:break-word">
-                                    Cashier: `+ cashier_name +`
+                                    Cashier: `+ cashier_name + `
                                 </p>
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding:4px 16px 0;line-height:16px;word-break:break-word">
-                                    POS: `+ store_name +`
+                                    POS: `+ store_name + `
                                 </p>
                             </td>
                         </tr>
@@ -259,7 +259,7 @@ export const rreceiptTemplate =  (receipt) => {
                             <tr>
                                 <td>
                                     <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:bold;font-size:14px;text-align:left;padding:12px 16px 11px;margin:0;line-height:16px;word-break:break-word">
-                                        `+ dining_option +`
+                                        `+ dining_option + `
                                     </p>
                                     <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:0 16px"></p>
                                 </td>
@@ -271,14 +271,14 @@ export const rreceiptTemplate =  (receipt) => {
                             <td>
                                 <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
                                         <tbody>
-                                                    `+ receiptItems(receipt.items) +`
+                                                    `+ receiptItems(receipt.items) + `
                                         
                                         
                                 </tbody></table>
                                 <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 11px"></p>
                             </td>
                         </tr>
-                    </tbody> `+ discountFun(receipt)+`
+                    </tbody> `+ discountFun(receipt) + `
                     
                         <tbody>
                             <tr>
@@ -382,7 +382,7 @@ export const rreceiptTemplate =  (receipt) => {
                                     <tbody><tr>
                                         <td valign="top" style="max-width:75%;padding:0 0 12px 16px;line-height:16px">
                                             <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0">
-                                                `+ receipt.sale_timestamp +`
+                                                `+ receipt.sale_timestamp + `
                                             </p>
                                         </td>
                                         <td valign="top" style="max-width:75%;padding:0 16px 12px 0;line-height:16px">
