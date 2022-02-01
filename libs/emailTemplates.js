@@ -121,7 +121,7 @@ const discountFun = (receipt) => {
                             </td>
                             <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;direction:ltr">
-                                    -25
+                                    -${receipt.total_discount}
                                 </p>
                             </td>
                         </tr>
@@ -181,6 +181,56 @@ const receiptItems = (items) => {
     });
     return itemsData;
 }
+const itemTaxes = (items) => {
+    let allTaxes = (items || []).map(item => {
+        return item.taxes || []
+    })
+    allTaxes = [...new Set(allTaxes)]
+    let taxData = (allTaxes || []).map(tax => {
+        return `<tr>
+            <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
+    
+                <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding-bottom:4px;word-break:break-word">
+                    <span>${tax.tax_type},</span> <span>&lrm;${tax.tax_rate}%</span>
+                        <span style="color:rgba(0,0,0,0.54)">(included)</span>
+                </p>
+            </td>
+            <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
+    
+                <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;padding-bottom:4px">
+                    ${+tax.tax_total.toFixed(2)}
+                </p>
+            </td>
+        </tr>`
+    })
+    return taxData
+}
+
+const itemDiscounts = (items) => {
+    let allDiscounts = (items || []).map(item => {
+        return item.discounts || []
+    })
+    allDiscounts = [...new Set(allDiscounts)]
+    let discountData = (allDiscounts || []).map(tax => {
+        return `<tr>
+            <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
+    
+                <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding-bottom:4px;word-break:break-word">
+                    <span>${tax.tax_type},</span> <span>&lrm;${tax.tax_rate}%</span>
+                        <span style="color:rgba(0,0,0,0.54)">(included)</span>
+                </p>
+            </td>
+            <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
+    
+                <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;padding-bottom:4px">
+                    ${+tax.tax_total.toFixed(2)}
+                </p>
+            </td>
+        </tr>`
+    })
+    return discountData
+}
+
 export const receiptTemplate = (receipt) => {
     let device_name, customer_name, store_name, dining_option, cashier_name = "";
     if (receipt.store) {
@@ -293,39 +343,12 @@ export const receiptTemplate = (receipt) => {
                                                 <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
     
                                                     <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:600;font-size:14px;text-align:right;margin:0;padding-bottom:4px">
-                                                        225
+                                                        ${receipt.sub_total || 0}
                                                     </p>
                                                 </td>
                                             </tr>
-                                                <tr>
-                                                    <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
-    
-                                                        <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding-bottom:4px;word-break:break-word">
-                                                            <span>Included In Price,</span> <span>&lrm;10%</span>
-                                                                <span style="color:rgba(0,0,0,0.54)">(included)</span>
-                                                        </p>
-                                                    </td>
-                                                    <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
-    
-                                                        <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;padding-bottom:4px">
-                                                            20
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
-    
-                                                        <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;word-break:break-word">
-                                                            <span>Added In Price,</span> <span>&lrm;10%</span>
-                                                        </p>
-                                                    </td>
-                                                    <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
-    
-                                                        <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0">
-                                                            21
-                                                        </p>
-                                                    </td>
-                                                </tr>
+                                                `+ itemTaxes(receipt.items) + `
+                                               
                                     </tbody></table>
                                     <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 11px"></p>
                                 </td>
@@ -344,7 +367,7 @@ export const receiptTemplate = (receipt) => {
                                         </td>
                                         <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
                                             <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:600;font-size:14px;text-align:right;margin:0;padding-bottom:4px">
-                                                246
+                                                ${receipt.total_price}
                                             </p>
                                         </td>
                                     </tr>
@@ -360,7 +383,7 @@ export const receiptTemplate = (receipt) => {
                                                     </td>
                                                     <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
                                                         <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;padding-bottom:4px">
-                                                            246
+                                                            ${receipt.cash_received}
                                                         </p>
                                                     </td>
                                                 </tr>
