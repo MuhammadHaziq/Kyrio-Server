@@ -249,6 +249,16 @@ router.post("/", async (req, res) => {
         account: account,
       });
       res.status(200).json(newSales);
+
+      if (send_email === true || send_email === "true") {
+        try {
+          const mailSent = await sendReceiptEmail("muhammadhaziq341@gmail.com", newSales);
+          console.log(mailSent)
+          await Sales.findOneAndUpdate({ receipt_number: newSales.receipt_number }, { send_email_check: true },)
+        } catch (error) {
+          console.error(error, "email Send Error")
+        }
+      }
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

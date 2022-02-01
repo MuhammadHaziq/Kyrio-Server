@@ -26,12 +26,12 @@ export const sendEmail = async (emailData) => {
       responseData = error;
     }
   );
-   let adminMsg = {
-     to: "tahiramjad79@gmail.com",
-     from: emailData.from,
-     subject: "New User Registered",
-     html: adminBody,
-   };
+  let adminMsg = {
+    to: "tahiramjad79@gmail.com",
+    from: emailData.from,
+    subject: "New User Registered",
+    html: adminBody,
+  };
   await sgMail.send(adminMsg).then(
     (response) => {
       responseData = response;
@@ -62,7 +62,7 @@ export const sendReceiptEmail = async (email, receipt) => {
       responseData = response;
     },
     (error) => {
-      console.error(error.message);
+      console.error(error.message, "Error");
 
       if (error.response) {
         console.error(error.response.body);

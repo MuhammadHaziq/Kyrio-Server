@@ -198,7 +198,7 @@ const itemTaxes = (items) => {
             <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
     
                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;padding-bottom:4px">
-                    ${+tax.tax_total.toFixed(2)}
+                    ${+tax.tax_total}
                 </p>
             </td>
         </tr>`
