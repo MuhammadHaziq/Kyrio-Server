@@ -181,11 +181,12 @@ const receiptItems = (items) => {
     });
     return itemsData;
 }
+
 const itemTaxes = (items) => {
-    let allTaxes = (items || []).map(item => {
-        return item.taxes || []
+    let allTaxes = (items || []).filter(item => item.taxes && item.taxes.length > 0).map(item => {
+        return item.taxes
     })
-    allTaxes = [...new Set(allTaxes)]
+    allTaxes = [...new Set(...allTaxes)]
     let taxData = (allTaxes || []).map(tax => {
         return `<tr>
             <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
@@ -207,10 +208,10 @@ const itemTaxes = (items) => {
 }
 
 const itemDiscounts = (items) => {
-    let allDiscounts = (items || []).map(item => {
-        return item.discounts || []
+    let allDiscounts = (items || []).filter(item => item.discounts && item.discounts.length > 0).map(item => {
+        return item.discounts
     })
-    allDiscounts = [...new Set(allDiscounts)]
+    allDiscounts = [...new Set(...allDiscounts)]
     let discountData = (allDiscounts || []).map(tax => {
         return `<tr>
             <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
