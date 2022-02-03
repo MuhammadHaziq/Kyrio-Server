@@ -190,7 +190,7 @@ router.post("/create", async (req, res) => {
         message: `Role Name cannot be empty`,
       });
     } else {
-      let role = await Role.find({ title: name });
+      let role = await Role.find({ account: account, title: name });
       if (role.length > 0) {
         res.status(403).send({
           message: `${name} role already exist`,
