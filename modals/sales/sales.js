@@ -146,7 +146,9 @@ const salesSchema = new mongoose.Schema(
           type: Boolean,
         },
         changeAmount: {
-          type: Boolean,
+          type: Number,
+          min: 0,
+          max: 10000000,
         },
         payment_details: [
           {
@@ -503,7 +505,7 @@ const salesSchema = new mongoose.Schema(
     },
     send_email_check: {
       type: Boolean,
-      default: false
+      default: false,
     },
     created_at: {
       type: Date,
@@ -513,7 +515,6 @@ const salesSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
-
   },
   {
     strict: false,
