@@ -1,7 +1,7 @@
 import { model } from "mongoose";
 
 export const adminTemplate = (name, email) => {
-    return `<table bgcolor="#E5E5E5" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0;padding:0;border-collapse:collapse">
+  return `<table bgcolor="#E5E5E5" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0;padding:0;border-collapse:collapse">
     <tbody><tr>
         <td height="100%" style="padding-top:71px">
             <table border="0" cellpadding="0" cellspacing="0" align="center" bgcolor="#ffffff" style="margin:0 auto;padding:0;border-collapse:collapse;border-radius:3px;max-width:572px;width:92%">
@@ -48,9 +48,9 @@ export const adminTemplate = (name, email) => {
         </td>
     </tr>
 </tbody></table>`;
-}
+};
 export const userTemplate = (id) => {
-    return `<table bgcolor="#E5E5E5" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0;padding:0;border-collapse:collapse">
+  return `<table bgcolor="#E5E5E5" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0;padding:0;border-collapse:collapse">
     <tbody><tr>
         <td height="100%" style="padding-top:71px">
             <table border="0" cellpadding="0" cellspacing="0" align="center" bgcolor="#ffffff" style="margin:0 auto;padding:0;border-collapse:collapse;border-radius:3px;max-width:572px;width:92%">
@@ -106,10 +106,10 @@ export const userTemplate = (id) => {
         </td>
     </tr>
 </tbody></table>`;
-}
+};
 const discountFun = (receipt) => {
-    if (receipt.total_discount > 0) {
-        return `<tbody>
+  if (receipt.total_discount > 0) {
+    return `<tbody>
         <tr>
             <td>
                 <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
@@ -129,27 +129,29 @@ const discountFun = (receipt) => {
                 <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 11px;word-break:break-word"></p>
             </td>
         </tr>
-    </tbody>`
-    } else {
-        return ``;
-    }
-}
+    </tbody>`;
+  } else {
+    return ``;
+  }
+};
 const receiptItems = (items) => {
-
-    let itemsData = items.map(item => {
-        // console.log(item.modifiers);
-        item.modifiers.map(md => {
-            // console.log(md.modifier);
-            // console.log(md.options);
-        })
-        let name = ""
-        let proTotal = 0;
-        proTotal = item.quantity * item.price;
-        if (item.name) {
-            name = item.name;
-        }
-        return `<tr><td valign="top" style="max-width:75%;padding:11px 0 0 16px">
-        <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;line-height:16px;word-break:break-word"> `+ name + `
+  let itemsData = items.map((item) => {
+    // console.log(item.modifiers);
+    item.modifiers.map((md) => {
+      // console.log(md.modifier);
+      // console.log(md.options);
+    });
+    let name = "";
+    let proTotal = 0;
+    proTotal = item.quantity * item.price;
+    if (item.name) {
+      name = item.name;
+    }
+    return (
+      `<tr><td valign="top" style="max-width:75%;padding:11px 0 0 16px">
+        <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;line-height:16px;word-break:break-word"> ` +
+      name +
+      `
                                                
                                             </p>
                                         </td>
@@ -158,41 +160,59 @@ const receiptItems = (items) => {
                                         </td>
                                         <td valign="top" style="padding:11px 16px 0 0;width:1%;white-space:nowrap">
                                             <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:right;margin:0;line-height:16px">
-                                                `+ proTotal + `
+                                                ` +
+      proTotal +
+      `
                                             </p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" style="padding:0 16px">
                                             <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:5px">
-                                                `+ item.quantity + ` × ` + item.price + `
+                                                ` +
+      item.quantity +
+      ` × ` +
+      item.price +
+      `
                                             </p>
-                                                `+ item.modifiers.map(md => {
-            return md.options.map(op => {
-                return `<p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
-                                                        + `+ op.option_name + `(` + op.price * item.quantity + `) 
+                                                ` +
+      item.modifiers.map((md) => {
+        return md.options.map((op) => {
+          return (
+            `<p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:13px;text-align:left;margin:0;line-height:16px;padding-top:4px">
+                                                        + ` +
+            op.option_name +
+            `(` +
+            op.price * item.quantity +
+            `) 
                                                         </p>`
-            })
-
-        }) + `
+          );
+        });
+      }) +
+      `
                                                 
                                         </td>
-                                    </tr>` ;
-    });
-    return itemsData;
-}
+                                    </tr>`
+    );
+  });
+  return itemsData;
+};
 
 const itemTaxes = (items) => {
-    let allTaxes = (items || []).filter(item => item.taxes && item.taxes.length > 0).map(item => {
-        return item.taxes
-    })
-    allTaxes = [...new Set(...allTaxes)]
-    let taxData = (allTaxes || []).map(tax => {
-        return `<tr>
+  let allTaxes = (items || [])
+    .filter((item) => item.taxes && item.taxes.length > 0)
+    .map((item) => {
+      return item.taxes;
+    });
+  allTaxes = [...new Set(...allTaxes)];
+  let taxData = (allTaxes || []).map((tax) => {
+    return `<tr>
             <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
     
                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding-bottom:4px;word-break:break-word">
-                    <span>${tax.tax_type},</span> <span>&lrm;${tax.tax_rate}%</span>
+                    <span>${tax.tax_type},</span> <span>&lrm;${
+      tax.tax_rate
+    }%</span>
                         <span style="color:rgba(0,0,0,0.54)">(included)</span>
                 </p>
             </td>
@@ -202,22 +222,26 @@ const itemTaxes = (items) => {
                     ${+tax.tax_total}
                 </p>
             </td>
-        </tr>`
-    })
-    return taxData
-}
+        </tr>`;
+  });
+  return taxData;
+};
 
 const itemDiscounts = (items) => {
-    let allDiscounts = (items || []).filter(item => item.discounts && item.discounts.length > 0).map(item => {
-        return item.discounts
-    })
-    allDiscounts = [...new Set(...allDiscounts)]
-    let discountData = (allDiscounts || []).map(tax => {
-        return `<tr>
+  let allDiscounts = (items || [])
+    .filter((item) => item.discounts && item.discounts.length > 0)
+    .map((item) => {
+      return item.discounts;
+    });
+  allDiscounts = [...new Set(...allDiscounts)];
+  let discountData = (allDiscounts || []).map((tax) => {
+    return `<tr>
             <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
     
                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding-bottom:4px;word-break:break-word">
-                    <span>${tax.tax_type},</span> <span>&lrm;${tax.tax_rate}%</span>
+                    <span>${tax.tax_type},</span> <span>&lrm;${
+      tax.tax_rate
+    }%</span>
                         <span style="color:rgba(0,0,0,0.54)">(included)</span>
                 </p>
             </td>
@@ -227,30 +251,35 @@ const itemDiscounts = (items) => {
                     ${+tax.tax_total.toFixed(2)}
                 </p>
             </td>
-        </tr>`
-    })
-    return discountData
-}
+        </tr>`;
+  });
+  return discountData;
+};
 
 export const receiptTemplate = (receipt) => {
-    let device_name, customer_name, store_name, dining_option, cashier_name = "";
-    if (receipt.store) {
-        store_name = receipt.store.name
-    }
-    if (receipt.device) {
-        device_name = receipt.device.name
-    }
-    if (receipt.customer) {
-        customer_name = receipt.customer.name
-    }
-    if (receipt.dining_option) {
-        dining_option = receipt.dining_option.name
-    }
-    if (receipt.cashier) {
-        cashier_name = receipt.cashier.name
-    }
+  let device_name,
+    customer_name,
+    store_name,
+    dining_option,
+    cashier_name = "";
+  if (receipt.store) {
+    store_name = receipt.store.name;
+  }
+  if (receipt.device) {
+    device_name = receipt.device.name;
+  }
+  if (receipt.customer) {
+    customer_name = receipt.customer.name;
+  }
+  if (receipt.dining_option) {
+    dining_option = receipt.dining_option.name;
+  }
+  if (receipt.cashier) {
+    cashier_name = receipt.cashier.name;
+  }
 
-    return `<div bgcolor="#F5F5F5" marginwidth="0" marginheight="0">
+  return (
+    `<div bgcolor="#F5F5F5" marginwidth="0" marginheight="0">
 
     <table bgcolor="#F5F5F5" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin:0;padding:0;border-collapse:collapse">
         <tbody><tr>
@@ -264,7 +293,9 @@ export const receiptTemplate = (receipt) => {
                         <tr>
                             <td valign="top" align="center">
                                 <h1 style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:bold;font-size:14px;text-align:center;margin:0;padding:0 16px 0;line-height:16px;word-break:break-word">
-                                    `+ store_name + `
+                                    ` +
+    store_name +
+    `
                                 </h1>
                                 <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 0"></p>
                             </td>
@@ -275,7 +306,9 @@ export const receiptTemplate = (receipt) => {
                         <tr>
                             <td>
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:34px;line-height:40px;text-align:center;margin:8px 0 0">
-                                    `+ receipt.total_price + `
+                                    ` +
+    receipt.total_price +
+    `
                                 </p>
                                 <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:center;line-height:16px;margin:3px 0 0;word-break:break-word">
                                     Total
@@ -292,10 +325,14 @@ export const receiptTemplate = (receipt) => {
                         <tr>
                             <td>
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding:4px 16px 0;line-height:16px;word-break:break-word">
-                                    Cashier: `+ cashier_name + `
+                                    Cashier: ` +
+    cashier_name +
+    `
                                 </p>
                                 <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding:4px 16px 0;line-height:16px;word-break:break-word">
-                                    POS: `+ store_name + `
+                                    POS: ` +
+    store_name +
+    `
                                 </p>
                             </td>
                         </tr>
@@ -310,7 +347,9 @@ export const receiptTemplate = (receipt) => {
                             <tr>
                                 <td>
                                     <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:bold;font-size:14px;text-align:left;padding:12px 16px 11px;margin:0;line-height:16px;word-break:break-word">
-                                        `+ dining_option + `
+                                        ` +
+    dining_option +
+    `
                                     </p>
                                     <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:0 16px"></p>
                                 </td>
@@ -322,14 +361,18 @@ export const receiptTemplate = (receipt) => {
                             <td>
                                 <table border="0" cellpadding="0" cellspacing="0" style="width:100%">
                                         <tbody>
-                                                    `+ receiptItems(receipt.items) + `
+                                                    ` +
+    receiptItems(receipt.items) +
+    `
                                         
                                         
                                 </tbody></table>
                                 <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 11px"></p>
                             </td>
                         </tr>
-                    </tbody> `+ discountFun(receipt) + `
+                    </tbody> ` +
+    discountFun(receipt) +
+    `
                     
                         <tbody>
                             <tr>
@@ -344,11 +387,15 @@ export const receiptTemplate = (receipt) => {
                                                 <td valign="top" style="max-width:25%;padding:0 16px 0 0;line-height:16px">
     
                                                     <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:600;font-size:14px;text-align:right;margin:0;padding-bottom:4px">
-                                                        ${receipt.sub_total || 0}
+                                                        ${
+                                                          receipt.sub_total || 0
+                                                        }
                                                     </p>
                                                 </td>
                                             </tr>
-                                                `+ itemTaxes(receipt.items) + `
+                                                ` +
+    itemTaxes(receipt.items) +
+    `
                                                
                                     </tbody></table>
                                     <p style="border-bottom:dashed 1px rgba(0,0,0,0.12);margin:12px 16px 11px"></p>
@@ -406,7 +453,9 @@ export const receiptTemplate = (receipt) => {
                                     <tbody><tr>
                                         <td valign="top" style="max-width:75%;padding:0 0 12px 16px;line-height:16px">
                                             <p style="color:rgba(0,0,0,0.54);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0">
-                                                `+ receipt.sale_timestamp + `
+                                                ` +
+    receipt.sale_timestamp +
+    `
                                             </p>
                                         </td>
                                         <td valign="top" style="max-width:75%;padding:0 16px 12px 0;line-height:16px">
@@ -432,5 +481,6 @@ export const receiptTemplate = (receipt) => {
             </td>
         </tr>
     </tbody></table><div class="yj6qo"></div><div class="adL">
-    </div></div>`;
-}
+    </div></div>`
+  );
+};

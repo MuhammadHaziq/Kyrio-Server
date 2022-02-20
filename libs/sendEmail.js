@@ -48,12 +48,12 @@ export const sendEmail = async (emailData) => {
   return responseData;
 };
 
-export const sendReceiptEmail = async (email, receipt) => {
+export const sendReceiptEmail = async (email, receipt, store) => {
   let receiptBody = receiptTemplate(receipt);
   const userMsg = {
     to: email,
-    from: 'receipts@kyrio.com',
-    subject: "Receipt from {store}",
+    from: "receipts@kyrio.com",
+    subject: `Receipt from ${store}`,
     html: receiptBody,
   };
   let responseData = "";
@@ -67,7 +67,7 @@ export const sendReceiptEmail = async (email, receipt) => {
       if (error.response) {
         console.error(error.response.body);
       }
-      responseData = error;
+      responseData = error.message;
     }
   );
   return responseData;

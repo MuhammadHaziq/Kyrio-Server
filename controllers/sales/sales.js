@@ -116,9 +116,9 @@ router.post("/", async (req, res) => {
     store,
     created_at,
     payments,
-    send_email
+    send_email,
   } = req.body;
-
+  console.log(req.body.send_email + "This email to sent on");
   if (sale_timestamp !== "" && sale_timestamp !== null) {
     sale_timestamp = sale_timestamp;
   } else {
@@ -250,13 +250,21 @@ router.post("/", async (req, res) => {
       });
       res.status(200).json(newSales);
 
-      if (send_email === true || send_email === "true") {
+      if (send_email !== "" || send_email !== null) {
         try {
-          const mailSent = await sendReceiptEmail("muhammadhaziq341@gmail.com", newSales);
-          console.log(mailSent)
-          await Sales.findOneAndUpdate({ receipt_number: newSales.receipt_number }, { send_email_check: true },)
+          console.log("email sending");
+          const mailSent = await sendReceiptEmail(
+            send_email,
+            newSales,
+            store.name
+          );
+          console.log(mailSent);
+          await Sales.findOneAndUpdate(
+            { receipt_number: newSales.receipt_number },
+            { send_email_check: true }
+          );
         } catch (error) {
-          console.error(error, "email Send Error")
+          console.error(error, "email Send Error");
         }
       }
     } catch (error) {
