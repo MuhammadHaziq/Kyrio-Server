@@ -17,7 +17,7 @@ router.get("/send", async (req, res) => {
   try {
     const { account, platform } = req.authData;
     const { receipt_id, email } = req.query;
-    console.log(email);
+    
     if (validator.validate(email)) {
       let result = await Sales.findOne({ _id: receipt_id });
 
