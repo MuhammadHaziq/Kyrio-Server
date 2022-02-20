@@ -90,6 +90,7 @@ router.patch("/", async (req, res) => {
     const { id, title, categories 
       // storeId 
     } = req.body;
+    const { _id, account } = req.authData;
     const updatedRecord = await kitchenPrinter.findOneAndUpdate(
       { _id: id },
       // { _id: id, storeId: storeId },
