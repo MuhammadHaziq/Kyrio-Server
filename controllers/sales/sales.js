@@ -46,6 +46,7 @@ router.get("/all", async (req, res) => {
     let filter = { account: account, cancelled_at: null };
 
     let isoDate = new Date(update_at);
+
     if (platform === "pos") {
       filter.updated_at = { $gte: isoDate };
     }
