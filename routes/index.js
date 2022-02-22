@@ -26,7 +26,7 @@ import rolesRoutes from "../controllers/employee/roles";
 import kitchenPrinter from "../controllers/settings/kitchenPrinter";
 import printerModal from "../controllers/printers";
 // #END#
-import settingsLoyalty from "../controllers/settings/loyalty";
+import Loyalty from "../controllers/settings/loyalty";
 import features from "../controllers/settings/features/features";
 import receipts from "../controllers/settings/receipt";
 import express from "express";
@@ -63,7 +63,7 @@ router.use("/printer", verifyToken, printerModal);
 // #END#
 router.use("/paymentTypes", verifyToken, paymentMethods);
 router.use("/paymentsType", verifyToken, paymentsType);
-router.use("/settingsLoyalty", verifyToken, settingsLoyalty);
+router.use("/loyalty", verifyToken, Loyalty);
 router.use("/features", verifyToken, features);
 router.use("/receipt", verifyToken, receipts);
 module.exports = router;

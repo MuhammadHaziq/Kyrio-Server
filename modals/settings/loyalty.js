@@ -4,31 +4,8 @@ const loyaltySchema = new mongoose.Schema(
   {
     amount: {
       type: String,
-      min: 3,
-      max: 255,
+      default: "00.00",
       required: true,
-    },
-    // storeId: {
-    //   type: String,
-    //   min: 3,
-    //   max: 255,
-    //   required: true,
-    // },
-    // account: {
-    //   type: String,
-    //   min: 6,
-    //   max: 255,
-    //   required: true
-    // },
-    // createdBy: {
-    //   type: String,
-    //   min: 3,
-    //   max: 255,
-    //   required: true,
-    // },
-    store: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
     },
     account: {
       type: mongoose.Schema.Types.ObjectId,
@@ -45,4 +22,4 @@ const loyaltySchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("settingsLoyalty", loyaltySchema);
+module.exports = mongoose.model("loyalties", loyaltySchema);

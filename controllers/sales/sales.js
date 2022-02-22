@@ -2,6 +2,8 @@ import express from "express";
 import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
 import Store from "../../modals/Store";
+import Customers from "../../modals/customers/customers";
+import Loyalties from "../../modals/settings/loyalty";
 import {
   REFUND_RECEIPT,
   ITEM_STOCK_UPDATE,
@@ -17,7 +19,7 @@ router.get("/send", async (req, res) => {
   try {
     const { account, platform } = req.authData;
     const { receipt_id, email } = req.query;
-    
+
     if (validator.validate(email)) {
       let result = await Sales.findOne({ _id: receipt_id });
 
@@ -119,16 +121,13 @@ router.post("/", async (req, res) => {
     payments,
     send_email,
   } = req.body;
-  console.log(req.body.send_email + "This email to sent on");
+
   if (sale_timestamp !== "" && sale_timestamp !== null) {
     sale_timestamp = sale_timestamp;
   } else {
     sale_timestamp = Date.now();
   }
   var errors = [];
-  // if (!receipt_number || typeof receipt_number == "undefined" || receipt_number == "") {
-  //   errors.push({ receipt_number: `Invalid Receipt No!` });
-  // }
   if (!payments || typeof payments == "undefined" || payments.length === 0) {
     errors.push({ receipt_type: `Please Enter Payments!` });
   }
@@ -139,9 +138,6 @@ router.post("/", async (req, res) => {
   ) {
     errors.push({ receipt_type: `Invalid Receipt Type!` });
   }
-  // if (!ticket_name || typeof ticket_name == "undefined" || ticket_name == "") {
-  //   errors.push({ ticket_name: `Invalid ticket_name!` });
-  // }
   if (typeof items == "undefined" || items.length <= 0 || items == "") {
     errors.push({ items: `Invalid items!` });
   }
@@ -196,6 +192,63 @@ router.post("/", async (req, res) => {
     try {
       let orderNo = parseInt(order_number.split("-")[2]);
 
+      // customer from receipt
+      let addCustomer = {
+        ...customer,
+        points_earned: 0,
+        points_balance: 0,
+      };
+      if (customer) {
+        try {
+          const loyalty = await Loyalties.findOne({
+            account: account,
+          });
+          let findCustomer = await Customers.findOne({ _id: customer._id });
+          if (loyalty && findCustomer) {
+            let earnedPoints = Math.round((loyalty.amount / 100) * total_price);
+            let totalPointsBalance = parseInt(findCustomer.points_balance);
+            totalPointsBalance =
+              parseInt(totalPointsBalance) + parseInt(earnedPoints);
+
+            let first_visit = findCustomer.first_visit
+              ? findCustomer.first_visit
+              : new Date();
+            let last_visit = new Date();
+
+            let total_visits = findCustomer.total_visits
+              ? findCustomer.total_visits + 1
+              : 1;
+
+            let total_spent = findCustomer.total_spent
+              ? findCustomer.total_spent + total_price
+              : total_price;
+
+            let total_points = totalPointsBalance;
+
+            await Customers.findOneAndUpdate(
+              { _id: findCustomer._id },
+              {
+                $set: {
+                  points_balance: total_points,
+                  first_visit: first_visit,
+                  last_visit: last_visit,
+                  total_visits: total_visits,
+                  total_spent: total_spent,
+                  total_points: total_points,
+                },
+              },
+              {
+                new: true,
+                upsert: true, // Make this update into an upsert
+              }
+            );
+            addCustomer.points_earned = earnedPoints;
+            addCustomer.points_balance = totalPointsBalance;
+          }
+        } catch (e) {
+          console.log(e.message);
+        }
+      }
       const newSales = await new Sales({
         receipt_number,
         order_number: orderNo,
@@ -218,7 +271,7 @@ router.post("/", async (req, res) => {
         refund_amount: 0,
         items,
         discounts,
-        customer,
+        customer: addCustomer,
         dining_option,
         store,
         payment_method,
@@ -250,16 +303,13 @@ router.post("/", async (req, res) => {
         account: account,
       });
       res.status(200).json(newSales);
-
-      if (send_email !== "" || send_email !== null) {
+      if (send_email !== "" && send_email !== null) {
         try {
-          console.log("email sending");
           const mailSent = await sendReceiptEmail(
             send_email,
             newSales,
             store.name
           );
-          console.log(mailSent);
           await Sales.findOneAndUpdate(
             { receipt_number: newSales.receipt_number },
             { send_email_check: true }
@@ -390,6 +440,66 @@ router.post("/refund", async (req, res) => {
         }
       }
       try {
+        // customer from receipt
+        let addCustomer = {
+          ...customer,
+          points_earned: 0,
+          points_balance: 0,
+        };
+        if (customer) {
+          try {
+            const loyalty = await Loyalties.findOne({
+              account: account,
+            });
+            let findCustomer = await Customers.findOne({ _id: customer._id });
+            if (loyalty && findCustomer) {
+              let earnedPoints = Math.round(
+                (loyalty.amount / 100) * total_price
+              );
+              let totalPointsBalance = parseInt(findCustomer.points_balance);
+              totalPointsBalance =
+                parseInt(totalPointsBalance) - parseInt(earnedPoints);
+
+              let first_visit = findCustomer.first_visit
+                ? findCustomer.first_visit
+                : new Date();
+              let last_visit = new Date();
+
+              let total_visits = findCustomer.total_visits
+                ? findCustomer.total_visits + 1
+                : 1;
+
+              let total_spent = findCustomer.total_spent
+                ? findCustomer.total_spent - total_price
+                : total_price;
+
+              let total_points = totalPointsBalance;
+
+              await Customers.findOneAndUpdate(
+                { _id: findCustomer._id },
+                {
+                  $set: {
+                    points_balance: total_points,
+                    first_visit: first_visit,
+                    last_visit: last_visit,
+                    total_visits: total_visits,
+                    total_spent: total_spent,
+                    total_points: total_points,
+                  },
+                },
+                {
+                  new: true,
+                  upsert: true, // Make this update into an upsert
+                }
+              );
+              addCustomer.points_earned = earnedPoints;
+              addCustomer.points_balance = totalPointsBalance;
+            }
+          } catch (e) {
+            console.log(e.message);
+          }
+        }
+
         const newRefund = await new Sales({
           receipt_number,
           ticket_name,
@@ -413,7 +523,7 @@ router.post("/refund", async (req, res) => {
           items,
           discounts,
           dining_option,
-          customer,
+          customer: addCustomer,
           payment_method,
           cashier,
           device,

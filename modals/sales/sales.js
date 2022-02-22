@@ -455,6 +455,16 @@ const salesSchema = new mongoose.Schema(
         min: 6,
         max: 255,
       },
+      points_earned: {
+        type: Number,
+        min: 0,
+        max: 10000000,
+      },
+      points_balance: {
+        type: Number,
+        min: 0,
+        max: 10000000,
+      },
     },
     store: {
       _id: false,
