@@ -11,11 +11,11 @@ router.get("/all", async (req, res) => {
   try {
     const { account, platform } = req.authData;
     const { update_at } = req.query;
-    let filter = { account: account }
-    
+    let filter = { account: account };
+
     let isoDate = new Date(update_at);
-    if(platform === "pos"){
-      filter.updatedAt = {$gte: isoDate}
+    if (platform === "pos") {
+      filter.updatedAt = { $gte: isoDate };
     }
     var result = await Customers.find(filter).sort({ name: 1 });
     res.status(200).json(result);
@@ -44,7 +44,7 @@ router.get("/:search", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    
+
     if (ObjectId.isValid(id)) {
       let result = await Customers.deleteOne({ _id: id });
       res.status(200).json({ message: "deleted", result });
@@ -98,10 +98,15 @@ router.post("/", async (req, res) => {
   } else {
     const { _id, account } = req.authData;
     try {
-      let checkCustomer = await Customers.findOne({ account: account, email: email});
-      if(checkCustomer && email !== ""){
-        res.status(400).json({ message: "Customer with this email already exist" });
-      } else{
+      let checkCustomer = await Customers.findOne({
+        account: account,
+        email: email,
+      });
+      if (checkCustomer && email !== "") {
+        res
+          .status(400)
+          .json({ message: "Customer with this email already exist" });
+      } else {
         const newCustomer = await new Customers({
           name: removeSpaces(name),
           account: account,
@@ -114,13 +119,21 @@ router.post("/", async (req, res) => {
           country: country,
           customer_code: removeSpaces(customer_code),
           note: removeSpaces(note),
+          points_balance: 0,
+          first_visit: "",
+          last_visit: "",
+          total_visits: 0,
+          total_spent: 0,
+          total_points: 0,
           created_by: _id,
         }).save();
         res.status(200).json(newCustomer);
       }
     } catch (error) {
       if (error.code === 11000) {
-        res.status(400).json({ message: "Customer with this email already exist" });
+        res
+          .status(400)
+          .json({ message: "Customer with this email already exist" });
       } else {
         res.status(400).json({ message: error.message });
       }
