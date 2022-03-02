@@ -11,7 +11,7 @@ const accountsSchema = new mongoose.Schema(
     decimal: {
       type: Number,
       min: 0,
-      max: 2,
+      max: 4,
     },
     timeFormat: {
       type: String,
