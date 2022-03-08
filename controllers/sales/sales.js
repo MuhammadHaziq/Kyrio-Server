@@ -121,7 +121,7 @@ router.post("/", async (req, res) => {
     payments,
     send_email,
   } = req.body;
-
+  
   if (sale_timestamp !== "" && sale_timestamp !== null) {
     sale_timestamp = sale_timestamp;
   } else {
@@ -249,6 +249,7 @@ router.post("/", async (req, res) => {
           console.log(e.message);
         }
       }
+      
       const newSales = await new Sales({
         receipt_number,
         order_number: orderNo,
@@ -271,7 +272,7 @@ router.post("/", async (req, res) => {
         refund_amount: 0,
         items,
         discounts,
-        customer: addCustomer,
+        customer: customer ? addCustomer : null,
         dining_option,
         store,
         payment_method,
