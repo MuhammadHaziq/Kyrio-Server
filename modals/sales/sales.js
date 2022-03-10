@@ -210,7 +210,7 @@ const salesSchema = new mongoose.Schema(
         },
         price: {
           type: Number,
-          min: 1,
+          min: 0,
           max: 1000000,
         },
         cost: {
