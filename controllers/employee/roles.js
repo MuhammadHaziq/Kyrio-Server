@@ -159,9 +159,9 @@ const get_role_summary = async (roleId, account) => {
 };
 router.get("/modules/app", async (req, res) => {
   try {
-    const { _id, account } = req.authData;
-    var role = await Role.findOne({ account: account, user_id: _id }).populate('allowPOS.modules.posModule', ["_id", "title", "handle"]);
-    // .select(["allowPOS"])
+    const { role_id, account } = req.authData;
+    var role = await Role.findOne({ account: account, _id: role_id }).populate('allowPOS.modules.posModule', ["_id", "title", "handle"]);
+    
     if (role.allowPOS.enable) {
       let modules = []
       for (const md of role.allowPOS.modules) {
