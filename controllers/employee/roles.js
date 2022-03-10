@@ -32,7 +32,7 @@ router.get("/:roleId", async (req, res) => {
   try {
     const { roleId } = req.params;
     const { account } = req.authData;
-    var role = await Role.findOne({ account: account, _id: roleId }).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]);
+    var role = await Role.findOne({ account: account, _id: roleId }).populate('allowBackoffice.modules.backoffice', ["_id", "title", "handle", "isMenu", "isChild"]).populate('allowPOS.modules.posModule', ["_id", "title", "handle", "description"]);
     res.status(200).json(role);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -52,10 +52,10 @@ router.get("/", async (req, res) => {
         role.allowBackoffice.enable && role.allowPOS.enable
           ? "Back office and POS"
           : role.allowBackoffice.enable && !role.allowPOS.enable
-          ? "Back office"
-          : !role.allowBackoffice.enable && role.allowPOS.enable
-          ? "POS"
-          : "";
+            ? "Back office"
+            : !role.allowBackoffice.enable && role.allowPOS.enable
+              ? "POS"
+              : "";
 
       let NoOfEmployees = await Users.find({
         role: role._id,
@@ -94,10 +94,10 @@ router.get("/get_role/:roleId", async (req, res) => {
         role.allowBackoffice.enable && role.allowPOS.enable
           ? "Back office and POS"
           : role.allowBackoffice.enable && !role.allowPOS.enable
-          ? "Back office"
-          : !role.allowBackoffice.enable && role.allowPOS.enable
-          ? "POS"
-          : "";
+            ? "Back office"
+            : !role.allowBackoffice.enable && role.allowPOS.enable
+              ? "POS"
+              : "";
 
       let NoOfEmployees = await Users.find({
         role_id: role._id,
@@ -133,10 +133,10 @@ const get_role_summary = async (roleId, account) => {
         role.allowBackoffice.enable && role.allowPOS.enable
           ? "Back office and POS"
           : role.allowBackoffice.enable && !role.allowPOS.enable
-          ? "Back office"
-          : !role.allowBackoffice.enable && role.allowPOS.enable
-          ? "POS"
-          : "";
+            ? "Back office"
+            : !role.allowBackoffice.enable && role.allowPOS.enable
+              ? "POS"
+              : "";
 
       let NoOfEmployees = await Users.find({
         role_id: role._id,
@@ -159,11 +159,12 @@ const get_role_summary = async (roleId, account) => {
 };
 router.get("/modules/app", async (req, res) => {
   try {
-    const { _id, account } = req.authData;
-    var role = await Role.findOne({ account: account, user_id: _id }).populate('allowPOS.modules.posModule', ["_id","title","handle"]).select(["allowPOS"]);
-    if(role.allowPOS.enable){
+    const { role_id, account } = req.authData;
+    var role = await Role.findOne({ account: account, _id: role_id }).populate('allowPOS.modules.posModule', ["_id", "title", "handle"]);
+    
+    if (role.allowPOS.enable) {
       let modules = []
-      for(const md of role.allowPOS.modules){
+      for (const md of role.allowPOS.modules) {
         modules.push({
           _id: md.posModule._id,
           title: md.posModule.title,
@@ -171,7 +172,7 @@ router.get("/modules/app", async (req, res) => {
           enable: md.enable
         })
       }
-      
+
       res.status(200).json(modules);
     } else {
       res.status(400).json({ message: "Sorry you do not have access to POS!" });
@@ -331,10 +332,10 @@ router.patch("/update", async (req, res) => {
           let updatedRole = await Role.findOneAndUpdate({ _id: roleId }, data, {
             new: true,
             upsert: true, // Make this update into an upsert
-          }).populate('allowBackoffice.modules.backoffice', ["_id","title","handle","isMenu","isChild"]).populate('allowPOS.modules.posModule', ["_id","title","handle","description"]);
-          if(updatedRole){
+          }).populate('allowBackoffice.modules.backoffice', ["_id", "title", "handle", "isMenu", "isChild"]).populate('allowPOS.modules.posModule', ["_id", "title", "handle", "description"]);
+          if (updatedRole) {
             let modules = []
-            for(const md of updatedRole.allowPOS.modules){
+            for (const md of updatedRole.allowPOS.modules) {
               modules.push({
                 _id: md.posModule._id,
                 title: md.posModule.title,
