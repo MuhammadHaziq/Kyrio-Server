@@ -282,6 +282,7 @@ router.post("/", async (req, res) => {
         created_at: sale_timestamp !== null ? sale_timestamp : created_at,
         updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
         payments: payments,
+        send_email: send_email ? send_email : null,
       }).save();
 
       let noOfSales = parseInt(receipt_number.split("-")[1]);

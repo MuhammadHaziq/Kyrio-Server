@@ -517,6 +517,11 @@ const salesSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    send_email: {
+      type: String,
+      min: 6,
+      max: 255,
+    },
     created_at: {
       type: Date,
       default: Date.now(),
