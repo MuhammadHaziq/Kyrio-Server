@@ -216,7 +216,7 @@ router.post("/signup", checkModules, async (req, res) => {
           businessName: userResult.account.businessName,
           email: userResult.email,
           _id: userResult._id,
-          from: "info@kyrio.com",
+          from: "info@kyriopos.com",
         };
         sendEmail(emailMessage);
         let user = {
