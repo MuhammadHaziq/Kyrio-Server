@@ -255,6 +255,7 @@ const itemDiscounts = (items) => {
   });
   return discountData;
 };
+// git password: y7tcpr9WGgBpzsHGWqkF
 
 export const receiptTemplate = (receipt) => {
   let device_name,

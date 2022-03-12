@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken";
 import { countryCodes } from "../data/CountryCode";
 import { removeSpaces } from "../function/validateFunctions";
 import { printerModels } from "../data/Printers";
-// import { sendEmail } from "../libs/sendEmail";
+import { sendEmail } from "../libs/sendEmail";
 
 var router = express.Router();
 
@@ -18,56 +18,73 @@ router.post("/testapi", async (req, res) => {
   const { param } = req.body;
   //  let accountResult = await Accounts.findOne({ _id: param }).populate('features.feature',["_id","name","description","icon"]).populate('settings.module',["_id","name","icon","heading","span"]).populate('settings.feature',["_id","name","description","icon"])
   //         res.status(200).send(accountResult);
-  let userResult = await Users.findOne({ _id: param }).populate({
-    path: 'role',
-    populate: [{
-      path: 'allowBackoffice.modules.backoffice',
-      select: ["_id", "title", "handle", "isMenu", "isChild"]
-    },
-    {
-      path: 'allowPOS.modules.posModule',
-      select: ["_id", "title", "handle", "description"]
-    }]
-  })
-    .populate('stores', ['_id', 'title'])
+  let userResult = await Users.findOne({ _id: param })
     .populate({
-      path: 'account',
-      populate: [{
-        path: 'features.feature',
-        select: ["_id", "title", "handle", "description", "icon"]
-      },
-      {
-        path: 'settings.module',
-        select: ["_id", "title", "handle", "icon", "heading", "span"]
-      },
-      {
-        path: 'settings.feature',
-        select: ["_id", "title", "handle", "description", "icon"]
-      }]
+      path: "role",
+      populate: [
+        {
+          path: "allowBackoffice.modules.backoffice",
+          select: ["_id", "title", "handle", "isMenu", "isChild"],
+        },
+        {
+          path: "allowPOS.modules.posModule",
+          select: ["_id", "title", "handle", "description"],
+        },
+      ],
+    })
+    .populate("stores", ["_id", "title"])
+    .populate({
+      path: "account",
+      populate: [
+        {
+          path: "features.feature",
+          select: ["_id", "title", "handle", "description", "icon"],
+        },
+        {
+          path: "settings.module",
+          select: ["_id", "title", "handle", "icon", "heading", "span"],
+        },
+        {
+          path: "settings.feature",
+          select: ["_id", "title", "handle", "description", "icon"],
+        },
+      ],
     });
   res.status(200).send(userResult);
-
-})
+});
 router.post("/signup", checkModules, async (req, res) => {
   try {
-    const { email, password, timezone, businessName, country, role_id, UDID, features, settings, platform } = req.body;
+    const {
+      email,
+      password,
+      timezone,
+      businessName,
+      country,
+      role_id,
+      UDID,
+      features,
+      settings,
+      platform,
+    } = req.body;
     let userId = "";
     let roleData = await Role.findOne({ _id: role_id });
-    const countryList = countryCodes.find(item => {
-      let listCountry = item.country.split('(').join('')
-      listCountry = listCountry.split(')').join('')
-      listCountry = removeSpaces(listCountry)
-      let searchCountry = country.split('(').join('')
-      searchCountry = searchCountry.split(')').join('')
-      searchCountry = removeSpaces(searchCountry)
-      return listCountry.toLowerCase() === searchCountry.toLowerCase()
-    })
+    const countryList = countryCodes.find((item) => {
+      let listCountry = item.country.split("(").join("");
+      listCountry = listCountry.split(")").join("");
+      listCountry = removeSpaces(listCountry);
+      let searchCountry = country.split("(").join("");
+      searchCountry = searchCountry.split(")").join("");
+      searchCountry = removeSpaces(searchCountry);
+      return listCountry.toLowerCase() === searchCountry.toLowerCase();
+    });
     let decimalValue = "";
-    if (typeof countryList === "undefined" || typeof countryList.decimalValue === "undefined") {
+    if (
+      typeof countryList === "undefined" ||
+      typeof countryList.decimalValue === "undefined"
+    ) {
       decimalValue = 2;
     } else {
-
-      decimalValue = countryList.decimalValue
+      decimalValue = countryList.decimalValue;
     }
     let users = new Users({
       name: roleData.title,
@@ -77,7 +94,7 @@ router.post("/signup", checkModules, async (req, res) => {
       emailVerified: false,
       password: md5(password),
       country: country,
-      role: role_id
+      role: role_id,
     });
     users
       .save()
@@ -89,31 +106,26 @@ router.post("/signup", checkModules, async (req, res) => {
             feature: itm._id,
             enable: true,
           };
-        })
-        let settingsArr = settings.map(
-          (itm) => {
-            return {
-              module: itm._id,
-              feature:
-                features.filter(
-                  (item) =>
-                    item.title.toUpperCase() ===
-                    itm.title.toUpperCase()
-                ).length > 0
-                  ? features
+        });
+        let settingsArr = settings.map((itm) => {
+          return {
+            module: itm._id,
+            feature:
+              features.filter(
+                (item) => item.title.toUpperCase() === itm.title.toUpperCase()
+              ).length > 0
+                ? features
                     .filter(
                       (item) =>
-                        item.title.toUpperCase() ===
-                        itm.title.toUpperCase()
+                        item.title.toUpperCase() === itm.title.toUpperCase()
                     )
                     .map((item) => {
                       return item._id;
                     })[0]
-                  : null,
-              enable: true,
-            };
-          }
-        );
+                : null,
+            enable: true,
+          };
+        });
         let account = await new Accounts({
           businessName: businessName,
           decimal: decimalValue || 2,
@@ -124,57 +136,89 @@ router.post("/signup", checkModules, async (req, res) => {
           createdBy: userId,
         }).save();
 
-        let accountResult = await Accounts.findOne({ _id: account._id }).populate('features.feature', ["_id", "title", "handle", "description", "icon"]).populate('settings.module', ["_id", "title", "handle", "icon", "heading", "span"]).populate('settings.feature', ["_id", "title", "handle", "description", "icon"])
+        let accountResult = await Accounts.findOne({ _id: account._id })
+          .populate("features.feature", [
+            "_id",
+            "title",
+            "handle",
+            "description",
+            "icon",
+          ])
+          .populate("settings.module", [
+            "_id",
+            "title",
+            "handle",
+            "icon",
+            "heading",
+            "span",
+          ])
+          .populate("settings.feature", [
+            "_id",
+            "title",
+            "handle",
+            "description",
+            "icon",
+          ]);
 
         let store = new Stores({
           title: accountResult.businessName,
           createdBy: result._id,
-          account: accountResult._id
+          account: accountResult._id,
         });
         let storeObject = await store.save();
 
         await Users.updateOne(
           { _id: result._id },
-          { createdBy: result._id, owner_id: result._id, account: accountResult._id, stores: [storeObject._id] }
+          {
+            createdBy: result._id,
+            owner_id: result._id,
+            account: accountResult._id,
+            stores: [storeObject._id],
+          }
         );
         await Role.updateOne(
           { _id: role_id },
           { user_id: result._id, account: accountResult._id }
         );
-        let userResult = await Users.findOne({ _id: result._id }).populate({
-          path: 'role',
-          populate: [{
-            path: 'allowBackoffice.modules.backoffice',
-            select: ["_id", "title", "handle", "isMenu", "isChild"]
-          },
-          {
-            path: 'allowPOS.modules.posModule',
-            select: ["_id", "title", "handle", "description"]
-          }]
-        })
-          .populate('stores', ['_id', 'title'])
+        let userResult = await Users.findOne({ _id: result._id })
           .populate({
-            path: 'account',
-            populate: [{
-              path: 'features.feature',
-              select: ["_id", "title", "handle", "description", "icon"]
-            },
-            {
-              path: 'settings.module',
-              select: ["_id", "title", "handle", "icon", "heading", "span"]
-            },
-            {
-              path: 'settings.feature',
-              select: ["_id", "title", "handle", "description", "icon"]
-            }]
+            path: "role",
+            populate: [
+              {
+                path: "allowBackoffice.modules.backoffice",
+                select: ["_id", "title", "handle", "isMenu", "isChild"],
+              },
+              {
+                path: "allowPOS.modules.posModule",
+                select: ["_id", "title", "handle", "description"],
+              },
+            ],
           })
-        // let emailMessage = {
-        //   businessName: userResult.account.businessName,
-        //   email: userResult.email,
-        //   _id: userResult._id,
-        //   from: "info@kyrio.com",
-        // };
-        // sendEmail(emailMessage);
+          .populate("stores", ["_id", "title"])
+          .populate({
+            path: "account",
+            populate: [
+              {
+                path: "features.feature",
+                select: ["_id", "title", "handle", "description", "icon"],
+              },
+              {
+                path: "settings.module",
+                select: ["_id", "title", "handle", "icon", "heading", "span"],
+              },
+              {
+                path: "settings.feature",
+                select: ["_id", "title", "handle", "description", "icon"],
+              },
+            ],
+          });
+        let emailMessage = {
+          businessName: userResult.account.businessName,
+          email: userResult.email,
+          _id: userResult._id,
+          from: "info@kyrio.com",
+        };
+        sendEmail(emailMessage);
         let user = {
           platform: platform,
           _id: userResult._id,
@@ -194,11 +238,15 @@ router.post("/signup", checkModules, async (req, res) => {
           language: userResult.language,
           decimal: userResult.account.decimal,
           is_owner: typeof userResult.owner_id !== "undefined" ? true : false,
-          posPin: typeof userResult.posPin !== "undefined" ? userResult.posPin : null,
-          enablePin: typeof userResult.enablePin !== "undefined" ? userResult.enablePin : null
+          posPin:
+            typeof userResult.posPin !== "undefined" ? userResult.posPin : null,
+          enablePin:
+            typeof userResult.enablePin !== "undefined"
+              ? userResult.enablePin
+              : null,
         };
-        let printers = []
-        printerModels.map(item => {
+        let printers = [];
+        printerModels.map((item) => {
           printers.push({
             title: item.title,
             Interfaces: item.Interfaces,
@@ -207,10 +255,9 @@ router.post("/signup", checkModules, async (req, res) => {
             createdBy: userResult._id,
             account: accountResult._id,
           });
-        })
-        await PrinterModal.insertMany(printers)
+        });
+        await PrinterModal.insertMany(printers);
         if (platform == "backoffice") {
-
           jwt.sign(user, "kyrio_bfghigheu", async (err, token) => {
             if (err) {
               res.status(500).send({
@@ -218,11 +265,16 @@ router.post("/signup", checkModules, async (req, res) => {
                 message: `Unable To Generate Token: ${err.message}`,
               });
             } else {
-              await addModuleWhenSignUp(userId, accountResult._id, storeObject, UDID);
+              await addModuleWhenSignUp(
+                userId,
+                accountResult._id,
+                storeObject,
+                UDID
+              );
 
-              user.roleData = userResult.role
-              user.features = userResult.account.features
-              user.settings = userResult.account.settings
+              user.roleData = userResult.role;
+              user.features = userResult.account.features;
+              user.settings = userResult.account.settings;
               user.UserToken = token;
               res.status(200).send(user);
             }
@@ -235,30 +287,35 @@ router.post("/signup", checkModules, async (req, res) => {
                 message: `Unable To Generate Token: ${err.message}`,
               });
             } else {
-              await addModuleWhenSignUp(userId, accountResult._id, storeObject, UDID);
+              await addModuleWhenSignUp(
+                userId,
+                accountResult._id,
+                storeObject,
+                UDID
+              );
 
-              let features = []
+              let features = [];
               for (const ft of userResult.account.features) {
                 features.push({
                   _id: ft.feature._id,
                   title: ft.feature.title,
                   handle: ft.feature.handle,
-                  enable: ft.enable
-                })
+                  enable: ft.enable,
+                });
               }
-              let modules = []
+              let modules = [];
               for (const md of userResult.role.allowPOS.modules) {
                 modules.push({
                   _id: md.posModule._id,
                   title: md.posModule.title,
                   handle: md.posModule.handle,
-                  enable: md.enable
-                })
+                  enable: md.enable,
+                });
               }
-              user.role_title = userResult.role.title,
-                user.features = features
-              user.modules = modules
-              user.UserToken = token
+              (user.role_title = userResult.role.title),
+                (user.features = features);
+              user.modules = modules;
+              user.UserToken = token;
               res.status(200).send(user);
             }
           });
@@ -275,34 +332,41 @@ router.post("/signin", async (req, res) => {
   try {
     const { email, password, platform } = req.body;
     if (platform == "backoffice" || platform === "pos") {
-
-      let result = await Users.findOne({ email: email, password: md5(password) }).populate({
-        path: 'role',
-        populate: [{
-          path: 'allowBackoffice.modules.backoffice',
-          select: ["_id", "title", "handle", "isMenu", "isChild"]
-        },
-        {
-          path: 'allowPOS.modules.posModule',
-          select: ["_id", "title", "handle", "description"]
-        }]
+      let result = await Users.findOne({
+        email: email,
+        password: md5(password),
       })
-        .populate('stores', ['_id', 'title'])
         .populate({
-          path: 'account',
-          populate: [{
-            path: 'features.feature',
-            select: ["_id", "title", "handle", "description", "icon"]
-          },
-          {
-            path: 'settings.module',
-            select: ["_id", "title", "handle", "icon", "heading", "span"]
-          },
-          {
-            path: 'settings.feature',
-            select: ["_id", "title", "handle", "description", "icon"]
-          }]
+          path: "role",
+          populate: [
+            {
+              path: "allowBackoffice.modules.backoffice",
+              select: ["_id", "title", "handle", "isMenu", "isChild"],
+            },
+            {
+              path: "allowPOS.modules.posModule",
+              select: ["_id", "title", "handle", "description"],
+            },
+          ],
         })
+        .populate("stores", ["_id", "title"])
+        .populate({
+          path: "account",
+          populate: [
+            {
+              path: "features.feature",
+              select: ["_id", "title", "handle", "description", "icon"],
+            },
+            {
+              path: "settings.module",
+              select: ["_id", "title", "handle", "icon", "heading", "span"],
+            },
+            {
+              path: "settings.feature",
+              select: ["_id", "title", "handle", "description", "icon"],
+            },
+          ],
+        });
 
       if (!result) {
         let user = await Users.find({ email: email });
@@ -333,11 +397,13 @@ router.post("/signin", async (req, res) => {
           timezone: result.timezone,
           language: result.language,
           decimal: result.account.decimal,
-          owner_id: typeof result.owner_id !== "undefined" ? result.owner_id : null,
+          owner_id:
+            typeof result.owner_id !== "undefined" ? result.owner_id : null,
           account: result.account._id,
           is_owner: String(result._id) === String(result.owner_id),
           posPin: typeof result.posPin !== "undefined" ? result.posPin : null,
-          enablePin: typeof result.enablePin !== "undefined" ? result.enablePin : null
+          enablePin:
+            typeof result.enablePin !== "undefined" ? result.enablePin : null,
         };
         if (platform == "backoffice") {
           if (!result.role.allowBackoffice.enable) {
@@ -353,9 +419,9 @@ router.post("/signin", async (req, res) => {
                   message: `Invalid User Token: ${err.message}`,
                 });
               }
-              user.roleData = result.role
-              user.features = result.account.features
-              user.settings = result.account.settings
+              user.roleData = result.role;
+              user.features = result.account.features;
+              user.settings = result.account.settings;
               user.UserToken = token;
               res.status(200).send(user);
             });
@@ -374,27 +440,26 @@ router.post("/signin", async (req, res) => {
                   message: `Invalid User Token: ${err.message}`,
                 });
               }
-              let features = []
+              let features = [];
               for (const ft of result.account.features) {
                 features.push({
                   _id: ft.feature._id,
                   title: ft.feature.title,
                   handle: ft.feature.handle,
-                  enable: ft.enable
-                })
+                  enable: ft.enable,
+                });
               }
-              let modules = []
+              let modules = [];
               for (const md of result.role.allowPOS.modules) {
                 modules.push({
                   _id: md.posModule._id,
                   title: md.posModule.title,
                   handle: md.posModule.handle,
-                  enable: md.enable
-                })
+                  enable: md.enable,
+                });
               }
-              user.role_title = result.role.title,
-                user.features = features
-              user.modules = modules
+              (user.role_title = result.role.title), (user.features = features);
+              user.modules = modules;
               user.UserToken = token;
               res.status(200).send(user);
             });

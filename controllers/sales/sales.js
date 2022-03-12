@@ -121,7 +121,7 @@ router.post("/", async (req, res) => {
     payments,
     send_email,
   } = req.body;
-  
+  console.log(sale_timestamp);
   if (sale_timestamp !== "" && sale_timestamp !== null) {
     sale_timestamp = sale_timestamp;
   } else {
@@ -249,7 +249,7 @@ router.post("/", async (req, res) => {
           console.log(e.message);
         }
       }
-      
+
       const newSales = await new Sales({
         receipt_number,
         order_number: orderNo,
@@ -319,6 +319,9 @@ router.post("/", async (req, res) => {
         } catch (error) {
           console.error(error, "email Send Error");
         }
+      }
+      if (payments.length > 0) {
+        console.log("send splits email");
       }
     } catch (error) {
       res.status(400).json({ message: error.message });
