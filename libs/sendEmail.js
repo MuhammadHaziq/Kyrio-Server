@@ -27,7 +27,7 @@ export const sendEmail = async (emailData) => {
     }
   );
   let adminMsg = {
-    to: "kevindoan@me.com",
+    to: "tahiramjad79@gmail.com",
     from: emailData.from,
     subject: "New User Registered",
     html: adminBody,
@@ -48,8 +48,17 @@ export const sendEmail = async (emailData) => {
   return responseData;
 };
 
-export const sendReceiptEmail = async (email, receipt, store) => {
-  let receiptBody = receiptTemplate(receipt);
+export const sendReceiptEmail = async (
+  email,
+  receipt,
+  store,
+  decimal,
+  pay,
+  type
+) => {
+  let receiptBody = receiptTemplate(receipt, decimal, pay, type);
+
+  // console.log(receiptBody);
   const userMsg = {
     to: email,
     from: "receipts@kyrio.com",

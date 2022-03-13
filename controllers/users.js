@@ -479,13 +479,18 @@ router.post("/signin", async (req, res) => {
     });
   }
 });
-router.get("/confirm", async (req, res) => {
+router.get("/confirm/:uuid", async (req, res) => {
   try {
-    const { u } = req.query;
-    await Users.updateOne({ _id: u }, { emailVerified: true });
-    res
-      .status(200)
-      .send({ type: "email", message: "Email Verfied Successfully!" });
+    const { uuid } = req.params;
+    let user = await Users.findOne({ _id: uuid });
+    if (!user.emailVerified) {
+      await Users.updateOne({ _id: uuid }, { emailVerified: true });
+      res
+        .status(200)
+        .send({ success: true, message: "Email verfied successfully!" });
+    } else {
+      res.status(200).send({ success: false, message: "Already varified!" });
+    }
   } catch (e) {
     // console.log(e.message);
     res.status(200).send({

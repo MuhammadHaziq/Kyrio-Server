@@ -121,7 +121,7 @@ router.post("/", async (req, res) => {
     payments,
     send_email,
   } = req.body;
-  console.log(sale_timestamp);
+
   if (sale_timestamp !== "" && sale_timestamp !== null) {
     sale_timestamp = sale_timestamp;
   } else {
@@ -147,7 +147,7 @@ router.post("/", async (req, res) => {
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const { _id, account } = req.authData;
+    const { _id, account, decimal } = req.authData;
     let stockNotification = {
       store,
       itemsList: [],
@@ -310,7 +310,10 @@ router.post("/", async (req, res) => {
           const mailSent = await sendReceiptEmail(
             send_email,
             newSales,
-            store.name
+            store.name,
+            decimal,
+            {},
+            "full"
           );
           await Sales.findOneAndUpdate(
             { receipt_number: newSales.receipt_number },
@@ -320,8 +323,20 @@ router.post("/", async (req, res) => {
           console.error(error, "email Send Error");
         }
       }
+      if (stockNotification.length > 0) {
+        console.log(stockNotification);
+      }
       if (payments.length > 0) {
-        console.log("send splits email");
+        payments.map(async (pay) => {
+          const mailSent = await sendReceiptEmail(
+            pay.email,
+            newSales,
+            store.name,
+            decimal,
+            pay,
+            "split"
+          );
+        });
       }
     } catch (error) {
       res.status(400).json({ message: error.message });
