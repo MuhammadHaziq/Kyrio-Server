@@ -3,14 +3,14 @@ import { sumBy } from "lodash";
 // #START# Sale Summary Functions
 
 export const truncateDecimals = (decimals, num) => {
-  // var numS = num.toString(),
-  //   decPos = numS.indexOf("."),
-  //   substrLength = decPos == -1 ? numS.length : 1 + decPos + decimals,
-  //   trimmedResult = numS.substr(0, substrLength),
-  //   finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
+  var numS = num.toString(),
+    decPos = numS.indexOf("."),
+    substrLength = decPos == -1 ? numS.length : 1 + decPos + decimals,
+    trimmedResult = numS.substr(0, substrLength),
+    finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
 
-  // return parseFloat(finalResult);
-  return amountFormat(num, decimals);
+  return parseFloat(finalResult);
+  // return amountFormat(num, decimals);
 };
 export const amountFormat = (num, decimal, sign = "") => {
   return numberWithCommas(num, decimal) + sign;

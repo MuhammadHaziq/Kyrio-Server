@@ -592,9 +592,8 @@ router.post("/receipts", async (req, res) => {
     let totalRefunds = receipts.filter(
       (itm) => itm.receipt_type == "REFUND"
     ).length;
-    let totalReceipts =
-      truncateDecimals(decimal, totalSales) +
-      truncateDecimals(decimal, totalRefunds);
+    let totalReceipts = totalSales + totalRefunds;
+    totalReceipts = truncateDecimals(decimal, totalReceipts);
 
     res.status(200).json({
       totalSales,
