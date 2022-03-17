@@ -500,7 +500,7 @@ router.post("/cabrestorepassword", async (req, res) => {
       let emailMessage = {
         email: user.email,
         _id: ticket.uuid,
-        from: "help@kyriopos.com",
+        from: "Kyrio Support <help@kyriopos.com>",
       };
       await sendPasswordResetEmail(emailMessage);
       res.status(200).send({ success: true, message: "ok" });
