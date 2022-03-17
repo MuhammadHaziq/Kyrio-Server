@@ -856,3 +856,187 @@ export const lowStockNotificationEmail = () => {
   </div>
   `;
 };
+
+export const resetPasswordTemplate = (userId) => {
+  return `<div bgcolor="#E5E5E5" marginwidth="0" marginheight="0">
+  <table
+    bgcolor="#E5E5E5"
+    border="0"
+    cellpadding="0"
+    cellspacing="0"
+    width="100%"
+    style="margin: 0; padding: 0; border-collapse: collapse"
+  >
+    <tbody>
+      <tr>
+        <td height="100%" style="padding-top: 71px">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            align="center"
+            bgcolor="#ffffff"
+            style="
+              margin: 0 auto;
+              padding: 0;
+              border-collapse: collapse;
+              border-radius: 3px;
+              max-width: 572px;
+              width: 92%;
+            "
+          >
+            <thead>
+              <tr>
+                <td align="center" valign="top">
+                  <a
+                    href="#"
+                    title="Kyrio POS"
+                    style="outline: none; display: block; margin-top: 17px"
+                    target="_blank"
+                    data-saferedirecturl="https://api.kyriopos.com/media/logo/kyrio_logo.png"
+                  >
+                    <img
+                      width="128"
+                      height="34.18"
+                      src="https://api.kyriopos.com/media/logo/kyrio_logo.png"
+                      border="0"
+                      alt="Kyrio logo"
+                      style="
+                        border: 0;
+                        outline: none;
+                        text-decoration: none;
+                        max-width: 100%;
+                        display: block;
+                        height: auto;
+                      "
+                      class="CToWUd"
+                    />
+                  </a>
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td
+                  valign="top"
+                  align="center"
+                  style="margin-top: 44px; padding: 0 16px"
+                >
+                  <h1
+                    style="
+                      color: rgba(0, 0, 0, 0.87);
+                      font-family: Roboto, Arial, Helvetica, sans-serif;
+                      font-weight: normal;
+                      font-size: 20px;
+                      margin: 44px 0 18px 0;
+                    "
+                  >
+                    Password recovery
+                  </h1>
+                  <p
+                    style="
+                      color: rgba(0, 0, 0, 0.87);
+                      font-family: Roboto, Arial, Helvetica, sans-serif;
+                      font-weight: normal;
+                      font-size: 14px;
+                    "
+                  >
+                    To create a new password click on the button below
+                  </p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="text-align: center; padding: 26px 0 30px 0">
+                  <a
+                    href="https://dashboard.kyriopos.com/#/changepswd/${userId}"
+                    title="Kyrio POS"
+                    style="
+                      outline: none;
+                      display: inline-block;
+                      text-decoration: none;
+                      font-family: Roboto, Arial, Helvetica, sans-serif;
+                      font-weight: 500;
+                      font-size: 14px;
+                      color: white;
+                      background-color: #7cb342;
+                      text-align: center;
+                      padding: 16px;
+                      border-radius: 3px;
+                    "
+                    target="_blank"
+                    data-saferedirecturl="https://dashboard.kyriopos.com/#/changepswd/${userId}"
+                  >
+                    CREATE A NEW PASSWORD
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+
+            <tbody>
+              <tr>
+                <td>
+                  <p
+                    style="
+                      font-family: Roboto, Arial, Helvetica, sans-serif;
+                      color: rgba(0, 0, 0, 0.87);
+                      text-align: center;
+                      font-size: 12px;
+                      line-height: 1.5;
+                      margin-bottom: 24px;
+                      padding: 0 16px;
+                    "
+                  >
+                    If you have questions, please visit
+                    <a
+                      style="text-decoration: none; color: #2d9cdb"
+                      href="https://dashboard.kyriopos.com/"
+                      target="_blank"
+                      data-saferedirecturl="https://dashboard.kyriopos.com/"
+                      >Kyrio Help Center</a
+                    >
+                    and
+                    <a
+                      style="text-decoration: none; color: #2d9cdb"
+                      href="https://dashboard.kyriopos.com/"
+                      target="_blank"
+                      data-saferedirecturl="https://dashboard.kyriopos.com/"
+                      >Kyrio Community</a
+                    >
+                    or chat with our consultants.<br />
+                    They are available 24/7 and always happy to assist.<br />
+                    <br />
+                    Sincerely, The Kyrio team
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <p
+            style="
+              font-family: Roboto, Arial, Helvetica, sans-serif;
+              color: rgba(0, 0, 0, 0.87);
+              font-size: 12px;
+              text-align: center;
+              margin: 22px 0 78px 0;
+            "
+          >
+            © 2022
+            <a
+              style="text-decoration: none; color: #2d9cdb"
+              href="https://dashboard.kyriopos.com/"
+              target="_blank"
+              data-saferedirecturl="https://dashboard.kyriopos.com/"
+              >Kyrio</a
+            >
+          </p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>`;
+};

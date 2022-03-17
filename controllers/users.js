@@ -3,6 +3,7 @@ import Role from "../modals/role";
 import Stores from "../modals/Store";
 import Accounts from "../modals/accounts";
 import PrinterModal from "../modals/printers/modal";
+import UserTickets from "../modals/UserTickets";
 import { checkModules, addModuleWhenSignUp } from "../libs/middlewares";
 import md5 from "md5";
 import express from "express";
@@ -10,7 +11,8 @@ import jwt from "jsonwebtoken";
 import { countryCodes } from "../data/CountryCode";
 import { removeSpaces } from "../function/validateFunctions";
 import { printerModels } from "../data/Printers";
-import { sendEmail } from "../libs/sendEmail";
+import { uuidv4, addMinutes } from "../function/globals";
+import { sendEmail, sendPasswordResetEmail } from "../libs/sendEmail";
 
 var router = express.Router();
 
@@ -479,6 +481,104 @@ router.post("/signin", async (req, res) => {
     });
   }
 });
+router.post("/cabrestorepassword", async (req, res) => {
+  try {
+    const { email } = req.body;
+    let user = await Users.findOne({ email: email });
+    if (user) {
+      let uuid = uuidv4() + "-" + user._id;
+
+      let ticket = await new UserTickets({
+        uuid: uuid,
+        userId: user._id,
+        email: email,
+        status: false,
+        url: `/changepswd/${uuid}`,
+        expireAt: addMinutes(new Date(), 30),
+      }).save();
+
+      let emailMessage = {
+        email: user.email,
+        _id: ticket.uuid,
+        from: "help@kyriopos.com",
+      };
+      await sendPasswordResetEmail(emailMessage);
+      res.status(200).send({ success: true, message: "ok" });
+    } else {
+      res.status(200).send({ success: true, message: "ok" });
+    }
+  } catch (e) {
+    console.log(e.message);
+    res.status(200).send({
+      type: "server",
+      message: "Unable to verify email please contact info@kyrio.com",
+    });
+  }
+});
+router.post("/cabrestorepassword/check", async (req, res) => {
+  try {
+    const { ticket } = req.body;
+    let userticket = await UserTickets.findOne({
+      uuid: ticket,
+      expireAt: { $gte: new Date() },
+      status: false,
+    });
+    if (userticket) {
+      res.status(200).send({ success: true, message: "ok" });
+    } else {
+      let checkTicket = await UserTickets.findOne({ uuid: ticket });
+      res.status(200).send({
+        success: false,
+        message: checkTicket.status
+          ? "You had already accessed this link!"
+          : "URL has been expired",
+      });
+    }
+  } catch (e) {
+    res.status(200).send({
+      type: "server",
+      message: "Internal Server Error| Try Again later",
+    });
+  }
+});
+router.post("/cabrestorepassword/confirm", async (req, res) => {
+  try {
+    const { ticket, password, platform } = req.body;
+
+    let userticket = await UserTickets.findOne({
+      uuid: ticket,
+    });
+    if (userticket) {
+      let user = await Users.findOne({ _id: userticket.userId });
+      if (user) {
+        await Users.updateOne(
+          { _id: user._id },
+          {
+            password: md5(password),
+          }
+        );
+        await UserTickets.updateOne(
+          { _id: userticket._id },
+          {
+            status: true,
+          }
+        );
+        res.status(200).send({ success: true, message: "ok" });
+      } else {
+        res.status(200).send({ success: false, message: "Invalid ticket" });
+      }
+    } else {
+      res.status(200).send({ success: false, message: "Invalid ticket" });
+    }
+  } catch (e) {
+    console.log(e.message);
+    res.status(200).send({
+      type: "server",
+      message: "Unable to verify ticket please contact info@kyrio.com",
+    });
+  }
+});
+
 router.get("/confirm/:uuid", async (req, res) => {
   try {
     const { uuid } = req.params;

@@ -2,6 +2,18 @@ const moment = require("moment");
 import { sumBy } from "lodash";
 // #START# Sale Summary Functions
 
+export const uuidv4 = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx".replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
+export const addMinutes = (date, minutes) => {
+  return new Date(date.getTime() + minutes * 60000);
+};
+
 export const truncateDecimals = (decimals, num) => {
   var numS = num.toString(),
     decPos = numS.indexOf("."),
