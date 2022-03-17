@@ -32,7 +32,7 @@ export const sendEmail = async (emailData) => {
     }
   );
   let adminMsg = {
-    to: "tahiramjad79@gmail.com",
+    to: "kevindoan@me.com",
     from: emailData.from,
     subject: "New User Registered",
     html: adminBody,
