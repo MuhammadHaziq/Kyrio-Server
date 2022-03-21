@@ -6,11 +6,6 @@ const ShiftsSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
     },
-    pos_device_id: {
-      type: String,
-      min: 1,
-      max: 255,
-    },
     opened_at: {
       type: String,
       min: 1,
@@ -21,67 +16,44 @@ const ShiftsSchema = new mongoose.Schema(
       min: 1,
       max: 255,
     },
-    opened_by_employee: {
-      type: String,
-      min: 1,
-      max: 255,
-    },
-    closed_by_employee: {
-      type: String,
-      min: 1,
-      max: 255,
-    },
     starting_cash: {
       type: Number,
-      min: 0,
     },
     cash_payments: {
       type: Number,
-      min: 0,
     },
     cash_refunds: {
       type: Number,
-      min: 0,
     },
     paid_in: {
       type: Number,
-      min: 0,
     },
     paid_out: {
       type: Number,
-      min: 0,
     },
     expected_cash: {
       type: Number,
-      min: 0,
     },
     actual_cash: {
       type: Number,
-      min: 0,
     },
     gross_sales: {
       type: Number,
-      min: 0,
     },
     refunds: {
       type: Number,
-      min: 0,
     },
     discounts: {
       type: Number,
-      min: 0,
     },
     net_sales: {
       type: Number,
-      min: 0,
     },
     tip: {
       type: Number,
-      min: 0,
     },
     surcharge: {
       type: Number,
-      min: 0,
     },
     taxes: [
       {
@@ -93,7 +65,6 @@ const ShiftsSchema = new mongoose.Schema(
         },
         money_amount: {
           type: Number,
-          min: 0,
         },
       },
     ],
@@ -107,26 +78,51 @@ const ShiftsSchema = new mongoose.Schema(
         },
         money_amount: {
           type: Number,
-          min: 0,
         },
       },
     ],
+    cash_movements: [
+      {
+        type: {
+          type: String,
+          min: 0,
+          max: 30,
+        },
+        money_amount: {
+          type: Number,
+        },
+        comment: {
+          type: String,
+          min: 0,
+        },
+        employee_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "users",
+        },
+        created_at: {
+          type: Date,
+        },
+      },
+    ],
+    opened_by_employee: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
+    closed_by_employee: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
+    pos_device_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "pos_device",
+    },
     account: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "accounts",
     },
-    created_by: {
-      type: String,
-      min: 3,
-      max: 255,
-    },
-    created_at: {
-      type: Date,
-      default: Date.now(),
-    },
-    updated_at: {
-      type: Date,
-      default: Date.now(),
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
     },
   },
   {

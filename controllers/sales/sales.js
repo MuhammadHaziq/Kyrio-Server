@@ -328,14 +328,16 @@ router.post("/", async (req, res) => {
       }
       if (payments.length > 0) {
         payments.map(async (pay) => {
-          const mailSent = await sendReceiptEmail(
-            pay.email,
-            newSales,
-            store.name,
-            decimal,
-            pay,
-            "split"
-          );
+          if (pay.email !== "") {
+            const mailSent = await sendReceiptEmail(
+              pay.email,
+              newSales,
+              store.name,
+              decimal,
+              pay,
+              "split"
+            );
+          }
         });
       }
     } catch (error) {

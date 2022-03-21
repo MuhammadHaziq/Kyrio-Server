@@ -2,6 +2,7 @@ import express from "express";
 import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
 import Users from "../../modals/users";
+import Shifts from "../../modals/employee/shifts";
 import _, { groupBy, orderBy, slice, isEmpty, sumBy } from "lodash";
 import Modifier from "../../modals/items/Modifier";
 import {
@@ -911,82 +912,27 @@ router.post("/taxes", async (req, res) => {
 
 router.post("/shifts", async (req, res) => {
   try {
-    const { startDate, endDate, stores, employees } = req.body;
-    const { account, decimal } = req.authData;
+    const { startDate, endDate, stores } = req.body;
+    const { account } = req.authData;
 
     var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
     var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
 
-    const receipts = await Sales.find({
+    const allShifts = await Shifts.find({
       $and: [
-        { created_at: { $gte: start, $lte: end } },
+        { createdAt: { $gte: start, $lte: end } },
         { account: account },
-        { cancelled_at: null },
-        { receipt_type: "SALE" },
-        { "store._id": { $in: stores } },
-        { created_by: { $in: employees } },
+        { store: { $in: stores } },
+        { closed_at: { $exists: true, $ne: null } },
       ],
-    }).populate("user", "name");
+    })
+      .populate("store", ["title"])
+      .populate("pos_device_id", ["title"])
+      .populate("opened_by_employee", ["name"])
+      .populate("closed_by_employee", ["name"])
+      .populate("createdBy", ["name"]);
 
-    const reportData = [];
-    const itemTaxes = [];
-    let taxableSales = 0;
-    let NonTaxableSales = 0;
-    let NetSales = 0;
-
-    await receipts.map((sale) => {
-      if (sale.total_tax != 0 && sale.total_tax != null) {
-        taxableSales = taxableSales + sale.total_price;
-      } else {
-        NonTaxableSales = NonTaxableSales + sale.total_price;
-      }
-      NetSales = NetSales + sale.total_price;
-
-      return sale.items.map((item) => {
-        if (item.taxes.length > 0) {
-          item.taxes.map((tax) => {
-            let data = {
-              _id: tax._id,
-              isChecked: tax.isChecked,
-              isEnabled: tax.isEnabled,
-              tax_rate: tax.tax_rate,
-              tax_total: tax.tax_total,
-              tax_type: tax.tax_type,
-              title: tax.title,
-              taxableSale: sale.total_price,
-            };
-            itemTaxes.push(data);
-            return data;
-          });
-        }
-      });
-    });
-    let itemGroupTaxes = groupBy(itemTaxes, "_id");
-    let itemTaxesKeys = Object.keys(itemGroupTaxes);
-
-    for (const key of itemTaxesKeys) {
-      reportData.push({
-        _id: itemGroupTaxes[key][0]._id,
-        title: itemGroupTaxes[key][0].title,
-        title: itemGroupTaxes[key][0].title,
-        tax_rate: itemGroupTaxes[key][0].tax_rate + "%",
-        taxableSale: truncateDecimals(
-          decimal,
-          itemGroupTaxes[key][0].taxableSale
-        ),
-        taxAmount: truncateDecimals(
-          decimal,
-          sumBy(itemGroupTaxes[key], "tax_total")
-        ),
-      });
-    }
-    taxableSales = truncateDecimals(decimal, taxableSales);
-    NonTaxableSales = truncateDecimals(decimal, NonTaxableSales);
-    NetSales = truncateDecimals(decimal, NetSales);
-
-    res
-      .status(200)
-      .json({ reportData, taxableSales, NonTaxableSales, NetSales });
+    res.status(200).json({ shifts: allShifts });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
