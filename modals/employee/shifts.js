@@ -2,16 +2,6 @@ import mongoose from "mongoose";
 
 const ShiftsSchema = new mongoose.Schema(
   {
-    opened_at: {
-      type: String,
-      min: 1,
-      max: 255,
-    },
-    closed_at: {
-      type: String,
-      min: 1,
-      max: 255,
-    },
     starting_cash: {
       type: Number,
     },
@@ -100,19 +90,29 @@ const ShiftsSchema = new mongoose.Schema(
         },
       },
     ],
+    opened_at: {
+      type: String,
+      min: 1,
+      max: 255,
+    },
+    closed_at: {
+      type: String,
+      min: 1,
+      max: 255,
+    },
     store: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
     },
-    opened_by_employee: {
+    opened_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },
-    closed_by_employee: {
+    closed_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },
-    pos_device_id: {
+    pos_device: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "pos_device",
     },

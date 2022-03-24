@@ -19,9 +19,9 @@ router.get("/:shiftid", async (req, res) => {
         account: account,
       })
         .populate("store", ["_id", "title"])
-        .populate("opened_by_employee", ["_id", "name"])
-        .populate("closed_by_employee", ["_id", "name"])
-        .populate("pos_device_id", ["_id", "title"])
+        .populate("opened_by", ["_id", "name"])
+        .populate("closed_by", ["_id", "name"])
+        .populate("pos_device", ["_id", "title"])
         .populate("createdBy", ["_id", "name"]);
       if (shift) {
         res.status(200).json(shift);
@@ -38,9 +38,9 @@ router.get("/", async (req, res) => {
     const { account } = req.authData;
     var shift = await Shifts.find({ account: account })
       .populate("store", ["_id", "title"])
-      .populate("opened_by_employee", ["_id", "name"])
-      .populate("closed_by_employee", ["_id", "name"])
-      .populate("pos_device_id", ["_id", "title"])
+      .populate("opened_by", ["_id", "name"])
+      .populate("closed_by", ["_id", "name"])
+      .populate("pos_device", ["_id", "title"])
       .populate("createdBy", ["_id", "name"])
       .sort({
         _id: "desc",
@@ -55,11 +55,11 @@ router.post("/", async (req, res) => {
   try {
     const {
       store,
-      pos_device_id,
+      pos_device,
       opened_at,
       closed_at,
-      opened_by_employee,
-      closed_by_employee,
+      opened_by,
+      closed_by,
       starting_cash,
       cash_payments,
       cash_refunds,
@@ -89,23 +89,23 @@ router.post("/", async (req, res) => {
       errors.push({ store: `Invalid store!` });
     }
     if (
-      !pos_device_id ||
-      typeof pos_device_id == "undefined" ||
-      pos_device_id == "" ||
-      pos_device_id == null
+      !pos_device ||
+      typeof pos_device == "undefined" ||
+      pos_device == "" ||
+      pos_device == null
     ) {
-      errors.push({ pos_device_id: `Invalid pos_device_id!` });
+      errors.push({ pos_device: `Invalid pos_device!` });
     }
     if (errors.length > 0) {
       res.status(400).send({ message: `Invalid Parameters!`, errors });
     } else {
       let shift = new Shifts({
         store,
-        pos_device_id,
+        pos_device,
         opened_at,
         closed_at,
-        opened_by_employee: opened_by_employee,
-        closed_by_employee: closed_by_employee,
+        opened_by: opened_by,
+        closed_by: closed_by,
         starting_cash,
         cash_payments,
         cash_refunds,
@@ -132,9 +132,9 @@ router.post("/", async (req, res) => {
             account: account,
           })
             .populate("store", ["_id", "title"])
-            .populate("opened_by_employee", ["_id", "name"])
-            .populate("closed_by_employee", ["_id", "name"])
-            .populate("pos_device_id", ["_id", "title"])
+            .populate("opened_by", ["_id", "name"])
+            .populate("closed_by", ["_id", "name"])
+            .populate("pos_device", ["_id", "title"])
             .populate("createdBy", ["_id", "name"])
             .sort({
               _id: "desc",
@@ -156,11 +156,11 @@ router.patch("/", async (req, res) => {
     const {
       _id,
       store,
-      pos_device_id,
+      pos_device,
       opened_at,
       closed_at,
-      opened_by_employee,
-      closed_by_employee,
+      opened_by,
+      closed_by,
       starting_cash,
       cash_payments,
       cash_refunds,
@@ -193,12 +193,12 @@ router.patch("/", async (req, res) => {
       errors.push({ store: `Invalid store!` });
     }
     if (
-      !pos_device_id ||
-      typeof pos_device_id == "undefined" ||
-      pos_device_id == "" ||
-      pos_device_id == null
+      !pos_device ||
+      typeof pos_device == "undefined" ||
+      pos_device == "" ||
+      pos_device == null
     ) {
-      errors.push({ pos_device_id: `Invalid pos_device_id!` });
+      errors.push({ pos_device: `Invalid pos_device!` });
     }
     if (errors.length > 0) {
       res.status(400).send({ message: `Invalid Parameters!`, errors });
@@ -209,11 +209,11 @@ router.patch("/", async (req, res) => {
           { _id: _id },
           {
             store,
-            pos_device_id,
+            pos_device,
             opened_at,
             closed_at,
-            opened_by_employee,
-            closed_by_employee,
+            opened_by,
+            closed_by,
             starting_cash,
             cash_payments,
             cash_refunds,
@@ -237,9 +237,9 @@ router.patch("/", async (req, res) => {
           }
         )
           .populate("store", ["_id", "title"])
-          .populate("opened_by_employee", ["_id", "name"])
-          .populate("closed_by_employee", ["_id", "name"])
-          .populate("pos_device_id", ["_id", "title"])
+          .populate("opened_by", ["_id", "name"])
+          .populate("closed_by", ["_id", "name"])
+          .populate("pos_device", ["_id", "title"])
           .populate("createdBy", ["_id", "name"])
           .sort({
             _id: "desc",
@@ -255,7 +255,7 @@ router.patch("/", async (req, res) => {
 });
 router.post("/open", async (req, res) => {
   try {
-    const { store, pos_device_id, opened_at, starting_cash, actual_cash } =
+    const { store, pos_device, opened_at, starting_cash, actual_cash } =
       req.body;
     const { account, _id } = req.authData;
     var errors = [];
@@ -270,18 +270,18 @@ router.post("/open", async (req, res) => {
       errors.push({ store: `Invalid store!` });
     }
     if (
-      !pos_device_id ||
-      typeof pos_device_id == "undefined" ||
-      pos_device_id == "" ||
-      pos_device_id == null
+      !pos_device ||
+      typeof pos_device == "undefined" ||
+      pos_device == "" ||
+      pos_device == null
     ) {
-      errors.push({ pos_device_id: `Invalid pos_device_id!` });
+      errors.push({ pos_device: `Invalid pos_device!` });
     }
     if (errors.length > 0) {
       res.status(400).send({ message: `Invalid Parameters!`, errors });
     } else {
       var openShift = await Shifts.findOne({
-        pos_device_id: pos_device_id,
+        pos_device: pos_device,
         closed_at: null,
         closed_at: { $exists: false, $eq: null },
         account: account,
@@ -290,9 +290,9 @@ router.post("/open", async (req, res) => {
       if (!openShift) {
         let shift = new Shifts({
           store,
-          pos_device_id,
+          pos_device,
           opened_at,
-          opened_by_employee: _id,
+          opened_by: _id,
           starting_cash,
           actual_cash,
           account: account,
@@ -306,9 +306,9 @@ router.post("/open", async (req, res) => {
               account: account,
             })
               .populate("store", ["_id", "title"])
-              .populate("opened_by_employee", ["_id", "name"])
-              .populate("closed_by_employee", ["_id", "name"])
-              .populate("pos_device_id", ["_id", "title"])
+              .populate("opened_by", ["_id", "name"])
+              .populate("closed_by", ["_id", "name"])
+              .populate("pos_device", ["_id", "title"])
               .populate("createdBy", ["_id", "name"])
               .sort({
                 _id: "desc",
@@ -316,9 +316,9 @@ router.post("/open", async (req, res) => {
             let shift = {
               _id: shiftInserted._id,
               store: shiftInserted.store,
-              pos_device_id: shiftInserted.pos_device_id,
+              pos_device: shiftInserted.pos_device,
               opened_at: shiftInserted.opened_at,
-              opened_by_employee: shiftInserted.opened_by_employee,
+              opened_by: shiftInserted.opened_by,
               starting_cash: shiftInserted.starting_cash,
               actual_cash: shiftInserted.actual_cash,
               account: shiftInserted.account,
@@ -347,9 +347,9 @@ router.post("/open", async (req, res) => {
               : "",
           _id: typeof openShift._id !== "undefined" ? openShift._id : "",
           store: typeof openShift.store !== "undefined" ? openShift.store : {},
-          pos_device_id:
-            typeof openShift.pos_device_id !== "undefined"
-              ? openShift.pos_device_id
+          pos_device:
+            typeof openShift.pos_device !== "undefined"
+              ? openShift.pos_device
               : "",
           opened_at:
             typeof openShift.opened_at !== "undefined"
@@ -359,13 +359,13 @@ router.post("/open", async (req, res) => {
             typeof openShift.closed_at !== "undefined"
               ? openShift.closed_at
               : "",
-          opened_by_employee:
-            typeof openShift.opened_by_employee !== "undefined"
-              ? openShift.opened_by_employee
+          opened_by:
+            typeof openShift.opened_by !== "undefined"
+              ? openShift.opened_by
               : "",
-          closed_by_employee:
-            typeof openShift.closed_by_employee !== "undefined"
-              ? openShift.closed_by_employee
+          closed_by:
+            typeof openShift.closed_by !== "undefined"
+              ? openShift.closed_by
               : "",
           starting_cash:
             typeof openShift.starting_cash !== "undefined"
@@ -462,7 +462,7 @@ router.patch("/close", async (req, res) => {
           { _id: _id },
           {
             closed_at,
-            closed_by_employee: req.authData._id,
+            closed_by: req.authData._id,
             cash_payments,
             cash_refunds,
             paid_in,
