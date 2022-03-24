@@ -14,7 +14,15 @@ router.get("/:shiftid", async (req, res) => {
     if (errors.length > 0) {
       res.status(400).send({ message: `Invalid Parameters!`, errors });
     } else {
-      var shift = await Shifts.findOne({ _id: shiftid, account: account });
+      var shift = await Shifts.findOne({
+        _id: shiftid,
+        account: account,
+      })
+        .populate("store", ["_id", "title"])
+        .populate("opened_by_employee", ["_id", "name"])
+        .populate("closed_by_employee", ["_id", "name"])
+        .populate("pos_device_id", ["_id", "title"])
+        .populate("createdBy", ["_id", "name"]);
       if (shift) {
         res.status(200).json(shift);
       } else {
@@ -28,9 +36,15 @@ router.get("/:shiftid", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const { account } = req.authData;
-    var shift = await Shifts.find({ account: account }).sort({
-      _id: "desc",
-    });
+    var shift = await Shifts.find({ account: account })
+      .populate("store", ["_id", "title"])
+      .populate("opened_by_employee", ["_id", "name"])
+      .populate("closed_by_employee", ["_id", "name"])
+      .populate("pos_device_id", ["_id", "title"])
+      .populate("createdBy", ["_id", "name"])
+      .sort({
+        _id: "desc",
+      });
     res.status(200).json(shift);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -90,8 +104,8 @@ router.post("/", async (req, res) => {
         pos_device_id,
         opened_at,
         closed_at,
-        opened_by_employee: _id,
-        closed_by_employee: _id,
+        opened_by_employee: opened_by_employee,
+        closed_by_employee: closed_by_employee,
         starting_cash,
         cash_payments,
         cash_refunds,
@@ -112,8 +126,20 @@ router.post("/", async (req, res) => {
       });
       shift
         .save()
-        .then((insert) => {
-          res.status(200).json(insert);
+        .then(async (insert) => {
+          let shiftInserted = await Shifts.findOne({
+            _id: insert._id,
+            account: account,
+          })
+            .populate("store", ["_id", "title"])
+            .populate("opened_by_employee", ["_id", "name"])
+            .populate("closed_by_employee", ["_id", "name"])
+            .populate("pos_device_id", ["_id", "title"])
+            .populate("createdBy", ["_id", "name"])
+            .sort({
+              _id: "desc",
+            });
+          res.status(200).json(shiftInserted);
         })
         .catch((err) => {
           res.status(403).send({
@@ -209,7 +235,15 @@ router.patch("/", async (req, res) => {
             new: true,
             upsert: true, // Make this update into an upsert
           }
-        );
+        )
+          .populate("store", ["_id", "title"])
+          .populate("opened_by_employee", ["_id", "name"])
+          .populate("closed_by_employee", ["_id", "name"])
+          .populate("pos_device_id", ["_id", "title"])
+          .populate("createdBy", ["_id", "name"])
+          .sort({
+            _id: "desc",
+          });
         res.status(200).json(updated);
       } else {
         res.status(500).json({ message: "Shift does not exist" });
@@ -249,6 +283,7 @@ router.post("/open", async (req, res) => {
       var openShift = await Shifts.findOne({
         pos_device_id: pos_device_id,
         closed_at: null,
+        closed_at: { $exists: false, $eq: null },
         account: account,
       });
 
@@ -265,19 +300,31 @@ router.post("/open", async (req, res) => {
         });
         shift
           .save()
-          .then((insert) => {
-            let shift = {
+          .then(async (insert) => {
+            let shiftInserted = await Shifts.findOne({
               _id: insert._id,
-              store: insert.store,
-              pos_device_id: insert.pos_device_id,
-              opened_at: insert.opened_at,
-              opened_by_employee: insert.opened_by_employee,
-              starting_cash: insert.starting_cash,
-              actual_cash: insert.actual_cash,
-              account: insert.account,
-              createdBy: insert.createdBy,
-              taxes: insert.taxes,
-              payments: insert.payments,
+              account: account,
+            })
+              .populate("store", ["_id", "title"])
+              .populate("opened_by_employee", ["_id", "name"])
+              .populate("closed_by_employee", ["_id", "name"])
+              .populate("pos_device_id", ["_id", "title"])
+              .populate("createdBy", ["_id", "name"])
+              .sort({
+                _id: "desc",
+              });
+            let shift = {
+              _id: shiftInserted._id,
+              store: shiftInserted.store,
+              pos_device_id: shiftInserted.pos_device_id,
+              opened_at: shiftInserted.opened_at,
+              opened_by_employee: shiftInserted.opened_by_employee,
+              starting_cash: shiftInserted.starting_cash,
+              actual_cash: shiftInserted.actual_cash,
+              account: shiftInserted.account,
+              createdBy: shiftInserted.createdBy,
+              taxes: shiftInserted.taxes,
+              payments: shiftInserted.payments,
               message: "",
               alreadyOpen: false,
             };
