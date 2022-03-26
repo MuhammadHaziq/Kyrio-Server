@@ -4,6 +4,7 @@ import {
   removeSpaces,
   removeNumberSpaces,
 } from "../../function/validateFunctions";
+import { CUSTOMER_POINTS } from "../../sockets/events";
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
 
@@ -185,7 +186,7 @@ router.patch("/", async (req, res) => {
       };
       let result = await Customers.findOneAndUpdate({ _id: id }, data, {
         new: true,
-        upsert: true, // Make this update into an upsert
+        upsert: true,
       });
       res.status(200).json(result);
     } catch (error) {
@@ -203,7 +204,16 @@ router.patch("/point_balance", async (req, res) => {
       points_balance: removeNumberSpaces(points_balance),
       created_by: id,
     };
-    let result = await Customers.updateOne({ _id: _id }, data);
+    let result = await Customers.findOneAndUpdate({ _id: _id }, data, {
+      new: true,
+      upsert: true,
+    });
+    req.io.to(account).emit(CUSTOMER_POINTS, {
+      app: result,
+      backoffice: result,
+      user: _id,
+      account: account,
+    });
     res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ message: error.message });

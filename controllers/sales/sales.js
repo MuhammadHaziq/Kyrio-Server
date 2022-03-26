@@ -8,6 +8,7 @@ import {
   REFUND_RECEIPT,
   ITEM_STOCK_UPDATE,
   RECEIPT_CANCELED,
+  CUSTOMER_POINTS,
 } from "../../sockets/events";
 import validator from "email-validator";
 import { sendReceiptEmail } from "../../libs/sendEmail";
@@ -17,18 +18,10 @@ const router = express.Router();
 
 router.get("/send", async (req, res) => {
   try {
-    const { account, platform } = req.authData;
     const { receipt_id, email } = req.query;
 
     if (validator.validate(email)) {
       let result = await Sales.findOne({ _id: receipt_id });
-
-      // let emailMessage = {
-      //   businessName: userResult.account.businessName,
-      //   email: userResult.email,
-      //   _id: userResult._id,
-      //   from: "info@kyrio.com",
-      // };
       sendReceiptEmail(email, result);
       res.send(result);
     } else {
@@ -304,6 +297,15 @@ router.post("/", async (req, res) => {
         user: _id,
         account: account,
       });
+      if (customer) {
+        req.io.to(account).emit(CUSTOMER_POINTS, {
+          app: addCustomer,
+          backoffice: addCustomer,
+          user: _id,
+          account: account,
+        });
+      }
+
       res.status(200).json(newSales);
       if (send_email !== "" && send_email !== null) {
         try {
