@@ -927,9 +927,10 @@ router.post("/shifts", async (req, res) => {
       ],
     })
       .populate("store", ["title"])
-      .populate("pos_device_id", ["title"])
+      .populate("pos_device", ["title"])
       .populate("opened_by_employee", ["name"])
       .populate("closed_by_employee", ["name"])
+      .populate("cash_movements.employee_id", ["name"])
       .populate("createdBy", ["name"]);
 
     res.status(200).json({ shifts: allShifts });

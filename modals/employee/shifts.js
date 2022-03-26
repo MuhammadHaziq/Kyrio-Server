@@ -45,9 +45,8 @@ const ShiftsSchema = new mongoose.Schema(
       {
         _id: false,
         _id: {
-          type: String,
-          min: 1,
-          max: 255,
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "itemTax",
         },
         money_amount: {
           type: Number,
@@ -58,9 +57,8 @@ const ShiftsSchema = new mongoose.Schema(
       {
         _id: false,
         _id: {
-          type: String,
-          min: 1,
-          max: 255,
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "paymentsType",
         },
         money_amount: {
           type: Number,
@@ -104,11 +102,11 @@ const ShiftsSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
     },
-    opened_by: {
+    opened_by_employee: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },
-    closed_by: {
+    closed_by_employee: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },

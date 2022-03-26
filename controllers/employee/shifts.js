@@ -19,8 +19,8 @@ router.get("/:shiftid", async (req, res) => {
         account: account,
       })
         .populate("store", ["_id", "title"])
-        .populate("opened_by", ["_id", "name"])
-        .populate("closed_by", ["_id", "name"])
+        .populate("opened_by_employee", ["_id", "name"])
+        .populate("closed_by_employee", ["_id", "name"])
         .populate("pos_device", ["_id", "title"])
         .populate("createdBy", ["_id", "name"]);
       if (shift) {
@@ -38,8 +38,8 @@ router.get("/", async (req, res) => {
     const { account } = req.authData;
     var shift = await Shifts.find({ account: account })
       .populate("store", ["_id", "title"])
-      .populate("opened_by", ["_id", "name"])
-      .populate("closed_by", ["_id", "name"])
+      .populate("opened_by_employee", ["_id", "name"])
+      .populate("closed_by_employee", ["_id", "name"])
       .populate("pos_device", ["_id", "title"])
       .populate("createdBy", ["_id", "name"])
       .sort({
@@ -58,8 +58,8 @@ router.post("/", async (req, res) => {
       pos_device,
       opened_at,
       closed_at,
-      opened_by,
-      closed_by,
+      opened_by_employee,
+      closed_by_employee,
       starting_cash,
       cash_payments,
       cash_refunds,
@@ -104,8 +104,9 @@ router.post("/", async (req, res) => {
         pos_device,
         opened_at,
         closed_at,
-        opened_by: opened_by,
-        closed_by: closed_by,
+        opened_by_employee: opened_by_employee._id,
+        closed_by_employee: closed_by_employee._id,
+        cash_movements,
         starting_cash,
         cash_payments,
         cash_refunds,
@@ -132,8 +133,8 @@ router.post("/", async (req, res) => {
             account: account,
           })
             .populate("store", ["_id", "title"])
-            .populate("opened_by", ["_id", "name"])
-            .populate("closed_by", ["_id", "name"])
+            .populate("opened_by_employee", ["_id", "name"])
+            .populate("closed_by_employee", ["_id", "name"])
             .populate("pos_device", ["_id", "title"])
             .populate("createdBy", ["_id", "name"])
             .sort({
@@ -159,8 +160,8 @@ router.patch("/", async (req, res) => {
       pos_device,
       opened_at,
       closed_at,
-      opened_by,
-      closed_by,
+      opened_by_employee,
+      closed_by_employee,
       starting_cash,
       cash_payments,
       cash_refunds,
@@ -212,8 +213,9 @@ router.patch("/", async (req, res) => {
             pos_device,
             opened_at,
             closed_at,
-            opened_by,
-            closed_by,
+            opened_by_employee: opened_by_employee._id,
+            closed_by_employee: closed_by_employee._id,
+            cash_movements,
             starting_cash,
             cash_payments,
             cash_refunds,
@@ -237,8 +239,8 @@ router.patch("/", async (req, res) => {
           }
         )
           .populate("store", ["_id", "title"])
-          .populate("opened_by", ["_id", "name"])
-          .populate("closed_by", ["_id", "name"])
+          .populate("opened_by_employee", ["_id", "name"])
+          .populate("closed_by_employee", ["_id", "name"])
           .populate("pos_device", ["_id", "title"])
           .populate("createdBy", ["_id", "name"])
           .sort({
@@ -255,8 +257,14 @@ router.patch("/", async (req, res) => {
 });
 router.post("/open", async (req, res) => {
   try {
-    const { store, pos_device, opened_at, starting_cash, actual_cash } =
-      req.body;
+    const {
+      store,
+      pos_device,
+      opened_at,
+      starting_cash,
+      actual_cash,
+      opened_by_employee,
+    } = req.body;
     const { account, _id } = req.authData;
     var errors = [];
     if (
@@ -292,7 +300,7 @@ router.post("/open", async (req, res) => {
           store,
           pos_device,
           opened_at,
-          opened_by: _id,
+          opened_by_employee: opened_by_employee._id,
           starting_cash,
           actual_cash,
           account: account,
@@ -306,8 +314,8 @@ router.post("/open", async (req, res) => {
               account: account,
             })
               .populate("store", ["_id", "title"])
-              .populate("opened_by", ["_id", "name"])
-              .populate("closed_by", ["_id", "name"])
+              .populate("opened_by_employee", ["_id", "name"])
+              .populate("closed_by_employee", ["_id", "name"])
               .populate("pos_device", ["_id", "title"])
               .populate("createdBy", ["_id", "name"])
               .sort({
@@ -318,7 +326,7 @@ router.post("/open", async (req, res) => {
               store: shiftInserted.store,
               pos_device: shiftInserted.pos_device,
               opened_at: shiftInserted.opened_at,
-              opened_by: shiftInserted.opened_by,
+              opened_by_employee: shiftInserted.opened_by_employee,
               starting_cash: shiftInserted.starting_cash,
               actual_cash: shiftInserted.actual_cash,
               account: shiftInserted.account,
@@ -359,13 +367,13 @@ router.post("/open", async (req, res) => {
             typeof openShift.closed_at !== "undefined"
               ? openShift.closed_at
               : "",
-          opened_by:
-            typeof openShift.opened_by !== "undefined"
-              ? openShift.opened_by
+          opened_by_employee:
+            typeof openShift.opened_by_employee !== "undefined"
+              ? openShift.opened_by_employee
               : "",
-          closed_by:
-            typeof openShift.closed_by !== "undefined"
-              ? openShift.closed_by
+          closed_by_employee:
+            typeof openShift.closed_by_employee !== "undefined"
+              ? openShift.closed_by_employee
               : "",
           starting_cash:
             typeof openShift.starting_cash !== "undefined"
@@ -437,6 +445,8 @@ router.patch("/close", async (req, res) => {
       cash_refunds,
       paid_in,
       paid_out,
+      closed_by_employee,
+      cash_movements,
       expected_cash,
       actual_cash,
       gross_sales,
@@ -462,7 +472,8 @@ router.patch("/close", async (req, res) => {
           { _id: _id },
           {
             closed_at,
-            closed_by: req.authData._id,
+            closed_by_employee: closed_by_employee._id,
+            cash_movements,
             cash_payments,
             cash_refunds,
             paid_in,
