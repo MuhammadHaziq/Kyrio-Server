@@ -578,6 +578,14 @@ router.post("/refund", async (req, res) => {
           user: _id,
           account: account,
         });
+        if (customer) {
+          req.io.to(account).emit(CUSTOMER_POINTS, {
+            app: addCustomer,
+            backoffice: addCustomer,
+            user: _id,
+            account: account,
+          });
+        }
         req.io.to(account).emit(REFUND_RECEIPT, {
           app: { refundReceipt: newRefund, saleReceipt: refundedSale },
           backoffice: {},
