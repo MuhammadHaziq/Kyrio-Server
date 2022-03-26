@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const ShiftsSchema = new mongoose.Schema(
   {
+    shift_number: {
+      type: Number,
+      default: 0,
+    },
     starting_cash: {
       type: Number,
     },

@@ -8,6 +8,10 @@ const paymentsTypeSchema = new mongoose.Schema(
       max: 255,
       required: true,
     },
+    cashPaymentRound: {
+      type: Number,
+      default: null,
+    },
     account: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "accounts",
@@ -19,10 +23,6 @@ const paymentsTypeSchema = new mongoose.Schema(
     store: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
-    },
-    cashPaymentRound: {
-      type: Number,
-      default: null,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

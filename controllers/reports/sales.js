@@ -931,6 +931,7 @@ router.post("/shifts", async (req, res) => {
       .populate("opened_by_employee", ["name"])
       .populate("closed_by_employee", ["name"])
       .populate("cash_movements.employee_id", ["name"])
+      .populate("payments._id", ["_id", "title"])
       .populate("createdBy", ["name"]);
 
     res.status(200).json({ shifts: allShifts });

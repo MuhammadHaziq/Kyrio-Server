@@ -60,6 +60,7 @@ router.post("/", async (req, res) => {
       closed_at,
       opened_by_employee,
       closed_by_employee,
+      cash_movements,
       starting_cash,
       cash_payments,
       cash_refunds,
