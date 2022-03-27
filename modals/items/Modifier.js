@@ -65,16 +65,16 @@ const modifierSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-modifierSchema.index(
-  {
-    title: 1,
-    account: 1,
-  },
-  {
-    unique: true,
-    sparse: true,
-  }
-);
+// modifierSchema.index(
+//   {
+//     title: 1,
+//     account: 1,
+//   },
+//   {
+//     unique: true,
+//     sparse: true,
+//   }
+// );
 modifierSchema.pre("save", function (next) {
   var doc = this;
   var modifierSchema = mongoose.model("modifier", modifierSchema);

@@ -37,14 +37,14 @@ const CategorySchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-CategorySchema.index(
-  {
-    title: 1,
-    account: 1,
-  },
-  {
-    unique: true,
-    sparse: true,
-  }
-);
+// CategorySchema.index(
+//   {
+//     title: 1,
+//     account: 1,
+//   },
+//   {
+//     unique: true,
+//     sparse: true,
+//   }
+// );
 module.exports = mongoose.model("categories", CategorySchema);
