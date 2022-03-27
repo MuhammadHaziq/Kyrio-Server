@@ -17,12 +17,13 @@ router.post("/", async (req, res) => {
     var jsonStores =
       typeof stores !== "undefined" && stores.length > 0 ? stores : [];
     const { _id, account } = req.authData;
-    let modifier = Modifier.findOne({
+    let modifier = await Modifier.findOne({
       title: title,
       account: account,
       deleted: 0,
     });
-    if (Object.keys(modifier).length <= 0) {
+    
+    if (!modifier) {
       const countModifier = await Modifier.countDocuments();
       const newModifier = new Modifier({
         title: title,
@@ -159,13 +160,13 @@ router.patch("/", async (req, res) => {
   try {
     const { id, title, options, stores } = req.body;
     const { _id, account } = req.authData;
-    let modifier = Modifier.findOne({
+    let modifier = await Modifier.findOne({
       _id: { $ne: id },
       title: title,
       account: account,
       deleted: 0,
     });
-    if (Object.keys(modifier).length <= 0) {
+    if (!modifier) {
       const result = await Modifier.findOneAndUpdate(
         { _id: id, account: account },
         {
