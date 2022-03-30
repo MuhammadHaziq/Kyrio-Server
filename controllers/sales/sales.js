@@ -121,9 +121,11 @@ router.post("/", async (req, res) => {
     sale_timestamp = Date.now();
   }
   var errors = [];
-  if (!payments || typeof payments == "undefined" || payments.length === 0) {
-    errors.push({ receipt_type: `Please Enter Payments!` });
-  }
+  // if(!open){
+    if (!payments || typeof payments == "undefined" || payments.length === 0) {
+      errors.push({ receipt_type: `Please Enter Payments!` });
+    }
+  // }
   if (
     !receipt_type ||
     typeof receipt_type == "undefined" ||
