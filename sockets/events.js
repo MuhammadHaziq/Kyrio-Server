@@ -35,6 +35,7 @@ export const MODIFIER_DELETE = "MODIFIER_DELETE";
 
 // RECEIPTS Events
 export const REFUND_RECEIPT = "REFUND_RECEIPT";
+export const OPEN_TICKET = "OPEN_TICKET";
 export const RECEIPT_CANCELED = "RECEIPT_CANCELED";
 // #END#
 

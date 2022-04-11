@@ -23,7 +23,6 @@ const modifierSchema = new mongoose.Schema(
         },
         price: {
           type: Number,
-          max: 100000000000,
           required: true,
         },
         position: {
@@ -57,7 +56,6 @@ const modifierSchema = new mongoose.Schema(
     },
     deletedAt: {
       type: Date,
-      default: Date.now(),
     },
   },
   {

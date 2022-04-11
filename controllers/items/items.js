@@ -1092,8 +1092,6 @@ router.get("/search", async (req, res) => {
       categoryFilter !== undefined
     ) {
       storeFilter["category"] = categoryFilter;
-    } else if (categoryFilter == "0") {
-      storeFilter["category"] = null;
     }
     if (
       stockFilter !== "-1" &&

@@ -29,7 +29,6 @@ const CategorySchema = new mongoose.Schema(
     },
     deletedAt: {
       type: Date,
-      default: Date.now(),
     },
   },
   {

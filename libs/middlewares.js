@@ -271,7 +271,7 @@ export const addModuleWhenSignUp = async (userId, account, store, UDID) => {
       console.log("Default Tax Option Catch Error", error.message);
     }
   }
-  const paymentTypesCheck = await paymentMethods.find();
+  const paymentTypesCheck = await paymentMethods.find({ account: account });
   if (paymentTypesCheck.length === 0) {
     try {
       await paymentMethods

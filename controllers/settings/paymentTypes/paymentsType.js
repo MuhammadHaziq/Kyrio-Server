@@ -52,11 +52,9 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { storeId } = req.query;
     const { account } = req.authData;
     const result = await paymentsType.find({
-      account: account,
-      store: storeId,
+      account: account
     }).populate('store', ["_id","title"]).populate('paymentMethod', ["_id","title"]);
     res.status(200).json(result);
   } catch (error) {
