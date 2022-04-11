@@ -9,6 +9,7 @@ import {
   ITEM_STOCK_UPDATE,
   RECEIPT_CANCELED,
   CUSTOMER_POINTS,
+  OPEN_TICKET
 } from "../../sockets/events";
 import validator from "email-validator";
 import { sendReceiptEmail } from "../../libs/sendEmail";
@@ -86,6 +87,7 @@ router.delete("/:id", async (req, res) => {
 });
 router.post("/", async (req, res) => {
   var {
+    _id,
     ticket_name,
     receipt_type,
     comments,
@@ -121,11 +123,11 @@ router.post("/", async (req, res) => {
     sale_timestamp = Date.now();
   }
   var errors = [];
-  // if(!open){
+  if(!open){
     if (!payments || typeof payments == "undefined" || payments.length === 0) {
       errors.push({ receipt_type: `Please Enter Payments!` });
     }
-  // }
+  }
   if (
     !receipt_type ||
     typeof receipt_type == "undefined" ||
@@ -147,47 +149,50 @@ router.post("/", async (req, res) => {
       store,
       itemsList: [],
     };
-    for (const item of items) {
-      if (item.track_stock) {
-        var storeItem = await ItemList.findOne({
-          _id: item.id,
-          stores: { $elemMatch: { store: store._id } },
-          account: account,
-        }).select([
-          "stockQty",
-          "stores.price",
-          "stores.inStock",
-          "stores.lowStock",
-        ]);
-        if (storeItem) {
-          let storeQty =
-            typeof storeItem.stores !== "undefined"
-              ? parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity)
-              : parseInt(item.quantity);
-          let itemQty = parseInt(storeItem.stockQty) - parseInt(item.quantity);
-          await ItemList.updateOne(
-            { $and: [{ _id: item.id }, { "stores.store": store._id }] },
-            {
-              $set: {
-                stockQty: itemQty,
-                "stores.$.inStock": storeQty,
-              },
-            }
-          );
-          stockNotification.itemsList.push({
+    if(!open){
+      for (const item of items) {
+        if (item.track_stock) {
+          var storeItem = await ItemList.findOne({
             _id: item.id,
-            name: item.name,
-            storeQty: storeQty,
-            itemQty: itemQty,
-          });
+            stores: { $elemMatch: { store: store._id } },
+            account: account,
+          }).select([
+            "stockQty",
+            "stores.price",
+            "stores.inStock",
+            "stores.lowStock",
+          ]);
+          if (storeItem) {
+            let storeQty =
+              typeof storeItem.stores !== "undefined"
+                ? parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity)
+                : parseInt(item.quantity);
+            let itemQty = parseInt(storeItem.stockQty) - parseInt(item.quantity);
+            await ItemList.updateOne(
+              { $and: [{ _id: item.id }, { "stores.store": store._id }] },
+              {
+                $set: {
+                  stockQty: itemQty,
+                  "stores.$.inStock": storeQty,
+                },
+              }
+            );
+            stockNotification.itemsList.push({
+              _id: item.id,
+              name: item.name,
+              storeQty: storeQty,
+              itemQty: itemQty,
+            });
+          }
         }
       }
     }
 
     try {
+      
       let orderNo = parseInt(order_number.split("-")[2]);
-
       // customer from receipt
+      
       let addCustomer = {
         ...customer,
         points_earned: 0,
@@ -244,8 +249,7 @@ router.post("/", async (req, res) => {
           console.log(e.message);
         }
       }
-
-      const newSales = await new Sales({
+      let saleData = {
         receipt_number,
         order_number: orderNo,
         ticket_name,
@@ -279,70 +283,101 @@ router.post("/", async (req, res) => {
         updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
         payments: payments,
         send_email: send_email ? send_email : null,
-      }).save();
-
-      let noOfSales = parseInt(receipt_number.split("-")[1]);
-
-      await POS_Device.updateOne(
-        { _id: device._id },
-        {
-          $set: {
-            noOfSales: noOfSales,
-            order_number: orderNo,
+      }
+      var newSales = {};
+      if(_id !== "" && _id !== null && typeof _id !== "undefined" ){
+        newSales = await Sales.findOneAndUpdate(
+          { _id: _id },
+          {
+            $set: saleData,
           },
-        }
-      );
+          {
+            new: true,
+            upsert: true, // Make this update into an upsert
+          }
+        );
+      } else {
+        newSales = await new Sales(saleData).save();
+      }
 
-      req.io.to(account).emit(ITEM_STOCK_UPDATE, {
-        app: stockNotification,
-        backoffice: stockNotification,
-        user: _id,
-        account: account,
-      });
-      if (customer) {
-        req.io.to(account).emit(CUSTOMER_POINTS, {
-          app: addCustomer,
-          backoffice: addCustomer,
+      if(!open){
+        let noOfSales = parseInt(receipt_number.split("-")[1]);
+
+        await POS_Device.updateOne(
+          { _id: device._id },
+          {
+            $set: {
+              noOfSales: noOfSales,
+              order_number: orderNo,
+            },
+          }
+        );
+      }
+      if(!open){
+        req.io.to(account).emit(ITEM_STOCK_UPDATE, {
+          app: stockNotification,
+          backoffice: stockNotification,
+          user: _id,
+          account: account,
+        });
+        if (customer) {
+          req.io.to(account).emit(CUSTOMER_POINTS, {
+            app: addCustomer,
+            backoffice: addCustomer,
+            user: _id,
+            account: account,
+          });
+        }
+      }
+      
+      if(open){
+        req.io.to(account).emit(OPEN_TICKET, {
+          app: newSales,
+          backoffice: newSales,
           user: _id,
           account: account,
         });
       }
 
       res.status(200).json(newSales);
-      if (send_email !== "" && send_email !== null) {
-        try {
-          const mailSent = await sendReceiptEmail(
-            send_email,
-            newSales,
-            store.name,
-            decimal,
-            {},
-            "full"
-          );
-          await Sales.findOneAndUpdate(
-            { receipt_number: newSales.receipt_number },
-            { send_email_check: true }
-          );
-        } catch (error) {
-          console.error(error, "email Send Error");
-        }
-      }
-      if (stockNotification.length > 0) {
-        console.log(stockNotification);
-      }
-      if (payments.length > 0) {
-        payments.map(async (pay) => {
-          if (pay.email !== "") {
+      if(!open){
+        if (send_email !== "" && send_email !== null) {
+          try {
             const mailSent = await sendReceiptEmail(
-              pay.email,
+              send_email,
               newSales,
               store.name,
               decimal,
-              pay,
-              "split"
+              {},
+              "full"
             );
+            await Sales.findOneAndUpdate(
+              { receipt_number: newSales.receipt_number },
+              { send_email_check: true }
+            );
+          } catch (error) {
+            console.error(error, "email Send Error");
           }
-        });
+        }
+      }
+      // if (stockNotification.length > 0) {
+      //   console.log(stockNotification);
+      // }
+      if(!open){
+        if (payments.length > 0) {
+          payments.map(async (pay) => {
+            if (pay.email !== "") {
+              const mailSent = await sendReceiptEmail(
+                pay.email,
+                newSales,
+                store.name,
+                decimal,
+                pay,
+                "split"
+              );
+            }
+          });
+        }
       }
     } catch (error) {
       res.status(400).json({ message: error.message });
