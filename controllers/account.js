@@ -41,7 +41,7 @@ router.get("/getAccountInfo", async (req, res) => {
       email: userInfo.email,
       timezone: userInfo.timezone,
       language: userInfo.language,
-      is_owner: String(userInfo._id) === String(userInfo.owner_id)
+      is_owner: String(userInfo._id) === String(userInfo.owner_id),
     };
     res.status(200).json(result);
   } catch (error) {
@@ -118,7 +118,6 @@ router.post("/setAccountInfo", async (req, res) => {
           businessName: businessName,
         }
       );
-
     }
     const result = await Users.updateOne(
       { _id: _id, account: account },
@@ -146,17 +145,16 @@ router.post("/deleteAccount", async (req, res) => {
     const { email, businessName, is_owner, account } = req.authData;
 
     if (is_owner) {
-
       const DeleteAcc = new DeletedAccounts({
         email: email,
         businessName: businessName,
         reason: reason,
         comments: comments,
-        confirm: confirm
+        confirm: confirm,
       });
       const result = await DeleteAcc.save();
       if (result) {
-        await Accounts.deleteOne({ _id: account })
+        await Accounts.deleteOne({ _id: account });
         await Category.deleteMany({ account: account });
         await Discount.deleteMany({ account: account });
         await Modifier.deleteMany({ account: account });
@@ -176,9 +174,15 @@ router.post("/deleteAccount", async (req, res) => {
         await Customers.deleteMany({ account: account });
         await SkuHistory.deleteMany({ account: account });
         await Store.deleteMany({ account: account });
-        rimraf(path.join(__dirname, "../uploads/items/" + account), () => { console.log("Items Images Deleted") });
-        rimraf(path.join(__dirname, "../uploads/receipt/" + account), () => { console.log("Receipt Images Deleted") });
-        rimraf(path.join(__dirname, "../uploads/csv/" + account), () => { console.log("CSV Files Deleted") });
+        rimraf(path.join(__dirname, "../uploads/items/" + account), () => {
+          console.log("Items Images Deleted");
+        });
+        rimraf(path.join(__dirname, "../uploads/receipt/" + account), () => {
+          console.log("Receipt Images Deleted");
+        });
+        rimraf(path.join(__dirname, "../uploads/csv/" + account), () => {
+          console.log("CSV Files Deleted");
+        });
         res.status(200).json({ status: true });
       }
     } else {

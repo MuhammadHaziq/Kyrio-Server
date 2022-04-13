@@ -10,7 +10,10 @@ import SkuHistory from "../../modals/items/SKUHistory";
 import itemTax from "../../modals/settings/taxes/itemTax";
 import Store from "../../modals/Store";
 import { uploadCsv, deleteFile } from "../fileHandler/uploadFiles";
-import { min } from "lodash";
+import { difference, min } from "lodash";
+import isEmpty from "is-really-empty";
+import StringIdGenerator from "../../function/StringIdGenerator";
+
 // const csv = require("fast-csv");
 const fs = require("fs-extra");
 const csv = require("@fast-csv/parse");
@@ -1485,7 +1488,7 @@ router.post("/validate_csv", async (req, res) => {
       (!csvFile || typeof csvFile == "undefined" || csvFile == "") &&
       csvFile == ""
     ) {
-      errors.push(`Invalid Csv File!`);
+      errors.push(`Invalid csv File!`);
     }
     if (errors.length > 0) {
       res.status(400).send({ message: `Invalid Parameters!`, errors });
@@ -1566,6 +1569,91 @@ router.post("/validate_csv", async (req, res) => {
                 message: `${rowCount} items will be import`,
               });
             }
+          });
+      }
+    }
+  } catch (err) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/validatewaresfile", async (req, res) => {
+  try {
+    var errors = [];
+    let insertFile = [];
+    let updatedFile = [];
+    let data = [];
+
+    let groupHandleEmptyErrors = [];
+    let groupSkuEmptyErrors = [];
+    let groupNameEmptyErrors = [];
+
+    let groupHandleDublicateErrors = [];
+    let groupSkuDublicateErrors = [];
+    let groupNameDublicateErrors = [];
+
+    const { account, _id } = req.authData;
+    let { csvData } = req.body;
+
+    var file = req.files ? req.files.file : "";
+
+    if ((!file || typeof file == "undefined" || file == "") && file == "") {
+      errors.push(`Invalid csv File!`);
+    }
+    if (errors.length > 0) {
+      res.status(400).send({ message: `Invalid Parameters!`, errors });
+    } else {
+      const imagesName = await uploadCsv([file], `csv/`);
+      if (imagesName.success === true) {
+        var i = 0;
+        var holdPreviousRecord = {};
+        var alphaNumeric = [];
+        var parser = fs
+          .createReadStream(`uploads/csv/${imagesName.images[0]}`)
+          .pipe(csv.parse({ headers: true, ignoreEmpty: true, trim: true }))
+          .on("error", (error) => console.error(error))
+          .on("data", async (row, param) => {
+            if (i === 0) {
+              const ids = new StringIdGenerator();
+              Object.keys(row).map((key, index) => {
+                let id = String(ids.next()).toUpperCase();
+                alphaNumeric.push({
+                  [id]: key,
+                });
+              });
+            }
+            data.push({
+              ["A" + i]: row.Handle,
+            });
+            i++;
+            // if(data.length  1){
+
+            // }
+            // // Check Handle
+            // if (isEmpty(row["Handle"])) {
+            //   groupHandleErrors.push({
+            //     index: i,
+            //   });
+            // }
+            // if (isEmpty(row["SKU"])) {
+            //   groupSkuErrors.push({
+            //     index: i,
+            //   });
+            // }
+            // if (isEmpty(row["Name"])) {
+            //   groupNameErrors.push({
+            //     index: i,
+            //   });
+            // }
+            // i++;
+          })
+          .on("end", async (rowCount) => {
+            console.log(`Parsed ${rowCount} rows`);
+            res.status(200).json({
+              success: true,
+              message: `${rowCount} items will be import`,
+              data: alphaNumeric,
+            });
           });
       }
     }
