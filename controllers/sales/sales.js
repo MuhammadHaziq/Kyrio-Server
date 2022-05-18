@@ -9,11 +9,13 @@ import {
   ITEM_STOCK_UPDATE,
   RECEIPT_CANCELED,
   CUSTOMER_POINTS,
-  OPEN_TICKET
+  OPEN_TICKET,
+  OPEN_TICKET_DELETE
 } from "../../sockets/events";
 import validator from "email-validator";
 import { sendReceiptEmail } from "../../libs/sendEmail";
 import POS_Device from "../../modals/POS_Device";
+var ObjectId = require('mongoose').Types.ObjectId;
 var mongoose = require("mongoose");
 const router = express.Router();
 
@@ -78,16 +80,33 @@ router.get("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
-    let result = await Sales.deleteOne({ _id: id });
+    let oldTicket = await Sales.findOne({_id: id});
+    if(oldTicket){
+      if(ObjectId.isValid(id)){
+        await Sales.deleteOne({_id: id})
+        req.io.to(account).emit(OPEN_TICKET_DELETE, {
+          app: { ticket_id: id },
+          backoffice: { ticket_id: id },
+          user: _id,
+          account: account,
+        });
+        res.status(200).json({ message: "ok", result: { ticket_id: id } });
+      } else {
+        res.status(400).json({ message: "Invalid Object ID", result: {} });
+      }
+    } else {
+      res.status(400).json({ message: "Ticket Not Found", result: {} });
+    }
 
-    res.status(200).json({ message: "deleted", result });
+    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 router.post("/", async (req, res) => {
   var {
-    _id,
+    sale_id,
     ticket_name,
     receipt_type,
     comments,
@@ -285,9 +304,9 @@ router.post("/", async (req, res) => {
         send_email: send_email ? send_email : null,
       }
       var newSales = {};
-      if(_id !== "" && _id !== null && typeof _id !== "undefined" ){
+      if(ObjectId.isValid(sale_id)){
         newSales = await Sales.findOneAndUpdate(
-          { _id: _id },
+          { _id: sale_id },
           {
             $set: saleData,
           },
@@ -334,6 +353,13 @@ router.post("/", async (req, res) => {
         req.io.to(account).emit(OPEN_TICKET, {
           app: newSales,
           backoffice: newSales,
+          user: _id,
+          account: account,
+        });
+      } else if(!open && ObjectId.isValid(sale_id)){
+        req.io.to(account).emit(OPEN_TICKET_DELETE, {
+          app: { ticket_id: sale_id },
+          backoffice: { ticket_id: sale_id },
           user: _id,
           account: account,
         });
