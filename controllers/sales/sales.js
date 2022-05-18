@@ -80,6 +80,7 @@ router.get("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
+    const { _id, account } = req.authData;
     let oldTicket = await Sales.findOne({_id: id});
     if(oldTicket){
       if(ObjectId.isValid(id)){
