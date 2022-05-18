@@ -26,6 +26,13 @@ const printerSchema = new mongoose.Schema(
     APR: {
       type: Boolean,
     },
+    restricted: {
+      type: Boolean,
+    },
+    pos_device: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "pos_device",
+    },
     modal: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "printerModal",
