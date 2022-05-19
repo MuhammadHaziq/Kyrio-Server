@@ -10,12 +10,12 @@ import {
   RECEIPT_CANCELED,
   CUSTOMER_POINTS,
   OPEN_TICKET,
-  OPEN_TICKET_DELETE
+  OPEN_TICKET_DELETE,
 } from "../../sockets/events";
 import validator from "email-validator";
 import { sendReceiptEmail } from "../../libs/sendEmail";
 import POS_Device from "../../modals/POS_Device";
-var ObjectId = require('mongoose').Types.ObjectId;
+var ObjectId = require("mongoose").Types.ObjectId;
 var mongoose = require("mongoose");
 const router = express.Router();
 
@@ -40,8 +40,12 @@ router.get("/send", async (req, res) => {
 router.get("/all", async (req, res) => {
   try {
     const { account, platform } = req.authData;
-    const { update_at } = req.query;
-    let filter = { account: account, cancelled_at: null };
+    const { update_at, store_id } = req.query;
+    let filter = {
+      account: account,
+      cancelled_at: null,
+      "store._id": store_id,
+    };
 
     let isoDate = new Date(update_at);
 
@@ -81,10 +85,10 @@ router.delete("/:id", async (req, res) => {
   try {
     var { id } = req.params;
     const { _id, account } = req.authData;
-    let oldTicket = await Sales.findOne({_id: id});
-    if(oldTicket){
-      if(ObjectId.isValid(id)){
-        await Sales.deleteOne({_id: id})
+    let oldTicket = await Sales.findOne({ _id: id });
+    if (oldTicket) {
+      if (ObjectId.isValid(id)) {
+        await Sales.deleteOne({ _id: id });
         req.io.to(account).emit(OPEN_TICKET_DELETE, {
           app: { ticket_id: id },
           backoffice: { ticket_id: id },
@@ -98,8 +102,6 @@ router.delete("/:id", async (req, res) => {
     } else {
       res.status(400).json({ message: "Ticket Not Found", result: {} });
     }
-
-    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -143,7 +145,7 @@ router.post("/", async (req, res) => {
     sale_timestamp = Date.now();
   }
   var errors = [];
-  if(!open){
+  if (!open) {
     if (!payments || typeof payments == "undefined" || payments.length === 0) {
       errors.push({ receipt_type: `Please Enter Payments!` });
     }
@@ -169,7 +171,7 @@ router.post("/", async (req, res) => {
       store,
       itemsList: [],
     };
-    if(!open){
+    if (!open) {
       for (const item of items) {
         if (item.track_stock) {
           var storeItem = await ItemList.findOne({
@@ -185,9 +187,11 @@ router.post("/", async (req, res) => {
           if (storeItem) {
             let storeQty =
               typeof storeItem.stores !== "undefined"
-                ? parseInt(storeItem.stores[0].inStock) - parseInt(item.quantity)
+                ? parseInt(storeItem.stores[0].inStock) -
+                  parseInt(item.quantity)
                 : parseInt(item.quantity);
-            let itemQty = parseInt(storeItem.stockQty) - parseInt(item.quantity);
+            let itemQty =
+              parseInt(storeItem.stockQty) - parseInt(item.quantity);
             await ItemList.updateOne(
               { $and: [{ _id: item.id }, { "stores.store": store._id }] },
               {
@@ -209,10 +213,9 @@ router.post("/", async (req, res) => {
     }
 
     try {
-      
       let orderNo = parseInt(order_number.split("-")[2]);
       // customer from receipt
-      
+
       let addCustomer = {
         ...customer,
         points_earned: 0,
@@ -303,9 +306,9 @@ router.post("/", async (req, res) => {
         updated_at: sale_timestamp !== null ? sale_timestamp : created_at,
         payments: payments,
         send_email: send_email ? send_email : null,
-      }
+      };
       var newSales = {};
-      if(ObjectId.isValid(sale_id)){
+      if (ObjectId.isValid(sale_id)) {
         newSales = await Sales.findOneAndUpdate(
           { _id: sale_id },
           {
@@ -320,7 +323,7 @@ router.post("/", async (req, res) => {
         newSales = await new Sales(saleData).save();
       }
 
-      if(!open){
+      if (!open) {
         let noOfSales = parseInt(receipt_number.split("-")[1]);
 
         await POS_Device.updateOne(
@@ -333,7 +336,7 @@ router.post("/", async (req, res) => {
           }
         );
       }
-      if(!open){
+      if (!open) {
         req.io.to(account).emit(ITEM_STOCK_UPDATE, {
           app: stockNotification,
           backoffice: stockNotification,
@@ -349,15 +352,15 @@ router.post("/", async (req, res) => {
           });
         }
       }
-      
-      if(open){
+
+      if (open) {
         req.io.to(account).emit(OPEN_TICKET, {
           app: newSales,
           backoffice: newSales,
           user: _id,
           account: account,
         });
-      } else if(!open && ObjectId.isValid(sale_id)){
+      } else if (!open && ObjectId.isValid(sale_id)) {
         req.io.to(account).emit(OPEN_TICKET_DELETE, {
           app: { ticket_id: sale_id },
           backoffice: { ticket_id: sale_id },
@@ -367,7 +370,7 @@ router.post("/", async (req, res) => {
       }
 
       res.status(200).json(newSales);
-      if(!open){
+      if (!open) {
         if (send_email !== "" && send_email !== null) {
           try {
             const mailSent = await sendReceiptEmail(
@@ -390,7 +393,7 @@ router.post("/", async (req, res) => {
       // if (stockNotification.length > 0) {
       //   console.log(stockNotification);
       // }
-      if(!open){
+      if (!open) {
         if (payments.length > 0) {
           payments.map(async (pay) => {
             if (pay.email !== "") {
