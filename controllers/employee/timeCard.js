@@ -238,7 +238,6 @@ router.get("/row/:id", async (req, res) => {
       for(const detail of time.timeDetail){
         var a = moment(detail.clockInDate);
         var b = moment(detail.clockOutDate);
-        console.log(a.diff(b, 'days'))
         timecards.push({
         _id: time._id,
         card_created_at: time.created_at,

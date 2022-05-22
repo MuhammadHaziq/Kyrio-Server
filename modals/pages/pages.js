@@ -6,6 +6,10 @@ const pagesSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    store: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Store",
+    },
     account: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "accounts",

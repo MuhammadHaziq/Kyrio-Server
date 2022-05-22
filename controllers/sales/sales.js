@@ -669,14 +669,22 @@ router.post("/refund", async (req, res) => {
   }
 });
 
-router.get("/check/:receipt_number", async (req, res) => {
-  const { receipt_number } = req.params;
+router.get("/check/:sale_id", async (req, res) => {
+  const { sale_id } = req.params;
   const { account } = req.authData;
-  let getSale = await Sales.findOne({
-    $and: [{ refund_for: receipt_number }, { account: account }],
+  let filter = { account: account }
+  let getCurrentSale = await Sales.findOne({
+    $and: [{ _id: sale_id }, filter],
   });
-  if (getSale) {
-    res.status(200).send({ refund: true });
+  if(getCurrentSale){
+    let getRefundedSale = await Sales.findOne({
+      $and: [{ refund_for: getCurrentSale.receipt_number }, { "store._id": {$eq: getCurrentSale.store._id } }],
+    });
+    if (getRefundedSale) {
+      res.status(200).send({ refund: true });
+    } else {
+      res.status(200).send({ refund: false });
+    }
   } else {
     res.status(200).send({ refund: false });
   }

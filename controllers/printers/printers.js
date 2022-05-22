@@ -1,19 +1,22 @@
 import express from "express";
 import Printers from "../../modals/printers/printers";
+const ObjectId = require("mongoose").Types.ObjectId;
 
 const router = express.Router();
 
 // Get list
-router.get("/:pos_device", async (req, res) => {
+router.get("/:pos_device/:storeId", async (req, res) => {
   try {
-    const { pos_device } = req.params;
+    const { pos_device, storeId } = req.params;
     const { account } = req.authData;
-    let printerResult = [];
-    const restrictedResults = await Printers.find({
-      account: account,
-      pos_device: pos_device,
-      restricted: true,
-    })
+      let filter = { 
+        account: account,
+        store: storeId,
+        pos_device: pos_device,
+        restricted: true 
+      }
+      
+    const restrictedResults = await Printers.find(filter)
       .populate("modal", ["_id", "title"])
       .populate({
         path: "groups",
@@ -21,11 +24,9 @@ router.get("/:pos_device", async (req, res) => {
       })
       .populate("store", ["_id", "title"])
       .sort({ title: "asc" });
-    const allrecords = await Printers.find({
-      account: account,
-      pos_device: { $ne: pos_device },
-      restricted: false,
-    })
+      filter.pos_device = { $ne: pos_device }
+      filter.restricted = false
+    const nonRestrictedResults = await Printers.find(filter)
       .populate("modal", ["_id", "title"])
       .populate({
         path: "groups",
@@ -34,19 +35,30 @@ router.get("/:pos_device", async (req, res) => {
       .populate("store", ["_id", "title"])
       .sort({ title: "asc" });
 
-    printerResult.push(restrictedResults);
-    printerResult.push(allrecords);
     let newResult = [];
-    for (const printer of printerResult) {
+    for (const printer of restrictedResults) {
       let grps = [];
-      for (const gr of printer.groups) {
-        grps.push(gr._id);
+      if(printer.groups){
+        for (const gr of printer.groups) {
+          grps.push(gr._id);
+        }
+      }
+      printer.groups = grps;
+      newResult.push(printer);
+    }
+    for (const printer of nonRestrictedResults) {
+      let grps = [];
+      if(printer.groups){
+        for (const gr of printer.groups) {
+          grps.push(gr._id);
+        }
       }
       printer.groups = grps;
       newResult.push(printer);
     }
     res.status(200).json(newResult);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: error.message });
   }
 });
@@ -136,6 +148,8 @@ router.post("/", async (req, res) => {
       modal,
       groups,
       store,
+      pos_device,
+      restricted
     } = req.body;
     const { _id, account } = req.authData;
 
@@ -147,9 +161,11 @@ router.post("/", async (req, res) => {
       PRNB: PRNB,
       PO: PO,
       APR: APR,
-      modal: modal,
-      groups: groups,
+      modal: ObjectId.isValid(modal) ? modal : null,
+      groups: ObjectId.isValid(groups) ? groups : null,
       store: store,
+      pos_device: pos_device,
+      restricted: restricted,
       createdBy: _id,
       account: account,
     });
@@ -194,6 +210,8 @@ router.patch("/", async (req, res) => {
     modal,
     groups,
     store,
+    pos_device,
+    restricted
   } = req.body;
   const { _id, account } = req.authData;
 
@@ -209,9 +227,11 @@ router.patch("/", async (req, res) => {
           PRNB: PRNB,
           PO: PO,
           APR: APR,
-          modal: modal,
-          groups: groups,
+          modal: ObjectId.isValid(modal) ? modal : null,
+          groups: ObjectId.isValid(groups) ? groups : null,
           store: store,
+          pos_device: pos_device,
+          restricted: restricted,
           createdBy: _id,
           account: account,
         },

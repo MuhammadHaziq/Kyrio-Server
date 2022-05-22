@@ -508,7 +508,6 @@ router.post("/cabrestorepassword", async (req, res) => {
       res.status(200).send({ success: true, message: "ok" });
     }
   } catch (e) {
-    console.log(e.message);
     res.status(200).send({
       type: "server",
       message: "Unable to verify email please contact info@kyrio.com",
@@ -571,7 +570,6 @@ router.post("/cabrestorepassword/confirm", async (req, res) => {
       res.status(200).send({ success: false, message: "Invalid ticket" });
     }
   } catch (e) {
-    console.log(e.message);
     res.status(200).send({
       type: "server",
       message: "Unable to verify ticket please contact info@kyrio.com",
@@ -592,7 +590,6 @@ router.get("/confirm/:uuid", async (req, res) => {
       res.status(200).send({ success: false, message: "Already varified!" });
     }
   } catch (e) {
-    // console.log(e.message);
     res.status(200).send({
       type: "server",
       message: "Unable to verify email please contact info@kyrio.com",
