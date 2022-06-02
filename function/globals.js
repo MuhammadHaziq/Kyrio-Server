@@ -89,7 +89,7 @@ export const filterSales = async (sales, divider, matches, decimal) => {
       });
     let allRefunds = sales.filter((sale) => sale.receipt_type === "REFUND");
 
-    let sale_total = sumBy(allSales, "sub_total");
+    let sale_total = sumBy(allSales, "total_price");
     let refund_total = sumBy(allRefunds, "total_price");
 
     let sale_discount_total = sumBy(allSales, "total_discount");
@@ -168,7 +168,7 @@ export const filterSales = async (sales, divider, matches, decimal) => {
                 truncateDecimals(decimal, sale.cost_of_goods);
               TotalGrossSales =
                 truncateDecimals(decimal, TotalGrossSales) +
-                truncateDecimals(decimal, sale.sub_total);
+                truncateDecimals(decimal, sale.total_price);
               TotalTax =
                 truncateDecimals(decimal, TotalTax) +
                 truncateDecimals(decimal, sale.total_tax) +
@@ -255,6 +255,7 @@ export const filterSales = async (sales, divider, matches, decimal) => {
       }
       i++;
     }
+    
     if (sales.length <= 0) {
       TableRecord = [];
     }

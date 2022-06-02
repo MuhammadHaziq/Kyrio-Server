@@ -10,6 +10,7 @@ import {
   filterSales,
   filterItemSales,
 } from "../../function/globals";
+import dateformat from "dateformat";
 const moment = require("moment");
 const router = express.Router();
 
@@ -22,8 +23,12 @@ router.post("/summary", async (req, res) => {
 
     const { account, decimal } = req.authData;
     // 2021-02-08T19:42:55.586+00:00
-    var start = moment(startDate, "YYYY-MM-DD");
-    var end = moment(endDate, "YYYY-MM-DD").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD");
+    // var end = moment(endDate, "YYYY-MM-DD").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
     // var compareStartDate = "";
     // var compareEndDate = "";
     // if(divider == "Hours"){
@@ -63,8 +68,12 @@ router.post("/item", async (req, res) => {
       req.body;
     const { account, decimal } = req.authData;
 
-    var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
-    var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
+    // var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
 
     var sales = await Sales.find({
       $and: [
@@ -219,8 +228,12 @@ router.post("/category", async (req, res) => {
     const { startDate, endDate, stores, employees } = req.body;
     const { account, decimal } = req.authData;
 
-    var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
-    var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
+    // var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
 
     var sales = await Sales.find({
       $and: [
@@ -375,8 +388,12 @@ router.post("/employee", async (req, res) => {
     const { startDate, endDate, stores, employees } = req.body;
     const { account, decimal } = req.authData;
 
-    var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
-    var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
+    // var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
 
     let sales = await Sales.aggregate([
       {
@@ -427,7 +444,7 @@ router.post("/employee", async (req, res) => {
             truncateDecimals(decimal, sale.cost_of_goods);
           TotalGrossSales =
             truncateDecimals(decimal, TotalGrossSales) +
-            truncateDecimals(decimal, sale.sub_total);
+            truncateDecimals(decimal, sale.total_price);
           TotalTax =
             truncateDecimals(decimal, TotalTax) +
             truncateDecimals(decimal, sale.total_tax) +
@@ -501,8 +518,12 @@ router.post("/paymentstypes", async (req, res) => {
     const { startDate, endDate, stores, employees } = req.body;
     const { account, decimal } = req.authData;
 
-    var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
-    var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
+    // var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
 
     var receipts = await Sales.find({
       $and: [
@@ -577,8 +598,12 @@ router.post("/receipts", async (req, res) => {
     const { startDate, endDate, stores, employees } = req.body;
     const { account, decimal } = req.authData;
 
-    var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
-    var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
+    // var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
 
     var receipts = await Sales.find({
       $and: [
@@ -618,8 +643,12 @@ router.post("/modifiers", async (req, res) => {
     const { startDate, endDate, stores, employees } = req.body;
     const { account, decimal } = req.authData;
 
-    var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
-    var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
+    // var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
 
     const receipts = await Sales.find({
       $and: [
@@ -758,8 +787,12 @@ router.post("/discounts", async (req, res) => {
     const { startDate, endDate, stores, employees } = req.body;
     const { account, decimal } = req.authData;
 
-    var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
-    var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
+    // var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
 
     const receipts = await Sales.find({
       $and: [
@@ -834,8 +867,12 @@ router.post("/taxes", async (req, res) => {
     const { startDate, endDate, stores, employees } = req.body;
     const { account, decimal } = req.authData;
 
-    var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
-    var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
+    // var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
 
     const receipts = await Sales.find({
       $and: [
@@ -924,8 +961,12 @@ router.post("/shifts", async (req, res) => {
     const { startDate, endDate, stores } = req.body;
     const { account } = req.authData;
 
-    var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
-    var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    // var start = moment(startDate, "YYYY-MM-DD  HH:mm:ss");
+    // var end = moment(endDate, "YYYY-MM-DD  HH:mm:ss").add(1, "days");
+    var start = dateformat(startDate, "yyyy-mm-dd");
+    var end = dateformat(endDate, "yyyy-mm-dd");
+    start = start + " 00:00:00";
+    end = end + " 23:59:59";
 
     const allShifts = await Shifts.find({
       $and: [

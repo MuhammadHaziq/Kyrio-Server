@@ -6,8 +6,8 @@
   "scripts": {
     "start": "concurrently 'npm run dev' 'npm run app'",
     "react": "react-scripts start",
-    "dev": "node ./bin/www",
-    "app": "node ./bin/www"
+    "dev": "nodemon ./bin/www",
+    "app": "nodemon ./bin/www"
   },
   "nodemonConfig": {
     "ignore": [
