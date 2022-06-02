@@ -91,8 +91,8 @@ mongoose.connect(
   },
   () => {
     process.env.NODE_ENV == "production"
-      ? console.log("Connected to Mongodb Cloud Server")
-      : console.log("Connected to Mongodb Local Server");
+      ? console.log("Connected to Mongodb Production Server")
+      : console.log("Connected to Mongodb Staging Server");
       
   }
 );

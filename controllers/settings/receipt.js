@@ -52,6 +52,8 @@ router.post("/", async (req, res) => {
     show_comments,
     language,
     storeId,
+    receiptImagePath,
+    printedReceiptImagePath
   } = req.body;
   const { _id, account } = req.authData;
   var errors = [];
@@ -82,7 +84,6 @@ router.post("/", async (req, res) => {
       const exist = await Receipts
       .findOne({ account: account, store: storeId })
       if(exist){
-
         var rootDir = process.cwd();
         if (typeof exist.receiptImage !== "undefined" && exist.receiptImage !== null && exist.receiptImage !== '' && receiptImage) {
           let fileUrl = `${rootDir}/uploads/receipt/${account}/` + exist.receiptImage;
@@ -96,13 +97,30 @@ router.post("/", async (req, res) => {
             fs.unlinkSync(fileUrl);
           }
         }
+        // If image is deleted
+        let existedDeletedReceipt = false
+        let existedDeletedPrinter = false
+        if (typeof exist.receiptImage !== "undefined" && exist.receiptImage !== null && exist.receiptImage !== '' && !receiptImage && receiptImagePath == 'null' ) {
+          let fileUrl = `${rootDir}/uploads/receipt/${account}/` + exist.receiptImage;
+          if (fs.existsSync(fileUrl)) {
+            fs.unlinkSync(fileUrl);
+          }
+          existedDeletedReceipt = true
+        }
+        if (typeof exist.printedReceiptImage !== "undefined" && exist.printedReceiptImage !== null && exist.printedReceiptImage !== '' && !printedReceiptImage && printedReceiptImagePath == 'null') {
+          let fileUrl = `${rootDir}/uploads/receipt/${account}/` + exist.printedReceiptImage;
+          if (fs.existsSync(fileUrl)) {
+            fs.unlinkSync(fileUrl);
+          }
+          existedDeletedPrinter = true
+        }
 
         const updatedReceipt = await Receipts.findOneAndUpdate(
           { account: account, store: storeId },
           {
             $set: {
-              receiptImage: receiptImageName == "" ? exist.receiptImage : receiptImageName,
-              printedReceiptImage: printedReceiptImageName == "" ? exist.printedReceiptImage : printedReceiptImageName,
+              receiptImage: receiptImageName !== "" ? receiptImageName : existedDeletedReceipt ? "" : exist.receiptImage,
+              printedReceiptImage: printedReceiptImageName !== "" ? printedReceiptImageName : existedDeletedPrinter ? "" : exist.printedReceiptImage,
               header: header,
               footer: footer,
               show_customer_info: show_customer_info,

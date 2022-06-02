@@ -15,6 +15,7 @@ import {
 import validator from "email-validator";
 import { sendReceiptEmail } from "../../libs/sendEmail";
 import POS_Device from "../../modals/POS_Device";
+import { paginate } from "../../libs/middlewares";
 var ObjectId = require("mongoose").Types.ObjectId;
 var mongoose = require("mongoose");
 const router = express.Router();
@@ -54,6 +55,30 @@ router.get("/all", async (req, res) => {
     }
     var allSales = await Sales.find(filter).sort({ _id: "desc" });
     res.status(200).json(allSales);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+router.get("/receipts", async (req, res) => {
+  try {
+    const { account, platform } = req.authData;
+    const { update_at, store_id } = req.query;
+    let filter = {
+      account: account,
+      cancelled_at: null,
+      "store._id": store_id,
+    };
+    let isoDate = new Date(update_at);
+
+    if (platform === "pos") {
+      filter.updated_at = { $gte: isoDate };
+    }
+    const response = await paginate(Sales, req, filter)
+    if(response.status === "ok"){
+      res.status(200).json(response.result);
+    } else if(response.status === "error"){
+      res.status(500).json({ message: response.message });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

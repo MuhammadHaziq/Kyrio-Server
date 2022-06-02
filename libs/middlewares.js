@@ -106,6 +106,35 @@ export const checkModules = (req, res, next) => {
   }
 };
 
+export const paginate = async (Model, req, filter) => {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const result = {};
+// change Model.length to Model.countDocuments() because you are counting directly from mongodb
+    if (endIndex < (await Model.countDocuments().exec())) {
+      result.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+    if (startIndex > 0) {
+      result.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+    try {
+//       .limit(limit).skip(startIndex) replaced the slice method because 
+//       it is done directly from mongodb and they are one of mongodb methods
+      result.results = await Model.find(filter).sort({ _id: "desc" }).limit(limit).skip(startIndex);
+      return { status: "ok", result };
+    } catch (e) {
+      return { status: "error", message: e.message };
+    }
+}
 export const verifyToken = (req, res, next) => {
   // Get auth header value
   // console.log(req.headers);

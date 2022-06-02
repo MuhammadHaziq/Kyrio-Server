@@ -44,6 +44,7 @@ router.post("/summary", async (req, res) => {
       $and: [
         { created_at: { $gte: start, $lte: end } },
         { account: account },
+        { open: false },
         { cancelled_at: null },
         { "store._id": { $in: stores } },
         { created_by: { $in: employees } },
@@ -69,6 +70,7 @@ router.post("/item", async (req, res) => {
       $and: [
         { created_at: { $gte: start, $lte: end } },
         { account: account },
+        { open: false },
         { cancelled_at: null },
         { "store._id": { $in: stores } },
         { created_by: { $in: employees } },
@@ -224,6 +226,7 @@ router.post("/category", async (req, res) => {
       $and: [
         { created_at: { $gte: start, $lte: end } },
         { account: account },
+        { open: false },
         { cancelled_at: null },
         { "store._id": { $in: stores } },
         { created_by: { $in: employees } },
@@ -380,6 +383,7 @@ router.post("/employee", async (req, res) => {
         $match: {
           created_at: { $gte: new Date(start), $lte: new Date(end) },
           account: account,
+          open: false,
           cancelled_at: null,
           "store._id": { $in: stores },
           "cashier._id": { $in: employees },
@@ -504,6 +508,7 @@ router.post("/paymentstypes", async (req, res) => {
       $and: [
         { created_at: { $gte: start, $lte: end } },
         { account: account },
+        { open: false },
         { cancelled_at: null },
         { "store._id": { $in: stores } },
         { created_by: { $in: employees } },
@@ -579,6 +584,7 @@ router.post("/receipts", async (req, res) => {
       $and: [
         { created_at: { $gte: start, $lte: end } },
         { account: account },
+        { open: false },
         { "store._id": { $in: stores } },
         { created_by: { $in: employees } },
       ],
@@ -619,6 +625,7 @@ router.post("/modifiers", async (req, res) => {
       $and: [
         { created_at: { $gte: start, $lte: end } },
         { account: account },
+        { open: false },
         { cancelled_at: null },
         { "store._id": { $in: stores } },
         { created_by: { $in: employees } },
@@ -758,6 +765,7 @@ router.post("/discounts", async (req, res) => {
       $and: [
         { created_at: { $gte: start, $lte: end } },
         { account: account },
+        { open: false },
         { cancelled_at: null },
         { receipt_type: "SALE" },
         { "store._id": { $in: stores } },
@@ -833,6 +841,7 @@ router.post("/taxes", async (req, res) => {
       $and: [
         { created_at: { $gte: start, $lte: end } },
         { account: account },
+        { open: false },
         { cancelled_at: null },
         { receipt_type: "SALE" },
         { "store._id": { $in: stores } },
