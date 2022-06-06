@@ -120,76 +120,42 @@ router.post("/item", async (req, res) => {
         let found = sale.items.filter((itm) => itm.id == item._id);
         if (found.length > 0) {
           if (sale.receipt_type == "SALE") {
-            TotalNetSale =
-              truncateDecimals(decimal, TotalNetSale) +
-              truncateDecimals(decimal, sumBy(found, "total_price"));
-            TotalDiscounts =
-              truncateDecimals(decimal, TotalDiscounts) +
-              truncateDecimals(decimal, sumBy(found, "total_discount"));
-            CostOfGoods =
-              truncateDecimals(decimal, CostOfGoods) +
-              truncateDecimals(decimal, sumBy(found, "cost"));
-            TotalGrossSales =
-              truncateDecimals(decimal, TotalGrossSales) +
-              truncateDecimals(decimal, sumBy(found, "total_price"));
-            TotalItemsSold =
-              TotalItemsSold +
-              parseInt(
-                sumBy(found, "quantity") - sumBy(found, "refund_quantity")
-              );
-            TotalTax =
-              truncateDecimals(decimal, TotalTax) +
-              truncateDecimals(decimal, sumBy(found, "total_tax")) +
-              truncateDecimals(decimal, sumBy(found, "total_tax_included"));
-            SaleTotalTax =
-              truncateDecimals(decimal, SaleTotalTax) +
-              truncateDecimals(decimal, sumBy(found, "total_tax"));
+            TotalNetSale += sumBy(found, "total_price");
+            TotalDiscounts += sumBy(found, "total_discount");
+            CostOfGoods += sumBy(found, "cost");
+            TotalGrossSales += sumBy(found, "total_price");
+            TotalItemsSold += (sumBy(found, "quantity") - sumBy(found, "refund_quantity"))
+            TotalTax += (sumBy(found, "total_tax") + sumBy(found, "total_tax_included"));
+            SaleTotalTax += sumBy(found, "total_tax");
           } else if (sale.receipt_type == "REFUND") {
-            TotalRefunds =
-              truncateDecimals(decimal, TotalRefunds) +
-              truncateDecimals(decimal, sumBy(found, "total_price"));
-            TotalDiscounts =
-              truncateDecimals(decimal, TotalDiscounts) -
-              truncateDecimals(decimal, sumBy(found, "total_discount"));
-            CostOfGoods =
-              truncateDecimals(decimal, CostOfGoods) -
-              truncateDecimals(decimal, sumBy(found, "cost"));
-            TotalItemsRefunded = TotalItemsRefunded + sumBy(found, "quantity");
-            TotalTax =
-              truncateDecimals(decimal, TotalTax) -
-              truncateDecimals(decimal, sumBy(found, "total_tax")) +
-              truncateDecimals(decimal, sumBy(found, "total_tax_included"));
-            SaleTotalTax =
-              truncateDecimals(decimal, SaleTotalTax) -
-              truncateDecimals(decimal, sumBy(found, "total_tax"));
+            TotalRefunds += sumBy(found, "total_price");
+            TotalDiscounts = TotalDiscounts - sumBy(found, "total_discount");
+            CostOfGoods = CostOfGoods - sumBy(found, "cost");
+            TotalItemsRefunded += sumBy(found, "quantity");
+            TotalTax = TotalTax - (sumBy(found, "total_tax") + sumBy(found, "total_tax_included"));
+            SaleTotalTax = SaleTotalTax - sumBy(found, "total_tax");
           }
         }
       }
 
-      TotalNetSale =
-        truncateDecimals(decimal, TotalGrossSales) -
-        truncateDecimals(decimal, TotalDiscounts) -
-        truncateDecimals(decimal, TotalRefunds);
-      TotalGrossProfit =
-        truncateDecimals(decimal, TotalNetSale) -
-        truncateDecimals(decimal, CostOfGoods);
+      TotalNetSale = TotalGrossSales - TotalDiscounts - TotalRefunds;
+      TotalGrossProfit = TotalNetSale - CostOfGoods;
       TotalMargin = (
-        ((truncateDecimals(decimal, TotalNetSale) - CostOfGoods) /
-          truncateDecimals(decimal, TotalNetSale)) *
+        ((decimal, TotalNetSale - CostOfGoods) / TotalNetSale) *
         100
       ).toFixed(2);
 
       let SalesTotal = {
         GrossSales: truncateDecimals(decimal, TotalGrossSales, 2),
-        Refunds: TotalRefunds,
-        discounts: TotalDiscounts,
-        NetSales: TotalNetSale,
-        CostOfGoods: CostOfGoods,
-        GrossProfit: TotalGrossProfit,
+        Refunds: truncateDecimals(decimal, TotalRefunds),
+        discounts: truncateDecimals(decimal, TotalDiscounts),
+        NetSales: truncateDecimals(decimal, TotalNetSale),
+        CostOfGoods: truncateDecimals(decimal, CostOfGoods),
+        GrossProfit: truncateDecimals(decimal, TotalGrossProfit),
         ItemsSold: TotalItemsSold,
         ItemsRefunded: TotalItemsRefunded,
         Margin: TotalMargin,
-        Tax: TotalTax,
+        Tax: truncateDecimals(decimal, TotalTax),
         id: item._id,
         name: item.title,
         sku: item.sku,
@@ -304,69 +270,38 @@ router.post("/category", async (req, res) => {
             let found = sale.items.filter((itm) => itm.id == item._id);
             if (found.length > 0) {
               if (sale.receipt_type == "SALE") {
-                TotalNetSale =
-                  truncateDecimals(decimal, TotalNetSale) +
-                  truncateDecimals(decimal, sumBy(found, "total_price"));
-                TotalDiscounts =
-                  truncateDecimals(decimal, TotalDiscounts) +
-                  truncateDecimals(decimal, sumBy(found, "total_discount"));
-                CostOfGoods =
-                  truncateDecimals(decimal, CostOfGoods) +
-                  truncateDecimals(decimal, sumBy(found, "cost"));
-                TotalGrossSales =
-                  truncateDecimals(decimal, TotalGrossSales) +
-                  truncateDecimals(decimal, sumBy(found, "total_price"));
-                TotalItemsSold = TotalItemsSold + sumBy(found, "quantity");
-                TotalTax =
-                  truncateDecimals(decimal, TotalTax) +
-                  truncateDecimals(decimal, sumBy(found, "total_tax")) +
-                  truncateDecimals(decimal, sumBy(found, "total_tax_included"));
-                SaleTotalTax =
-                  truncateDecimals(decimal, SaleTotalTax) +
-                  truncateDecimals(decimal, sumBy(found, "total_tax"));
+                TotalNetSale += sumBy(found, "total_price");
+                TotalDiscounts += sumBy(found, "total_discount");
+                CostOfGoods += sumBy(found, "cost");
+                TotalGrossSales += sumBy(found, "total_price");
+                TotalItemsSold += sumBy(found, "quantity");
+                TotalTax += (sumBy(found, "total_tax") + sumBy(found, "total_tax_included"));
+                SaleTotalTax += sumBy(found, "total_tax");
               } else if (sale.receipt_type == "REFUND") {
-                TotalRefunds =
-                  truncateDecimals(decimal, TotalRefunds) +
-                  truncateDecimals(decimal, sumBy(found, "total_price"));
-                TotalDiscounts =
-                  truncateDecimals(decimal, TotalDiscounts) -
-                  truncateDecimals(decimal, sumBy(found, "total_discount"));
-                CostOfGoods =
-                  truncateDecimals(decimal, CostOfGoods) -
-                  truncateDecimals(decimal, sumBy(found, "cost"));
-                TotalItemsRefunded =
-                  TotalItemsRefunded + sumBy(found, "quantity");
-                TotalTax =
-                  truncateDecimals(decimal, TotalTax) -
-                  truncateDecimals(decimal, sumBy(found, "total_tax")) +
-                  truncateDecimals(decimal, sumBy(found, "total_tax_included"));
-                SaleTotalTax =
-                  truncateDecimals(decimal, SaleTotalTax) -
-                  truncateDecimals(decimal, sumBy(found, "total_tax"));
+                TotalRefunds += sumBy(found, "total_price");
+                TotalDiscounts = TotalDiscounts - sumBy(found, "total_discount");
+                CostOfGoods = CostOfGoods - sumBy(found, "cost");
+                TotalItemsRefunded += sumBy(found, "quantity");
+                TotalTax = TotalTax - (sumBy(found, "total_tax") + sumBy(found, "total_tax_included"));
+                SaleTotalTax = SaleTotalTax - sumBy(found, "total_tax");
               }
             }
           }
-          TotalNetSale =
-            truncateDecimals(decimal, TotalGrossSales) -
-            truncateDecimals(decimal, TotalDiscounts) -
-            truncateDecimals(decimal, TotalRefunds);
-          TotalGrossProfit =
-            truncateDecimals(decimal, TotalNetSale) -
-            truncateDecimals(decimal, CostOfGoods);
+          TotalNetSale = TotalGrossSales - TotalDiscounts - TotalRefunds;
+          TotalGrossProfit = TotalNetSale - CostOfGoods;
           TotalMargin = (
-            ((truncateDecimals(decimal, TotalNetSale) - CostOfGoods) /
-              truncateDecimals(decimal, TotalNetSale)) *
+            ((TotalNetSale - CostOfGoods) / TotalNetSale) *
             100
           ).toFixed(2);
         }
       }
       SalesTotal = {
-        GrossSales: TotalGrossSales,
-        Refunds: TotalRefunds,
-        discounts: TotalDiscounts,
-        NetSales: TotalNetSale,
-        CostOfGoods: CostOfGoods,
-        GrossProfit: TotalGrossProfit,
+        GrossSales: truncateDecimals(decimal, TotalGrossSales),
+        Refunds: truncateDecimals(decimal, TotalRefunds),
+        discounts: truncateDecimals(decimal, TotalDiscounts),
+        NetSales: truncateDecimals(decimal, TotalNetSale),
+        CostOfGoods: truncateDecimals(decimal, CostOfGoods),
+        GrossProfit: truncateDecimals(decimal, TotalGrossProfit),
         ItemsSold: TotalItemsSold,
         Tax: TotalTax,
         ItemsRefunded: TotalItemsRefunded,
@@ -433,75 +368,44 @@ router.post("/employee", async (req, res) => {
 
       for (const sale of empSale.sales) {
         if (sale.receipt_type == "SALE") {
-          TotalNetSale =
-            truncateDecimals(decimal, TotalNetSale) +
-            truncateDecimals(decimal, sale.total_price);
-          TotalDiscounts =
-            truncateDecimals(decimal, TotalDiscounts) +
-            truncateDecimals(decimal, sale.total_discount);
-          CostOfGoods =
-            truncateDecimals(decimal, CostOfGoods) +
-            truncateDecimals(decimal, sale.cost_of_goods);
-          TotalGrossSales =
-            truncateDecimals(decimal, TotalGrossSales) +
-            truncateDecimals(decimal, sale.total_price);
-          TotalTax =
-            truncateDecimals(decimal, TotalTax) +
-            truncateDecimals(decimal, sale.total_tax) +
-            truncateDecimals(decimal, sale.total_tax_included);
-          SaleTotalTax =
-            truncateDecimals(decimal, SaleTotalTax) +
-            truncateDecimals(decimal, sale.total_tax);
+          TotalNetSale += sale.total_price;
+          TotalDiscounts += sale.total_discount;
+          CostOfGoods += sale.cost_of_goods;
+          TotalGrossSales += sale.sub_total;
+          TotalTax += (sale.total_tax +sale.total_tax_included);
+          SaleTotalTax += sale.total_tax;
         } else if (sale.receipt_type == "REFUND") {
-          TotalRefunds =
-            truncateDecimals(decimal, TotalRefunds) +
-            truncateDecimals(decimal, sale.total_price);
-          TotalDiscounts =
-            truncateDecimals(decimal, TotalDiscounts) -
-            truncateDecimals(decimal, sale.total_discount);
-          CostOfGoods =
-            truncateDecimals(decimal, CostOfGoods) -
-            truncateDecimals(decimal, sale.cost_of_goods);
-          TotalTax =
-            truncateDecimals(decimal, TotalTax) -
-            truncateDecimals(decimal, sale.total_tax) +
-            truncateDecimals(decimal, sale.total_tax_included);
-          SaleTotalTax =
-            truncateDecimals(decimal, SaleTotalTax) -
-            truncateDecimals(decimal, sale.total_tax);
+          TotalRefunds += sale.total_price;
+          TotalDiscounts = TotalDiscounts - sale.total_discount;
+          CostOfGoods =  CostOfGoods - sale.cost_of_goods;
+          TotalTax = TotalTax - (sale.total_tax + sale.total_tax_included);
+          SaleTotalTax = SaleTotalTax - sale.total_tax;
           TotalItemsRefunded++;
         }
         TotalItemsSold++;
       }
-      TotalNetSale =
-        truncateDecimals(decimal, TotalGrossSales) -
-        truncateDecimals(decimal, TotalDiscounts) -
-        truncateDecimals(decimal, TotalRefunds);
-      TotalGrossProfit =
-        truncateDecimals(decimal, TotalNetSale) -
-        truncateDecimals(decimal, CostOfGoods);
-      TotalMargin = (
-        ((truncateDecimals(decimal, TotalNetSale) - CostOfGoods) /
-          truncateDecimals(decimal, TotalNetSale)) *
-        100
-      ).toFixed(2);
+      TotalNetSale = TotalGrossSales - TotalDiscounts - TotalRefunds;
+      TotalGrossProfit = TotalNetSale - CostOfGoods;
+      TotalMargin = ((TotalGrossProfit / TotalNetSale) *
+          100
+        ).toFixed(2);
 
       let SalesTotal = {
-        GrossSales: TotalGrossSales,
-        Refunds: TotalRefunds,
-        discounts: TotalDiscounts,
-        NetSales: TotalNetSale,
-        CostOfGoods: CostOfGoods,
-        GrossProfit: TotalGrossProfit,
+        GrossSales: truncateDecimals(decimal, TotalGrossSales),
+        Refunds: truncateDecimals(decimal, TotalRefunds),
+        discounts: truncateDecimals(decimal, TotalDiscounts),
+        NetSales: truncateDecimals(decimal, TotalNetSale),
+        CostOfGoods: truncateDecimals(decimal, CostOfGoods),
+        GrossProfit: truncateDecimals(decimal, TotalGrossProfit),
         ItemsSold: TotalItemsSold,
-        Tax: TotalTax,
+        Tax: truncateDecimals(decimal, TotalTax),
         Receipts: empSale.sales.length,
         AverageSale: truncateDecimals(
           decimal,
           TotalNetSale / empSale.sales.length
         ),
         ItemsRefunded: TotalItemsRefunded,
-        Margin: TotalMargin,
+        Margin: truncateDecimals(decimal, TotalMargin),
         Name: emp.name,
       };
       reportData.push(SalesTotal);
@@ -552,7 +456,11 @@ router.post("/paymentstypes", async (req, res) => {
     let paymentKeys = Object.keys(payments);
 
     let reportData = [];
-
+    let totalPaymentTransactions = 0,
+    totalPaymentAmount = 0,
+    totalRefundTransactions = 0,
+    totalRefundAmount = 0,
+    totalNetAmount = 0
     for (var payment of paymentKeys) {
       let paymentTransactions = 0;
       let paymentAmount = 0;
@@ -561,20 +469,14 @@ router.post("/paymentstypes", async (req, res) => {
       let netAmount = 0;
       for (const pay of payments[payment]) {
         if (pay.receipt_type == "SALE") {
-          paymentAmount =
-            truncateDecimals(decimal, paymentAmount) +
-            truncateDecimals(decimal, pay.amount);
+          paymentAmount += pay.amount;
           paymentTransactions++;
         } else if (pay.receipt_type == "REFUND") {
-          refundAmount =
-            truncateDecimals(decimal, refundAmount) +
-            truncateDecimals(decimal, pay.amount);
+          refundAmount += pay.amount;
           refundTransactions++;
         }
       }
-      netAmount =
-        truncateDecimals(decimal, paymentAmount) -
-        truncateDecimals(decimal, refundAmount);
+      netAmount = paymentAmount - refundAmount;
 
       let SalesTotal = {
         paymentTransactions: truncateDecimals(decimal, paymentTransactions),
@@ -584,10 +486,21 @@ router.post("/paymentstypes", async (req, res) => {
         netAmount: truncateDecimals(decimal, netAmount),
         PaymentType: payments[payment][0].type,
       };
+      totalPaymentTransactions += paymentTransactions;
+      totalPaymentAmount += paymentAmount;
+      totalRefundTransactions += refundTransactions;
+      totalRefundAmount += refundAmount;
+      totalNetAmount += netAmount;
       reportData.push(SalesTotal);
     }
-
-    res.status(200).json(reportData);
+    let total = {
+      totalPaymentTransactions: truncateDecimals(decimal, totalPaymentTransactions),
+      totalPaymentAmount: truncateDecimals(decimal, totalPaymentAmount),
+      totalRefundTransactions: truncateDecimals(decimal, totalRefundTransactions),
+      totalRefundAmount: truncateDecimals(decimal, totalRefundAmount),
+      totalNetAmount: truncateDecimals(decimal, totalNetAmount)
+    }
+    res.status(200).json({ report: reportData, total});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -701,14 +614,11 @@ router.post("/modifiers", async (req, res) => {
                       if (sale.receipt_type == "SALE") {
                         optQuantitySold =
                           optQuantitySold + parseInt(item.quantity);
-                        optGrossSales =
-                          optGrossSales + truncateDecimals(decimal, opt.price);
+                        optGrossSales += opt.price;
                       } else if (sale.receipt_type == "REFUND") {
                         optRefundQuantitySold =
                           optRefundQuantitySold + parseInt(item.quantity);
-                        optRefundGrossSales =
-                          optRefundGrossSales +
-                          truncateDecimals(decimal, opt.price);
+                        optRefundGrossSales += opt.price;
                       }
                     }
                   }
@@ -817,7 +727,10 @@ router.post("/discounts", async (req, res) => {
       }
       return sale.items.map((item) => {
         if (item.discounts.length > 0) {
-          item.discounts.map((dis) => itemDiscounts.push(dis));
+          item.discounts.map((dis) => { 
+            dis.discount_total = (dis.value/100) * item.total_price
+            return itemDiscounts.push(dis)
+          });
         }
       });
     });
@@ -827,7 +740,7 @@ router.post("/discounts", async (req, res) => {
 
     let receiptGroupDiscounts = groupBy(receiptDiscounts, "_id");
     let receiptDiscountKeys = Object.keys(receiptGroupDiscounts);
-
+    
     let reportData = [];
     for (const key of itemDiscountKeys) {
       reportData.push({
@@ -836,10 +749,7 @@ router.post("/discounts", async (req, res) => {
         applied: itemGroupDiscounts[key].length,
         type: itemGroupDiscounts[key][0].type,
         value: itemGroupDiscounts[key][0].value,
-        total: truncateDecimals(
-          decimal,
-          sumBy(itemGroupDiscounts[key], "discount_total")
-        ),
+        total: sumBy(itemGroupDiscounts[key], "discount_total"),
       });
     }
     for (const key of receiptDiscountKeys) {
@@ -849,10 +759,7 @@ router.post("/discounts", async (req, res) => {
         applied: receiptGroupDiscounts[key].length,
         type: receiptGroupDiscounts[key][0].type,
         value: receiptGroupDiscounts[key][0].value,
-        total: truncateDecimals(
-          decimal,
-          sumBy(receiptGroupDiscounts[key], "value")
-        ),
+        total: sumBy(receiptGroupDiscounts[key], "value"),
       });
     }
 
