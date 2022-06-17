@@ -335,7 +335,7 @@ router.post("/signin", async (req, res) => {
     const { email, password, platform } = req.body;
     if (platform == "backoffice" || platform === "pos") {
       let result = await Users.findOne({
-        email: email,
+        email: email.toLowerCase(),
         password: md5(password),
       })
         .populate({

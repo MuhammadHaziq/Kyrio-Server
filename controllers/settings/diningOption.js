@@ -40,7 +40,7 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { _id, account, stores, is_owner } = req.authData;
+    const { account, stores, is_owner } = req.authData;
     let filter = { account: account }
     if(!is_owner){
       let storeIDList = []
@@ -60,10 +60,10 @@ router.get("/", async (req, res) => {
       const result = await diningOption
         .find({
           account: account,
-          $or: [{ stores: { $elemMatch: { store: store._id } } }, { stores: { $elemMatch: { storeId: store._id } } }]
+          $or: [{ stores: { $elemMatch: { store: store._id } } }, { stores: { $elemMatch: { storeId: store._id } } }],
         }).populate('stores.store', ["_id","title"])
         .sort({ _id: "asc" });
-
+        
       data.push({
         storeId: store._id,
         storeName: store.title,
@@ -229,6 +229,7 @@ router.delete("/:id", async (req, res) => {
 router.patch("/", async (req, res) => {
   try {
     const { id, title, store, isSelected } = req.body;
+    const { account } = req.authData;
     let jsonStore = JSON.parse(store);
     const countDining = await diningOption.countDocuments();
    
@@ -242,7 +243,7 @@ router.patch("/", async (req, res) => {
     });
     const { _id } = req.authData;
     const result = await diningOption.findOneAndUpdate(
-      { _id: id },
+      { _id: id, account: account },
       {
         $set: {
           title: title,

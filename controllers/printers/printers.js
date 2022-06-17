@@ -58,7 +58,6 @@ router.get("/:pos_device/:storeId", async (req, res) => {
     }
     res.status(200).json(newResult);
   } catch (error) {
-    console.log(error)
     res.status(500).json({ message: error.message });
   }
 });

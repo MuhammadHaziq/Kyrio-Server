@@ -53,6 +53,7 @@ router.post("/", async (req, res) => {
 
 router.get("/:storeId", async (req, res) => {
   try {
+    
     const { account, platform, stores, is_owner } = req.authData;
     const { storeId } = req.params;
     const { update_at } = req.query;

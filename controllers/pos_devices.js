@@ -100,7 +100,6 @@ router.post("/getStoreDevice", async (req, res) => {
     const { storeId, UDID } = req.body;
     if (UDID != "") {
       let result = {};
-      let condition = {};
       if (storeId === "0") {
         result = await POS_Device.findOne({
           account: account,
@@ -124,8 +123,8 @@ router.post("/getStoreDevice", async (req, res) => {
           }).populate("store", ["_id", "title"]);
         }
       }
-
       if (result !== null) {
+        
         result = await POS_Device.findByIdAndUpdate(
           { _id: result._id },
           {
@@ -136,10 +135,13 @@ router.post("/getStoreDevice", async (req, res) => {
           }
         ).populate("store", ["_id", "title"]);
         var shift = await Shifts.findOne({
-          pos_device_id: result._id,
+          pos_device: result._id,
           closed_at: null,
           account: account,
-        });
+        }).populate("store", ["_id", "title"])
+        .populate("opened_by_employee", ["_id", "name"])
+        .populate("pos_device", ["_id", "title"])
+        .populate("createdBy", ["_id", "name"]);
         if (shift) {
           res.status(200).json({ device: result, openShift: shift });
         } else {
