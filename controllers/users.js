@@ -196,80 +196,94 @@ router.post("/signup", checkModules, async (req, res) => {
           });
         }
         if (platform == "backoffice") {
-          jwt.sign(user, "kyrio_bfghigheu", async (err, token) => {
-            if (err) {
-              deleteUserAccount({
-                email,
-                businessName,
-                account: account._id,
-                reason: "Signup of user unable to generate token",
-                comments: `${err.message}`,
-                confirm: true,
-              });
-              res.status(500).send({
-                type: "server",
-                message: `Internal server error!`,
-              });
-            } else {
-              user.roleData = userResult.role;
-              user.features = userResult.account.features;
-              user.settings = userResult.account.settings;
-              user.UserToken = token;
+          jwt.sign(
+            user,
+            "kyrio_bfghigheu",
+            {
+              expiresIn: "1d", // expires in 1 day
+            },
+            async (err, token) => {
+              if (err) {
+                deleteUserAccount({
+                  email,
+                  businessName,
+                  account: account._id,
+                  reason: "Signup of user unable to generate token",
+                  comments: `${err.message}`,
+                  confirm: true,
+                });
+                res.status(500).send({
+                  type: "server",
+                  message: `Internal server error!`,
+                });
+              } else {
+                user.roleData = userResult.role;
+                user.features = userResult.account.features;
+                user.settings = userResult.account.settings;
+                user.UserToken = token;
 
-              try {
-                sendEmail(emailMessage);
-              } catch (err) {
-                console.log(`Unable to send email: ${err.message}`);
+                try {
+                  sendEmail(emailMessage);
+                } catch (err) {
+                  console.log(`Unable to send email: ${err.message}`);
+                }
+                res.status(200).send(user);
               }
-              res.status(200).send(user);
             }
-          });
+          );
         } else if (platform == "pos") {
-          jwt.sign(user, "kyrio_bfghigheu", async (err, token) => {
-            if (err) {
-              deleteUserAccount({
-                email,
-                businessName,
-                account: account._id,
-                reason: "Signup of user unable to generate token",
-                comments: `${err.message}`,
-                confirm: true,
-              });
-              res.status(500).send({
-                type: "server",
-                message: `Unable To Generate Token: ${err.message}`,
-              });
-            } else {
-              let features = [];
-              for (const ft of userResult.account.features) {
-                features.push({
-                  _id: ft.feature._id,
-                  title: ft.feature.title,
-                  handle: ft.feature.handle,
-                  enable: ft.enable,
+          jwt.sign(
+            user,
+            "kyrio_bfghigheu",
+            {
+              expiresIn: "1d", // expires in 1 day
+            },
+            async (err, token) => {
+              if (err) {
+                deleteUserAccount({
+                  email,
+                  businessName,
+                  account: account._id,
+                  reason: "Signup of user unable to generate token",
+                  comments: `${err.message}`,
+                  confirm: true,
                 });
-              }
-              let modules = [];
-              for (const md of userResult.role.allowPOS.modules) {
-                modules.push({
-                  _id: md.posModule._id,
-                  title: md.posModule.title,
-                  handle: md.posModule.handle,
-                  enable: md.enable,
+                res.status(500).send({
+                  type: "server",
+                  message: `Unable To Generate Token: ${err.message}`,
                 });
+              } else {
+                let features = [];
+                for (const ft of userResult.account.features) {
+                  features.push({
+                    _id: ft.feature._id,
+                    title: ft.feature.title,
+                    handle: ft.feature.handle,
+                    enable: ft.enable,
+                  });
+                }
+                let modules = [];
+                for (const md of userResult.role.allowPOS.modules) {
+                  modules.push({
+                    _id: md.posModule._id,
+                    title: md.posModule.title,
+                    handle: md.posModule.handle,
+                    enable: md.enable,
+                  });
+                }
+                (user.role_title = userResult.role.title),
+                  (user.features = features);
+                user.modules = modules;
+                user.UserToken = token;
+                try {
+                  sendEmail(emailMessage);
+                } catch (err) {
+                  console.log(`Unable to send email: ${err.message}`);
+                }
+                res.status(200).send(user);
               }
-              (user.role_title = userResult.role.title),
-                (user.features = features);
-              user.modules = modules;
-              user.UserToken = token;
-              try {
-                sendEmail(emailMessage);
-              } catch (err) {
-                console.log(`Unable to send email: ${err.message}`);
-              }
-              res.status(200).send(user);
             }
-          });
+          );
         }
       })
       .catch((err) => {
@@ -385,7 +399,7 @@ router.post("/signin", async (req, res) => {
               user,
               "kyrio_bfghigheu",
               {
-                expiresIn: "120s", // expires in 365 days
+                expiresIn: "1d", // expires in 1 day
               },
               (err, token) => {
                 if (err) {
@@ -413,7 +427,7 @@ router.post("/signin", async (req, res) => {
               user,
               "kyrio_bfghigheu",
               {
-                expiresIn: "120s", // expires in 365 days
+                expiresIn: "1d", // expires in 1 day
               },
               (err, token) => {
                 if (err) {
