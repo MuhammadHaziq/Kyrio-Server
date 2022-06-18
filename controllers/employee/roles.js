@@ -334,16 +334,21 @@ router.patch("/update", async (req, res) => {
             upsert: true, // Make this update into an upsert
           }).populate('allowBackoffice.modules.backoffice', ["_id", "title", "handle", "isMenu", "isChild"]).populate('allowPOS.modules.posModule', ["_id", "title", "handle", "description"]);
           if (updatedRole) {
-            let modules = []
+            let appData = {
+              modules: [],
+              allowBackoffice: backoffice.enable,
+              allowPOS: pos.enable
+            }
             for (const md of updatedRole.allowPOS.modules) {
-              modules.push({
+              appData.modules.push({
                 _id: md.posModule._id,
                 title: md.posModule.title,
                 handle: md.posModule.handle,
                 enable: md.enable
               })
             }
-            req.io.to(account).emit(ROLES_ACCESS_TOGGLE, { app: modules, backoffice: updatedRole, user: _id, account: account });
+            
+            req.io.to(account).emit(ROLES_ACCESS_TOGGLE, { app: appData, backoffice: updatedRole, user: _id, account: account });
           }
           const response = await get_role_summary(roleId, account);
           if (response.status == true) {
