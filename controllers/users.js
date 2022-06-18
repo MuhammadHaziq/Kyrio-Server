@@ -440,8 +440,10 @@ router.post("/signin", async (req, res) => {
                     enable: md.enable,
                   });
                 }
-                (user.role_title = result.role.title),
-                  (user.features = features);
+                user.role_title = result.role.title;
+                user.allowBackoffice = result.role.allowBackoffice.enable;
+                user.allowPOS = result.role.allowPOS.enable;
+                user.features = features;
                 user.modules = modules;
                 user.UserToken = token;
                 res.status(200).send(user);
