@@ -608,28 +608,31 @@ router.patch("/", async (req, res) => {
 router.get("/sku", async (req, res) => {
   try {
     const { account, _id } = req.authData;
-    
+
     var skuFound = await SkuHistory.findOne({
       account: account,
     });
     if (skuFound) {
       let newSKU = "";
-      
-      if(skuFound.sku == 'null' || skuFound.sku == null || skuFound.sku == ''){ 
-        skuFound.sku = parseInt(9999)
+
+      if (
+        skuFound.sku == "null" ||
+        skuFound.sku == null ||
+        skuFound.sku == ""
+      ) {
+        skuFound.sku = parseInt(9999);
       }
-        for (var i = 1; i <= 99999; i++) {
-          newSKU = parseInt(skuFound.sku) + i;
-          var itemFound = await ItemList.findOne({
-            sku: newSKU,
-            account: account,
-            deleted: 0,
-          })
-            .select("sku");
-          if (!itemFound) {
-            break;
-          }
+      for (var i = 1; i <= 99999; i++) {
+        newSKU = parseInt(skuFound.sku) + i;
+        var itemFound = await ItemList.findOne({
+          sku: newSKU,
+          account: account,
+          deleted: 0,
+        }).select("sku");
+        if (!itemFound) {
+          break;
         }
+      }
       res.status(200).json({ sku: newSKU });
     } else {
       const newSkuHistory = new SkuHistory({
@@ -1195,7 +1198,7 @@ router.get("/search", async (req, res) => {
           },
         ],
       })
-      .sort({ [sortBy]: sortValue })
+      .sort({ title: 1 })
       .skip((+page - 1) * +itemsPerPage)
       .limit(+itemsPerPage)
       .lean();
@@ -1269,14 +1272,14 @@ router.post("/delete", async (req, res) => {
 router.get("/get_item_stores", async (req, res) => {
   try {
     const { account, stores, is_owner } = req.authData;
-    let filter = { account: account }
-    if(!is_owner){
-      let storeIDList = []
-      if(stores.length > 0){
-        for(const str of stores){
-          storeIDList.push(str._id)
+    let filter = { account: account };
+    if (!is_owner) {
+      let storeIDList = [];
+      if (stores.length > 0) {
+        for (const str of stores) {
+          storeIDList.push(str._id);
         }
-        filter._id = { $in : storeIDList }
+        filter._id = { $in: storeIDList };
       }
     }
     const storesList = await Store.find(filter).sort({
