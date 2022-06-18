@@ -1,7 +1,83 @@
-const moment = require("moment");
 import { sumBy } from "lodash";
-// #START# Sale Summary Functions
+import path from "path";
+import Accounts from "../modals/accounts";
+import Users from "../modals/users";
+import Category from "../modals/items/category";
+import Discount from "../modals/items/Discount";
+import Modifier from "../modals/items/Modifier";
+import ItemList from "../modals/items/ItemList";
+import KitchenPrinter from "../modals/settings/kitchenPrinter";
+import PaymentMethods from "../modals/settings/paymentTypes/paymentMethods";
+import DiningOption from "../modals/settings/diningOption";
+import PaymentsType from "../modals/settings/paymentTypes/paymentsType";
+import POS_Device from "../modals/POS_Device";
+import Role from "../modals/role";
+import ItemTax from "../modals/settings/taxes/itemTax";
+import Loyalty from "../modals/settings/loyalty";
+import Receipts from "../modals/settings/receipt";
+import Tickets from "../modals/sales/tickets";
+import Sales from "../modals/sales/sales";
+import Customers from "../modals/customers/customers";
+import Store from "../modals/Store";
+import SkuHistory from "../modals/items/SKUHistory";
+import DeletedAccounts from "../modals/DeletedAccounts";
+import PrinterModal from "../modals/printers/modal";
+const moment = require("moment");
+var rimraf = require("rimraf");
 
+export const deleteUserAccount = async ({
+  email,
+  businessName,
+  account,
+  reason,
+  comments,
+  confirm,
+}) => {
+  try {
+    await Accounts.deleteOne({ _id: account });
+    await Category.deleteMany({ account: account });
+    await Discount.deleteMany({ account: account });
+    await Modifier.deleteMany({ account: account });
+    await ItemList.deleteMany({ account: account });
+    await DiningOption.deleteMany({ account: account });
+    await PrinterModal.deleteMany({ account: account });
+    await KitchenPrinter.deleteMany({ account: account });
+    await PaymentMethods.deleteMany({ account: account });
+    await PaymentsType.deleteMany({ account: account });
+    await POS_Device.deleteMany({ account: account });
+    await Role.deleteMany({ account: account });
+    await ItemTax.deleteMany({ account: account });
+    await Users.deleteMany({ account: account });
+    await Loyalty.deleteMany({ account: account });
+    await Receipts.deleteMany({ account: account });
+    await Tickets.deleteMany({ account: account });
+    await Sales.deleteMany({ account: account });
+    await Customers.deleteMany({ account: account });
+    await SkuHistory.deleteMany({ account: account });
+    await Store.deleteMany({ account: account });
+    rimraf(path.join(__dirname, "../uploads/items/" + account), () => {
+      console.log("Items Images Deleted");
+    });
+    rimraf(path.join(__dirname, "../uploads/receipt/" + account), () => {
+      console.log("Receipt Images Deleted");
+    });
+    rimraf(path.join(__dirname, "../uploads/csv/" + account), () => {
+      console.log("CSV Files Deleted");
+    });
+
+    await new DeletedAccounts({
+      email: email,
+      businessName: businessName,
+      reason: reason,
+      comments: comments,
+      confirm: confirm,
+    }).save();
+
+    return { status: true, message: "Account successfully deleted!" };
+  } catch (e) {
+    return { status: false, message: e.message };
+  }
+};
 export const uuidv4 = () => {
   return "xxxxxxxx-xxxx-4xxx-yxxx".replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
@@ -20,10 +96,10 @@ export const truncateDecimals = (decimals, num) => {
   //   substrLength = decPos == -1 ? numS.length : 1 + decPos + decimals,
   //   trimmedResult = numS.substr(0, substrLength),
   //   finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
-  if(typeof num == "undefined" || num == 0 || num == null || num == ""){
-    return (0).toFixed(decimals)
+  if (typeof num == "undefined" || num == 0 || num == null || num == "") {
+    return (0).toFixed(decimals);
   } else {
-    return parseFloat(num,decimals).toFixed(decimals);
+    return parseFloat(num, decimals).toFixed(decimals);
   }
   // return amountFormat(num, decimals);
 };
@@ -82,36 +158,36 @@ export const checkDivider = async (divider, saleCreatedAt, matches, index) => {
     return saleYear.isSame(match, "year");
   }
 };
+// #START# Sale Summary Functions
 export const filterSales = async (sales, divider, matches, decimal) => {
   try {
+    let sale_total = 0; //sumBy(allSales, "sub_total");
+    let refund_total = 0; //sumBy(allRefunds, "total_price");
 
-    let sale_total = 0;//sumBy(allSales, "sub_total");
-    let refund_total = 0;//sumBy(allRefunds, "total_price");
+    let sale_discount_total = 0; //sumBy(allSales, "total_discount");
+    let refund_discount_total = 0; //sumBy(allRefunds, "total_discount");
 
-    let sale_discount_total = 0;//sumBy(allSales, "total_discount");
-    let refund_discount_total = 0;//sumBy(allRefunds, "total_discount");
+    let sale_cost_total = 0; //sumBy(allSales, "cost_of_goods");
+    let refund_cost_total = 0; //sumBy(allRefunds, "cost_of_goods");
 
-    let sale_cost_total = 0;//sumBy(allSales, "cost_of_goods");
-    let refund_cost_total = 0;//sumBy(allRefunds, "cost_of_goods");
+    let sale_tax_total = 0; //sumBy(allSales, "total_tax");
 
-    let sale_tax_total = 0;//sumBy(allSales, "total_tax");
-
-    for(const sale of sales){
-      if(sale.receipt_type === "SALE"){
-        sale_total += sale.sub_total
-        sale_discount_total += sale.total_discount
-        sale_cost_total += sale.cost_of_goods
-      } else if(sale.receipt_type === "REFUND"){
-        refund_total += sale.refund_total
-        refund_discount_total += sale.total_discount
-        refund_cost_total += sale.cost_of_goods
+    for (const sale of sales) {
+      if (sale.receipt_type === "SALE") {
+        sale_total += sale.sub_total;
+        sale_discount_total += sale.total_discount;
+        sale_cost_total += sale.cost_of_goods;
+      } else if (sale.receipt_type === "REFUND") {
+        refund_total += sale.refund_total;
+        refund_discount_total += sale.total_discount;
+        refund_cost_total += sale.cost_of_goods;
       }
     }
 
     let TotalGrossSales = sale_total;
     let TotalRefunds = refund_total;
-    let TotalDiscounts = sale_discount_total - refund_discount_total
-    let TotalNetSale =  sale_total;
+    let TotalDiscounts = sale_discount_total - refund_discount_total;
+    let TotalNetSale = sale_total;
     let CostOfGoods = sale_cost_total - refund_cost_total;
     let TotalGrossProfit = 0;
 
@@ -158,7 +234,7 @@ export const filterSales = async (sales, divider, matches, decimal) => {
               TotalDiscounts += sale.total_discount;
               CostOfGoods += sale.cost_of_goods;
               TotalGrossSales += sale.sub_total;
-              TotalTax += (sale.total_tax +sale.total_tax_included);
+              TotalTax += sale.total_tax + sale.total_tax_included;
               SaleTotalTax += sale.total_tax;
             } else if (sale.receipt_type == "REFUND") {
               TotalRefunds += sale.total_price;
@@ -171,10 +247,8 @@ export const filterSales = async (sales, divider, matches, decimal) => {
         }
         TotalNetSale = TotalGrossSales - TotalDiscounts - TotalRefunds;
         TotalGrossProfit = TotalNetSale - CostOfGoods;
-        
-        TotalMargin = ((TotalGrossProfit / TotalNetSale) *
-          100
-        ).toFixed(2);
+
+        TotalMargin = ((TotalGrossProfit / TotalNetSale) * 100).toFixed(2);
         TotalMargin = isNaN(TotalMargin) ? 0 : TotalMargin;
 
         let summaryDate = "";
@@ -217,11 +291,13 @@ export const filterSales = async (sales, divider, matches, decimal) => {
         graphRecord.discounts.push(truncateDecimals(decimal, TotalDiscounts));
         graphRecord.NetSales.push(truncateDecimals(decimal, TotalNetSale));
         graphRecord.CostOfGoods.push(truncateDecimals(decimal, CostOfGoods));
-        graphRecord.GrossProfit.push(truncateDecimals(decimal, TotalGrossProfit));
+        graphRecord.GrossProfit.push(
+          truncateDecimals(decimal, TotalGrossProfit)
+        );
       }
       i++;
     }
-    
+
     if (sales.length <= 0) {
       TableRecord = [];
     }

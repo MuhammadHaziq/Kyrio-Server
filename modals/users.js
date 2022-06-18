@@ -38,6 +38,11 @@ const usersSchema = new mongoose.Schema(
       min: 0,
       max: 255,
     },
+    real: {
+      type: String,
+      min: 0,
+      max: 255,
+    },
     country: {
       type: String,
       min: 6,
