@@ -210,6 +210,7 @@ router.post("/", async (req, res) => {
             "stores.lowStock",
           ]);
           if (storeItem) {
+            console.log(storeItem)
             let storeQty =
               typeof storeItem.stores !== "undefined"
                 ? parseInt(storeItem.stores[0].inStock) -
