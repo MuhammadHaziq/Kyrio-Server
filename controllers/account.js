@@ -1,29 +1,9 @@
 import express from "express";
-import path from "path";
 import Accounts from "../modals/accounts";
 import Users from "../modals/users";
-import Category from "../modals/items/category";
-import Discount from "../modals/items/Discount";
-import Modifier from "../modals/items/Modifier";
-import ItemList from "../modals/items/ItemList";
-import KitchenPrinter from "../modals/settings/kitchenPrinter";
-import PaymentMethods from "../modals/settings/paymentTypes/paymentMethods";
-import DiningOption from "../modals/settings/diningOption";
-import PaymentsType from "../modals/settings/paymentTypes/paymentsType";
-import POS_Device from "../modals/POS_Device";
-import Role from "../modals/role";
-import ItemTax from "../modals/settings/taxes/itemTax";
-import Loyalty from "../modals/settings/loyalty";
-import Receipts from "../modals/settings/receipt";
-import Tickets from "../modals/sales/tickets";
-import Sales from "../modals/sales/sales";
-import Customers from "../modals/customers/customers";
-import Store from "../modals/Store";
-import SkuHistory from "../modals/items/SKUHistory";
-import DeletedAccounts from "../modals/DeletedAccounts";
 import md5 from "md5";
+import { deleteUserAccount } from "../function/globals";
 const router = express.Router();
-var rimraf = require("rimraf");
 
 router.get("/getAccountInfo", async (req, res) => {
   try {
@@ -145,45 +125,18 @@ router.post("/deleteAccount", async (req, res) => {
     const { email, businessName, is_owner, account } = req.authData;
 
     if (is_owner) {
-      const DeleteAcc = new DeletedAccounts({
-        email: email,
-        businessName: businessName,
-        reason: reason,
-        comments: comments,
-        confirm: confirm,
+      let response = await deleteUserAccount({
+        email,
+        businessName,
+        account,
+        reason,
+        comments,
+        confirm,
       });
-      const result = await DeleteAcc.save();
-      if (result) {
-        await Accounts.deleteOne({ _id: account });
-        await Category.deleteMany({ account: account });
-        await Discount.deleteMany({ account: account });
-        await Modifier.deleteMany({ account: account });
-        await ItemList.deleteMany({ account: account });
-        await DiningOption.deleteMany({ account: account });
-        await KitchenPrinter.deleteMany({ account: account });
-        await PaymentMethods.deleteMany({ account: account });
-        await PaymentsType.deleteMany({ account: account });
-        await POS_Device.deleteMany({ account: account });
-        await Role.deleteMany({ account: account });
-        await ItemTax.deleteMany({ account: account });
-        await Users.deleteMany({ account: account });
-        await Loyalty.deleteMany({ account: account });
-        await Receipts.deleteMany({ account: account });
-        await Tickets.deleteMany({ account: account });
-        await Sales.deleteMany({ account: account });
-        await Customers.deleteMany({ account: account });
-        await SkuHistory.deleteMany({ account: account });
-        await Store.deleteMany({ account: account });
-        rimraf(path.join(__dirname, "../uploads/items/" + account), () => {
-          console.log("Items Images Deleted");
-        });
-        rimraf(path.join(__dirname, "../uploads/receipt/" + account), () => {
-          console.log("Receipt Images Deleted");
-        });
-        rimraf(path.join(__dirname, "../uploads/csv/" + account), () => {
-          console.log("CSV Files Deleted");
-        });
+      if (response.status) {
         res.status(200).json({ status: true });
+      } else {
+        res.status(200).json({ status: false });
       }
     } else {
       res.status(200).json({ status: false });
