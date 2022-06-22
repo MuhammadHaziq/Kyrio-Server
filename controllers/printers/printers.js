@@ -9,13 +9,13 @@ router.get("/:pos_device/:storeId", async (req, res) => {
   try {
     const { pos_device, storeId } = req.params;
     const { account } = req.authData;
-      let filter = { 
-        account: account,
-        store: storeId,
-        pos_device: pos_device,
-        restricted: true 
-      }
-      
+    let filter = {
+      account: account,
+      store: storeId,
+      pos_device: pos_device,
+      restricted: true,
+    };
+
     const restrictedResults = await Printers.find(filter)
       .populate("modal", ["_id", "title"])
       .populate({
@@ -24,8 +24,8 @@ router.get("/:pos_device/:storeId", async (req, res) => {
       })
       .populate("store", ["_id", "title"])
       .sort({ title: "asc" });
-      filter.pos_device = { $ne: pos_device }
-      filter.restricted = false
+    delete filter.pos_device;
+    filter.restricted = false;
     const nonRestrictedResults = await Printers.find(filter)
       .populate("modal", ["_id", "title"])
       .populate({
@@ -38,7 +38,7 @@ router.get("/:pos_device/:storeId", async (req, res) => {
     let newResult = [];
     for (const printer of restrictedResults) {
       let grps = [];
-      if(printer.groups){
+      if (printer.groups) {
         for (const gr of printer.groups) {
           grps.push(gr._id);
         }
@@ -48,7 +48,7 @@ router.get("/:pos_device/:storeId", async (req, res) => {
     }
     for (const printer of nonRestrictedResults) {
       let grps = [];
-      if(printer.groups){
+      if (printer.groups) {
         for (const gr of printer.groups) {
           grps.push(gr._id);
         }
@@ -148,7 +148,7 @@ router.post("/", async (req, res) => {
       groups,
       store,
       pos_device,
-      restricted
+      restricted,
     } = req.body;
     const { _id, account } = req.authData;
 
@@ -210,7 +210,7 @@ router.patch("/", async (req, res) => {
     groups,
     store,
     pos_device,
-    restricted
+    restricted,
   } = req.body;
   const { _id, account } = req.authData;
 
