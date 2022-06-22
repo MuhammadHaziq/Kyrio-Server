@@ -330,6 +330,9 @@ const showPayments = (receipt, decimal) => {
     .join("");
 };
 const showSplitPayments = (receipt, decimal, pay) => {
+  if(typeof pay.amount == "undefined"){
+    return ""
+  } 
   return `<tr>
       <td valign="top" style="max-width:75%;padding:0 0 0 16px;line-height:16px">
           <p style="color:rgba(0,0,0,0.87);font-family:Roboto,Arial,Helvetica,sans-serif;font-weight:normal;font-size:14px;text-align:left;margin:0;padding-bottom:4px;word-break:break-word">
