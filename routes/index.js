@@ -35,6 +35,13 @@ var router = express.Router();
 router.get("/", (req, res, next) => {
   res.render("index", { title: "Kyrio POS Server Version 2" });
 });
+router.post("/kommunicate", (req, res) => {
+  console.log(req.body);
+  res.status(200).send({
+    type: "server",
+    message: `We Got It`,
+  });
+});
 router.use("/users", usersRouter);
 router.use("/ownercab", verifyToken, accountRouter);
 router.use("/tickets", verifyToken, ticketsRouter);
