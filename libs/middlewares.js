@@ -18,6 +18,7 @@ import { removeSpaces } from "../function/validateFunctions";
 import { deleteUserAccount } from "../function/globals";
 import jwt from "jsonwebtoken";
 import validator from "email-validator";
+import jwt_decode from "jwt-decode";
 
 export const checkModules = (req, res, next) => {
   const { email, platform, businessName, country } = req.body;
@@ -220,20 +221,21 @@ export const verifyToken = (req, res, next) => {
   if (typeof bearerToken !== "undefined") {
     // Set the token
     req.token = bearerToken;
-    jwt.verify(bearerToken, "kyrio_bfghigheu", (err, authData) => {
-      if (err) {
-        res.sendStatus(401);
+    // jwt.verify(bearerToken, "kyrio_bfghigheu", (err, authData) => {
+    //   if (err) {
+    //     res.sendStatus(401);
+    //   } else {
+    var decoded = jwt_decode(bearerToken);
+    Users.find({ _id: decoded._id }).then((response) => {
+      if (response.length > 0) {
+        req.authData = decoded;
+        next();
       } else {
-        Users.find({ _id: authData._id }).then((response) => {
-          if (response.length > 0) {
-            req.authData = authData;
-            next();
-          } else {
-            res.sendStatus(401);
-          }
-        });
+        res.sendStatus(401);
       }
     });
+    // }
+    // });
     // Next middleware
   } else {
     res.sendStatus(401);
