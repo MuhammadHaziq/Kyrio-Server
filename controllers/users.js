@@ -199,9 +199,7 @@ router.post("/signup", checkModules, async (req, res) => {
           jwt.sign(
             user,
             "kyrio_bfghigheu",
-            {
-              expiresIn: "1d", // expires in 1 day
-            },
+            
             async (err, token) => {
               if (err) {
                 deleteUserAccount({
@@ -235,9 +233,7 @@ router.post("/signup", checkModules, async (req, res) => {
           jwt.sign(
             user,
             "kyrio_bfghigheu",
-            {
-              expiresIn: "1d", // expires in 1 day
-            },
+            
             async (err, token) => {
               if (err) {
                 deleteUserAccount({
@@ -398,9 +394,7 @@ router.post("/signin", async (req, res) => {
             jwt.sign(
               user,
               "kyrio_bfghigheu",
-              {
-                expiresIn: "1d", // expires in 1 day
-              },
+              
               (err, token) => {
                 if (err) {
                   res.status(500).send({
@@ -426,9 +420,7 @@ router.post("/signin", async (req, res) => {
             jwt.sign(
               user,
               "kyrio_bfghigheu",
-              {
-                expiresIn: "1d", // expires in 1 day
-              },
+              
               (err, token) => {
                 if (err) {
                   res.status(500).send({
