@@ -1,7 +1,6 @@
 import express from "express";
 import Accounts from "../../modals/accounts";
 import Users from "../../modals/users";
-import md5 from "md5";
 const router = express.Router();
 
 router.get("/all", async (req, res) => {
