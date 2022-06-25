@@ -229,7 +229,7 @@ export const verifyToken = (req, res, next) => {
     //     res.sendStatus(401);
     //   } else {
     var decoded = jwt_decode(bearerToken);
-    console.log(decoded);
+    
     Users.find({ _id: decoded._id }).then((response) => {
       if (response.length > 0) {
         req.authData = decoded;
