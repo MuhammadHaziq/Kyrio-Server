@@ -189,16 +189,19 @@ export const paginate = async (Model, req, filter) => {
 
   const result = {};
   // change Model.length to Model.countDocuments() because you are counting directly from mongodb
-  if (endIndex < (await Model.countDocuments().exec())) {
+  let Total = await Model.countDocuments().exec();
+  if (endIndex < Total) {
     result.next = {
       page: page + 1,
       limit: limit,
+      total: Total,
     };
   }
   if (startIndex > 0) {
     result.previous = {
       page: page - 1,
       limit: limit,
+      total: Total,
     };
   }
   try {
