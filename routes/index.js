@@ -28,6 +28,10 @@ import printerModal from "../controllers/printers";
 import Loyalty from "../controllers/settings/loyalty";
 import features from "../controllers/settings/features/features";
 import receipts from "../controllers/settings/receipt";
+// Admin Routes
+import adminRouter from "../controllers/admin";
+// #END#
+
 import express from "express";
 import { verifyToken } from "../libs/middlewares";
 var router = express.Router();
@@ -71,4 +75,7 @@ router.use("/paymentsType", verifyToken, paymentsType);
 router.use("/loyalty", verifyToken, Loyalty);
 router.use("/features", verifyToken, features);
 router.use("/receipt", verifyToken, receipts);
+// Admin Routes
+router.use("/admin", adminRouter);
+// #END#
 module.exports = router;
