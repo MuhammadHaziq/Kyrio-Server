@@ -182,8 +182,8 @@ export const checkModules = (req, res, next) => {
 };
 
 export const paginate = async (Model, req, filter) => {
-  const page = parseInt(req.query.page);
-  const limit = parseInt(req.query.limit);
+  const page = parseInt(req.query.page || 1);
+  const limit = parseInt(req.query.limit || 10);
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 
@@ -195,12 +195,12 @@ export const paginate = async (Model, req, filter) => {
       limit: limit,
     };
   }
-  if (startIndex > 0) {
-    result.previous = {
-      page: page - 1,
-      limit: limit,
-    };
-  }
+  // if (startIndex > 0) {
+  result.previous = {
+    page: page - 1,
+    limit: limit,
+  };
+  // }
   try {
     //       .limit(limit).skip(startIndex) replaced the slice method because
     //       it is done directly from mongodb and they are one of mongodb methods
