@@ -195,12 +195,12 @@ export const paginate = async (Model, req, filter) => {
       limit: limit,
     };
   }
-  // if (startIndex > 0) {
-  result.previous = {
-    page: page - 1,
-    limit: limit,
-  };
-  // }
+  if (startIndex > 0) {
+    result.previous = {
+      page: page - 1,
+      limit: limit,
+    };
+  }
   try {
     //       .limit(limit).skip(startIndex) replaced the slice method because
     //       it is done directly from mongodb and they are one of mongodb methods
@@ -226,7 +226,7 @@ export const verifyToken = (req, res, next) => {
     //     res.sendStatus(401);
     //   } else {
     var decoded = jwt_decode(bearerToken);
-    // console.log(decoded);
+    console.log(decoded);
     Users.find({ _id: decoded._id }).then((response) => {
       if (response.length > 0) {
         req.authData = decoded;
