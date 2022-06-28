@@ -190,7 +190,7 @@ export const pagination = async (Model, req, filter) => {
   const result = {};
   // change Model.length to Model.countDocuments() because you are counting directly from mongodb
   let Total = await Model.countDocuments().exec();
-  let meta = {
+  result.meta = {
     hasNextPage: false,
     hasPreviousPage: false,
     itemCount: Total,
@@ -262,7 +262,7 @@ export const verifyToken = (req, res, next) => {
     //     res.sendStatus(401);
     //   } else {
     var decoded = jwt_decode(bearerToken);
-    
+
     Users.find({ _id: decoded._id }).then((response) => {
       if (response.length > 0) {
         req.authData = decoded;
