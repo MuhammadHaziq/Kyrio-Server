@@ -199,13 +199,13 @@ export const pagination = async (Model, req, filter) => {
     take: limit,
   };
   if (endIndex < Total) {
-    meta.hasNextPage = true;
+    result.meta.hasNextPage = true;
   }
   if (startIndex > 0) {
-    meta.hasPreviousPage = true;
+    result.meta.hasPreviousPage = true;
   }
   try {
-    result.results = await Model.find(filter)
+    result.data = await Model.find(filter)
       .sort({ _id: "desc" })
       .limit(limit)
       .skip(startIndex);

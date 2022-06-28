@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
     if (status === "ok") {
       let data = [];
 
-      for (const account of result.results) {
+      for (const account of result.data) {
         let totalUsers = await Users.find({
           account: account._id,
         }).countDocuments();
@@ -21,13 +21,13 @@ router.get("/", async (req, res) => {
           decimal: account.decimal,
           timeFormat: account.timeFormat,
           dateFormat: account.dateFormat,
-          createdAt: account.createdAt,
           totalUsers: totalUsers,
+          createdAt: account.createdAt,
         });
       }
       res
         .status(200)
-        .json({ next: result.next, previous: result.previous, data });
+        .json({ data, meta: result.meta });
     } else if (status === "error") {
       res.status(500).json({ message: response.message });
     }
