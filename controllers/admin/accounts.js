@@ -1,12 +1,12 @@
 import express from "express";
 import Accounts from "../../modals/accounts";
 import Users from "../../modals/users";
-import { paginate } from "../../libs/middlewares";
+import { pagination } from "../../libs/middlewares";
 const router = express.Router();
 
 router.get("/all", async (req, res) => {
   try {
-    const { status, result } = await paginate(Accounts, req, {});
+    const { status, result } = await pagination(Accounts, req, {});
 
     if (status === "ok") {
       let data = [];

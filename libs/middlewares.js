@@ -181,6 +181,39 @@ export const checkModules = (req, res, next) => {
   }
 };
 
+export const pagination = async (Model, req, filter) => {
+  const page = parseInt(req.query.page || 1);
+  const limit = parseInt(req.query.limit || 10);
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  const result = {};
+  // change Model.length to Model.countDocuments() because you are counting directly from mongodb
+  let Total = await Model.countDocuments().exec();
+  let meta = {
+    hasNextPage: false,
+    hasPreviousPage: false,
+    itemCount: Total,
+    page: page,
+    pageCount: Math.ceil(Total / limit),
+    take: limit,
+  };
+  if (endIndex < Total) {
+    meta.hasNextPage = true;
+  }
+  if (startIndex > 0) {
+    meta.hasPreviousPage = true;
+  }
+  try {
+    result.results = await Model.find(filter)
+      .sort({ _id: "desc" })
+      .limit(limit)
+      .skip(startIndex);
+    return { status: "ok", result };
+  } catch (e) {
+    return { status: "error", message: e.message };
+  }
+};
 export const paginate = async (Model, req, filter) => {
   const page = parseInt(req.query.page || 1);
   const limit = parseInt(req.query.limit || 10);
