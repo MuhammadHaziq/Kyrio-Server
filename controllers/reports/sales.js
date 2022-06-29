@@ -530,6 +530,26 @@ router.post("/receipts", async (req, res) => {
       .populate("user", "name")
       .populate("cancelled_by", ["_id", "name"])
       .sort({ receipt_number: "desc" });
+      let items = []
+      // for(const sale of receipts){
+      //   for(const item of sale.items){
+          // let itemsFound = await ItemList.find({
+          //   $and: [{ account: account }, { _id: { $in: item.id } }],
+          // }).populate("category", ["_id", "title"]);
+          
+      //   } 
+      // }
+      receipts.map(sale => {
+        return sale.items.map(item => {
+          let itemsFound = await ItemList.findOne({
+            $and: [{ account: account }, { _id: { $in: item.id } }],
+          }).populate("category", ["_id", "title"]);
+          item.sku = itemsFound.sku
+          item.category = itemsFound.category.title
+        })
+      })
+
+      
 
     let totalSales = receipts.filter(
       (itm) => itm.receipt_type == "SALE"
