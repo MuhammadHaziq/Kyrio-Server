@@ -194,7 +194,10 @@ router.patch("/", async (req, res) => {
       )
         .populate("stores", ["_id", "title"])
         .sort({ position: 1 });
-      req.io.to(account).emit(MODIFIER_UPDATE, { data: result, user: _id });
+        const appResponse = await Modifier.findOne(
+          { _id: result._id })
+          .sort({ position: 1 });
+      req.io.to(account).emit(MODIFIER_UPDATE, { data: appResponse, user: _id });
 
       res.status(200).json(result);
     } else {

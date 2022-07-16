@@ -151,7 +151,7 @@ router.post("/", async (req, res) => {
       restricted,
     } = req.body;
     const { _id, account } = req.authData;
-
+    const newGroups = !groups ? null : groups.length > 0 ? groups : null 
     const newPrinter = new Printers({
       title: title,
       connect_interface: connect_interface,
@@ -161,7 +161,7 @@ router.post("/", async (req, res) => {
       PO: PO,
       APR: APR,
       modal: ObjectId.isValid(modal) ? modal : null,
-      groups: ObjectId.isValid(groups) ? groups : null,
+      groups: newGroups,
       store: store,
       pos_device: pos_device,
       restricted: restricted,
@@ -213,7 +213,7 @@ router.patch("/", async (req, res) => {
     restricted,
   } = req.body;
   const { _id, account } = req.authData;
-
+  const updateGroups = !groups ? null : groups.length > 0 ? groups : null 
   try {
     const updatedRecord = await Printers.findOneAndUpdate(
       { _id: id },
@@ -227,7 +227,7 @@ router.patch("/", async (req, res) => {
           PO: PO,
           APR: APR,
           modal: ObjectId.isValid(modal) ? modal : null,
-          groups: ObjectId.isValid(groups) ? groups : null,
+          groups: updateGroups,
           store: store,
           pos_device: pos_device,
           restricted: restricted,

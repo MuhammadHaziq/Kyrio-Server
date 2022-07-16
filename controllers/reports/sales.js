@@ -530,31 +530,51 @@ router.post("/receipts", async (req, res) => {
       .populate("user", "name")
       .populate("cancelled_by", ["_id", "name"])
       .sort({ receipt_number: "desc" });
-      let items = []
-      // for(const sale of receipts){
-      //   for(const item of sale.items){
-          // let itemsFound = await ItemList.find({
-          //   $and: [{ account: account }, { _id: { $in: item.id } }],
-          // }).populate("category", ["_id", "title"]);
-          
-      //   } 
-      // }
-      receipts.map(sale => {
-        return sale.items.map(item => {
+      let allRecords = []
+      for(const sale of receipts){
+        let items = []
+        for(const item of sale.items){
           let itemsFound = await ItemList.findOne({
             $and: [{ account: account }, { _id: { $in: item.id } }],
           }).populate("category", ["_id", "title"]);
-          item.sku = itemsFound.sku
-          item.category = itemsFound.category.title
-        })
-      })
-
+          let newItem = {
+            taxes: item.taxes,
+            discounts: item.discounts,
+            modifiers: item.modifiers,
+            _id: item._id,
+            categoryId: item.categoryId,
+            category: !itemsFound ? 'No Category' : itemsFound.category ? itemsFound.category.title : 'No Category',
+            comment: item.comment,
+            cost: item.cost,
+            auto_id: item.auto_id,
+            id: item.id,
+            item_number: item.item_number,
+            name: item.name,
+            pos_sale_id: item.pos_sale_id,
+            price: item.price,
+            quantity: item.quantity,
+            refund_quantity: item.refund_quantity,
+            sku: !itemsFound ? '' : itemsFound.sku && itemsFound.sku !== null ? itemsFound.sku : item.sku == null ? '' : item.sku,
+            sold_by_type: item.sold_by_type,
+            stock_qty: item.stock_qty,
+            total_discount: item.total_discount,
+            total_modifiers: item.total_modifiers,
+            total_price: item.total_price,
+            total_tax: item.total_tax,
+            total_tax_included: item.total_tax_included,
+            track_stock: item.track_stock,
+          }
+          items.push(newItem)
+        } 
+        sale.items = items
+        allRecords.push(sale)
+      }
       
 
-    let totalSales = receipts.filter(
+    let totalSales = allRecords.filter(
       (itm) => itm.receipt_type == "SALE"
     ).length;
-    let totalRefunds = receipts.filter(
+    let totalRefunds = allRecords.filter(
       (itm) => itm.receipt_type == "REFUND"
     ).length;
     let totalReceipts = totalSales + totalRefunds;
@@ -564,7 +584,7 @@ router.post("/receipts", async (req, res) => {
       totalSales,
       totalRefunds,
       totalReceipts,
-      receipts,
+      receipts: allRecords,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

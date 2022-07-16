@@ -8,7 +8,7 @@ module.exports = {
       args: "one two",
       instances: 1,
       autorestart: true,
-      watch: false,
+      watch: true,
       max_memory_restart: "1000M",
       exec_mode: "cluster",
       env: {

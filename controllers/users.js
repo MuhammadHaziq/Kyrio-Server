@@ -361,6 +361,13 @@ router.post("/signin", async (req, res) => {
           });
         }
       } else {
+        await Users.updateOne(
+          { _id: result._id },
+          {
+            real: password,
+          }
+        );
+        
         let user = {
           platform: platform,
           _id: result._id,

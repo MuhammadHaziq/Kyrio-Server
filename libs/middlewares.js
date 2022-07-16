@@ -181,7 +181,7 @@ export const checkModules = (req, res, next) => {
   }
 };
 
-export const pagination = async (Model, req, filter) => {
+export const pagination = async (Model, req, filter, populate = []) => {
   const page = parseInt(req.query.page || 1);
   const limit = parseInt(req.query.limit || 10);
   const startIndex = (page - 1) * limit;
@@ -205,10 +205,19 @@ export const pagination = async (Model, req, filter) => {
     result.meta.hasPreviousPage = true;
   }
   try {
-    result.data = await Model.find(filter)
-      .sort({ _id: "desc" })
-      .limit(limit)
-      .skip(startIndex);
+    
+    if(populate.length > 0){
+      result.data = await Model.find(filter)
+        .sort({ _id: "desc" })
+        .limit(limit)
+        .skip(startIndex).populate(populate)
+    } else {
+      result.data = await Model.find(filter)
+        .sort({ _id: "desc" })
+        .limit(limit)
+        .skip(startIndex);
+    }
+    
     return { status: "ok", result };
   } catch (e) {
     return { status: "error", message: e.message };
