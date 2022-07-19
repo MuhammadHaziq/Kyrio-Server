@@ -182,7 +182,7 @@ export const checkModules = (req, res, next) => {
 };
 
 export const pagination = async (Model, req, filter, populate = []) => {
-  const page = parseInt(req.query.page || 1);
+  const page = req.query.page == 0 ? 1 : parseInt(req.query.page || 1);
   const limit = parseInt(req.query.limit || 10);
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;

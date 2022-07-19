@@ -213,7 +213,9 @@ router.patch("/", async (req, res) => {
     restricted,
   } = req.body;
   const { _id, account } = req.authData;
+  console.log(groups)
   const updateGroups = !groups ? null : groups.length > 0 ? groups : null 
+  console.log(updateGroups)
   try {
     const updatedRecord = await Printers.findOneAndUpdate(
       { _id: id },
@@ -236,17 +238,18 @@ router.patch("/", async (req, res) => {
         },
       }
     )
+    // .populate({
+    //   path: "groups",
+    //   select: ["_id", "title"],
+    //   populate: [
+    //     {
+    //       path: "categories",
+    //       select: ["_id", "title", "color"],
+    //     },
+    //   ],
+    // })
+      .populate("groups", ["_id", "title"])
       .populate("modal", ["_id", "title"])
-      .populate({
-        path: "groups",
-        select: ["_id", "title"],
-        populate: [
-          {
-            path: "categories",
-            select: ["_id", "title", "color"],
-          },
-        ],
-      })
       .populate("store", ["_id", "title"]);
     if (updatedRecord) {
       res.status(200).json(updatedRecord);
