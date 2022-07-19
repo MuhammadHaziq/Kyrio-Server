@@ -183,7 +183,7 @@ export const checkModules = (req, res, next) => {
 
 export const pagination = async (Model, req, filter, populate = []) => {
   const page = req.query.page == 0 ? 1 : parseInt(req.query.page || 1);
-  const limit = req.query.limit == 0  ? 10 : parseInt(req.query.limit || 10);
+  const limit = req.query.limit == 0 ? 10 : parseInt(req.query.limit || 10);
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 
@@ -205,27 +205,27 @@ export const pagination = async (Model, req, filter, populate = []) => {
     result.meta.hasPreviousPage = true;
   }
   try {
-    
-    if(populate.length > 0){
+    if (populate.length > 0) {
       result.data = await Model.find(filter)
         .sort({ _id: "desc" })
         .limit(limit)
-        .skip(startIndex).populate(populate)
+        .skip(startIndex)
+        .populate(populate);
     } else {
       result.data = await Model.find(filter)
         .sort({ _id: "desc" })
         .limit(limit)
         .skip(startIndex);
     }
-    
+
     return { status: "ok", result };
   } catch (e) {
     return { status: "error", message: e.message };
   }
 };
 export const paginate = async (Model, req, filter) => {
-  const page = parseInt(req.query.page || 1);
-  const limit = parseInt(req.query.limit || 10);
+  const page = req.query.page == 0 ? 1 : parseInt(req.query.page || 1);
+  const limit = req.query.limit == 0 ? 10 : parseInt(req.query.limit || 10);
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 

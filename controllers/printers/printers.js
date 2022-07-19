@@ -151,7 +151,7 @@ router.post("/", async (req, res) => {
       restricted,
     } = req.body;
     const { _id, account } = req.authData;
-    const newGroups = !groups ? null : groups.length > 0 ? groups : null 
+    const newGroups = !groups ? null : groups.length > 0 ? groups : null;
     const newPrinter = new Printers({
       title: title,
       connect_interface: connect_interface,
@@ -213,11 +213,9 @@ router.patch("/", async (req, res) => {
     restricted,
   } = req.body;
   const { _id, account } = req.authData;
-  console.log(groups)
-  const updateGroups = !groups ? null : groups.length > 0 ? groups : null 
-  console.log(updateGroups)
+  const updateGroups = !groups ? null : groups.length > 0 ? groups : null;
   try {
-    const updatedRecord = await Printers.findOneAndUpdate(
+    await Printers.updateOne(
       { _id: id },
       {
         $set: {
@@ -237,17 +235,8 @@ router.patch("/", async (req, res) => {
           account: account,
         },
       }
-    )
-    // .populate({
-    //   path: "groups",
-    //   select: ["_id", "title"],
-    //   populate: [
-    //     {
-    //       path: "categories",
-    //       select: ["_id", "title", "color"],
-    //     },
-    //   ],
-    // })
+    );
+    const updatedRecord = await Printers.findOne({ _id: id })
       .populate("groups", ["_id", "title"])
       .populate("modal", ["_id", "title"])
       .populate("store", ["_id", "title"]);
