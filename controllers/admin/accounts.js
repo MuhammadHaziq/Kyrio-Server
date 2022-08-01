@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { status, result } = await pagination(Accounts, req, {});
+    const { status, result } = await pagination(Accounts, req);
 
     if (status === "ok") {
       let data = [];
@@ -26,9 +26,7 @@ router.get("/", async (req, res) => {
           createdAt: account.createdAt,
         });
       }
-      res
-        .status(200)
-        .json({ data, meta: result.meta });
+      res.status(200).json({ data, meta: result.meta });
     } else if (status === "error") {
       res.status(500).json({ message: result.message });
     }
@@ -41,32 +39,30 @@ router.get("/users", async (req, res) => {
   try {
     const populate = [
       {
-        path: 'role',
-        select: 'title'
+        path: "role",
+        select: "title",
       },
       {
-        path: 'account',
-        select: 'businessName'
+        path: "account",
+        select: "businessName",
       },
       {
-        path: 'createdBy',
-        select: 'name'
+        path: "createdBy",
+        select: "name",
       },
       {
-        path: 'owner_id',
-        select: 'name'
+        path: "owner_id",
+        select: "name",
       },
       {
-        path: 'stores',
-        select: 'title'
-      }
-  ]
-    const { status, result } = await pagination(Users, req, {}, populate);
+        path: "stores",
+        select: "title",
+      },
+    ];
+    const { status, result } = await pagination(Users, req, filter, populate);
 
     if (status === "ok") {
-      res
-        .status(200)
-        .json({ data: result.data, meta: result.meta });
+      res.status(200).json({ data: result.data, meta: result.meta });
     } else if (status === "error") {
       res.status(500).json({ message: result.message });
     }
@@ -78,20 +74,18 @@ router.get("/stores", async (req, res) => {
   try {
     const populate = [
       {
-        path: 'account',
-        select: 'businessName'
+        path: "account",
+        select: "businessName",
       },
       {
-        path: 'createdBy',
-        select: 'name'
+        path: "createdBy",
+        select: "name",
       },
-  ]
+    ];
     const { status, result } = await pagination(Store, req, {}, populate);
 
     if (status === "ok") {
-      res
-        .status(200)
-        .json({ data: result.data, meta: result.meta });
+      res.status(200).json({ data: result.data, meta: result.meta });
     } else if (status === "error") {
       res.status(500).json({ message: result.message });
     }
