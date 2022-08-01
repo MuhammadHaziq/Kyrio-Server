@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { status, result } = await pagination(Accounts, req);
+    const { status, result } = await pagination(Accounts, req, {});
 
     if (status === "ok") {
       let data = [];
@@ -59,7 +59,7 @@ router.get("/users", async (req, res) => {
         select: "title",
       },
     ];
-    const { status, result } = await pagination(Users, req, filter, populate);
+    const { status, result } = await pagination(Users, req, {}, populate);
 
     if (status === "ok") {
       res.status(200).json({ data: result.data, meta: result.meta });
