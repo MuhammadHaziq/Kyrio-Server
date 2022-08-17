@@ -192,6 +192,12 @@ router.post("/", async (req, res) => {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
     const { _id, account, decimal } = req.authData;
+    
+    const ifAlreadyExist = await Sales.findOne({ account: account, "store._id": store._id, receipt_number: receipt_number })
+    if(ifAlreadyExist){
+      res.status(200).json(ifAlreadyExist);
+    } else {
+      
     let stockNotification = {
       store,
       itemsList: [],
@@ -437,6 +443,7 @@ router.post("/", async (req, res) => {
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
+  }
   }
 });
 

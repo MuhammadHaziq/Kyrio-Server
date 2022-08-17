@@ -1,7 +1,8 @@
 import Users from "../modals/users";
 import Role from "../modals/role";
 import Stores from "../modals/Store";
-import Accounts from "../modals/accounts";
+// import Accounts from "../modals/accounts";
+import Sales from "../modals/sales/sales";
 import PrinterModal from "../modals/printers/modal";
 import UserTickets from "../modals/UserTickets";
 import { checkModules, addModuleWhenSignUp } from "../libs/middlewares";
@@ -16,41 +17,44 @@ import { deleteUserAccount } from "../function/globals";
 
 var router = express.Router();
 
+router.post("/videoaskwebhook", async (req, res) => {
+  console.log(req.body);
+  res.status(200).send({message: "Received"});
+})
 router.post("/testapi", async (req, res) => {
   const { param } = req.body;
-  let userResult = await Users.findOne({ _id: param })
-    .populate({
-      path: "role",
-      populate: [
-        {
-          path: "allowBackoffice.modules.backoffice",
-          select: ["_id", "title", "handle", "isMenu", "isChild"],
-        },
-        {
-          path: "allowPOS.modules.posModule",
-          select: ["_id", "title", "handle", "description"],
-        },
-      ],
-    })
-    .populate("stores", ["_id", "title"])
-    .populate({
-      path: "account",
-      populate: [
-        {
-          path: "features.feature",
-          select: ["_id", "title", "handle", "description", "icon"],
-        },
-        {
-          path: "settings.module",
-          select: ["_id", "title", "handle", "icon", "heading", "span"],
-        },
-        {
-          path: "settings.feature",
-          select: ["_id", "title", "handle", "description", "icon"],
-        },
-      ],
-    });
-  res.status(200).send(userResult);
+  let userResult = await Sales.aggregate([
+    {"$match": {"account" :{ "$eq" : '628aeeb5dfb45b23782a7701' }, "store._id": "628aeeb5dfb45b23782a7716" } }, 
+    {"$group" : {
+      _id: {
+        receipt_number: "$receipt_number"
+      },
+      uniqueIds: {
+        $addToSet: "$_id"
+      },
+      count: {
+        $sum: 1
+      }
+    } },
+    {"$match": {"count" : {"$gt": 1} } },
+    // {"$project": {"receipt_number" : "$_id", "_id" : 0} }
+  ]);
+
+  let totalDuplicates = 0;
+  let keepIDs = [];
+  let deleteIDs = [];
+  for(const itm of userResult){
+    let IDs = itm.uniqueIds
+    keepIDs.push(IDs[0]);
+    IDs.splice(0, 1);
+    for(const id of IDs){
+      deleteIDs.push(id)
+    }
+    totalDuplicates = totalDuplicates + itm.count
+  }
+  // await Sales.deleteMany({ _id: { $in: deleteIDs } });
+  res.status(200).send({total: userResult.length, totalDuplicates, keepIDsLength: keepIDs.length, deleteIDsLength: deleteIDs.length, keepIDs,
+    deleteIDs, data: userResult});
 });
 router.post("/signup", checkModules, async (req, res) => {
   const {

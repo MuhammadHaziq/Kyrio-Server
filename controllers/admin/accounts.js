@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    console.log(req);
     const { status, result } = await pagination(Accounts, req, {});
 
     if (status === "ok") {
