@@ -10,7 +10,6 @@ import taxesType from "../controllers/settings/taxes/taxesType";
 import taxesOption from "../controllers/settings/taxes/taxesOption";
 import paymentMethods from "../controllers/settings/paymentTypes/paymentMethods.js";
 import paymentsType from "../controllers/settings/paymentTypes/paymentsType.js";
-
 import itemTax from "../controllers/settings/taxes/itemTax";
 import ticketsRouter from "../controllers/sales/tickets";
 import salesRouter from "../controllers/sales/sales";

@@ -124,15 +124,19 @@ router.post("/item", async (req, res) => {
             TotalDiscounts += sumBy(found, "total_discount");
             CostOfGoods += sumBy(found, "cost");
             TotalGrossSales += sumBy(found, "total_price");
-            TotalItemsSold += (sumBy(found, "quantity") - sumBy(found, "refund_quantity"))
-            TotalTax += (sumBy(found, "total_tax") + sumBy(found, "total_tax_included"));
+            TotalItemsSold +=
+              sumBy(found, "quantity") - sumBy(found, "refund_quantity");
+            TotalTax +=
+              sumBy(found, "total_tax") + sumBy(found, "total_tax_included");
             SaleTotalTax += sumBy(found, "total_tax");
           } else if (sale.receipt_type == "REFUND") {
             TotalRefunds += sumBy(found, "total_price");
             TotalDiscounts = TotalDiscounts - sumBy(found, "total_discount");
             CostOfGoods = CostOfGoods - sumBy(found, "cost");
             TotalItemsRefunded += sumBy(found, "quantity");
-            TotalTax = TotalTax - (sumBy(found, "total_tax") + sumBy(found, "total_tax_included"));
+            TotalTax =
+              TotalTax -
+              (sumBy(found, "total_tax") + sumBy(found, "total_tax_included"));
             SaleTotalTax = SaleTotalTax - sumBy(found, "total_tax");
           }
         }
@@ -188,7 +192,6 @@ router.post("/item", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/category", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -275,14 +278,20 @@ router.post("/category", async (req, res) => {
                 CostOfGoods += sumBy(found, "cost");
                 TotalGrossSales += sumBy(found, "total_price");
                 TotalItemsSold += sumBy(found, "quantity");
-                TotalTax += (sumBy(found, "total_tax") + sumBy(found, "total_tax_included"));
+                TotalTax +=
+                  sumBy(found, "total_tax") +
+                  sumBy(found, "total_tax_included");
                 SaleTotalTax += sumBy(found, "total_tax");
               } else if (sale.receipt_type == "REFUND") {
                 TotalRefunds += sumBy(found, "total_price");
-                TotalDiscounts = TotalDiscounts - sumBy(found, "total_discount");
+                TotalDiscounts =
+                  TotalDiscounts - sumBy(found, "total_discount");
                 CostOfGoods = CostOfGoods - sumBy(found, "cost");
                 TotalItemsRefunded += sumBy(found, "quantity");
-                TotalTax = TotalTax - (sumBy(found, "total_tax") + sumBy(found, "total_tax_included"));
+                TotalTax =
+                  TotalTax -
+                  (sumBy(found, "total_tax") +
+                    sumBy(found, "total_tax_included"));
                 SaleTotalTax = SaleTotalTax - sumBy(found, "total_tax");
               }
             }
@@ -317,7 +326,6 @@ router.post("/category", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/employee", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -372,12 +380,12 @@ router.post("/employee", async (req, res) => {
           TotalDiscounts += sale.total_discount;
           CostOfGoods += sale.cost_of_goods;
           TotalGrossSales += sale.sub_total;
-          TotalTax += (sale.total_tax +sale.total_tax_included);
+          TotalTax += sale.total_tax + sale.total_tax_included;
           SaleTotalTax += sale.total_tax;
         } else if (sale.receipt_type == "REFUND") {
           TotalRefunds += sale.total_price;
           TotalDiscounts = TotalDiscounts - sale.total_discount;
-          CostOfGoods =  CostOfGoods - sale.cost_of_goods;
+          CostOfGoods = CostOfGoods - sale.cost_of_goods;
           TotalTax = TotalTax - (sale.total_tax + sale.total_tax_included);
           SaleTotalTax = SaleTotalTax - sale.total_tax;
           TotalItemsRefunded++;
@@ -386,9 +394,7 @@ router.post("/employee", async (req, res) => {
       }
       TotalNetSale = TotalGrossSales - TotalDiscounts - TotalRefunds;
       TotalGrossProfit = TotalNetSale - CostOfGoods;
-      TotalMargin = ((TotalGrossProfit / TotalNetSale) *
-          100
-        ).toFixed(2);
+      TotalMargin = ((TotalGrossProfit / TotalNetSale) * 100).toFixed(2);
 
       let SalesTotal = {
         GrossSales: truncateDecimals(decimal, TotalGrossSales),
@@ -416,7 +422,6 @@ router.post("/employee", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/paymentstypes", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -457,10 +462,10 @@ router.post("/paymentstypes", async (req, res) => {
 
     let reportData = [];
     let totalPaymentTransactions = 0,
-    totalPaymentAmount = 0,
-    totalRefundTransactions = 0,
-    totalRefundAmount = 0,
-    totalNetAmount = 0
+      totalPaymentAmount = 0,
+      totalRefundTransactions = 0,
+      totalRefundAmount = 0,
+      totalNetAmount = 0;
     for (var payment of paymentKeys) {
       let paymentTransactions = 0;
       let paymentAmount = 0;
@@ -494,18 +499,23 @@ router.post("/paymentstypes", async (req, res) => {
       reportData.push(SalesTotal);
     }
     let total = {
-      totalPaymentTransactions: truncateDecimals(decimal, totalPaymentTransactions),
+      totalPaymentTransactions: truncateDecimals(
+        decimal,
+        totalPaymentTransactions
+      ),
       totalPaymentAmount: truncateDecimals(decimal, totalPaymentAmount),
-      totalRefundTransactions: truncateDecimals(decimal, totalRefundTransactions),
+      totalRefundTransactions: truncateDecimals(
+        decimal,
+        totalRefundTransactions
+      ),
       totalRefundAmount: truncateDecimals(decimal, totalRefundAmount),
-      totalNetAmount: truncateDecimals(decimal, totalNetAmount)
-    }
-    res.status(200).json({ report: reportData, total});
+      totalNetAmount: truncateDecimals(decimal, totalNetAmount),
+    };
+    res.status(200).json({ report: reportData, total });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/receipts", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -530,46 +540,55 @@ router.post("/receipts", async (req, res) => {
       .populate("user", "name")
       .populate("cancelled_by", ["_id", "name"])
       .sort({ receipt_number: "desc" });
-      let allRecords = []
-      for(const sale of receipts){
-        let items = []
-        for(const item of sale.items){
-          let itemsFound = await ItemList.findOne({
-            $and: [{ account: account }, { _id: { $in: item.id } }],
-          }).populate("category", ["_id", "title"]);
-          let newItem = {
-            taxes: item.taxes,
-            discounts: item.discounts,
-            modifiers: item.modifiers,
-            _id: item._id,
-            categoryId: item.categoryId,
-            category: !itemsFound ? 'No Category' : itemsFound.category ? itemsFound.category.title : 'No Category',
-            comment: item.comment,
-            cost: item.cost,
-            auto_id: item.auto_id,
-            id: item.id,
-            item_number: item.item_number,
-            name: item.name,
-            pos_sale_id: item.pos_sale_id,
-            price: item.price,
-            quantity: item.quantity,
-            refund_quantity: item.refund_quantity,
-            sku: !itemsFound ? '' : itemsFound.sku && itemsFound.sku !== null ? itemsFound.sku : item.sku == null ? '' : item.sku,
-            sold_by_type: item.sold_by_type,
-            stock_qty: item.stock_qty,
-            total_discount: item.total_discount,
-            total_modifiers: item.total_modifiers,
-            total_price: item.total_price,
-            total_tax: item.total_tax,
-            total_tax_included: item.total_tax_included,
-            track_stock: item.track_stock,
-          }
-          items.push(newItem)
-        } 
-        sale.items = items
-        allRecords.push(sale)
+    let allRecords = [];
+    for (const sale of receipts) {
+      let items = [];
+      for (const item of sale.items) {
+        let itemsFound = await ItemList.findOne({
+          $and: [{ account: account }, { _id: { $in: item.id } }],
+        }).populate("category", ["_id", "title"]);
+        let newItem = {
+          taxes: item.taxes,
+          discounts: item.discounts,
+          modifiers: item.modifiers,
+          _id: item._id,
+          categoryId: item.categoryId,
+          category: !itemsFound
+            ? "No Category"
+            : itemsFound.category
+            ? itemsFound.category.title
+            : "No Category",
+          comment: item.comment,
+          cost: item.cost,
+          auto_id: item.auto_id,
+          id: item.id,
+          item_number: item.item_number,
+          name: item.name,
+          pos_sale_id: item.pos_sale_id,
+          price: item.price,
+          quantity: item.quantity,
+          refund_quantity: item.refund_quantity,
+          sku: !itemsFound
+            ? ""
+            : itemsFound.sku && itemsFound.sku !== null
+            ? itemsFound.sku
+            : item.sku == null
+            ? ""
+            : item.sku,
+          sold_by_type: item.sold_by_type,
+          stock_qty: item.stock_qty,
+          total_discount: item.total_discount,
+          total_modifiers: item.total_modifiers,
+          total_price: item.total_price,
+          total_tax: item.total_tax,
+          total_tax_included: item.total_tax_included,
+          track_stock: item.track_stock,
+        };
+        items.push(newItem);
       }
-      
+      sale.items = items;
+      allRecords.push(sale);
+    }
 
     let totalSales = allRecords.filter(
       (itm) => itm.receipt_type == "SALE"
@@ -590,7 +609,6 @@ router.post("/receipts", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/modifiers", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -731,7 +749,6 @@ router.post("/modifiers", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/discounts", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -767,9 +784,9 @@ router.post("/discounts", async (req, res) => {
       }
       return sale.items.map((item) => {
         if (item.discounts.length > 0) {
-          item.discounts.map((dis) => { 
-            dis.discount_total = (dis.value/100) * item.total_price
-            return itemDiscounts.push(dis)
+          item.discounts.map((dis) => {
+            dis.discount_total = (dis.value / 100) * item.total_price;
+            return itemDiscounts.push(dis);
           });
         }
       });
@@ -780,7 +797,7 @@ router.post("/discounts", async (req, res) => {
 
     let receiptGroupDiscounts = groupBy(receiptDiscounts, "_id");
     let receiptDiscountKeys = Object.keys(receiptGroupDiscounts);
-    
+
     let reportData = [];
     for (const key of itemDiscountKeys) {
       reportData.push({
@@ -808,7 +825,6 @@ router.post("/discounts", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/taxes", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -902,7 +918,6 @@ router.post("/taxes", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/shifts", async (req, res) => {
   try {
     const { startDate, endDate, stores } = req.body;
