@@ -37,7 +37,8 @@ import { verifyToken } from "../libs/middlewares";
 var router = express.Router();
 
 router.get("/", (req, res, next) => {
-  res.render("index", { title: "Kyrio POS Server Version 2" });
+  
+  res.render("index", { title: process.env.NODE_ENV == "production" ? "Kyrio POS Server Version 2" : "Kyrio POS Staging Server Version 2" });
 });
 router.post("/kommunicate", (req, res) => {
   console.log(req.body);
