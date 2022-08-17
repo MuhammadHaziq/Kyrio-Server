@@ -34,12 +34,66 @@ import adminRouter from "../controllers/admin";
 
 import express from "express";
 import { verifyToken } from "../libs/middlewares";
+import { groupBy, sortBy } from "lodash";
 var router = express.Router();
+var axios = require("axios");
 
 router.get("/", (req, res, next) => {
   
   res.render("index", { title: process.env.NODE_ENV == "production" ? "Kyrio POS Server Version 2" : "Kyrio POS Staging Server Version 2" });
 });
+router.get("/circle", (req, res, next) => {
+  var config = {
+    method: "get",
+    url: "https://app.circle.so/api/v1/comments?community_id=25997&space_id=3406943&post_id=3406943",
+    headers: {
+      Authorization: "Token 4MNGEqQnUrEGrrNMPWApct1h",
+    },
+  };
+
+  axios(config)
+    .then(function (response) {
+      var comments = response.data;
+      comments = sortBy(comments, ["created_at"]);
+      var group = groupBy(comments, "parent_comment_id");
+      var topLevelComments = group["null"];
+      delete group["null"];
+      res.status(200).send({ comments: group, topLevelComments });
+    })
+    .catch(function (error) {
+      res.status(200).send(error);
+    });
+});
+router.post("/circle/create", (req, res, next) => {
+  const { community_id, space_id, post_id, parent_comment_id, body, email } =
+    req.body.data;
+  var url = `https://app.circle.so/api/v1/comments?community_id=${community_id}&space_id=${space_id}&post_id=${post_id}&body=${body}`;
+
+  if (parent_comment_id) {
+    url = url + `&parent_comment_id=${parent_comment_id}`;
+  }
+  if (email) {
+    url = url + `&user_email=${email}`;
+  }
+  console.log(url);
+  var config = {
+    method: "post",
+    url: url,
+    headers: {
+      Authorization: "Token 4MNGEqQnUrEGrrNMPWApct1h",
+    },
+  };
+
+  axios(config)
+    .then(function (response) {
+      var repliedComment = response.data;
+      res.status(200).send(repliedComment);
+    })
+    .catch(function (error) {
+      res.status(200).send(error);
+    });
+});
+
 router.post("/kommunicate", (req, res) => {
   console.log(req.body);
   res.status(200).send({
