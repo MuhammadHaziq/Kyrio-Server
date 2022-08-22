@@ -15,19 +15,22 @@ import { pagination } from "../../libs/middlewares";
 const moment = require("moment");
 const router = express.Router();
 
-
 router.get("/summary-test", async (req, res) => {
   try {
     // const { startDate, endDate, stores, employees, divider, matches } =
     //   req.body;
-      const { account, decimal } = req.authData;
+    const { account, decimal } = req.authData;
     // var start = dateformat(startDate, "yyyy-mm-dd");
     // var end = dateformat(endDate, "yyyy-mm-dd");
-    var start =  "2022-08-04 00:00:00";
+    var start = "2022-08-04 00:00:00";
     var end = "2022-08-04 23:59:59";
-    var employees = ["62d99026962a171c6829f2dc", "628aeeb5dfb45b23782a7700", "628b6ea9dfb45b23782a791a"];
+    var employees = [
+      "62d99026962a171c6829f2dc",
+      "628aeeb5dfb45b23782a7700",
+      "628b6ea9dfb45b23782a791a",
+    ];
     var stores = ["628aeeb5dfb45b23782a7716"];
-    
+
     var sales = await Sales.aggregate([
       {
         $match: {
@@ -38,13 +41,13 @@ router.get("/summary-test", async (req, res) => {
           "store._id": { $in: stores },
           "cashier._id": { $in: employees },
         },
-      }
+      },
     ]);
-      res.status(200).json(sales)
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-})
+    res.status(200).json(sales);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 router.post("/summary", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees, divider, matches } =
@@ -55,7 +58,7 @@ router.post("/summary", async (req, res) => {
     var end = dateformat(endDate, "yyyy-mm-dd");
     start = start + " 00:00:00";
     end = end + " 23:59:59";
-    
+
     var sales = await Sales.find({
       $and: [
         { created_at: { $gte: start, $lte: end } },
@@ -66,7 +69,7 @@ router.post("/summary", async (req, res) => {
         { created_by: { $in: employees } },
       ],
     });
-    
+
     let report = await filterSales(sales, divider, matches, decimal);
 
     res.status(200).json(report);
