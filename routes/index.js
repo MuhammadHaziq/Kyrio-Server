@@ -10,7 +10,6 @@ import taxesType from "../controllers/settings/taxes/taxesType";
 import taxesOption from "../controllers/settings/taxes/taxesOption";
 import paymentMethods from "../controllers/settings/paymentTypes/paymentMethods.js";
 import paymentsType from "../controllers/settings/paymentTypes/paymentsType.js";
-
 import itemTax from "../controllers/settings/taxes/itemTax";
 import ticketsRouter from "../controllers/sales/tickets";
 import salesRouter from "../controllers/sales/sales";
@@ -39,7 +38,8 @@ var router = express.Router();
 var axios = require("axios");
 
 router.get("/", (req, res, next) => {
-  res.render("index", { title: "Kyrio POS Server Version 2" });
+  
+  res.render("index", { title: process.env.NODE_ENV == "production" ? "Kyrio POS Server Version 2" : "Kyrio POS Staging Server Version 2" });
 });
 
 router.get("/circle", (req, res, next) => {

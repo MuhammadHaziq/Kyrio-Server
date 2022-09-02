@@ -1,9 +1,10 @@
 import express from "express";
+import dateformat from "dateformat";
+import _, { groupBy, orderBy, slice, isEmpty, sumBy } from "lodash";
 import Sales from "../../modals/sales/sales";
 import ItemList from "../../modals/items/ItemList";
 import Users from "../../modals/users";
 import Shifts from "../../modals/employee/shifts";
-import _, { groupBy, orderBy, slice, isEmpty, sumBy } from "lodash";
 import Modifier from "../../modals/items/Modifier";
 import NewReports from "./newReports";
 import {
@@ -11,17 +12,50 @@ import {
   filterSales,
   filterItemSales,
 } from "../../function/globals";
-import dateformat from "dateformat";
+import { pagination } from "../../libs/middlewares";
 const moment = require("moment");
 const router = express.Router();
 
+router.get("/summary-test", async (req, res) => {
+  try {
+    // const { startDate, endDate, stores, employees, divider, matches } =
+    //   req.body;
+    const { account, decimal } = req.authData;
+    // var start = dateformat(startDate, "yyyy-mm-dd");
+    // var end = dateformat(endDate, "yyyy-mm-dd");
+    var start = "2022-08-04 00:00:00";
+    var end = "2022-08-04 23:59:59";
+    var employees = [
+      "62d99026962a171c6829f2dc",
+      "628aeeb5dfb45b23782a7700",
+      "628b6ea9dfb45b23782a791a",
+    ];
+    var stores = ["628aeeb5dfb45b23782a7716"];
+
+    var sales = await Sales.aggregate([
+      {
+        $match: {
+          created_at: { $gte: new Date(start), $lte: new Date(end) },
+          account: account,
+          open: false,
+          cancelled_at: null,
+          "store._id": { $in: stores },
+          "cashier._id": { $in: employees },
+        },
+      },
+    ]);
+    res.status(200).json(sales);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 router.use("/", NewReports);
 router.post("/summary", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees, divider, matches } =
       req.body;
-    const { account, decimal } = req.authData;
 
+    const { account, decimal } = req.authData;
     var start = dateformat(startDate, "yyyy-mm-dd");
     var end = dateformat(endDate, "yyyy-mm-dd");
     start = start + " 00:00:00";
@@ -37,6 +71,7 @@ router.post("/summary", async (req, res) => {
         { created_by: { $in: employees } },
       ],
     });
+
     let report = await filterSales(sales, divider, matches, decimal);
 
     res.status(200).json(report);
@@ -174,7 +209,6 @@ router.post("/item", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/category", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -309,7 +343,6 @@ router.post("/category", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/employee", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -406,7 +439,6 @@ router.post("/employee", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/paymentstypes", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -501,7 +533,6 @@ router.post("/paymentstypes", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/receipts", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -595,7 +626,6 @@ router.post("/receipts", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/modifiers", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -736,7 +766,6 @@ router.post("/modifiers", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/discounts", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -813,7 +842,6 @@ router.post("/discounts", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/taxes", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees } = req.body;
@@ -907,7 +935,6 @@ router.post("/taxes", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 router.post("/shifts", async (req, res) => {
   try {
     const { startDate, endDate, stores } = req.body;
