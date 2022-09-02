@@ -5,6 +5,7 @@ import Users from "../../modals/users";
 import Shifts from "../../modals/employee/shifts";
 import _, { groupBy, orderBy, slice, isEmpty, sumBy } from "lodash";
 import Modifier from "../../modals/items/Modifier";
+import NewReports from "./newReports";
 import {
   truncateDecimals,
   filterSales,
@@ -14,6 +15,7 @@ import dateformat from "dateformat";
 const moment = require("moment");
 const router = express.Router();
 
+router.use("/", NewReports);
 router.post("/summary", async (req, res) => {
   try {
     const { startDate, endDate, stores, employees, divider, matches } =

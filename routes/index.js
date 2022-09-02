@@ -41,6 +41,7 @@ var axios = require("axios");
 router.get("/", (req, res, next) => {
   res.render("index", { title: "Kyrio POS Server Version 2" });
 });
+
 router.get("/circle", (req, res, next) => {
   var config = {
     method: "get",
@@ -74,7 +75,6 @@ router.post("/circle/create", (req, res, next) => {
   if (email) {
     url = url + `&user_email=${email}`;
   }
-  console.log(url);
   var config = {
     method: "post",
     url: url,
