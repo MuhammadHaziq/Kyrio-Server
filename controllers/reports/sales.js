@@ -6,6 +6,7 @@ import ItemList from "../../modals/items/ItemList";
 import Users from "../../modals/users";
 import Shifts from "../../modals/employee/shifts";
 import Modifier from "../../modals/items/Modifier";
+import NewReports from "./newReports";
 import {
   truncateDecimals,
   filterSales,
@@ -48,6 +49,7 @@ router.get("/summary-test", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+router.use("/", NewReports);
 router.post("/summary", async (req, res) => {
   try {
     

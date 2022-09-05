@@ -41,6 +41,7 @@ router.get("/", (req, res, next) => {
   
   res.render("index", { title: process.env.NODE_ENV == "production" ? "Kyrio POS Server Version 2" : "Kyrio POS Staging Server Version 2" });
 });
+
 router.get("/circle", (req, res, next) => {
   var config = {
     method: "get",
@@ -74,7 +75,6 @@ router.post("/circle/create", (req, res, next) => {
   if (email) {
     url = url + `&user_email=${email}`;
   }
-  console.log(url);
   var config = {
     method: "post",
     url: url,
