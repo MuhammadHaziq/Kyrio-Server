@@ -18,20 +18,14 @@ router.get("/:pos_device/:storeId", async (req, res) => {
 
     const restrictedResults = await Printers.find(filter)
       .populate("modal", ["_id", "title"])
-      .populate({
-        path: "groups",
-        select: ["_id"],
-      })
+      .populate("groups", ["_id"])
       .populate("store", ["_id", "title"])
       .sort({ title: "asc" });
     delete filter.pos_device;
     filter.restricted = false;
     const nonRestrictedResults = await Printers.find(filter)
       .populate("modal", ["_id", "title"])
-      .populate({
-        path: "groups",
-        select: ["_id"],
-      })
+      .populate("groups", ["_id"])
       .populate("store", ["_id", "title"])
       .sort({ title: "asc" });
 

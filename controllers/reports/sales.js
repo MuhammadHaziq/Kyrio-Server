@@ -50,6 +50,7 @@ router.get("/summary-test", async (req, res) => {
 });
 router.post("/summary", async (req, res) => {
   try {
+    
     const { startDate, endDate, stores, employees, divider, matches } =
       req.body;
 
@@ -69,7 +70,7 @@ router.post("/summary", async (req, res) => {
         { created_by: { $in: employees } },
       ],
     });
-
+    
     let report = await filterSales(sales, divider, matches, decimal);
 
     res.status(200).json(report);

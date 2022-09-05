@@ -178,22 +178,22 @@ export const filterSales = async (sales, divider, matches, decimal) => {
         sale_discount_total += sale.total_discount;
         sale_cost_total += sale.cost_of_goods;
       } else if (sale.receipt_type === "REFUND") {
-        refund_total += sale.refund_total;
+        refund_total += sale.sub_total;
         refund_discount_total += sale.total_discount;
         refund_cost_total += sale.cost_of_goods;
       }
     }
-
+    
     let TotalGrossSales = sale_total;
     let TotalRefunds = refund_total;
     let TotalDiscounts = sale_discount_total - refund_discount_total;
     let TotalNetSale = sale_total;
     let CostOfGoods = sale_cost_total - refund_cost_total;
     let TotalGrossProfit = 0;
-
+    
     TotalNetSale = TotalGrossSales - TotalDiscounts - TotalRefunds;
     TotalGrossProfit = TotalNetSale - CostOfGoods;
-
+    
     let SalesTotal = {
       GrossSales: truncateDecimals(decimal, TotalGrossSales),
       Refunds: truncateDecimals(decimal, TotalRefunds),
@@ -202,7 +202,7 @@ export const filterSales = async (sales, divider, matches, decimal) => {
       CostOfGoods: truncateDecimals(decimal, CostOfGoods),
       GrossProfit: truncateDecimals(decimal, TotalGrossProfit),
     };
-
+    
     let TableRecord = [];
     let graphRecord = {
       GrossSales: [],
