@@ -206,10 +206,13 @@ router.patch("/", async (req, res) => {
     pos_device,
     restricted,
   } = req.body;
+  
   const { _id, account } = req.authData;
   const updateGroups = !groups ? null : groups.length > 0 ? groups : null;
+console.log("groups: ", groups)
+console.log("updateGroups: ", updateGroups)
   try {
-    await Printers.updateOne(
+    const updatedRecord = await Printers.findOneAndUpdate(
       { _id: id },
       {
         $set: {
@@ -228,12 +231,21 @@ router.patch("/", async (req, res) => {
           createdBy: _id,
           account: account,
         },
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
       }
-    );
-    const updatedRecord = await Printers.findOne({ _id: id })
-      .populate("groups", ["_id", "title"])
-      .populate("modal", ["_id", "title"])
-      .populate("store", ["_id", "title"]);
+    ).populate("groups", ["_id", "title"])
+    .populate("modal", ["_id", "title"])
+    .populate("store", ["_id", "title"]);
+    console.log(updatedRecord)
+    // const updatedRecord = await Printers.findOne({ _id: id })
+    //   .populate("groups", ["_id", "title"])
+    //   .populate("modal", ["_id", "title"])
+    //   .populate("store", ["_id", "title"]);
+    //   console.log("Res Data....",updatedRecord);
+    
     if (updatedRecord) {
       res.status(200).json(updatedRecord);
     } else {
