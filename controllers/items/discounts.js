@@ -34,17 +34,28 @@ router.post("/", async (req, res) => {
 });
 router.get("/:storeId", async (req, res) => {
   try {
-    const { account, platform } = req.authData;
+    const { account, platform, stores, is_owner } = req.authData;
     const { storeId } = req.params;
     const { update_at } = req.query;
 
     let storeFilter = {};
     if (storeId != "0") {
       storeFilter.stores = { $elemMatch: { $in: storeId } };
+    } else {
+      
+      if(!is_owner){
+        let storeIDList = []
+        if(stores.length > 0){
+          for(const str of stores){
+            storeIDList.push(str._id)
+          }
+          storeFilter.stores = { $elemMatch: { $in: storeIDList } };
+        }
+      }
     }
     storeFilter.account = account;
     storeFilter.deleted = 0;
- 
+
     if(platform === "pos"){
       let isoDate = new Date(update_at);
       storeFilter.updatedAt = {$gte: isoDate}

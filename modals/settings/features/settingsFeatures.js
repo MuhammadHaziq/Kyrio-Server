@@ -1,58 +1,63 @@
 import mongoose, { mongo, models } from "mongoose";
 
-const settingsFeaturesSchema = new mongoose.Schema({
-  feature_title: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  account: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
-  },
-  feature_description: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  stores: {
-    storeId: {
+const settingsFeaturesSchema = new mongoose.Schema(
+  {
+    feature_title: {
       type: String,
       min: 3,
       max: 255,
       required: true,
     },
-    storeName: {
+    account: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "accounts",
+    },
+    feature_description: {
+      type: String,
+      min: 3,
+      max: 255,
+      required: true,
+    },
+    stores: {
+      storeId: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+      storeName: {
+        type: String,
+        min: 3,
+        max: 255,
+        required: true,
+      },
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+    createdBy: {
       type: String,
       min: 3,
       max: 255,
       required: true,
     },
   },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-  
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-  createdBy: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-});
+  {
+    strict: false,
+    timestamps: true,
+  }
+);
 
 settingsFeaturesSchema.index(
   {
     title: 1,
+    account: 1,
   },
   {
     unique: true,

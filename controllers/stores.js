@@ -78,14 +78,23 @@ router.post("/", async (req, res) => {
 });
 router.get("/", async (req, res) => {
   try {
-    const { _id, account } = req.authData;
-
+    const { _id, account, stores, is_owner } = req.authData;
+    let filter = { account: account }
+    if(!is_owner){
+      let storeIDList = []
+      if(stores.length > 0){
+        for(const str of stores){
+          storeIDList.push(str._id)
+        }
+        filter._id = { $in : storeIDList }
+      }
+    }
     // display only login user stores
-    const stores = await Store.find({ account: account }).sort({
+    const storesList = await Store.find(filter).sort({
       _id: "desc",
     });
     let allStores = [];
-    for (const store of stores) {
+    for (const store of storesList) {
       let devices = await POS_Device.find({
         "store": store._id,
       }).countDocuments();

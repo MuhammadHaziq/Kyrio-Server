@@ -24,10 +24,11 @@ const DeletedAccounts = new mongoose.Schema(
       max: 255,
     },
     confirm: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
   {
+    strict: false,
     timestamps: true,
   }
 );

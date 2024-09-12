@@ -1,53 +1,59 @@
 import mongoose, { mongo, models } from "mongoose";
 
-const diningOptionSchema = new mongoose.Schema({
-  storeId: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  account: {
-    type: String,
-    min: 6,
-    max: 255,
-    required: true
-  },
-  storeName: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  diningOptions: [
-    {
-      title: {
-        type: String,
-        min: 3,
-        max: 255,
-        required: true,
-      },
-      isActive: {
-        type: Boolean,
-        default: true,
-      },
-      position: {
-        type: Number,
-        default: 0,
-      },
+const diningOptionSchema = new mongoose.Schema(
+  {
+    storeId: {
+      type: String,
+      min: 3,
+      max: 255,
+      required: true,
     },
-  ],
-  createdAt: {
-    type: Date,
-    default: Date.now(),
+    account: {
+      type: String,
+      min: 6,
+      max: 255,
+      required: true,
+    },
+    storeName: {
+      type: String,
+      min: 3,
+      max: 255,
+      required: true,
+    },
+    diningOptions: [
+      {
+        title: {
+          type: String,
+          min: 3,
+          max: 255,
+          required: true,
+        },
+        isActive: {
+          type: Boolean,
+          default: true,
+        },
+        position: {
+          type: Number,
+          default: 0,
+        },
+      },
+    ],
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+    createdBy: {
+      type: String,
+      min: 3,
+      max: 255,
+      required: true,
+    },
   },
-  createdBy: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-});
+  {
+    strict: false,
+    timestamps: true,
+  }
+);
 
 // diningOptionSchema.index(
 //   {

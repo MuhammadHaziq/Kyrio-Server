@@ -1,18 +1,118 @@
-const moment = require("moment");
 import { sumBy } from "lodash";
-// #START# Sale Summary Functions
+import path from "path";
+import Accounts from "../modals/accounts";
+import Users from "../modals/users";
+import Category from "../modals/items/category";
+import Discount from "../modals/items/Discount";
+import Modifier from "../modals/items/Modifier";
+import ItemList from "../modals/items/ItemList";
+import KitchenPrinter from "../modals/settings/kitchenPrinter";
+import PaymentMethods from "../modals/settings/paymentTypes/paymentMethods";
+import DiningOption from "../modals/settings/diningOption";
+import PaymentsType from "../modals/settings/paymentTypes/paymentsType";
+import POS_Device from "../modals/POS_Device";
+import Role from "../modals/role";
+import ItemTax from "../modals/settings/taxes/itemTax";
+import Loyalty from "../modals/settings/loyalty";
+import Receipts from "../modals/settings/receipt";
+import Tickets from "../modals/sales/tickets";
+import Sales from "../modals/sales/sales";
+import Customers from "../modals/customers/customers";
+import Store from "../modals/Store";
+import SkuHistory from "../modals/items/SKUHistory";
+import DeletedAccounts from "../modals/DeletedAccounts";
+import PrinterModal from "../modals/printers/modal";
+const moment = require("moment");
+var rimraf = require("rimraf");
 
-export let truncateDecimals = (decimals, num) => {
-  
-  var numS = num.toString(),
-      decPos = numS.indexOf('.'),
-      substrLength = decPos == -1 ? numS.length : 1 + decPos + decimals,
-      trimmedResult = numS.substr(0, substrLength),
-      finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
+export const deleteUserAccount = async ({
+  email,
+  businessName,
+  account,
+  reason,
+  comments,
+  confirm,
+}) => {
+  try {
+    await Accounts.deleteOne({ _id: account });
+    await Category.deleteMany({ account: account });
+    await Discount.deleteMany({ account: account });
+    await Modifier.deleteMany({ account: account });
+    await ItemList.deleteMany({ account: account });
+    await DiningOption.deleteMany({ account: account });
+    await PrinterModal.deleteMany({ account: account });
+    await KitchenPrinter.deleteMany({ account: account });
+    await PaymentMethods.deleteMany({ account: account });
+    await PaymentsType.deleteMany({ account: account });
+    await POS_Device.deleteMany({ account: account });
+    await Role.deleteMany({ account: account });
+    await ItemTax.deleteMany({ account: account });
+    await Users.deleteMany({ account: account });
+    await Loyalty.deleteMany({ account: account });
+    await Receipts.deleteMany({ account: account });
+    await Tickets.deleteMany({ account: account });
+    await Sales.deleteMany({ account: account });
+    await Customers.deleteMany({ account: account });
+    await SkuHistory.deleteMany({ account: account });
+    await Store.deleteMany({ account: account });
+    rimraf(path.join(__dirname, "../uploads/items/" + account), () => {
+      console.log("Items Images Deleted");
+    });
+    rimraf(path.join(__dirname, "../uploads/receipt/" + account), () => {
+      console.log("Receipt Images Deleted");
+    });
+    rimraf(path.join(__dirname, "../uploads/csv/" + account), () => {
+      console.log("CSV Files Deleted");
+    });
 
-  return parseFloat(finalResult);
-}
+    await new DeletedAccounts({
+      email: email,
+      businessName: businessName,
+      reason: reason,
+      comments: comments,
+      confirm: confirm,
+    }).save();
 
+    return { status: true, message: "Account successfully deleted!" };
+  } catch (e) {
+    return { status: false, message: e.message };
+  }
+};
+export const uuidv4 = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx".replace(/[xy]/g, function (c) {
+    var r = (Math.random() * 16) | 0,
+      v = c == "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
+export const addMinutes = (date, minutes) => {
+  return new Date(date.getTime() + minutes * 60000);
+};
+
+export const truncateDecimals = (decimals, num) => {
+  // var numS = num.toString(),
+  //   decPos = numS.indexOf("."),
+  //   substrLength = decPos == -1 ? numS.length : 1 + decPos + decimals,
+  //   trimmedResult = numS.substr(0, substrLength),
+  //   finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
+  if (typeof num == "undefined" || num == 0 || num == null || num == "") {
+    return (0).toFixed(decimals);
+  } else {
+    return parseFloat(num, decimals).toFixed(decimals);
+  }
+  // return amountFormat(num, decimals);
+};
+export const amountFormat = (num, decimal, sign = "") => {
+  return numberWithCommas(num, decimal) + sign;
+};
+export const numberWithCommas = (num, decimal) => {
+  num = parseFloat(num);
+  return num
+    .toFixed(decimal)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
 export const checkDivider = async (divider, saleCreatedAt, matches, index) => {
   if (divider == "Hours") {
     let format = "HH";
@@ -58,49 +158,51 @@ export const checkDivider = async (divider, saleCreatedAt, matches, index) => {
     return saleYear.isSame(match, "year");
   }
 };
+// #START# Sale Summary Functions
 export const filterSales = async (sales, divider, matches, decimal) => {
   try {
-    let allSales = sales
-      .filter((sale) => sale.receipt_type === "SALE")
-      .map((sale) => {
-        sale.sub_total = parseFloat(sale.sub_total);
-        return sale;
-      });
-    let allRefunds = sales.filter((sale) => sale.receipt_type === "REFUND");
+    let sale_total = 0; //sumBy(allSales, "sub_total");
+    let refund_total = 0; //sumBy(allRefunds, "total_price");
 
-    let sale_total = sumBy(allSales, "sub_total");
-    let refund_total = sumBy(allRefunds, "total_price");
+    let sale_discount_total = 0; //sumBy(allSales, "total_discount");
+    let refund_discount_total = 0; //sumBy(allRefunds, "total_discount");
 
-    let sale_discount_total = sumBy(allSales, "total_discount");
-    let refund_discount_total = sumBy(allRefunds, "total_discount");
+    let sale_cost_total = 0; //sumBy(allSales, "cost_of_goods");
+    let refund_cost_total = 0; //sumBy(allRefunds, "cost_of_goods");
 
-    let sale_cost_total = sumBy(allSales, "cost_of_goods");
-    let refund_cost_total = sumBy(allRefunds, "cost_of_goods");
+    let sale_tax_total = 0; //sumBy(allSales, "total_tax");
+
+    for (const sale of sales) {
+      if (sale.receipt_type === "SALE") {
+        sale_total += sale.sub_total;
+        sale_discount_total += sale.total_discount;
+        sale_cost_total += sale.cost_of_goods;
+      } else if (sale.receipt_type === "REFUND") {
+        refund_total += sale.sub_total;
+        refund_discount_total += sale.total_discount;
+        refund_cost_total += sale.cost_of_goods;
+      }
+    }
     
-    let sale_tax_total = sumBy(allSales, "total_tax");
-
-    let TotalGrossSales = truncateDecimals(decimal, sale_total);
-    let TotalRefunds = truncateDecimals(decimal, refund_total);
-    let TotalDiscounts = truncateDecimals(decimal, sale_discount_total - refund_discount_total);
-    let TotalNetSale = truncateDecimals(decimal, sale_total);
-    let CostOfGoods = truncateDecimals(decimal, sale_cost_total - refund_cost_total);
-    let TotalGrossProfit = 0
-
-    TotalNetSale =
-      truncateDecimals(decimal, TotalGrossSales) -
-      truncateDecimals(decimal, TotalDiscounts) -
-      truncateDecimals(decimal, TotalRefunds)
-    TotalGrossProfit = truncateDecimals(decimal, TotalNetSale) - truncateDecimals(decimal, CostOfGoods);
-
+    let TotalGrossSales = sale_total;
+    let TotalRefunds = refund_total;
+    let TotalDiscounts = sale_discount_total - refund_discount_total;
+    let TotalNetSale = sale_total;
+    let CostOfGoods = sale_cost_total - refund_cost_total;
+    let TotalGrossProfit = 0;
+    
+    TotalNetSale = TotalGrossSales - TotalDiscounts - TotalRefunds;
+    TotalGrossProfit = TotalNetSale - CostOfGoods;
+    
     let SalesTotal = {
-      GrossSales: TotalGrossSales,
-      Refunds: TotalRefunds,
-      discounts: TotalDiscounts,
-      NetSales: TotalNetSale,
-      CostOfGoods: CostOfGoods,
-      GrossProfit: TotalGrossProfit,
+      GrossSales: truncateDecimals(decimal, TotalGrossSales),
+      Refunds: truncateDecimals(decimal, TotalRefunds),
+      discounts: truncateDecimals(decimal, TotalDiscounts),
+      NetSales: truncateDecimals(decimal, TotalNetSale),
+      CostOfGoods: truncateDecimals(decimal, CostOfGoods),
+      GrossProfit: truncateDecimals(decimal, TotalGrossProfit),
     };
-
+    
     let TableRecord = [];
     let graphRecord = {
       GrossSales: [],
@@ -128,42 +230,26 @@ export const filterSales = async (sales, divider, matches, decimal) => {
         for (const sale of sales) {
           if (await checkDivider(divider, sale.created_at, matches, i)) {
             if (sale.receipt_type == "SALE") {
-              TotalNetSale =
-                truncateDecimals(decimal, TotalNetSale) + truncateDecimals(decimal, sale.total_price);
-              TotalDiscounts =
-                truncateDecimals(decimal, TotalDiscounts) + truncateDecimals(decimal, sale.total_discount);
-              CostOfGoods =
-                truncateDecimals(decimal, CostOfGoods) + truncateDecimals(decimal, sale.cost_of_goods);
-              TotalGrossSales =
-                truncateDecimals(decimal, TotalGrossSales) + truncateDecimals(decimal, sale.sub_total);
-              TotalTax =
-                truncateDecimals(decimal, TotalTax) + truncateDecimals(decimal, sale.total_tax) + truncateDecimals(decimal, sale.total_tax_included);
-              SaleTotalTax =
-                truncateDecimals(decimal, SaleTotalTax) + truncateDecimals(decimal, sale.total_tax);
+              TotalNetSale += sale.total_price;
+              TotalDiscounts += sale.total_discount;
+              CostOfGoods += sale.cost_of_goods;
+              TotalGrossSales += sale.sub_total;
+              TotalTax += sale.total_tax + sale.total_tax_included;
+              SaleTotalTax += sale.total_tax;
             } else if (sale.receipt_type == "REFUND") {
-              TotalRefunds =
-                truncateDecimals(decimal, TotalRefunds) + truncateDecimals(decimal, sale.total_price);
-              TotalDiscounts =
-                truncateDecimals(decimal, TotalDiscounts) - truncateDecimals(decimal, sale.total_discount);
-              CostOfGoods =
-                truncateDecimals(decimal, CostOfGoods) - truncateDecimals(decimal, sale.cost_of_goods);
-              TotalTax =
-                truncateDecimals(decimal, TotalTax) - truncateDecimals(decimal, sale.total_tax) + truncateDecimals(decimal, sale.total_tax_included);
-              SaleTotalTax =
-                truncateDecimals(decimal, SaleTotalTax) - truncateDecimals(decimal, sale.total_tax);
+              TotalRefunds += sale.total_price;
+              TotalDiscounts = TotalDiscounts - sale.total_discount;
+              CostOfGoods = CostOfGoods - sale.cost_of_goods;
+              TotalTax = TotalTax - (sale.total_tax + sale.total_tax_included);
+              SaleTotalTax = SaleTotalTax - sale.total_tax;
             }
           }
         }
-        TotalNetSale =
-          truncateDecimals(decimal, TotalGrossSales) -
-          truncateDecimals(decimal, TotalDiscounts) -
-          truncateDecimals(decimal, TotalRefunds);
-        TotalGrossProfit = truncateDecimals(decimal, TotalNetSale) - truncateDecimals(decimal, CostOfGoods);
+        TotalNetSale = TotalGrossSales - TotalDiscounts - TotalRefunds;
+        TotalGrossProfit = TotalNetSale - CostOfGoods;
 
-        TotalMargin = (
-          (truncateDecimals(decimal, TotalGrossProfit) / truncateDecimals(decimal, TotalNetSale)) *
-          100).toFixed(2);
-        TotalMargin = isNaN(TotalMargin) ? 0 : TotalMargin ;
+        TotalMargin = ((TotalGrossProfit / TotalNetSale) * 100).toFixed(2);
+        TotalMargin = isNaN(TotalMargin) ? 0 : TotalMargin;
 
         let summaryDate = "";
         let format = "MMM DD, YYYY";
@@ -190,29 +276,32 @@ export const filterSales = async (sales, divider, matches, decimal) => {
 
         totals = {
           Date: summaryDate,
-          GrossSales: TotalGrossSales,
-          Refunds: TotalRefunds,
-          discounts: TotalDiscounts,
-          NetSales: TotalNetSale,
-          CostOfGoods: CostOfGoods,
-          GrossProfit: TotalGrossProfit,
-          Margin: TotalMargin,
-          Tax: TotalTax,
+          GrossSales: truncateDecimals(decimal, TotalGrossSales),
+          Refunds: truncateDecimals(decimal, TotalRefunds),
+          discounts: truncateDecimals(decimal, TotalDiscounts),
+          NetSales: truncateDecimals(decimal, TotalNetSale),
+          CostOfGoods: truncateDecimals(decimal, CostOfGoods),
+          GrossProfit: truncateDecimals(decimal, TotalGrossProfit),
+          Margin: truncateDecimals(decimal, TotalMargin),
+          Tax: truncateDecimals(decimal, TotalTax),
         };
         TableRecord.push(totals);
-        graphRecord.GrossSales.push(TotalGrossSales);
-        graphRecord.Refunds.push(TotalRefunds);
-        graphRecord.discounts.push(TotalDiscounts);
-        graphRecord.NetSales.push(TotalNetSale);
-        graphRecord.CostOfGoods.push(CostOfGoods);
-        graphRecord.GrossProfit.push(TotalGrossProfit);
+        graphRecord.GrossSales.push(truncateDecimals(decimal, TotalGrossSales));
+        graphRecord.Refunds.push(truncateDecimals(decimal, TotalRefunds));
+        graphRecord.discounts.push(truncateDecimals(decimal, TotalDiscounts));
+        graphRecord.NetSales.push(truncateDecimals(decimal, TotalNetSale));
+        graphRecord.CostOfGoods.push(truncateDecimals(decimal, CostOfGoods));
+        graphRecord.GrossProfit.push(
+          truncateDecimals(decimal, TotalGrossProfit)
+        );
       }
       i++;
     }
+
     if (sales.length <= 0) {
       TableRecord = [];
     }
-    return { SalesTotal, graphRecord: graphRecord, summary: TableRecord };
+    return { SalesTotal, graphRecord, summary: TableRecord };
   } catch (error) {
     return {
       SalesTotal: {},
@@ -256,12 +345,14 @@ export const filterItemSales = async (
                   truncateDecimals(decimal, TotalDiscounts) +
                   truncateDecimals(decimal, sumBy(found, "total_discount"));
                 CostOfGoods =
-                  truncateDecimals(decimal, CostOfGoods) + truncateDecimals(decimal, sumBy(found, "cost"));
+                  truncateDecimals(decimal, CostOfGoods) +
+                  truncateDecimals(decimal, sumBy(found, "cost"));
                 TotalGrossSales =
                   truncateDecimals(decimal, TotalGrossSales) +
-                  truncateDecimals(decimal, sumBy(found, "total_price"));
-                SaleTotalTax = SaleTotalTax +truncateDecimals(decimal, sumBy(found, "total_tax"));
-
+                  truncateDecimals(decimal, sumBy(found, "sub_total"));
+                SaleTotalTax =
+                  SaleTotalTax +
+                  truncateDecimals(decimal, sumBy(found, "total_tax"));
               } else if (sale.receipt_type == "REFUND") {
                 TotalRefunds =
                   truncateDecimals(decimal, TotalRefunds) +
@@ -270,7 +361,8 @@ export const filterItemSales = async (
                   truncateDecimals(decimal, TotalDiscounts) -
                   truncateDecimals(decimal, sumBy(found, "total_discount"));
                 CostOfGoods =
-                  truncateDecimals(decimal, CostOfGoods) - truncateDecimals(decimal, sumBy(found, "cost"));
+                  truncateDecimals(decimal, CostOfGoods) -
+                  truncateDecimals(decimal, sumBy(found, "cost"));
                 TotalItemsRefunded =
                   TotalItemsRefunded + sumBy(found, "quantity");
               }
@@ -280,7 +372,7 @@ export const filterItemSales = async (
         TotalNetSale =
           truncateDecimals(decimal, TotalGrossSales) -
           truncateDecimals(decimal, TotalDiscounts) -
-          truncateDecimals(decimal, TotalRefunds)
+          truncateDecimals(decimal, TotalRefunds);
 
         NetSales.push(TotalNetSale);
       }

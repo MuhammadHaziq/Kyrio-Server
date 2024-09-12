@@ -188,7 +188,6 @@ async function uploadVideo(files, folder) {
       message: "Successfully saved images!",
     };
   } catch (error) {
-    console.log(error);
     return { success: false, assetNames: assetNames, message: error.message };
     // return res.status(200).json({ message: "error" });
   }
@@ -238,7 +237,6 @@ async function uploadAudio(files, folder) {
       message: "Successfully saved images!",
     };
   } catch (error) {
-    console.log(error);
     return { success: false, assetNames: assetNames, message: error.message };
     // return res.status(200).json({ message: "error" });
   }
@@ -249,11 +247,9 @@ function deleteFile(fileName, folder) {
     return new Promise((resolve, reject) => {
       var appDir = path.dirname(require.main.filename);
       let fullPath = appDir + "/uploads/" + folder + "/" + fileName + "";
-      console.log(fullPath);
       if (fs.existsSync(fullPath)) {
         fs.unlink(fullPath, (err) => {
           if (err) {
-            console.log(err);
             reject("error");
           }
 
@@ -264,7 +260,6 @@ function deleteFile(fileName, folder) {
       }
     });
   } catch (error) {
-    console.log(error);
     return "error";
   }
 }

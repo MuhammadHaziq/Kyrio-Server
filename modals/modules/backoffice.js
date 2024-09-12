@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-const backofficeSchema = new mongoose.Schema({
+const backofficeSchema = new mongoose.Schema(
+  {
     title: {
       type: String,
       min: 3,
@@ -20,8 +21,11 @@ const backofficeSchema = new mongoose.Schema({
     },
     isMenu: Boolean,
     isChild: Boolean,
-},{
-  timestamps: true
-});
+  },
+  {
+    strict: false,
+    timestamps: true,
+  }
+);
 
 module.exports = mongoose.model("backoffice", backofficeSchema);

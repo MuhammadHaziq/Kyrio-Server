@@ -1,9 +1,9 @@
 import express from "express";
-import settingsLoyalty from "../../modals/settings/loyalty";
+import Loyalties from "../../modals/settings/loyalty";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  const { loyalty_amount, storeId } = req.body;
+  const { loyalty_amount } = req.body;
   const { _id, account } = req.authData;
   var errors = [];
   if (
@@ -12,41 +12,57 @@ router.post("/", async (req, res) => {
     loyalty_amount == ""
   ) {
     errors.push(`Invalid Amount!`);
-    // errors.push({ name: `Invalid Name!` });
-  }
-  if (!storeId || typeof storeId == "undefined" || storeId == "") {
-    errors.push(`Invalid Store Id!`);
   }
   if (errors.length > 0) {
     res.status(400).send({ message: `Invalid Parameters!`, errors });
   } else {
-    const newSettingsLoyalty = new settingsLoyalty({
-      amount: loyalty_amount,
-      store: storeId,
-      createdBy: _id,
-      account: account
-    });
     try {
-      const result = await newSettingsLoyalty.save();
-      const data = {
-        status: true,
-        data: result["amount"],
-      };
-      res.status(201).json(data);
+      const checkLoyalty = await Loyalties.findOne({
+        account: account,
+      });
+      var data = {};
+      if (!checkLoyalty) {
+        const newLoyalty = new Loyalties({
+          amount: loyalty_amount,
+          createdBy: _id,
+          account: account,
+        });
+        const result = await newLoyalty.save();
+        data = {
+          status: true,
+          data: result.amount,
+        };
+      } else {
+        const updateLoyaty = await Loyalties.findOneAndUpdate(
+          { _id: checkLoyalty._id },
+          {
+            amount: loyalty_amount,
+          },
+          {
+            new: true,
+            upsert: true, // Make this update into an upsert
+          }
+        );
+        data = {
+          status: true,
+          data: updateLoyaty.amount,
+        };
+      }
+      res.status(200).json(data);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   }
 });
-router.get("/:storeId", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const { account } = req.authData;
-    const { storeId } = req.params;
-    const result = await settingsLoyalty
-      .findOne({ account: account, store: storeId }); // Find Lasted One Record
+    const result = await Loyalties.findOne({
+      account: account,
+    });
     const data = {
       status: true,
-      data: result !== null ? result["amount"] : "00.0",
+      data: result !== null ? result.amount : "00.0",
     };
     res.status(200).json(data);
   } catch (error) {

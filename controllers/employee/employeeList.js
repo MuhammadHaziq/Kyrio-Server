@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
   try {
     const { storeId } = req.body;
 
-    const { account } = req.authData;
+    const { account, stores, is_owner } = req.authData;
     let result;
     if (typeof storeId !== "undefined") {
       result = await Users.find({
@@ -19,7 +19,17 @@ router.get("/", async (req, res) => {
         name: 1
       });
     } else {
-      result = await Users.find({ account: account }).populate('role',["_id","title"]).populate('stores', ["_id","title"]).sort({
+      let filter = { account: account }
+      if(!is_owner){
+        let storeIDList = []
+        if(stores.length > 0){
+          for(const str of stores){
+            storeIDList.push(str._id)
+          }
+          filter.stores = { $in : storeIDList }
+        }
+      }
+      result = await Users.find(filter).populate('role',["_id","title"]).populate('stores', ["_id","title"]).sort({
         name: 1
       });
     }
@@ -31,11 +41,20 @@ router.get("/", async (req, res) => {
 
 router.get("/get_store_employee_list/:storeId", async (req, res) => {
   try {
-    const { account } = req.authData;
+    const { account, stores, is_owner } = req.authData;
     const { storeId } = req.params;
     let filter = "";
     if (storeId === undefined || storeId === "" || storeId === "0") {
       filter = { account: account };
+      if(!is_owner){
+        let storeIDList = []
+        if(stores.length > 0){
+          for(const str of stores){
+            storeIDList.push(str._id)
+          }
+          filter.stores = { $in : storeIDList }
+        }
+      }
     } else {
       filter = {
         account: account,
@@ -74,7 +93,7 @@ router.get("/search", async (req, res) => {
     } else {
       filter = {
         $or: [
-          { title: { $regex: ".*" + search + ".*", $options: "i" } },
+          { name: { $regex: ".*" + search + ".*", $options: "i" } },
           { email: { $regex: ".*" + search + ".*", $options: "i" } },
           { phone: { $regex: ".*" + search + ".*", $options: "i" } },
           {

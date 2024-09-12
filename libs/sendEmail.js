@@ -1,4 +1,9 @@
-import { receiptTemplate, adminTemplate, userTemplate } from "./emailTemplates";
+import {
+  receiptTemplate,
+  adminTemplate,
+  userTemplate,
+  resetPasswordTemplate,
+} from "./emailTemplates";
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(
   "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"
@@ -26,12 +31,12 @@ export const sendEmail = async (emailData) => {
       responseData = error;
     }
   );
-   let adminMsg = {
-     to: "tahiramjad79@gmail.com",
-     from: emailData.from,
-     subject: "New User Registered",
-     html: adminBody,
-   };
+  let adminMsg = {
+    to: "kevindoan@me.com",
+    from: emailData.from,
+    subject: "New User Registered",
+    html: adminBody,
+  };
   await sgMail.send(adminMsg).then(
     (response) => {
       responseData = response;
@@ -47,14 +52,13 @@ export const sendEmail = async (emailData) => {
   );
   return responseData;
 };
-
-export const sendReceiptEmail = async (email, receipt) => {
-  let receiptBody = receiptTemplate(receipt);
+export const sendPasswordResetEmail = async (emailData) => {
+  let userBody = resetPasswordTemplate(emailData._id);
   const userMsg = {
-    to: email,
-    from: 'receipts@kyrio.com',
-    subject: "Receipt from {store}",
-    html: receiptBody,
+    to: emailData.email,
+    from: emailData.from,
+    subject: "Kyrio POS: password recovery",
+    html: userBody,
   };
   let responseData = "";
   await sgMail.send(userMsg).then(
@@ -68,6 +72,40 @@ export const sendReceiptEmail = async (email, receipt) => {
         console.error(error.response.body);
       }
       responseData = error;
+    }
+  );
+  return responseData;
+};
+
+export const sendReceiptEmail = async (
+  email,
+  receipt,
+  store,
+  decimal,
+  pay,
+  type
+) => {
+  let receiptBody = receiptTemplate(receipt, decimal, pay, type);
+
+  // console.log(receiptBody);
+  const userMsg = {
+    to: email,
+    from: "receipts@kyrio.com",
+    subject: `Receipt from ${store}`,
+    html: receiptBody,
+  };
+  let responseData = "";
+  await sgMail.send(userMsg).then(
+    (response) => {
+      responseData = response;
+    },
+    (error) => {
+      console.error(error.message, "Error");
+
+      if (error.response) {
+        console.error(error.response.body);
+      }
+      responseData = error.message;
     }
   );
   return responseData;

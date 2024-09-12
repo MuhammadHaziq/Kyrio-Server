@@ -1,17 +1,18 @@
 import mongoose, { mongo, models } from "mongoose";
 
-const diningOptionSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    min: 3,
-    max: 255,
-    required: true,
-  },
-  account: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "accounts",
-  },
-  stores: [
+const diningOptionSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      min: 3,
+      max: 255,
+      required: true,
+    },
+    account: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "accounts",
+    },
+    stores: [
       {
         store: {
           type: mongoose.Schema.Types.ObjectId,
@@ -27,22 +28,26 @@ const diningOptionSchema = new mongoose.Schema({
         },
       },
     ],
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
   },
-},{
-  timestamps: true
-});
+  {
+    strict: false,
+    timestamps: true,
+  }
+);
 
 diningOptionSchema.index(
   {
     title: 1,
-    createdBy: 1,
+    // createdBy: 1,
+    account: 1,
   },
   {
     unique: true,
-    sparse: true
+    sparse: true,
   }
 );
 // diningOptionSchema.pre("save", function (next) {

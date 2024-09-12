@@ -11,16 +11,30 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const { title, color } = req.body;
   const { _id, account } = req.authData;
-  const newCat = new Category({
-    title: title,
-    account: account,
-    color: color,
-    created_by: _id,
-  });
   try {
-    const newCatResult = await newCat.save();
-    req.io.to(account).emit(CATEGORY_INSERT, { data: newCatResult, user: _id });
-    res.status(200).json(newCatResult);
+    let category = await Category.findOne({
+      title: title,
+      account: account,
+      deleted: 0,
+    });
+
+    if (!category) {
+      const newCat = new Category({
+        title: title,
+        account: account,
+        color: color,
+        created_by: _id,
+      });
+      const newCatResult = await newCat.save();
+      req.io
+        .to(account)
+        .emit(CATEGORY_INSERT, { data: newCatResult, user: _id });
+      res.status(200).json(newCatResult);
+    } else {
+      res
+        .status(400)
+        .json({ message: "Category with this name already exists" });
+    }
   } catch (error) {
     if (error.code === 11000) {
       res
@@ -39,19 +53,19 @@ router.get("/", async (req, res) => {
     const filter = {
       account: account,
       deleted: 0,
-    }
+    };
     let isoDate = new Date(update_at);
-    if(platform === "pos"){
-      filter.updatedAt = {$gte: isoDate}
+    if (platform === "pos") {
+      filter.updatedAt = { $gte: isoDate };
     }
     const allCat = await Category.find(filter).sort({
       title: 1,
     });
-    
+
     let allCategories = [];
     for (const cate of allCat) {
       let itemCount = await ItemList.find({
-        "category": cate._id,
+        category: cate._id,
         deleted: 0,
       }).countDocuments();
       allCategories.push({
@@ -120,9 +134,11 @@ router.get("/categoryItem", async (req, res) => {
       };
     }
 
-    var result = await ItemList.find(filters).sort({
-      title: 1,
-    }).populate('category', ["_id","title"]);
+    var result = await ItemList.find(filters)
+      .sort({
+        title: 1,
+      })
+      .populate("category", ["_id", "title"]);
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -132,21 +148,33 @@ router.patch("/", async (req, res) => {
   try {
     const { _id, account } = req.authData;
     const { id, title, color } = req.body;
-    const result = await Category.findOneAndUpdate(
-      { _id: id, account: account },
-      {
-        $set: {
-          title: title,
-          color: color,
+    let category = await Category.findOne({
+      _id: { $ne: id },
+      title: title,
+      account: account,
+      deleted: 0,
+    });
+    if (!category) {
+      const result = await Category.findOneAndUpdate(
+        { _id: id, account: account },
+        {
+          $set: {
+            title: title,
+            color: color,
+          },
         },
-      },
-      {
-        new: true,
-        upsert: true, // Make this update into an upsert
-      }
-    );
-    req.io.to(account).emit(CATEGORY_UPDATE, { data: result, user: _id });
-    res.status(200).json(result);
+        {
+          new: true,
+          upsert: true, // Make this update into an upsert
+        }
+      );
+      req.io.to(account).emit(CATEGORY_UPDATE, { data: result, user: _id });
+      res.status(200).json(result);
+    } else {
+      res
+        .status(400)
+        .json({ message: "Category with this name already exists" });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
